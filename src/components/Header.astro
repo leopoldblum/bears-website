@@ -4,7 +4,7 @@
 
 <header class="bg-bears-bg text-bears-text p-4" x-data="{ mobileMenuOpen: false }">
   <div class="container mx-auto">
-    <div class="flex items-center justify-between lg:grid lg:grid-cols-4 lg:gap-4 xl:flex">
+    <div class="relative flex items-center justify-between lg:grid lg:grid-cols-4 lg:gap-4 xl:flex">
       <!-- Logo/Brand - Takes 1/4 on lg, always visible -->
       <div class="shrink-0 lg:col-span-1">
         <a href="/" class="text-2xl font-bold text-bears-accent">BEARS</a>
@@ -23,7 +23,7 @@
 
       <!-- Search Bar - Takes 1/4 on lg, centered absolutely on xl+ -->
       <div class="hidden lg:block lg:col-span-1">
-        <div class="xl:absolute xl:left-1/2 xl:-translate-x-1/2 xl:w-64">
+        <div class="xl:absolute xl:left-1/2 xl:top-1/2 xl:-translate-x-1/2 xl:-translate-y-1/2 xl:w-64">
           <input
             type="search"
             placeholder="Search..."
