@@ -1,0 +1,42 @@
+---
+// Landing CTA Component with Image Carousel
+---
+
+<section class="relative h-[calc(100vh-5rem)] w-full overflow-hidden bg-linear-to-br from-[#1F1F1F] to-bears-bg">
+  <!-- Background Image Placeholder -->
+  <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiMzMDMwMzAiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1zaXplPSIyNCIgZmlsbD0iIzUwNTA1MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkJhY2tncm91bmQgSW1hZ2UgUGxhY2Vob2xkZXI8L3RleHQ+PC9zdmc+')] bg-cover bg-center opacity-30"></div>
+
+  <!-- Content Container - Top Left Quarter -->
+  <div class="relative z-10 h-full">
+    <div class="container mx-auto px-4 sm:px-8 md:px-12 lg:px-16 h-full flex flex-col justify-between py-8 sm:py-12 md:py-16 lg:py-20">
+      <div class="max-w-md">
+        <!-- Logo -->
+        <h1 class="text-5xl sm:text-7xl md:text-8xl lg:text-9xl font-bold text-bears-accent drop-shadow-lg">BEARS</h1>
+      </div>
+
+      <div class="max-w-md">
+        <!-- Introduction Content -->
+        <div>
+          <h2 class="text-xl sm:text-2xl md:text-3xl font-bold text-bears-accent mb-4">Introduction</h2>
+          <p class="text-sm sm:text-base text-bears-text leading-relaxed mb-6">
+            Welcome to BEARS - a pioneering initiative at the forefront of innovation and research.
+            Our mission is to push boundaries and create meaningful impact through collaboration and excellence.
+          </p>
+
+          <!-- CTA Buttons -->
+          <div class="flex gap-2 sm:gap-4">
+            <button class="px-4 py-2.5 sm:px-6 sm:py-2 bg-bears-accent text-bears-text rounded-full hover:bg-bears-accent-muted transition-colors font-medium text-sm sm:text-base">
+              Join us!
+            </button>
+            <button class="px-4 py-2.5 sm:px-6 sm:py-2 bg-bears-bg text-bears-text border-2 border-bears-accent-muted rounded-full hover:bg-bears-accent hover:border-bears-accent transition-colors font-medium text-sm sm:text-base">
+              Learn more
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty spacer for bottom -->
+      <div></div>
+    </div>
+  </div>
+</section>
