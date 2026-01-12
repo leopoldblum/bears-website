@@ -1,7 +1,7 @@
 @import "tailwindcss";
 
 @theme {
-  --color-bears-bg: #2B2B2B;
+  --color-bears-bg: #1A1A1A;
   --color-bears-text: #E1E1E1;
   --color-bears-accent: #C50E1F;
   --color-bears-accent-muted: #A00B19;

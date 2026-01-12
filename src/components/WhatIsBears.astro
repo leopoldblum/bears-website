@@ -1,0 +1,64 @@
+---
+// WhatIsBears component - Explains what BEARS e.V. is
+---
+
+<section class="container mx-auto px-4 sm:px-8 md:px-12 lg:px-16 py-12 sm:py-16 md:py-20">
+  <div class="flex flex-col gap-4 sm:gap-6 max-w-3xl mx-auto text-center">
+    <!-- Header -->
+    <h2 class="text-3xl sm:text-4xl md:text-5xl font-bold text-bears-text">
+      What is BEARS e.V.?
+    </h2>
+
+    <!-- Explanation text -->
+    <p class="text-base sm:text-lg text-bears-text leading-relaxed">
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+    </p>
+
+    <!-- Button -->
+    <div>
+      <button class="px-4 py-2.5 sm:px-6 sm:py-2 bg-bears-accent text-bears-text rounded-full hover:bg-bears-accent-muted transition-colors font-medium">
+        Learn More
+      </button>
+    </div>
+  </div>
+
+  <div class="mt-12 sm:mt-16 overflow-hidden w-full">
+    <div class="flex animate-scroll">
+      <!-- First set -->
+      <img src="https://via.placeholder.com/300x200/E1E1E1/2B2B2B?text=Image+1" alt="Placeholder 1" class="h-48 sm:h-56 md:h-64 w-72 sm:w-80 md:w-96 object-cover rounded-lg shrink-0 mr-6 sm:mr-8 bg-red-900" />
+      <img src="https://via.placeholder.com/300x200/CCCCCC/2B2B2B?text=Image+2" alt="Placeholder 2" class="h-48 sm:h-56 md:h-64 w-72 sm:w-80 md:w-96 object-cover rounded-lg shrink-0 mr-6 sm:mr-8 bg-red-800" />
+      <img src="https://via.placeholder.com/300x200/E1E1E1/2B2B2B?text=Image+3" alt="Placeholder 3" class="h-48 sm:h-56 md:h-64 w-72 sm:w-80 md:w-96 object-cover rounded-lg shrink-0 mr-6 sm:mr-8 bg-red-900" />
+      <img src="https://via.placeholder.com/300x200/CCCCCC/2B2B2B?text=Image+4" alt="Placeholder 4" class="h-48 sm:h-56 md:h-64 w-72 sm:w-80 md:w-96 object-cover rounded-lg shrink-0 mr-6 sm:mr-8 bg-red-800" />
+      <img src="https://via.placeholder.com/300x200/E1E1E1/2B2B2B?text=Image+5" alt="Placeholder 5" class="h-48 sm:h-56 md:h-64 w-72 sm:w-80 md:w-96 object-cover rounded-lg shrink-0 mr-6 sm:mr-8 bg-red-900" />
+
+      <!-- Second set (duplicate) -->
+      <img src="https://via.placeholder.com/300x200/E1E1E1/2B2B2B?text=Image+1" alt="Placeholder 1" class="h-48 sm:h-56 md:h-64 w-72 sm:w-80 md:w-96 object-cover rounded-lg shrink-0 mr-6 sm:mr-8 bg-red-900" />
+      <img src="https://via.placeholder.com/300x200/CCCCCC/2B2B2B?text=Image+2" alt="Placeholder 2" class="h-48 sm:h-56 md:h-64 w-72 sm:w-80 md:w-96 object-cover rounded-lg shrink-0 mr-6 sm:mr-8 bg-red-800" />
+      <img src="https://via.placeholder.com/300x200/E1E1E1/2B2B2B?text=Image+3" alt="Placeholder 3" class="h-48 sm:h-56 md:h-64 w-72 sm:w-80 md:w-96 object-cover rounded-lg shrink-0 mr-6 sm:mr-8 bg-red-900" />
+      <img src="https://via.placeholder.com/300x200/CCCCCC/2B2B2B?text=Image+4" alt="Placeholder 4" class="h-48 sm:h-56 md:h-64 w-72 sm:w-80 md:w-96 object-cover rounded-lg shrink-0 mr-6 sm:mr-8 bg-red-800" />
+      <img src="https://via.placeholder.com/300x200/E1E1E1/2B2B2B?text=Image+5" alt="Placeholder 5" class="h-48 sm:h-56 md:h-64 w-72 sm:w-80 md:w-96 object-cover rounded-lg shrink-0 mr-6 sm:mr-8 bg-red-900" />
+    </div>
+  </div>
+</section>
+
+
+
+<style>
+  @keyframes scroll {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(calc(-50%));
+    }
+  }
+  
+  .animate-scroll {
+    animation: scroll 25s linear infinite;
+    width: fit-content;
+  }
+  
+  .animate-scroll:hover {
+    animation-play-state: paused;
+  }
+</style>
