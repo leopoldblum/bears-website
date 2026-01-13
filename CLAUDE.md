@@ -47,5 +47,16 @@ This project uses Tailwind CSS v4 with the Vite plugin. Global styles are import
 
 **Mobile-First Design**: All new components and features should be designed with mobile devices in mind first. Use Tailwind's responsive breakpoints (sm, md, lg, xl) to progressively enhance for larger screens. Start with mobile styles as the base, then add breakpoint modifiers for larger screens.
 
+**Headline Spacing**: All h2 headlines should use consistent spacing below them (unless explicitly specified otherwise for a particular component). The standard spacing pattern for headlines is:
+```
+mb-6 sm:mb-8 md:mb-12
+```
+This provides:
+- Mobile (< 640px): 1.5rem (24px)
+- Small screens (640px+): 2rem (32px)
+- Medium+ screens (768px+): 3rem (48px)
+
+This ensures a coherent visual rhythm across all sections of the website. Apply this spacing to all h2 headlines in components that appear on pages, maintaining consistency with the overall design system.
+
 ### Static Assets
 Place static files (images, fonts, etc.) in the `public/` directory. They're served from the root path.
