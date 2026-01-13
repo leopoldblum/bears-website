@@ -1,0 +1,74 @@
+---
+// LatestNews component - Shows latest news from BEARS
+import NewsGridElement from "./NewsGridElement.astro";
+
+const newsItems = [
+  {
+    imageUrl: "https://via.placeholder.com/600x400/C50E1F/C50E1F?text=News+1",
+    imageAlt: "News Image 1",
+    date: "January 12, 2026",
+    title: "Jesse has joined the Matrix-Channel!",
+    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore.",
+  },
+  {
+    imageUrl: "https://via.placeholder.com/600x400/C50E1F/E1E1E1?text=News+2",
+    imageAlt: "News Image 2",
+    date: "January 10, 2026",
+    title: "2nd Great Update",
+    description: "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+  },
+  {
+    imageUrl: "https://via.placeholder.com/600x400/C50E1F/E1E1E1?text=News+3",
+    imageAlt: "News Image 3",
+    date: "January 10, 2026",
+    title: "3rd Great Update",
+    description: "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+  },
+  {
+    imageUrl: "https://via.placeholder.com/600x400/C50E1F/E1E1E1?text=News+4",
+    imageAlt: "News Image 4",
+    date: "January 10, 2026",
+    title: "4th Great Update",
+    description: "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+  },
+    {
+    imageUrl: "https://via.placeholder.com/600x400/C50E1F/E1E1E1?text=News+4",
+    imageAlt: "News Image 4",
+    date: "January 10, 2026",
+    title: "5th Great Update",
+    description: "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
+  },
+];
+---
+
+<section class="container mx-auto px-4 sm:px-8 md:px-12 lg:px-16 py-16 sm:py-20 md:py-24">
+  <!-- Header - left aligned -->
+  <h2 class="text-3xl sm:text-4xl md:text-5xl font-bold text-bears-text mb-6 sm:mb-8">
+    Latest News from BEARS
+  </h2>
+
+  <!-- Placeholder text -->
+  <p class="text-base sm:text-lg text-bears-text leading-relaxed max-w-3xl mb-8 sm:mb-12">
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation.
+  </p>
+
+  <!-- Learn More Button -->
+  <div>
+    <button class="px-4 py-2.5 sm:px-6 sm:py-2 bg-bears-accent text-bears-text rounded-full hover:bg-bears-accent-muted transition-colors font-medium">
+      Learn More
+    </button>
+  </div>
+
+    <!-- News Preview Grid -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8 my-8 sm:my-12">
+    {newsItems.map((news) => (
+      <NewsGridElement
+        imageUrl={news.imageUrl}
+        imageAlt={news.imageAlt}
+        date={news.date}
+        title={news.title}
+        description={news.description}
+      />
+    ))}
+  </div>
+</section>

@@ -1,0 +1,95 @@
+---
+// Testimonials - Testimonial Carousel Component
+import TestimonialCard from "./TestimonialCard.astro";
+
+// Define testimonials data
+const testimonials = [
+  {
+    quote: "This is a placeholder testimonial. Members will be able to share their experiences and thoughts about BEARS here.",
+    name: "Member Name",
+    role: "Role / Year / Program"
+  },
+  {
+    quote: "Another great placeholder testimonial showcasing how members can share their positive experiences with the organization.",
+    name: "Another Member",
+    role: "Position / Class / Department"
+  },
+  {
+    quote: "Placeholder content for testimonials can be easily swapped with real member quotes and feedback once content is ready.",
+    name: "Third Member",
+    role: "Title / Year / Group"
+  }
+];
+---
+
+<section class="container mx-auto px-4 sm:px-8 md:px-12 lg:px-16 pt-4 sm:pt-6 md:pt-8 pb-16 sm:pb-20 md:pb-24">
+  <!-- Heading -->
+  <h2 class="text-3xl sm:text-4xl md:text-5xl font-bold text-bears-text mb-6 sm:mb-8">
+    What Members Think
+  </h2>
+
+  <!-- Carousel Container -->
+  <div
+    x-data={`{
+      currentSlide: 0,
+      totalSlides: ${testimonials.length},
+      nextSlide() { this.currentSlide = (this.currentSlide + 1) % this.totalSlides },
+      prevSlide() { this.currentSlide = (this.currentSlide - 1 + this.totalSlides) % this.totalSlides },
+      goToSlide(index) { this.currentSlide = index }
+    }`}
+    class="w-full"
+  >
+
+    <!-- Testimonial Cards -->
+    <div class="relative flex items-center justify-center min-h-120 gap-4 sm:gap-6 md:gap-8">
+
+      <!-- Previous Arrow Button -->
+      <button
+        @click="prevSlide()"
+        class="shrink-0 bg-bears-accent hover:bg-bears-accent-muted text-white rounded-lg px-3 py-4 sm:px-4 sm:py-6 md:px-5 md:py-8 transition-colors duration-200"
+        aria-label="Previous testimonial"
+      >
+        <svg class="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+        </svg>
+      </button>
+
+      <!-- Cards Container (80% width) -->
+      <div class="relative w-[80%] min-h-120 flex items-center justify-center">
+        {testimonials.map((testimonial, index) => (
+          <TestimonialCard
+            slideIndex={index}
+            quote={testimonial.quote}
+            name={testimonial.name}
+            role={testimonial.role}
+          />
+        ))}
+      </div>
+
+      <!-- Next Arrow Button -->
+      <button
+        @click="nextSlide()"
+        class="shrink-0 bg-bears-accent hover:bg-bears-accent-muted text-white rounded-lg px-3 py-4 sm:px-4 sm:py-6 md:px-5 md:py-8 transition-colors duration-200"
+        aria-label="Next testimonial"
+      >
+        <svg class="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Dot Indicators (Auto-generated based on testimonials array) -->
+    <div class="flex justify-center gap-2 sm:gap-3 mt-8 sm:mt-10 md:mt-12">
+      {testimonials.map((_, index) => (
+        <button
+          @click={`goToSlide(${index})`}
+          :class={`currentSlide === ${index} ? 'bg-bears-accent' : 'bg-gray-600 hover:bg-gray-500'`}
+          class="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 rounded-full transition-colors duration-200 cursor-pointer"
+          :aria-label={`\`Go to testimonial ${index + 1}\``}
+          :aria-current={`currentSlide === ${index} ? 'true' : 'false'`}
+        ></button>
+      ))
+      }
+    </div>
+  </div>
+</section>
