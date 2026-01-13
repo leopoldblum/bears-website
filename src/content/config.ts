@@ -10,6 +10,17 @@ const testimonialsCollection = defineCollection({
   }),
 });
 
+const sponsorsCollection = defineCollection({
+  type: 'content',
+  schema: z.object({
+    name: z.string(),
+    logo: z.string(),
+    url: z.string().url().optional(),
+    tier: z.enum(['bronze', 'silver', 'gold']),
+  }),
+});
+
 export const collections = {
   testimonials: testimonialsCollection,
+  sponsors: sponsorsCollection,
 };

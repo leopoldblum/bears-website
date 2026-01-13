@@ -1,3 +1,10 @@
+---
+quote: "EXAMPLE FILE - NOT A REAL TESTIMONIAL"
+name: "Example Documentation"
+role: "Documentation File"
+image: "placeholder-1.jpg"
+---
+
 # How to Add a New Testimonial
 
 ## Quick Start

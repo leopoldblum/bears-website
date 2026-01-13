@@ -1,0 +1,65 @@
+---
+// SponsorTier component - Renders a tier of sponsors with tier-specific styling
+interface Props {
+  sponsors: Array<{
+    name: string;
+    logo: string;
+    url?: string;
+    tier: 'gold' | 'silver' | 'bronze';
+    slug: string;
+  }>;
+  tier: 'gold' | 'silver' | 'bronze';
+}
+
+const { sponsors, tier } = Astro.props;
+
+// Define tier-specific styling configuration
+const tierConfig = {
+  gold: {
+    sizeClasses: 'h-24 w-24 sm:h-32 sm:w-32 md:h-40 md:w-40',
+    gapClasses: 'gap-8 sm:gap-10 md:gap-12',
+    marginClasses: 'mb-6 sm:mb-8',
+  },
+  silver: {
+    sizeClasses: 'h-20 w-20 sm:h-24 sm:w-24 md:h-28 md:w-28',
+    gapClasses: 'gap-6 sm:gap-8 md:gap-10',
+    marginClasses: 'mb-6 sm:mb-8',
+  },
+  bronze: {
+    sizeClasses: 'h-16 w-16 sm:h-20 sm:w-20 md:h-24 md:w-24',
+    gapClasses: 'gap-4 sm:gap-6 md:gap-8',
+    marginClasses: 'mb-10 sm:mb-12 md:mb-16',
+  },
+};
+
+const config = tierConfig[tier];
+---
+
+{sponsors.length > 0 && (
+  <div class={`flex flex-wrap justify-center items-center ${config.gapClasses} ${config.marginClasses}`}>
+    {sponsors.map((sponsor: any) => {
+      const content = (
+        <img
+          src={sponsor.logo}
+          alt={sponsor.name}
+          class={config.sizeClasses}
+        />
+      );
+
+      return sponsor.url ? (
+        <a
+          href={sponsor.url}
+          class="inline-block hover:scale-110 hover:opacity-80 transition-all duration-300"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {content}
+        </a>
+      ) : (
+        <div class="inline-block">
+          {content}
+        </div>
+      );
+    })}
+  </div>
+)}

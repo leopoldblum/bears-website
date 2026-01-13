@@ -1,73 +1,51 @@
 ---
-// BecomeSponsor component - Displays sponsor showcase with light background
-// Data-driven sponsor management with premium and other sponsor tiers
+// BecomeSponsor component - Displays sponsor showcase with tier-based system
+import { getCollection } from "astro:content";
+import { getImage } from "astro:assets";
+import SponsorTier from "./SponsorTier.astro";
 
-// Define sponsor data
-const premiumSponsors = [
-  {
-    name: "Sponsor 1",
-    logo: "https://placehold.co/160x160/CCCCCC/2B2B2B?text=Logo+1",
-    url: "#"
-  },
-  {
-    name: "Sponsor 2",
-    logo: "https://placehold.co/160x160/DDDDDD/2B2B2B?text=Logo+2",
-    url: "#"
-  },
-  {
-    name: "Sponsor 3",
-    logo: "https://placehold.co/160x160/CCCCCC/2B2B2B?text=Logo+3",
-    url: "#"
-  },
-  {
-    name: "Sponsor 4",
-    logo: "https://placehold.co/160x160/DDDDDD/2B2B2B?text=Logo+4",
-    url: "#"
-  },
-  {
-    name: "Sponsor 5",
-    logo: "https://placehold.co/160x160/CCCCCC/2B2B2B?text=Logo+5",
-    url: "#"
-  }
-];
+// Fetch all sponsors
+const allSponsors = await getCollection("sponsors");
 
-const otherSponsors = [
-  {
-    name: "Sponsor 6",
-    logo: "https://placehold.co/80x80/DDDDDD/2B2B2B?text=Logo+6",
-    url: "#"
-  },
-  {
-    name: "Sponsor 7",
-    logo: "https://placehold.co/80x80/CCCCCC/2B2B2B?text=Logo+7",
-    url: "#"
-  },
-  {
-    name: "Sponsor 8",
-    logo: "https://placehold.co/80x80/DDDDDD/2B2B2B?text=Logo+8",
-    url: "#"
-  },
-  {
-    name: "Sponsor 9",
-    logo: "https://placehold.co/80x80/CCCCCC/2B2B2B?text=Logo+9",
-    url: "#"
-  },
-  {
-    name: "Sponsor 10",
-    logo: "https://placehold.co/80x80/DDDDDD/2B2B2B?text=Logo+10",
-    url: "#"
-  },
-  {
-    name: "Sponsor 11",
-    logo: "https://placehold.co/80x80/CCCCCC/2B2B2B?text=Logo+11",
-    url: "#"
-  },
-  {
-    name: "Sponsor 12",
-    logo: "https://placehold.co/80x80/DDDDDD/2B2B2B?text=Logo+12",
-    url: "#"
-  }
-];
+// Import all logo images
+const logos = import.meta.glob<{ default: ImageMetadata }>("/src/assets/sponsors/*.{jpg,jpeg,png}");
+
+// Process sponsors with optimized images
+const sponsorsWithImages = await Promise.all(
+  allSponsors.map(async (sponsor: any) => {
+    const logoPath = `/src/assets/sponsors/${sponsor.data.logo}`;
+    let optimizedLogo;
+
+    if (logos[logoPath]) {
+      const logoModule = await logos[logoPath]();
+      const optimized = await getImage({
+        src: logoModule.default,
+        format: "webp",
+        width: 200
+      });
+      optimizedLogo = optimized.src;
+    }
+
+    return {
+      ...sponsor.data,
+      logo: optimizedLogo,
+      slug: sponsor.slug,
+    };
+  })
+);
+
+// Group sponsors by tier and sort alphabetically within each tier
+const goldSponsors = sponsorsWithImages
+  .filter(s => s.tier === 'gold')
+  .sort((a, b) => a.slug.localeCompare(b.slug));
+
+const silverSponsors = sponsorsWithImages
+  .filter(s => s.tier === 'silver')
+  .sort((a, b) => a.slug.localeCompare(b.slug));
+
+const bronzeSponsors = sponsorsWithImages
+  .filter(s => s.tier === 'bronze')
+  .sort((a, b) => a.slug.localeCompare(b.slug));
 ---
 
 <section class="bg-[#F5F5F5] py-16 sm:py-20 md:py-24">
@@ -77,38 +55,24 @@ const otherSponsors = [
       Become a Sponsor
     </h2>
 
-    <!-- Premium Sponsors Row -->
-    {premiumSponsors.length > 0 && (
-      <div class="flex flex-wrap justify-center items-center gap-8 sm:gap-10 md:gap-12 mb-6 sm:mb-8">
-        {premiumSponsors.map((sponsor) => (
-          <a href={sponsor.url} class="inline-block hover:scale-110 hover:opacity-80 transition-all duration-300">
-            <img
-              src={sponsor.logo}
-              alt={sponsor.name}
-              class="h-24 w-24 sm:h-32 sm:w-32 md:h-40 md:w-40"
-            />
-          </a>
-        ))}
-      </div>
+    <!-- Gold Sponsors Tier -->
+    <SponsorTier sponsors={goldSponsors} tier="gold" />
+
+    <!-- Divider 1: Only show if gold sponsors exist AND (silver OR bronze exist) -->
+    {goldSponsors.length > 0 && (silverSponsors.length > 0 || bronzeSponsors.length > 0) && (
+      <hr class="w-full max-w-3xl mx-auto border-t border-[#2B2B2B] opacity-20 my-8 sm:my-10 md:my-12" />
     )}
 
-    <!-- Divider between sponsor tiers -->
-    <hr class="w-full max-w-3xl mx-auto border-t border-[#2B2B2B] opacity-20 my-8 sm:my-10 md:my-12" />
+    <!-- Silver Sponsors Tier -->
+    <SponsorTier sponsors={silverSponsors} tier="silver" />
 
-    <!-- Other Sponsors Row -->
-    {otherSponsors.length > 0 && (
-      <div class="flex flex-wrap justify-center items-center gap-6 sm:gap-8 md:gap-10 mb-10 sm:mb-12 md:mb-16">
-        {otherSponsors.map((sponsor) => (
-          <a href={sponsor.url} class="inline-block hover:scale-110 hover:opacity-80 transition-all duration-300">
-            <img
-              src={sponsor.logo}
-              alt={sponsor.name}
-              class="h-20 w-20 sm:h-24 sm:w-24 md:h-28 md:w-28"
-            />
-          </a>
-        ))}
-      </div>
+    <!-- Divider 2: Only show if silver sponsors exist AND bronze exist -->
+    {silverSponsors.length > 0 && bronzeSponsors.length > 0 && (
+      <hr class="w-full max-w-3xl mx-auto border-t border-[#2B2B2B] opacity-20 my-8 sm:my-10 md:my-12" />
     )}
+
+    <!-- Bronze Sponsors Tier -->
+    <SponsorTier sponsors={bronzeSponsors} tier="bronze" />
 
     <!-- Placeholder text below logos -->
     <p class="text-sm sm:text-base text-[#2B2B2B] text-center opacity-70 max-w-2xl mx-auto mb-6 sm:mb-8">
