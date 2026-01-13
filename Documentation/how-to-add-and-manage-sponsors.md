@@ -1,9 +1,3 @@
----
-name: "EXAMPLE FILE - NOT A REAL SPONSOR"
-logo: "gold-placeholder-1.png"
-tier: "gold"
----
-
 # How to Add a New Sponsor
 
 ## Quick Start
