@@ -1,25 +1,39 @@
 ---
 // Testimonials - Testimonial Carousel Component
+import { getCollection } from "astro:content";
+import { getImage } from "astro:assets";
 import TestimonialCard from "./TestimonialCard.astro";
 
-// Define testimonials data
-const testimonials = [
-  {
-    quote: "This is a placeholder testimonial. Members will be able to share their experiences and thoughts about BEARS here.",
-    name: "Member Name",
-    role: "Role / Year / Program"
-  },
-  {
-    quote: "Another great placeholder testimonial showcasing how members can share their positive experiences with the organization.",
-    name: "Another Member",
-    role: "Position / Class / Department"
-  },
-  {
-    quote: "Placeholder content for testimonials can be easily swapped with real member quotes and feedback once content is ready.",
-    name: "Third Member",
-    role: "Title / Year / Group"
-  }
-];
+// Fetch testimonials from content collection
+const allTestimonials = await getCollection("testimonials");
+
+// Sort alphabetically by filename (slug)
+const sortedTestimonials = allTestimonials.sort((a: any, b: any) => a.slug.localeCompare(b.slug));
+
+// Import all images from testimonials directory
+const images = import.meta.glob<{ default: ImageMetadata }>("/src/assets/testimonials/*.{jpg,jpeg,png}");
+
+// Process testimonials with optimized images
+const testimonialsWithImages = await Promise.all(
+  sortedTestimonials.map(async (testimonial: any) => {
+    const imagePath = `/src/assets/testimonials/${testimonial.data.image}`;
+    let optimizedImage;
+
+    // Check if the image exists and optimize it
+    if (images[imagePath]) {
+      const imageModule = await images[imagePath]();
+      const optimized = await getImage({ src: imageModule.default, format: "webp" });
+      optimizedImage = optimized.src;
+    }
+
+    return {
+      ...testimonial.data,
+      image: optimizedImage,
+    };
+  })
+);
+
+const testimonials = testimonialsWithImages;
 ---
 
 <section class="container mx-auto px-4 sm:px-8 md:px-12 lg:px-16 pt-4 sm:pt-6 md:pt-8 pb-16 sm:pb-20 md:pb-24">
@@ -46,7 +60,7 @@ const testimonials = [
       <!-- Previous Arrow Button -->
       <button
         @click="prevSlide()"
-        class="shrink-0 bg-bears-accent hover:bg-bears-accent-muted text-white rounded-lg px-3 py-4 sm:px-4 sm:py-6 md:px-5 md:py-8 transition-colors duration-200"
+        class="shrink-0 bg-bears-accent hover:bg-bears-accent-muted text-white rounded-lg px-3 py-4 sm:px-4 sm:py-6 md:px-5 md:py-8 transition-colors duration-200 cursor-pointer"
         aria-label="Previous testimonial"
       >
         <svg class="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -62,6 +76,7 @@ const testimonials = [
             quote={testimonial.quote}
             name={testimonial.name}
             role={testimonial.role}
+            image={testimonial.image}
           />
         ))}
       </div>
@@ -69,7 +84,7 @@ const testimonials = [
       <!-- Next Arrow Button -->
       <button
         @click="nextSlide()"
-        class="shrink-0 bg-bears-accent hover:bg-bears-accent-muted text-white rounded-lg px-3 py-4 sm:px-4 sm:py-6 md:px-5 md:py-8 transition-colors duration-200"
+        class="shrink-0 bg-bears-accent hover:bg-bears-accent-muted text-white rounded-lg px-3 py-4 sm:px-4 sm:py-6 md:px-5 md:py-8 transition-colors duration-200 cursor-pointer"
         aria-label="Next testimonial"
       >
         <svg class="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
