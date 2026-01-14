@@ -60,3 +60,24 @@ This ensures a coherent visual rhythm across all sections of the website. Apply 
 
 ### Static Assets
 Place static files (images, fonts, etc.) in the `public/` directory. They're served from the root path.
+
+## Documentation
+
+The `/documentation/` directory contains user-facing guides for content creators and maintainers. These documents explain how to add and manage content on the website.
+
+**Important**: When you make code changes that affect documented behavior or data structures, you must update the corresponding documentation files to keep them in sync with the implementation.
+
+### When to Update Documentation
+
+Update documentation files when:
+- Changing content collection schemas (e.g., adding/removing frontmatter fields)
+- Modifying sort/filter logic (e.g., how items are ordered)
+- Changing file organization or naming conventions
+- Updating asset paths or directory structures
+- Modifying how content is displayed or validated
+
+### Documentation Files
+
+- `how-to-add-and-manage-sponsors.md` - Guide for managing sponsor content
+- `how-to-add-and-manage-testimonials.md` - Guide for managing testimonials
+- `how-to-add-and-manage-events-and-projects.md` - Guide for managing events and projects

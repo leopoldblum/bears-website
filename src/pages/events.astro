@@ -1,10 +1,53 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
+import { getCollection } from "astro:content";
+import { getImage } from "astro:assets";
+import NewsGridElement from "../components/NewsGridElement.astro";
+
+// Filter and sort events
+const allEvents = await getCollection("posts", ({ id, data }) => {
+  return id.startsWith('events/') && (import.meta.env.DEV || !data.isDraft);
+});
+
+const sortedEvents = allEvents.sort((a, b) =>
+  b.data.date.getTime() - a.data.date.getTime()
+);
+
+// Import and optimize images
+const images = import.meta.glob<{ default: ImageMetadata }>("/src/assets/events/*.{jpg,jpeg,png,webp}");
+
+const eventsWithImages = await Promise.all(
+  sortedEvents.map(async (event) => {
+    let optimizedImage;
+    if (event.data.coverImage) {
+      const imagePath = `/src/assets/events/${event.data.coverImage}`;
+      if (images[imagePath]) {
+        const imageModule = await images[imagePath]();
+        const optimized = await getImage({ src: imageModule.default, format: "webp" });
+        optimizedImage = optimized.src;
+      }
+    }
+    return { ...event.data, slug: event.slug, coverImage: optimizedImage };
+  })
+);
 ---
 
 <BaseLayout title="Events">
   <div class="container mx-auto px-4 py-6 sm:px-6 sm:py-8 md:px-8">
-    <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4 text-bears-accent">Events</h1>
-    <p class="text-sm sm:text-base text-bears-text">Events page content - To be defined</p>
+    <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 sm:mb-8 md:mb-12 text-bears-accent">
+      Events
+    </h1>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+      {eventsWithImages.map((event) => (
+        <NewsGridElement
+          imageUrl={event.coverImage || "https://via.placeholder.com/600x400"}
+          imageAlt={event.title}
+          date={event.date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+          title={event.title}
+          description={event.description}
+          href={`/events/${event.slug.replace('events/', '')}`}
+        />
+      ))}
+    </div>
   </div>
 </BaseLayout>

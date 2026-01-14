@@ -20,7 +20,21 @@ const sponsorsCollection = defineCollection({
   }),
 });
 
+const postsCollection = defineCollection({
+  type: 'content',
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    date: z.date(),
+    domain: z.enum(['aerospace', 'robotics', 'ai', 'sustainability', 'education', 'research', 'other']),
+    tags: z.array(z.string()).optional(),
+    coverImage: z.string().optional(),
+    isDraft: z.boolean().default(false).optional(),
+  }),
+});
+
 export const collections = {
   testimonials: testimonialsCollection,
   sponsors: sponsorsCollection,
+  posts: postsCollection,
 };

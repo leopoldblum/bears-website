@@ -1,0 +1,72 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { getCollection, type CollectionEntry } from "astro:content";
+import { getImage } from "astro:assets";
+
+export async function getStaticPaths() {
+  const allEvents = await getCollection("posts", ({ id, data }) => {
+    return id.startsWith('events/') && (import.meta.env.DEV || !data.isDraft);
+  });
+
+  return allEvents.map(entry => ({
+    params: { slug: entry.slug.replace('events/', '') },
+    props: { entry }
+  }));
+}
+
+interface Props {
+  entry: CollectionEntry<'posts'>;
+}
+
+const { entry } = Astro.props;
+const { Content } = await entry.render();
+
+// Import and optimize cover image
+const images = import.meta.glob<{ default: ImageMetadata }>("/src/assets/events/*.{jpg,jpeg,png,webp}");
+let optimizedCoverImage: string | undefined;
+
+if (entry.data.coverImage) {
+  const imagePath = `/src/assets/events/${entry.data.coverImage}`;
+  if (images[imagePath]) {
+    const imageModule = await images[imagePath]();
+    const optimized = await getImage({ src: imageModule.default, format: "webp" });
+    optimizedCoverImage = optimized.src;
+  }
+}
+---
+
+<BaseLayout title={entry.data.title}>
+  <article class="container mx-auto px-4 py-6 sm:px-6 sm:py-8 md:px-8">
+    <!-- Cover Image -->
+    {optimizedCoverImage && (
+      <div class="mb-6 sm:mb-8 rounded-lg overflow-hidden">
+        <img
+          src={optimizedCoverImage}
+          alt={entry.data.title}
+          class="w-full h-48 sm:h-64 md:h-96 object-cover"
+        />
+      </div>
+    )}
+
+    <!-- Title and Date -->
+    <header class="mb-6 sm:mb-8">
+      <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4 text-bears-accent">
+        {entry.data.title}
+      </h1>
+      <time class="text-sm sm:text-base text-bears-text/80">
+        {entry.data.date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+      </time>
+    </header>
+
+    <!-- Content -->
+    <div class="prose prose-invert prose-lg max-w-none
+                prose-headings:text-bears-text
+                prose-p:text-bears-text/90
+                prose-a:text-bears-accent prose-a:no-underline hover:prose-a:underline
+                prose-strong:text-bears-text
+                prose-ul:text-bears-text/90
+                prose-ol:text-bears-text/90">
+      <Content />
+    </div>
+  </article>
+</BaseLayout>
