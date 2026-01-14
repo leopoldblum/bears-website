@@ -30,7 +30,21 @@ const postsCollection = defineCollection({
     tags: z.array(z.string()).optional(),
     coverImage: z.string().optional(),
     isDraft: z.boolean().default(false).optional(),
-  }),
+    displayMeetTheTeam: z.boolean().optional(),
+    headOfProject: z.string().optional(),
+  }).refine(
+    (data) => {
+      // If displayMeetTheTeam is true, headOfProject must be provided
+      if (data.displayMeetTheTeam === true && !data.headOfProject) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message: "headOfProject is required when displayMeetTheTeam is true",
+      path: ["headOfProject"],
+    }
+  ),
 });
 
 export const collections = {

@@ -6,6 +6,8 @@ domain: "aerospace"
 tags: ["satellite", "tracking", "software", "iot", "dashboard"]
 coverImage: "project-1.jpg"
 isDraft: false
+displayMeetTheTeam: true
+headOfProject: "Alice Johnson"
 ---
 
 ## Project Overview

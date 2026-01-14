@@ -1,5 +1,16 @@
 ---
 // MeetTheTeam component
+import { getCollection } from 'astro:content';
+
+// Fetch projects that should be displayed in MeetTheTeam accordion
+const allProjects = await getCollection('posts', ({ id, data }) => {
+  return id.startsWith('projects/') &&
+         data.displayMeetTheTeam === true &&
+         (import.meta.env.DEV || !data.isDraft);
+});
+
+// Sort by date descending (newest first)
+const projects = allProjects.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 ---
 
 <section class="container mx-auto px-4 sm:px-8 md:px-12 lg:px-16 py-16 sm:py-20 md:py-24">
@@ -17,16 +28,42 @@
       />
     </div>
 
-    <!-- Text content - 1/3 width on larger screens -->
-    <div class="w-full md:w-1/3">
-      <p class="text-base sm:text-lg text-bears-text-onDark leading-relaxed">
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-        Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-      </p>
-      <p class="text-base sm:text-lg text-bears-text-onDark leading-relaxed mt-4">
-        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
-        Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-      </p>
+    <!-- Projects Accordion - 1/3 width on larger screens -->
+    <div class="w-full md:w-1/3 border-t border-b border-bears-text-onDark/20" x-data="{ activeProject: 0 }">
+      {projects.map((project, index) => (
+        <div class="border-b border-bears-text-onDark/20 last:border-b-0">
+          <!-- Accordion Title Button -->
+          <button
+            type="button"
+            class="w-full text-left py-4 px-2 text-base sm:text-lg font-semibold text-bears-text-onDark hover:text-bears-accent transition-colors duration-200 cursor-pointer"
+            x-on:click={`activeProject !== ${index} && (activeProject = ${index})`}
+            aria-expanded={index === 0 ? "true" : "false"}
+            aria-controls={`project-${index}`}
+          >
+            {project.data.title}
+          </button>
+
+          <!-- Accordion Content -->
+          <div
+            id={`project-${index}`}
+            class="grid transition-[grid-template-rows] duration-300 ease-in-out"
+            x-bind:class={`activeProject === ${index} ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'`}
+          >
+            <div class="overflow-hidden">
+              <div class="pb-4 px-2 max-h-120 md:max-h-140 lg:max-h-160 overflow-y-auto">
+                {project.data.headOfProject && (
+                  <p class="text-xs sm:text-sm text-bears-accent font-medium mb-2">
+                    {project.data.headOfProject}
+                  </p>
+                )}
+                <p class="text-sm sm:text-base text-bears-text-onDark/90 leading-relaxed">
+                  {project.data.description}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      ))}
     </div>
   </div>
 </section>

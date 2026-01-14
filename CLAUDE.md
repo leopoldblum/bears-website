@@ -20,6 +20,7 @@ Run commands from the project root:
 ### Technology Stack
 - **Framework**: Astro.js 5.x (SSG/hybrid rendering)
 - **Styling**: Tailwind CSS v4 (via Vite plugin)
+- **Interactivity**: Alpine.js for lightweight client-side JavaScript features
 - **TypeScript**: Strict mode enabled (extends astro/tsconfigs/strict)
 
 ### Project Structure

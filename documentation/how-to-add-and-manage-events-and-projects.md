@@ -23,6 +23,8 @@ domain: "robotics"
 tags: ["tag1", "tag2"]
 coverImage: "cover-image.jpg"
 isDraft: false
+displayMeetTheTeam: false  # Set to true to feature project in MeetTheTeam accordion (projects only)
+headOfProject: "Your Name"  # Required when displayMeetTheTeam is true, optional otherwise
 ---
 
 # Main Content
@@ -65,6 +67,19 @@ Write your full event or project description here using markdown.
 - When `true`: visible in dev mode (`npm run dev`) but hidden in production
 - When `false`: visible in both dev and production
 - Use this to work on content before publishing
+
+**`displayMeetTheTeam`** (optional, projects only) - Display in MeetTheTeam accordion
+- When `true`: project appears in the interactive accordion on the MeetTheTeam component
+- When omitted or `false`: project appears only on the projects listing page
+- Use this to highlight key projects alongside the team photo
+- Projects are displayed in date order (newest first)
+- **Note**: When this is set to `true`, `headOfProject` becomes required
+
+**`headOfProject`** (optional, but required when `displayMeetTheTeam` is `true`) - Project manager name
+- Name of the person managing/leading the project
+- Displayed above the description in the MeetTheTeam accordion
+- Example: `"Emma Watson"`, `"Alice Johnson"`
+- Only displayed when project appears in MeetTheTeam component
 
 ## Complete Examples
 
@@ -109,6 +124,8 @@ domain: "aerospace"
 tags: ["cubesat", "tracking", "satellite"]
 coverImage: "cubesat-tracker.jpg"
 isDraft: false
+displayMeetTheTeam: true
+headOfProject: "Alice Johnson"
 ---
 
 ## Project Overview

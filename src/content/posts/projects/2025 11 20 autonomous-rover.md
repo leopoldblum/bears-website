@@ -6,6 +6,8 @@ domain: "robotics"
 tags: ["ai", "rover", "autonomous", "computer-vision", "machine-learning"]
 coverImage: "project-2.jpg"
 isDraft: false
+displayMeetTheTeam: true
+headOfProject: "Emma Watson"
 ---
 
 ## Project Overview
