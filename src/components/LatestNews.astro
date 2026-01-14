@@ -2,76 +2,52 @@
 // LatestNews component - Shows latest news from BEARS
 import NewsGridElement from "./NewsGridElement.astro";
 import { getImage } from "astro:assets";
+import { getCollection } from "astro:content";
 
 // Import images
 const eventImages = import.meta.glob<{ default: ImageMetadata }>("/src/assets/events/*.{jpg,jpeg,png,webp}");
 const projectImages = import.meta.glob<{ default: ImageMetadata }>("/src/assets/projects/*.{jpg,jpeg,png,webp}");
 
-// Helper to get optimized image
-async function getOptimizedImage(path: string, type: 'events' | 'projects') {
-  const images = type === 'events' ? eventImages : projectImages;
-  const fullPath = `/src/assets/${type}/${path}`;
-  if (images[fullPath]) {
-    const imageModule = await images[fullPath]();
-    const optimized = await getImage({ src: imageModule.default, format: "webp" });
-    return optimized.src;
-  }
-  return "";
-}
+// Fetch all posts (events and projects)
+const allPosts = await getCollection("posts", ({ data }) => {
+  return import.meta.env.DEV || !data.isDraft;
+});
 
-// Define news items with image filenames
-const newsItemsData = [
-  {
-    imageFile: "event-1.jpg",
-    imageType: "events" as const,
-    imageAlt: "Event 1",
-    date: "January 12, 2026",
-    title: "Jessie has joined the Matrix-Channel!",
-    description: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore.",
-  },
-  {
-    imageFile: "project-1.jpg",
-    imageType: "projects" as const,
-    imageAlt: "Project 1",
-    date: "January 10, 2026",
-    title: "2nd Great Update",
-    description: "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
-  },
-  {
-    imageFile: "event-2.jpg",
-    imageType: "events" as const,
-    imageAlt: "Event 2",
-    date: "January 10, 2026",
-    title: "3rd Great Update",
-    description: "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
-  },
-  {
-    imageFile: "project-2.jpg",
-    imageType: "projects" as const,
-    imageAlt: "Project 2",
-    date: "January 10, 2026",
-    title: "4th Great Update",
-    description: "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
-  },
-  {
-    imageFile: "event-3.jpg",
-    imageType: "events" as const,
-    imageAlt: "Event 3",
-    date: "January 10, 2026",
-    title: "5th Great Update",
-    description: "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.",
-  },
-];
+// Sort by date (newest first) and limit to 4 items
+const latestPosts = allPosts
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+  .slice(0, 4);
 
-// Get optimized images
+// Process posts with optimized images and hrefs
 const newsItems = await Promise.all(
-  newsItemsData.map(async (item) => ({
-    imageUrl: await getOptimizedImage(item.imageFile, item.imageType),
-    imageAlt: item.imageAlt,
-    date: item.date,
-    title: item.title,
-    description: item.description,
-  }))
+  latestPosts.map(async (post) => {
+    // Determine post type (event or project)
+    const postType = post.slug.startsWith('events/') ? 'events' : 'projects';
+
+    // Optimize cover image
+    let optimizedImage;
+    if (post.data.coverImage) {
+      const imagePath = `/src/assets/${postType}/${post.data.coverImage}`;
+      const images = postType === 'events' ? eventImages : projectImages;
+      if (images[imagePath]) {
+        const imageModule = await images[imagePath]();
+        const optimized = await getImage({ src: imageModule.default, format: "webp" });
+        optimizedImage = optimized.src;
+      }
+    }
+
+    // Build href for the post
+    const href = `/${postType}/${post.slug.replace(`${postType}/`, '')}`;
+
+    return {
+      imageUrl: optimizedImage || "https://via.placeholder.com/600x400",
+      imageAlt: post.data.title,
+      date: post.data.date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+      title: post.data.title,
+      description: post.data.description,
+      href: href,
+    };
+  })
 );
 ---
 
@@ -102,6 +78,7 @@ const newsItems = await Promise.all(
         date={news.date}
         title={news.title}
         description={news.description}
+        href={news.href}
       />
     ))}
   </div>
