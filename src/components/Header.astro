@@ -1,8 +1,22 @@
 ---
 // Header component
 ---
-
-<header class="bg-bears-bg text-bears-text-onDark p-4" x-data="{ mobileMenuOpen: false }">
+<!-- wrongfully detected error here, everything works fine -->
+<header
+  class="bg-bears-bg text-bears-text-onDark p-4 sticky top-0 z-40 transition-transform duration-300"
+  x-data="{
+    mobileMenuOpen: false,
+    lastScrollY: 0,
+    headerHidden: false
+  }"
+  x-init="lastScrollY = window.scrollY"
+  @scroll.window="
+    if (mobileMenuOpen) { headerHidden = false; return; }
+    headerHidden = window.scrollY > lastScrollY && window.scrollY > 60;
+    lastScrollY = window.scrollY;
+  "
+  :class="{ '-translate-y-full': headerHidden }"
+>
   <div class="container mx-auto">
     <div class="relative flex items-center justify-between lg:grid lg:grid-cols-4 lg:gap-4 xl:flex">
       <!-- Logo/Brand - Takes 1/4 on lg, always visible -->
@@ -58,7 +72,7 @@
       x-transition:leave="transition ease-in duration-150"
       x-transition:leave-start="opacity-100 translate-y-0"
       x-transition:leave-end="opacity-0 -translate-y-4"
-      class="lg:hidden mt-4 py-4 border-t border-gray-700"
+      class="lg:hidden fixed left-0 right-0 top-15 z-50 bg-bears-bg px-4 py-4 border-t border-gray-700 shadow-lg"
       @click.away="mobileMenuOpen = false"
     >
       <!-- Search Bar (full width) -->
