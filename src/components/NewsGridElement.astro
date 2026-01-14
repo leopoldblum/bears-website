@@ -18,24 +18,24 @@ const Wrapper = href ? 'a' : 'div';
   <img
     src={imageUrl}
     alt={imageAlt}
-    class="w-full h-full object-cover bg-linear-to-br from-bears-accent/25 to-transparent"
+    class="w-full h-full object-cover bg-linear-to-br"
   />
 
   <!-- Gradient Overlay on bottom half -->
-  <div class="absolute inset-x-0 bottom-0 h-1/2 bg-linear-to-t from-black/80 to-transparent"></div>
+  <div class="absolute inset-x-0 bottom-0 h-1/2 bg-linear-to-t from-black/90 to-transparent"></div>
 
   <!-- Content -->
   <div class="absolute inset-x-0 bottom-0 p-6">
     <!-- Date -->
-    <p class="text-sm text-bears-text/80 mb-2">{date}</p>
+    <p class="text-sm text-bears-text-onDark/80 mb-2">{date}</p>
 
     <!-- Title -->
-    <h3 class="text-xl sm:text-2xl font-bold text-bears-text mb-3 group-hover:text-bears-accent transition-colors">
+    <h3 class="text-xl sm:text-2xl font-bold text-bears-text-onDark mb-3 group-hover:text-bears-accent transition-colors">
       {title}
     </h3>
 
     <!-- Description -->
-    <p class="text-sm sm:text-base text-bears-text/90 leading-relaxed">
+    <p class="text-sm sm:text-base text-bears-text-onDark/90 leading-relaxed">
       {description}
     </p>
   </div>

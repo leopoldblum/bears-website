@@ -4,7 +4,7 @@ description: "A real-time satellite tracking dashboard for monitoring BEARS Cube
 date: 2025-12-10
 domain: "aerospace"
 tags: ["satellite", "tracking", "software", "iot", "dashboard"]
-coverImage: "cubesat-tracking.jpg"
+coverImage: "project-1.jpg"
 isDraft: false
 ---
 

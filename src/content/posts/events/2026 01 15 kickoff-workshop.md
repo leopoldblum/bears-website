@@ -4,7 +4,7 @@ description: "Join us for our semester kickoff workshop where we'll introduce ne
 date: 2026-01-15
 domain: "education"
 tags: ["workshop", "networking", "onboarding"]
-coverImage: "kickoff-workshop.jpg"
+coverImage: "event-1.jpg"
 isDraft: false
 ---
 

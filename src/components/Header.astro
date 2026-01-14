@@ -2,7 +2,7 @@
 // Header component
 ---
 
-<header class="bg-bears-bg text-bears-text p-4" x-data="{ mobileMenuOpen: false }">
+<header class="bg-bears-bg text-bears-text-onDark p-4" x-data="{ mobileMenuOpen: false }">
   <div class="container mx-auto">
     <div class="relative flex items-center justify-between lg:grid lg:grid-cols-4 lg:gap-4 xl:flex">
       <!-- Logo/Brand - Takes 1/4 on lg, always visible -->
@@ -13,7 +13,7 @@
       <!-- Hamburger Menu Button (mobile/tablet only) -->
       <button
         @click="mobileMenuOpen = !mobileMenuOpen"
-        class="lg:hidden text-bears-text hover:text-bears-accent transition-colors p-2"
+        class="lg:hidden text-bears-text-onDark hover:text-bears-accent transition-colors p-2"
         aria-label="Toggle menu"
       >
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -27,7 +27,7 @@
           <input
             type="search"
             placeholder="Search..."
-            class="w-full px-3 py-1.5 rounded-lg bg-[#303030] text-bears-text placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-bears-accent"
+            class="w-full px-3 py-1.5 rounded-lg bg-[#303030] text-bears-text-onDark placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-bears-accent"
             disabled
           />
         </div>
@@ -66,7 +66,7 @@
         <input
           type="search"
           placeholder="Search..."
-          class="w-full px-3 py-2.5 rounded-lg bg-[#303030] text-bears-text placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-bears-accent"
+          class="w-full px-3 py-2.5 rounded-lg bg-[#303030] text-bears-text-onDark placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-bears-accent"
           disabled
         />
       </div>

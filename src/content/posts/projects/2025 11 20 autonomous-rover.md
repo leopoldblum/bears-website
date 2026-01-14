@@ -4,7 +4,7 @@ description: "Development of an AI-powered autonomous navigation system for our 
 date: 2025-11-20
 domain: "robotics"
 tags: ["ai", "rover", "autonomous", "computer-vision", "machine-learning"]
-coverImage: "autonomous-rover.jpg"
+coverImage: "project-2.jpg"
 isDraft: false
 ---
 
