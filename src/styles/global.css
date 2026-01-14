@@ -14,3 +14,7 @@ body {
   background-color: var(--color-bears-bg);
   color: var(--color-bears-text);
 }
+
+[x-cloak] {
+  display: none !important;
+}
