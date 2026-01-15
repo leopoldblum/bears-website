@@ -4,9 +4,6 @@ import { getCollection } from "astro:content";
 import NewsGridElement from "../components/NewsGridElement.astro";
 import type { ImageMetadata } from 'astro';
 
-// Import component-specific default placeholder image
-import defaultEventImage from "../assets/default-images/default-event.jpg";
-
 // Filter and sort events
 const allEvents = await getCollection("posts", ({ id, data }) => {
   return id.startsWith('events/') && (import.meta.env.DEV || !data.isDraft);
@@ -21,8 +18,8 @@ const images = import.meta.glob<{ default: ImageMetadata }>("/src/assets/events/
 
 const eventsWithImages = await Promise.all(
   sortedEvents.map(async (event) => {
-    // Start with default image
-    let imageData: ImageMetadata = defaultEventImage;
+    // Start with null, NewsGridElement will use default
+    let imageData: ImageMetadata | null = null;
     let imageLoadFailed = false;
 
     // Try to load custom image if specified

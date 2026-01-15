@@ -4,9 +4,6 @@ import { getCollection } from "astro:content";
 import NewsGridElement from "../components/NewsGridElement.astro";
 import type { ImageMetadata } from 'astro';
 
-// Import component-specific default placeholder image
-import defaultProjectImage from "../assets/default-images/default-project.jpg";
-
 // Filter and sort projects
 const allProjects = await getCollection("posts", ({ id, data }) => {
   return id.startsWith('projects/') && (import.meta.env.DEV || !data.isDraft);
@@ -21,8 +18,8 @@ const images = import.meta.glob<{ default: ImageMetadata }>("/src/assets/project
 
 const projectsWithImages = await Promise.all(
   sortedProjects.map(async (project) => {
-    // Start with default image
-    let imageData: ImageMetadata = defaultProjectImage;
+    // Start with null, NewsGridElement will use default
+    let imageData: ImageMetadata | null = null;
     let imageLoadFailed = false;
 
     // Try to load custom image if specified
