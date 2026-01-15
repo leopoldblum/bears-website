@@ -33,6 +33,10 @@ const testimonialsWithImages = await Promise.all(
 );
 
 const testimonials = testimonialsWithImages;
+
+// Autoscroll time configuration (in milliseconds) for carousel 
+const autoScrollIntervalTime = 5000; // 10 seconds
+
 ---
 
 <section class="container mx-auto px-4 sm:px-8 md:px-12 lg:px-16 pt-4 sm:pt-6 md:pt-8 pb-16 sm:pb-20 md:pb-24">
@@ -43,13 +47,44 @@ const testimonials = testimonialsWithImages;
 
   <!-- Carousel Container -->
   <div
-    x-data={`{
+    x-data={
+    `{
       currentSlide: 0,
       totalSlides: ${testimonials.length},
-      nextSlide() { this.currentSlide = (this.currentSlide + 1) % this.totalSlides },
-      prevSlide() { this.currentSlide = (this.currentSlide - 1 + this.totalSlides) % this.totalSlides },
-      goToSlide(index) { this.currentSlide = index }
-    }`}
+      autoScrollInterval: null,
+
+      // Navigation methods
+      nextSlide() {
+        this.currentSlide = (this.currentSlide + 1) % this.totalSlides;
+      },
+      prevSlide() {
+        this.currentSlide = (this.currentSlide - 1 + this.totalSlides) % this.totalSlides;
+        this.resetAutoScroll();
+      },
+      goToSlide(index) {
+        this.currentSlide = index;
+        this.resetAutoScroll();
+      },
+
+      // Autoscroll methods
+      startAutoScroll() {
+        this.autoScrollInterval = setInterval(() => {
+          this.nextSlide();
+        }, ${autoScrollIntervalTime});
+      },
+      stopAutoScroll() {
+        if (this.autoScrollInterval) {
+          clearInterval(this.autoScrollInterval);
+          this.autoScrollInterval = null;
+        }
+      },
+      resetAutoScroll() {
+        this.stopAutoScroll();
+        this.startAutoScroll();
+      }
+    }`
+    }
+    x-init="startAutoScroll()"
     class="w-full"
   >
 
@@ -68,7 +103,7 @@ const testimonials = testimonialsWithImages;
       </button>
 
       <!-- Cards Container (80% width) -->
-      <div class="relative w-[80%] min-h-120 flex items-center justify-center">
+      <div class="relative w-[80%] min-h-120 flex items-center justify-center" @mouseenter="stopAutoScroll()" @mouseleave="startAutoScroll()">
         {testimonials.map((testimonial, index) => (
           <TestimonialCard
             slideIndex={index}
