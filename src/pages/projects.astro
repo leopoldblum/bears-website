@@ -42,11 +42,11 @@ const projectsWithImages = await Promise.all(
     if (import.meta.env.DEV) {
       if (project.data.coverImageType === "DEFAULT") {
         console.warn(
-          `⚠️  Project "${project.data.title}" (${project.slug}) is using DEFAULT cover image`
+          `🔹 Project "${project.data.title}" (${project.slug}) is using DEFAULT cover image`
         );
       } else if (imageLoadFailed) {
         console.warn(
-          `⚠️  Project "${project.data.title}" (${project.slug}) - image "${project.data.coverImage}" failed to load, using default`
+          `🔹 Project "${project.data.title}" (${project.slug}) - image "${project.data.coverImage}" failed to load, using default`
         );
       }
     }

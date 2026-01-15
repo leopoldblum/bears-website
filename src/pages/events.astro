@@ -42,11 +42,11 @@ const eventsWithImages = await Promise.all(
     if (import.meta.env.DEV) {
       if (event.data.coverImageType === "DEFAULT") {
         console.warn(
-          `⚠️  Event "${event.data.title}" (${event.slug}) is using DEFAULT cover image`
+          `🔹 Event "${event.data.title}" (${event.slug}) is using DEFAULT cover image`
         );
       } else if (imageLoadFailed) {
         console.warn(
-          `⚠️  Event "${event.data.title}" (${event.slug}) - image "${event.data.coverImage}" failed to load, using default`
+          `🔹 Event "${event.data.title}" (${event.slug}) - image "${event.data.coverImage}" failed to load, using default`
         );
       }
     }
