@@ -1,9 +1,12 @@
 ---
 // SponsorTier component - Renders a tier of sponsors with tier-specific styling
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
 interface Props {
   sponsors: Array<{
     name: string;
-    logo: string;
+    logo: ImageMetadata;
     url?: string;
     tier: 'gold' | 'silver' | 'bronze';
     slug: string;
@@ -39,10 +42,12 @@ const config = tierConfig[tier];
   <div class={`flex flex-wrap justify-center items-center ${config.gapClasses} ${config.marginClasses}`}>
     {sponsors.map((sponsor: any) => {
       const content = (
-        <img
+        <Image
           src={sponsor.logo}
           alt={sponsor.name}
           class={config.sizeClasses}
+          loading="lazy"
+          format="webp"
         />
       );
 

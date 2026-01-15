@@ -1,5 +1,8 @@
 import { defineCollection, z } from 'astro:content';
 
+// Export CoverImageType enum for use in loaders
+export const CoverImageType = z.enum(["DEFAULT", "CUSTOM"]);
+
 const testimonialsCollection = defineCollection({
   type: 'content',
   schema: z.object({
@@ -44,7 +47,14 @@ const postsCollection = defineCollection({
       message: "headOfProject is required when displayMeetTheTeam is true",
       path: ["headOfProject"],
     }
-  ),
+  ).transform((data) => {
+    // Derive coverImageType from coverImage presence
+    const coverImageType: z.infer<typeof CoverImageType> = data.coverImage ? "CUSTOM" : "DEFAULT";
+    return {
+      ...data,
+      coverImageType,
+    };
+  }),
 });
 
 export const collections = {

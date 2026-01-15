@@ -1,7 +1,8 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { getCollection, type CollectionEntry } from "astro:content";
-import { getImage } from "astro:assets";
+import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro";
 
 export async function getStaticPaths() {
   const allEvents = await getCollection("posts", ({ id, data }) => {
@@ -21,16 +22,15 @@ interface Props {
 const { entry } = Astro.props;
 const { Content } = await entry.render();
 
-// Import and optimize cover image
+// Import cover image
 const images = import.meta.glob<{ default: ImageMetadata }>("/src/assets/events/*.{jpg,jpeg,png,webp}");
-let optimizedCoverImage: string | undefined;
+let coverImageData: ImageMetadata | undefined;
 
 if (entry.data.coverImage) {
   const imagePath = `/src/assets/events/${entry.data.coverImage}`;
   if (images[imagePath]) {
     const imageModule = await images[imagePath]();
-    const optimized = await getImage({ src: imageModule.default, format: "webp" });
-    optimizedCoverImage = optimized.src;
+    coverImageData = imageModule.default;
   }
 }
 ---
@@ -38,12 +38,14 @@ if (entry.data.coverImage) {
 <BaseLayout title={entry.data.title}>
   <article class="container mx-auto px-4 py-6 sm:px-6 sm:py-8 md:px-8">
     <!-- Cover Image -->
-    {optimizedCoverImage && (
+    {coverImageData && (
       <div class="mb-6 sm:mb-8 rounded-lg overflow-hidden">
-        <img
-          src={optimizedCoverImage}
+        <Image
+          src={coverImageData}
           alt={entry.data.title}
           class="w-full h-48 sm:h-64 md:h-96 object-cover"
+          loading="eager"
+          format="webp"
         />
       </div>
     )}

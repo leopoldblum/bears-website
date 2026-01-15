@@ -1,8 +1,11 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { getCollection } from "astro:content";
-import { getImage } from "astro:assets";
 import NewsGridElement from "../components/NewsGridElement.astro";
+import type { ImageMetadata } from 'astro';
+
+// Import component-specific default placeholder image
+import defaultEventImage from "../assets/default-images/default-event.jpg";
 
 // Filter and sort events
 const allEvents = await getCollection("posts", ({ id, data }) => {
@@ -13,21 +16,45 @@ const sortedEvents = allEvents.sort((a, b) =>
   b.data.date.getTime() - a.data.date.getTime()
 );
 
-// Import and optimize images
+// Import images
 const images = import.meta.glob<{ default: ImageMetadata }>("/src/assets/events/*.{jpg,jpeg,png,webp}");
 
 const eventsWithImages = await Promise.all(
   sortedEvents.map(async (event) => {
-    let optimizedImage;
-    if (event.data.coverImage) {
+    // Start with default image
+    let imageData: ImageMetadata = defaultEventImage;
+    let imageLoadFailed = false;
+
+    // Try to load custom image if specified
+    if (event.data.coverImageType === "CUSTOM" && event.data.coverImage) {
       const imagePath = `/src/assets/events/${event.data.coverImage}`;
+
       if (images[imagePath]) {
-        const imageModule = await images[imagePath]();
-        const optimized = await getImage({ src: imageModule.default, format: "webp" });
-        optimizedImage = optimized.src;
+        try {
+          const imageModule = await images[imagePath]();
+          imageData = imageModule.default;
+        } catch (error) {
+          imageLoadFailed = true;
+        }
+      } else {
+        imageLoadFailed = true;
       }
     }
-    return { ...event.data, slug: event.slug, coverImage: optimizedImage };
+
+    // Development warnings
+    if (import.meta.env.DEV) {
+      if (event.data.coverImageType === "DEFAULT") {
+        console.warn(
+          `⚠️  Event "${event.data.title}" (${event.slug}) is using DEFAULT cover image`
+        );
+      } else if (imageLoadFailed) {
+        console.warn(
+          `⚠️  Event "${event.data.title}" (${event.slug}) - image "${event.data.coverImage}" failed to load, using default`
+        );
+      }
+    }
+
+    return { ...event.data, slug: event.slug, coverImage: imageData };
   })
 );
 ---
@@ -40,12 +67,13 @@ const eventsWithImages = await Promise.all(
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
       {eventsWithImages.map((event) => (
         <NewsGridElement
-          imageUrl={event.coverImage || "https://via.placeholder.com/600x400"}
+          imageData={event.coverImage}
           imageAlt={event.title}
           date={event.date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
           title={event.title}
           description={event.description}
           href={`/events/${event.slug.replace('events/', '')}`}
+          postType="events"
         />
       ))}
     </div>

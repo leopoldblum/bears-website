@@ -1,8 +1,8 @@
 ---
 // BecomeSponsor component - Displays sponsor showcase with tier-based system
 import { getCollection } from "astro:content";
-import { getImage } from "astro:assets";
 import SponsorTier from "./SponsorTier.astro";
+import placeholderLogo from "../assets/sponsors/gold-placeholder-1.png";
 
 // Fetch all sponsors
 const allSponsors = await getCollection("sponsors");
@@ -10,25 +10,20 @@ const allSponsors = await getCollection("sponsors");
 // Import all logo images
 const logos = import.meta.glob<{ default: ImageMetadata }>("/src/assets/sponsors/*.{jpg,jpeg,png}");
 
-// Process sponsors with optimized images
+// Process sponsors with images
 const sponsorsWithImages = await Promise.all(
   allSponsors.map(async (sponsor: any) => {
     const logoPath = `/src/assets/sponsors/${sponsor.data.logo}`;
-    let optimizedLogo;
+    let logoData = placeholderLogo;
 
     if (logos[logoPath]) {
       const logoModule = await logos[logoPath]();
-      const optimized = await getImage({
-        src: logoModule.default,
-        format: "webp",
-        width: 200
-      });
-      optimizedLogo = optimized.src;
+      logoData = logoModule.default;
     }
 
     return {
       ...sponsor.data,
-      logo: optimizedLogo,
+      logo: logoData,
       slug: sponsor.slug,
     };
   })

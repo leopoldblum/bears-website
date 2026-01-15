@@ -60,8 +60,13 @@ Write your full event or project description here using markdown.
 - For events: Place image in `src/assets/events/`
 - For projects: Place image in `src/assets/projects/`
 - Supported formats: `.jpg`, `.jpeg`, `.png`, `.webp`
-- Recommended size: 600x400px or larger
+- Recommended size: 600x400px or larger (3:2 aspect ratio)
 - Images are automatically optimized to WebP format
+- **If omitted or invalid**: The system automatically uses a default placeholder image:
+  - Events use `default-event.jpg` from `src/assets/default-images/`
+  - Projects use `default-project.jpg` from `src/assets/default-images/`
+  - These placeholders are intentionally obvious to encourage adding custom images
+- **Development Mode**: Console warnings will appear for posts without custom images, helping you identify which posts need images added
 
 **`isDraft`** (optional) - Draft mode flag (default: `false`)
 - When `true`: visible in dev mode (`npm run dev`) but hidden in production

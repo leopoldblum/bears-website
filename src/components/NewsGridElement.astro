@@ -1,24 +1,30 @@
 ---
 // NewsGridElement component - Reusable news preview card with image overlay
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
 interface Props {
-  imageUrl: string;
+  imageData: ImageMetadata;
   imageAlt: string;
   date: string;
   title: string;
   description: string;
   href?: string;
+  postType?: 'events' | 'projects';  // Keep for potential future use
 }
 
-const { imageUrl, imageAlt, date, title, description, href } = Astro.props;
+const { imageData, imageAlt, date, title, description, href } = Astro.props;
 const Wrapper = href ? 'a' : 'div';
 ---
 
 <Wrapper href={href} class="relative h-80 rounded-lg overflow-hidden group cursor-pointer transition-transform duration-300 md:hover:scale-105 block">
-  <!-- Background Image -->
-  <img
-    src={imageUrl}
+  <!-- Background Image - Always present -->
+  <Image
+    src={imageData}
     alt={imageAlt}
-    class="w-full h-full object-cover bg-linear-to-br"
+    class="w-full h-full object-cover"
+    loading="lazy"
+    format="webp"
   />
 
   <!-- Gradient Overlay on bottom half -->

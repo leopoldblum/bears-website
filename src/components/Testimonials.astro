@@ -1,7 +1,6 @@
 ---
 // Testimonials - Testimonial Carousel Component
 import { getCollection } from "astro:content";
-import { getImage } from "astro:assets";
 import TestimonialCard from "./TestimonialCard.astro";
 
 // Fetch testimonials from content collection
@@ -13,22 +12,21 @@ const sortedTestimonials = allTestimonials.sort((a: any, b: any) => a.slug.local
 // Import all images from testimonials directory
 const images = import.meta.glob<{ default: ImageMetadata }>("/src/assets/testimonials/*.{jpg,jpeg,png}");
 
-// Process testimonials with optimized images
+// Process testimonials with images
 const testimonialsWithImages = await Promise.all(
   sortedTestimonials.map(async (testimonial: any) => {
     const imagePath = `/src/assets/testimonials/${testimonial.data.image}`;
-    let optimizedImage;
+    let imageData;
 
-    // Check if the image exists and optimize it
+    // Check if the image exists and load it
     if (images[imagePath]) {
       const imageModule = await images[imagePath]();
-      const optimized = await getImage({ src: imageModule.default, format: "webp" });
-      optimizedImage = optimized.src;
+      imageData = imageModule.default;
     }
 
     return {
       ...testimonial.data,
-      image: optimizedImage,
+      image: imageData,
     };
   })
 );

@@ -62,6 +62,44 @@ This ensures a coherent visual rhythm across all sections of the website. Apply 
 ### Static Assets
 Place static files (images, fonts, etc.) in the `public/` directory. They're served from the root path.
 
+### Images and Astro's Image Component
+
+This project uses Astro's `<Image/>` component for all images to enable automatic optimization, responsive image generation, and control over loading behavior.
+
+**CRITICAL: No Remote Image URLs**
+- **NEVER use remote URLs** (e.g., `https://placehold.co/...`, `https://via.placeholder.com/...`) for images
+- **ALL images MUST be local files** stored in `/src/assets/`
+- Placeholder images must be actual image files imported from `/src/assets/`
+
+**Image Architecture:**
+- All images are stored in `/src/assets/` with subdirectories:
+  - `/src/assets/events/` - Event cover images
+  - `/src/assets/projects/` - Project cover images
+  - `/src/assets/sponsors/` - Sponsor logos
+  - `/src/assets/testimonials/` - Testimonial portraits
+- Components pass `ImageMetadata` objects (not URL strings) as props
+- The `<Image/>` component handles optimization automatically
+
+**Usage Pattern:**
+```astro
+---
+import { Image } from 'astro:assets';
+import placeholderImage from '../assets/events/event-1.jpg';
+---
+
+<Image
+  src={placeholderImage}
+  alt="Description"
+  class="..."
+  loading="lazy"  // or "eager" for above-the-fold
+  format="webp"
+/>
+```
+
+**Loading Strategy:**
+- Use `loading="eager"` for above-the-fold images (e.g., cover images on detail pages)
+- Use `loading="lazy"` for below-the-fold images (e.g., cards, carousels, logos)
+
 ## Documentation
 
 The `/documentation/` directory contains user-facing guides for content creators and maintainers. These documents explain how to add and manage content on the website.
