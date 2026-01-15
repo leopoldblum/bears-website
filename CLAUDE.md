@@ -48,6 +48,19 @@ This project uses Tailwind CSS v4 with the Vite plugin. Global styles are import
 
 **Mobile-First Design**: All new components and features should be designed with mobile devices in mind first. Use Tailwind's responsive breakpoints (sm, md, lg, xl) to progressively enhance for larger screens. Start with mobile styles as the base, then add breakpoint modifiers for larger screens.
 
+**Responsive Breakpoint Strategy**: This website primarily uses `sm:` (640px) and `lg:` (1024px) as the main breakpoints for layout changes. Avoid using `md:` (768px) for major layout transitions, as the 768px-1024px range often creates awkward, cramped layouts on tablets. More granular controlled layouts with `md:` are often too fiddly and don't provide good user experience. Reserve `md:` for fine-tuning details like spacing or font sizes, not for major structural changes.
+
+**Recommended breakpoint usage:**
+- Base (mobile): Core layout and styling
+- `sm:` (640px+): Small adjustments for larger phones
+- `lg:` (1024px+): Major layout changes (column to row, single to multi-column grids)
+- `xl:` (1280px+): Optional refinements for very large screens
+
+Examples:
+- Grid layouts: `grid-cols-1 lg:grid-cols-2` (skip md:)
+- Flex direction: `flex-col lg:flex-row` (skip md:)
+- Component sizing: Fine-tune with all breakpoints as needed
+
 **Headline Spacing**: All h2 headlines should use consistent spacing below them (unless explicitly specified otherwise for a particular component). The standard spacing pattern for headlines is:
 ```
 mb-6 sm:mb-8 md:mb-12
