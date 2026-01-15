@@ -1,7 +1,7 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { getCollection } from "astro:content";
-import NewsGridElement from "../components/NewsGridElement.astro";
+import PostShowcase from "../components/PostShowcase.astro";
 import type { ImageMetadata } from 'astro';
 
 // Filter and sort events
@@ -18,7 +18,7 @@ const images = import.meta.glob<{ default: ImageMetadata }>("/src/assets/events/
 
 const eventsWithImages = await Promise.all(
   sortedEvents.map(async (event) => {
-    // Start with null, NewsGridElement will use default
+    // Start with null, PostShowcase will use default
     let imageData: ImageMetadata | null = null;
     let imageLoadFailed = false;
 
@@ -63,8 +63,8 @@ const eventsWithImages = await Promise.all(
     </h1>
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
       {eventsWithImages.map((event) => (
-        <NewsGridElement
-          imageData={event.coverImage}
+        <PostShowcase
+          coverImage={event.coverImage}
           imageAlt={event.title}
           date={event.date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
           title={event.title}

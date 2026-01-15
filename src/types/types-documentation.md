@@ -50,7 +50,7 @@ const postType: PostType = post.slug.startsWith('events/') ? 'events' : 'project
 
 **Used in:**
 - [src/components/LatestNews.astro](../components/LatestNews.astro)
-- [src/components/NewsGridElement.astro](../components/NewsGridElement.astro)
+- [src/components/PostShowcase.astro](../components/PostShowcase.astro)
 
 ---
 

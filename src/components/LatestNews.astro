@@ -1,6 +1,6 @@
 ---
 // LatestNews component - Shows latest news from BEARS
-import NewsGridElement from "./NewsGridElement.astro";
+import PostShowcase from "./PostShowcase.astro";
 import { getCollection } from "astro:content";
 import type { ImageMetadata } from 'astro';
 import type { PostType } from '../types';
@@ -27,8 +27,8 @@ const newsItems = await Promise.all(
     const postType: PostType = post.slug.startsWith('events/') ? 'events' : 'projects';
 
     // Load cover image based on coverImageType
-    let imageData: ImageMetadata | null = null;
-    let imageLoadFailed = false;
+    let coverImage: ImageMetadata | null = null;
+    let coverImageLoadFailed = false;
 
     if (post.data.coverImageType === "CUSTOM" && post.data.coverImage) {
       const imagePath = `/src/assets/${postType}/${post.data.coverImage}`;
@@ -37,14 +37,14 @@ const newsItems = await Promise.all(
       if (images[imagePath]) {
         try {
           const imageModule = await images[imagePath]();
-          imageData = imageModule.default;
+          coverImage = imageModule.default;
         } catch (error) {
-          imageLoadFailed = true;
-          // imageData remains null, NewsGridElement will use default
+          coverImageLoadFailed = true;
+          // coverImage remains null, PostShowcase will use default
         }
       } else {
-        imageLoadFailed = true;
-        // imageData remains null, NewsGridElement will use default
+        coverImageLoadFailed = true;
+        // coverImage remains null, PostShowcase will use default
       }
     }
 
@@ -52,11 +52,11 @@ const newsItems = await Promise.all(
     if (import.meta.env.DEV) {
       if (post.data.coverImageType === "DEFAULT") {
         console.warn(
-          `⚠️  Post "${post.data.title}" (${post.slug}) is using DEFAULT cover image`
+          `🔹 Post "${post.data.title}" (${post.slug}) is using DEFAULT cover image`
         );
-      } else if (imageLoadFailed) {
+      } else if (coverImageLoadFailed) {
         console.warn(
-          `⚠️  Post "${post.data.title}" (${post.slug}) - image "${post.data.coverImage}" failed to load, using default`
+          `🔹 Post "${post.data.title}" (${post.slug}) - image "${post.data.coverImage}" failed to load, using default`
         );
       }
     }
@@ -65,7 +65,7 @@ const newsItems = await Promise.all(
     const href = `/${postType}/${post.slug.replace(`${postType}/`, '')}`;
 
     return {
-      imageData: imageData,  // May be null, NewsGridElement will use default
+      imageData: coverImage,  // May be null, PostShowcase will use default
       imageAlt: post.data.title,
       date: post.data.date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
       title: post.data.title,
@@ -98,8 +98,8 @@ const newsItems = await Promise.all(
     <!-- News Preview Grid -->
   <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10 my-8 sm:my-12">
     {newsItems.map((news) => (
-      <NewsGridElement
-        imageData={news.imageData}
+      <PostShowcase
+        coverImage={news.imageData}
         imageAlt={news.imageAlt}
         date={news.date}
         title={news.title}

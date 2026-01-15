@@ -7,7 +7,7 @@ import defaultEventImage from "../assets/default-images/default-event.jpg";
 import defaultProjectImage from "../assets/default-images/default-project.jpg";
 
 interface Props {
-  imageData: ImageMetadata | null;
+  coverImage: ImageMetadata | null;
   imageAlt: string;
   date: string;
   title: string;
@@ -16,11 +16,11 @@ interface Props {
   postType?: PostType;
 }
 
-const { imageData, imageAlt, date, title, description, href, postType } = Astro.props;
+const { coverImage, imageAlt, date, title, description, href, postType } = Astro.props;
 
-// Use provided imageData or fall back to default based on postType
+// Use provided coverImage or fall back to default based on postType
 const defaultImage = postType === 'projects' ? defaultProjectImage : defaultEventImage;
-const finalImageData = imageData ?? defaultImage;
+const finalImageData = coverImage ?? defaultImage;
 
 const Wrapper = href ? 'a' : 'div';
 ---
