@@ -3,6 +3,7 @@
 import { getCollection } from "astro:content";
 import SponsorTier from "./SponsorTier.astro";
 import placeholderLogo from "../assets/sponsors/gold-placeholder-1.png";
+import type { SponsorEntry } from '../types';
 
 // Fetch all sponsors
 const allSponsors = await getCollection("sponsors");
@@ -12,7 +13,7 @@ const logos = import.meta.glob<{ default: ImageMetadata }>("/src/assets/sponsors
 
 // Process sponsors with images
 const sponsorsWithImages = await Promise.all(
-  allSponsors.map(async (sponsor: any) => {
+  allSponsors.map(async (sponsor: SponsorEntry) => {
     const logoPath = `/src/assets/sponsors/${sponsor.data.logo}`;
     let logoData = placeholderLogo;
 

@@ -1,7 +1,5 @@
 import { defineCollection, z } from 'astro:content';
-
-// Export CoverImageType enum for use in loaders
-export const CoverImageType = z.enum(["DEFAULT", "CUSTOM"]);
+import { CoverImageType } from '../types/content';
 
 const testimonialsCollection = defineCollection({
   type: 'content',

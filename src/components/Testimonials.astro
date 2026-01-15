@@ -2,19 +2,20 @@
 // Testimonials - Testimonial Carousel Component
 import { getCollection } from "astro:content";
 import TestimonialCard from "./TestimonialCard.astro";
+import type { TestimonialEntry } from '../types';
 
 // Fetch testimonials from content collection
 const allTestimonials = await getCollection("testimonials");
 
 // Sort alphabetically by filename (slug)
-const sortedTestimonials = allTestimonials.sort((a: any, b: any) => a.slug.localeCompare(b.slug));
+const sortedTestimonials = allTestimonials.sort((a: TestimonialEntry, b: TestimonialEntry) => a.slug.localeCompare(b.slug));
 
 // Import all images from testimonials directory
 const images = import.meta.glob<{ default: ImageMetadata }>("/src/assets/testimonials/*.{jpg,jpeg,png}");
 
 // Process testimonials with images
 const testimonialsWithImages = await Promise.all(
-  sortedTestimonials.map(async (testimonial: any) => {
+  sortedTestimonials.map(async (testimonial: TestimonialEntry) => {
     const imagePath = `/src/assets/testimonials/${testimonial.data.image}`;
     let imageData;
 

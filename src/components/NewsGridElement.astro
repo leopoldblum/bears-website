@@ -2,6 +2,7 @@
 // NewsGridElement component - Reusable news preview card with image overlay
 import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
+import type { PostType } from '../types';
 import defaultEventImage from "../assets/default-images/default-event.jpg";
 import defaultProjectImage from "../assets/default-images/default-project.jpg";
 
@@ -12,7 +13,7 @@ interface Props {
   title: string;
   description: string;
   href?: string;
-  postType?: 'events' | 'projects';
+  postType?: PostType;
 }
 
 const { imageData, imageAlt, date, title, description, href, postType } = Astro.props;

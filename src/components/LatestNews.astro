@@ -3,6 +3,7 @@
 import NewsGridElement from "./NewsGridElement.astro";
 import { getCollection } from "astro:content";
 import type { ImageMetadata } from 'astro';
+import type { PostType } from '../types';
 
 // Import images
 const eventImages = import.meta.glob<{ default: ImageMetadata }>("/src/assets/events/*.{jpg,jpeg,png,webp}");
@@ -23,7 +24,7 @@ const newsItems = await Promise.all(
   latestPosts.map(async (post) => {
 
     // Determine post type (event or project)
-    const postType: 'events' | 'projects' = post.slug.startsWith('events/') ? 'events' : 'projects';
+    const postType: PostType = post.slug.startsWith('events/') ? 'events' : 'projects';
 
     // Load cover image based on coverImageType
     let imageData: ImageMetadata | null = null;
