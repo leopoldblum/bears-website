@@ -36,14 +36,14 @@ if (entry.data.coverImage) {
 ---
 
 <BaseLayout title={entry.data.title}>
-  <article class="container mx-auto px-4 py-6 sm:px-6 sm:py-8 md:px-8">
+  <article class="container mx-auto px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
     <!-- Cover Image -->
     {coverImageData && (
       <div class="mb-6 sm:mb-8 rounded-lg overflow-hidden">
         <Image
           src={coverImageData}
           alt={entry.data.title}
-          class="w-full h-48 sm:h-64 md:h-96 object-cover"
+          class="w-full h-48 sm:h-64 lg:h-96 object-cover"
           loading="eager"
           format="webp"
         />
@@ -52,7 +52,7 @@ if (entry.data.coverImage) {
 
     <!-- Title and Date -->
     <header class="mb-6 sm:mb-8">
-      <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold mb-3 sm:mb-4 text-bears-accent">
+      <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4 text-bears-accent">
         {entry.data.title}
       </h1>
       <time class="text-sm sm:text-base text-bears-text-onDark/80">

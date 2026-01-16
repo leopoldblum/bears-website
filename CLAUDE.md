@@ -63,12 +63,12 @@ Examples:
 
 **Headline Spacing**: All h2 headlines should use consistent spacing below them (unless explicitly specified otherwise for a particular component). The standard spacing pattern for headlines is:
 ```
-mb-6 sm:mb-8 md:mb-12
+mb-6 sm:mb-8 lg:mb-12
 ```
 This provides:
 - Mobile (< 640px): 1.5rem (24px)
 - Small screens (640px+): 2rem (32px)
-- Medium+ screens (768px+): 3rem (48px)
+- Large screens (1024px+): 3rem (48px)
 
 This ensures a coherent visual rhythm across all sections of the website. Apply this spacing to all h2 headlines in components that appear on pages, maintaining consistency with the overall design system.
 

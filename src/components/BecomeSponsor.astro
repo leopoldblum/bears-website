@@ -44,10 +44,10 @@ const bronzeSponsors = sponsorsWithImages
   .sort((a, b) => a.slug.localeCompare(b.slug));
 ---
 
-<section class="bg-bears-bg-light py-16 sm:py-20 md:py-24">
-  <div class="container mx-auto px-4 sm:px-8 md:px-12 lg:px-16">
+<section class="bg-bears-bg-light py-16 sm:py-20 lg:py-24">
+  <div class="container mx-auto px-4 sm:px-8 lg:px-16">
     <!-- Headline -->
-    <h2 class="text-3xl sm:text-4xl md:text-5xl font-bold text-center text-bears-text-onLight mb-12 sm:mb-16 md:mb-20">
+    <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-center text-bears-text-onLight mb-12 sm:mb-16 lg:mb-20">
       Become a Sponsor
     </h2>
 
@@ -56,7 +56,7 @@ const bronzeSponsors = sponsorsWithImages
 
     <!-- Divider 1: Only show if gold sponsors exist AND (silver OR bronze exist) -->
     {goldSponsors.length > 0 && (silverSponsors.length > 0 || bronzeSponsors.length > 0) && (
-      <hr class="w-full max-w-3xl mx-auto border-t border-bears-text-onLight opacity-20 my-8 sm:my-10 md:my-12" />
+      <hr class="w-full max-w-3xl mx-auto border-t border-bears-text-onLight opacity-20 my-8 sm:my-10 lg:my-12" />
     )}
 
     <!-- Silver Sponsors Tier -->
@@ -64,7 +64,7 @@ const bronzeSponsors = sponsorsWithImages
 
     <!-- Divider 2: Only show if silver sponsors exist AND bronze exist -->
     {silverSponsors.length > 0 && bronzeSponsors.length > 0 && (
-      <hr class="w-full max-w-3xl mx-auto border-t border-bears-text-onLight opacity-20 my-8 sm:my-10 md:my-12" />
+      <hr class="w-full max-w-3xl mx-auto border-t border-bears-text-onLight opacity-20 my-8 sm:my-10 lg:my-12" />
     )}
 
     <!-- Bronze Sponsors Tier -->

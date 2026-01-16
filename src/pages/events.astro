@@ -57,11 +57,11 @@ const eventsWithImages = await Promise.all(
 ---
 
 <BaseLayout title="Events">
-  <div class="container mx-auto px-4 py-6 sm:px-6 sm:py-8 md:px-8">
-    <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold mb-6 sm:mb-8 md:mb-12 text-bears-accent">
+  <div class="container mx-auto px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+    <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 sm:mb-8 lg:mb-12 text-bears-accent">
       Events
     </h1>
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
       {eventsWithImages.map((event) => (
         <PostShowcase
           coverImage={event.coverImage}
