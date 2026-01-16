@@ -25,7 +25,7 @@ const finalCoverImage = coverImage ?? defaultCoverImage;
 const Wrapper = href ? 'a' : 'div';
 ---
 
-<Wrapper href={href} class="relative h-80 rounded-lg overflow-hidden group cursor-pointer transition-transform duration-300 lg:hover:scale-105 block">
+<Wrapper href={href} class="relative h-80 rounded-lg overflow-hidden group cursor-pointer transition-transform duration-300 lg:hover:scale-102 block">
   <!-- Background Image - Always present -->
   <Image
     src={finalCoverImage}
@@ -33,9 +33,6 @@ const Wrapper = href ? 'a' : 'div';
     class="w-full h-full object-cover"
     format="webp"
   />
-
-  <!-- Gradient Overlay on bottom half -->
-  <div class="absolute inset-x-0 bottom-0 h-1/2 bg-[linear-gradient(to_top,rgba(0,0,0,0.95)_0%,rgba(0,0,0,0.9)_50%,rgba(0,0,0,0.85)_65%,rgba(0,0,0,0.6)_80%,rgba(0,0,0,0.15)_90%,transparent_100%)]"></div>
 
   <!-- Date Badge - Top Left -->
   <div class="absolute top-4 left-4 z-10">
@@ -59,16 +56,22 @@ const Wrapper = href ? 'a' : 'div';
     </span>
   </div>
 
-  <!-- Title and Description - Bottom -->
-  <div class="absolute inset-x-0 bottom-0 p-6">
-    <!-- Title -->
-    <h3 class="text-xl sm:text-2xl font-bold text-bears-text-onDark mb-3 group-hover:text-bears-accent transition-colors">
-      {title}
-    </h3>
+  <!-- Title and Description - Bottom with Dynamic Gradient -->
+  <div class="absolute inset-x-0 bottom-0 transition-all duration-300">
+    <!-- Gradient Background - Expands with content -->
+    <div class="absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.95)_0%,rgba(0,0,0,0.9)_50%,rgba(0,0,0,0.85)_65%,rgba(0,0,0,0.6)_80%,rgba(0,0,0,0.15)_90%,transparent_100%)] transition-all duration-300"></div>
 
-    <!-- Description -->
-    <p class="text-sm sm:text-base text-bears-text-onDark/90 leading-relaxed">
-      {description}
-    </p>
+    <!-- Content -->
+    <div class="relative p-6">
+      <!-- Title -->
+      <h3 class="text-xl sm:text-2xl font-bold text-bears-text-onDark mb-3 group-hover:text-bears-accent transition-colors">
+        {title}
+      </h3>
+
+      <!-- Description - Hidden by default, slides up on hover -->
+      <p class="text-sm sm:text-base text-bears-text-onDark/90 leading-relaxed max-h-0 opacity-0 overflow-hidden group-hover:max-h-40 group-hover:opacity-100 transition-all duration-300">
+        {description}
+      </p>
+    </div>
   </div>
 </Wrapper>
