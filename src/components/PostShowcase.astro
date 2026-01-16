@@ -25,7 +25,7 @@ const finalCoverImage = coverImage ?? defaultCoverImage;
 const Wrapper = href ? 'a' : 'div';
 ---
 
-<Wrapper href={href} class="relative h-80 rounded-lg overflow-hidden group cursor-pointer transition-transform duration-300 lg:hover:scale-105 block">
+<Wrapper href={href} class="relative h-80 rounded-lg overflow-hidden group cursor-pointer transition-transform duration-300 lg:hover:scale-102 block">
   <!-- Background Image - Always present -->
   <Image
     src={finalCoverImage}
@@ -41,7 +41,22 @@ const Wrapper = href ? 'a' : 'div';
   <!-- Content -->
   <div class="absolute inset-x-0 bottom-0 p-6">
     <!-- Date -->
-    <p class="text-sm text-bears-text-onDark drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)] mb-2">{date}</p>
+<div class="absolute top-[-150px] left-0 z-10">
+  <span class="
+    text-xs
+    font-medium
+    uppercase
+    tracking-wide
+    text-white
+    bg-black/70
+    backdrop-blur-sm
+    px-3 py-1
+    rounded-full
+    shadow-md
+  ">
+    {date}
+  </span>
+</div>
 
     <!-- Title -->
     <h3 class="text-xl sm:text-2xl font-bold text-bears-text-onDark mb-3 group-hover:text-bears-accent transition-colors">
