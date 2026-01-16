@@ -36,12 +36,12 @@ const Wrapper = href ? 'a' : 'div';
   />
 
   <!-- Gradient Overlay on bottom half -->
-  <div class="absolute inset-x-0 bottom-0 h-1/2 bg-linear-to-t from-black/90 to-transparent"></div>
+  <div class="absolute inset-x-0 bottom-0 h-1/2 bg-[linear-gradient(to_top,rgba(0,0,0,0.95)_0%,rgba(0,0,0,0.9)_50%,rgba(0,0,0,0.85)_65%,rgba(0,0,0,0.6)_80%,rgba(0,0,0,0.15)_90%,transparent_100%)]"></div>
 
   <!-- Content -->
   <div class="absolute inset-x-0 bottom-0 p-6">
     <!-- Date -->
-    <p class="text-sm text-bears-text-onDark/80 mb-2">{date}</p>
+    <p class="text-sm text-bears-text-onDark drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)] mb-2">{date}</p>
 
     <!-- Title -->
     <h3 class="text-xl sm:text-2xl font-bold text-bears-text-onDark mb-3 group-hover:text-bears-accent transition-colors">
