@@ -96,7 +96,7 @@ const newsItems = await Promise.all(
   </div>
 
     <!-- News Preview Grid -->
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 my-8 sm:my-12 px-2 sm:px-0">
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 my-8 sm:my-12 px-4 sm:px-0">
     {newsItems.map((news) => (
       <PostShowcase
         coverImage={news.imageData}
