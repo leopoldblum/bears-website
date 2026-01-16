@@ -25,39 +25,42 @@ const finalCoverImage = coverImage ?? defaultCoverImage;
 const Wrapper = href ? 'a' : 'div';
 ---
 
-<Wrapper href={href} class="relative h-80 rounded-lg overflow-hidden group cursor-pointer transition-transform duration-300 lg:hover:scale-102 block">
+<Wrapper href={href} class="relative h-80 rounded-lg overflow-hidden group cursor-pointer transition-transform duration-300 lg:hover:scale-105 block">
   <!-- Background Image - Always present -->
   <Image
     src={finalCoverImage}
     alt={imageAlt}
     class="w-full h-full object-cover"
-    loading="lazy"
     format="webp"
   />
 
   <!-- Gradient Overlay on bottom half -->
   <div class="absolute inset-x-0 bottom-0 h-1/2 bg-[linear-gradient(to_top,rgba(0,0,0,0.95)_0%,rgba(0,0,0,0.9)_50%,rgba(0,0,0,0.85)_65%,rgba(0,0,0,0.6)_80%,rgba(0,0,0,0.15)_90%,transparent_100%)]"></div>
 
-  <!-- Content -->
-  <div class="absolute inset-x-0 bottom-0 p-6">
-    <!-- Date -->
-<div class="absolute top-[-150px] left-0 z-10">
-  <span class="
-    text-xs
-    font-medium
-    uppercase
-    tracking-wide
-    text-white
-    bg-black/70
-    backdrop-blur-sm
-    px-3 py-1
-    rounded-full
-    shadow-md
-  ">
-    {date}
-  </span>
-</div>
+  <!-- Date Badge - Top Left -->
+  <div class="absolute top-4 left-4 z-10">
+    <span class="
+      flex items-center gap-2
+      text-xs
+      font-medium
+      uppercase
+      tracking-wide
+      text-white
+      bg-black/70
+      backdrop-blur-sm
+      px-3 py-1
+      rounded-full
+      shadow-md
+    ">
+      <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+      </svg>
+      {date}
+    </span>
+  </div>
 
+  <!-- Title and Description - Bottom -->
+  <div class="absolute inset-x-0 bottom-0 p-6">
     <!-- Title -->
     <h3 class="text-xl sm:text-2xl font-bold text-bears-text-onDark mb-3 group-hover:text-bears-accent transition-colors">
       {title}
