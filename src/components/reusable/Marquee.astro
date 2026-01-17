@@ -1,0 +1,65 @@
+---
+// Marquee - Seamless infinite horizontal auto-scroll component
+// Usage: Wrap any content as children
+// Cross-platform safe (no % transform assumptions)
+
+interface Props {
+  duration?: number;       // Animation duration in seconds (default: 30)
+  gap?: string;            // Gap between items (default: "2rem")
+  pauseOnHover?: boolean;  // Pause animation on hover (default: true)
+}
+
+const {
+  duration = 30,
+  gap = "2rem",
+  pauseOnHover = true,
+} = Astro.props;
+---
+
+<div class="marquee-container">
+  <div class={`marquee-track ${pauseOnHover ? 'pause-on-hover' : ''}`}>
+    <!-- First set -->
+    <div class="marquee-items">
+      <slot />
+    </div>
+
+    <!-- Duplicate set for seamless loop -->
+    <div class="marquee-items" aria-hidden="true">
+      <slot />
+    </div>
+  </div>
+</div>
+
+<style define:vars={{ duration: `${duration}s`, gap }}>
+  .marquee-container {
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .marquee-track {
+    display: flex;
+    gap: var(--gap);
+    width: max-content;
+    animation: marquee-scroll var(--duration) linear infinite;
+    will-change: transform;
+  }
+
+  .marquee-items {
+    display: flex;
+    gap: var(--gap);
+    flex-shrink: 0;
+  }
+
+  @keyframes marquee-scroll {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  .marquee-track.pause-on-hover:hover {
+    animation-play-state: paused;
+  }
+</style>

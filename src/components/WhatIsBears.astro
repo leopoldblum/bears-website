@@ -2,6 +2,7 @@
 // WhatIsBears component - Explains what BEARS e.V. is
 import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
+import Marquee from './reusable/Marquee.astro';
 
 // Dynamically import all images from whatIsBears directory
 const images = import.meta.glob<{ default: ImageMetadata }>("/src/assets/whatIsBears/*.{jpg,jpeg,png,webp}");
@@ -35,63 +36,17 @@ const carouselImages = await Promise.all(
     </div>
   </div>
 
-  <div class="mt-12 sm:mt-16 overflow-hidden w-full"
-    x-data="{ scrollWidth: 0 }"
-    x-init="
-        scrollWidth = $el.querySelector('.animate-scroll').scrollWidth / 2;
-        $el.querySelector('.animate-scroll').style.setProperty('--scroll-distance', `-${scrollWidth}px`);
-        "
-  >
-    <div class="flex animate-scroll">
-      
-      <!-- First set -->
+  <div class="mt-12 sm:mt-16">
+    <Marquee duration={15} gap="2rem">
       {carouselImages.map((img, index) => (
         <Image
           src={img}
           alt={`BEARS Gallery ${index + 1}`}
-          class="h-48 sm:h-56 lg:h-64 w-72 sm:w-80 lg:w-96 object-cover rounded-lg shrink-0 mr-6 sm:mr-8"
+          class="h-48 sm:h-56 lg:h-64 w-72 sm:w-80 lg:w-96 object-cover rounded-lg shrink-0"
           loading="eager"
           format="webp"
-          data-set="first"
-          data-index={index}
         />
       ))}
-
-      <!-- Second set (duplicate for infinite scroll) -->
-      {carouselImages.map((img, index) => (
-        <Image
-          src={img}
-          alt={`BEARS Gallery ${index + 1}`}
-          class="h-48 sm:h-56 lg:h-64 w-72 sm:w-80 lg:w-96 object-cover rounded-lg shrink-0 mr-6 sm:mr-8"
-          loading="eager"
-          format="webp"
-          data-set="second"
-          data-index={index}
-        />
-      ))}
-    </div>
+    </Marquee>
   </div>
 </section>
-
-
-
-<style>
-  @keyframes scroll {
-    from {
-      transform: translateX(0);
-    }
-    to {
-      transform: translateX(var(--scroll-distance, -2496px)); 
-    }
-  }
-  
-  .animate-scroll {
-    animation: scroll 15s linear infinite;
-    width: fit-content;
-    will-change: transform;
-  }
-  
-  .animate-scroll:hover {
-    animation-play-state: paused;
-  }
-</style>
