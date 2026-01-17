@@ -3,6 +3,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import { getCollection } from "astro:content";
 import PostShowcase from "../components/PostShowcase.astro";
 import type { ImageMetadata } from 'astro';
+import { loadImagesForCollection } from "../utils/imageLoader";
 
 // Filter and sort projects
 const allProjects = await getCollection("posts", ({ id, data }) => {
@@ -13,47 +14,22 @@ const sortedProjects = allProjects.sort((a, b) =>
   b.data.date.getTime() - a.data.date.getTime()
 );
 
-// Import images
+// Load images for projects
 const images = import.meta.glob<{ default: ImageMetadata }>("/src/assets/projects/*.{jpg,jpeg,png,webp}");
+const projectsWithLoadedImages = await loadImagesForCollection({
+  glob: images,
+  collection: sortedProjects,
+  baseDir: '/src/assets/projects',
+  imageField: 'coverImage',
+  postType: 'project',
+});
 
-const projectsWithImages = await Promise.all(
-  sortedProjects.map(async (project) => {
-    // Start with null, PostShowcase will use default
-    let imageData: ImageMetadata | null = null;
-    let imageLoadFailed = false;
-
-    // Try to load custom image if specified
-    if (project.data.coverImageType === "CUSTOM" && project.data.coverImage) {
-      const imagePath = `/src/assets/projects/${project.data.coverImage}`;
-
-      if (images[imagePath]) {
-        try {
-          const imageModule = await images[imagePath]();
-          imageData = imageModule.default;
-        } catch (error) {
-          imageLoadFailed = true;
-        }
-      } else {
-        imageLoadFailed = true;
-      }
-    }
-
-    // Development warnings
-    if (import.meta.env.DEV) {
-      if (project.data.coverImageType === "DEFAULT") {
-        console.warn(
-          `🔹 Project "${project.data.title}" (${project.slug}) is using DEFAULT cover image`
-        );
-      } else if (imageLoadFailed) {
-        console.warn(
-          `🔹 Project "${project.data.title}" (${project.slug}) - image "${project.data.coverImage}" failed to load, using default`
-        );
-      }
-    }
-
-    return { ...project.data, slug: project.slug, coverImage: imageData };
-  })
-);
+// Map to format expected by PostShowcase
+const projectsWithImages = projectsWithLoadedImages.map((project) => ({
+  ...project.data,
+  slug: project.slug,
+  coverImage: project.loadedImage,
+}));
 ---
 
 <BaseLayout title="Projects">

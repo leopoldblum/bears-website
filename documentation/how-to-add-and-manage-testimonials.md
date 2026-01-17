@@ -59,3 +59,7 @@ image: "alex-johnson.jpg"
 **Reorder**: Rename files to change their alphabetical order (e.g., rename `05-name.md` to `01-name.md` to move it to the front)
 
 **Remove**: Delete the `.md` file (and optionally the image)
+
+## Fallback
+
+If Image failed to load (shouldn't happen), a fallback default image will be loaded

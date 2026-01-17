@@ -4,6 +4,7 @@ import PostShowcase from "./PostShowcase.astro";
 import { getCollection } from "astro:content";
 import type { ImageMetadata } from 'astro';
 import type { PostType } from '../types';
+import { loadImagesForCollection } from '../utils/imageLoader';
 
 // Import images
 const eventImages = import.meta.glob<{ default: ImageMetadata }>("/src/assets/events/*.{jpg,jpeg,png,webp}");
@@ -19,62 +20,46 @@ const latestPosts = allPosts
   .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
   .slice(0, 4);
 
-// Process posts with images and hrefs
-const newsItems = await Promise.all(
-  latestPosts.map(async (post) => {
+// Separate events and projects for batch image loading
+const events = latestPosts.filter(post => post.slug.startsWith('events/'));
+const projects = latestPosts.filter(post => post.slug.startsWith('projects/'));
 
-    // Determine post type (event or project)
-    const postType: PostType = post.slug.startsWith('events/') ? 'events' : 'projects';
+// Load images for events and projects
+const eventsWithImages = await loadImagesForCollection({
+  glob: eventImages,
+  collection: events,
+  baseDir: '/src/assets/events',
+  imageField: 'coverImage',
+  postType: 'event',
+});
 
-    // Load cover image based on coverImageType
-    let coverImage: ImageMetadata | null = null;
-    let coverImageLoadFailed = false;
+const projectsWithImages = await loadImagesForCollection({
+  glob: projectImages,
+  collection: projects,
+  baseDir: '/src/assets/projects',
+  imageField: 'coverImage',
+  postType: 'project',
+});
 
-    if (post.data.coverImageType === "CUSTOM" && post.data.coverImage) {
-      const imagePath = `/src/assets/${postType}/${post.data.coverImage}`;
-      const images = postType === 'events' ? eventImages : projectImages;
+// Merge and sort by date again
+const allPostsWithImages = [...eventsWithImages, ...projectsWithImages]
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
 
-      if (images[imagePath]) {
-        try {
-          const imageModule = await images[imagePath]();
-          coverImage = imageModule.default;
-        } catch (error) {
-          coverImageLoadFailed = true;
-          // coverImage remains null, PostShowcase will use default
-        }
-      } else {
-        coverImageLoadFailed = true;
-        // coverImage remains null, PostShowcase will use default
-      }
-    }
+// Build news items for PostShowcase
+const newsItems = allPostsWithImages.map((post) => {
+  const postType: PostType = post.slug.startsWith('events/') ? 'events' : 'projects';
+  const href = `/${postType}/${post.slug.replace(`${postType}/`, '')}`;
 
-    // Development warnings
-    if (import.meta.env.DEV) {
-      if (post.data.coverImageType === "DEFAULT") {
-        console.warn(
-          `🔹 Post "${post.data.title}" (${post.slug}) is using DEFAULT cover image`
-        );
-      } else if (coverImageLoadFailed) {
-        console.warn(
-          `🔹 Post "${post.data.title}" (${post.slug}) - image "${post.data.coverImage}" failed to load, using default`
-        );
-      }
-    }
-
-    // Build href for the post
-    const href = `/${postType}/${post.slug.replace(`${postType}/`, '')}`;
-
-    return {
-      imageData: coverImage,  // May be null, PostShowcase will use default
-      imageAlt: post.data.title,
-      date: post.data.date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
-      title: post.data.title,
-      description: post.data.description,
-      href: href,
-      postType: postType,
-    };
-  })
-);
+  return {
+    imageData: post.loadedImage,
+    imageAlt: post.data.title,
+    date: post.data.date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
+    title: post.data.title,
+    description: post.data.description,
+    href: href,
+    postType: postType,
+  };
+});
 ---
 
 <section class="container mx-auto px-4 sm:px-8 lg:px-16 py-16 sm:py-20 lg:py-24">
