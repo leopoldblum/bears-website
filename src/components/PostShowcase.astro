@@ -32,6 +32,7 @@ const Wrapper = href ? 'a' : 'div';
     alt={imageAlt}
     class="w-full h-full object-cover"
     format="webp"
+    loading={'eager'}
   />
 
   <!-- Date Badge - Top Left -->
@@ -68,8 +69,8 @@ const Wrapper = href ? 'a' : 'div';
         {title}
       </h3>
 
-      <!-- Description - Hidden by default, slides up on hover -->
-      <p class="text-sm sm:text-base text-bears-text-onDark/90 leading-relaxed max-h-0 opacity-0 overflow-hidden group-hover:max-h-40 group-hover:opacity-100 transition-all duration-300">
+      <!-- Description - Always visible on mobile, shows on hover on desktop -->
+      <p class="text-sm sm:text-base text-bears-text-onDark/90 leading-relaxed max-h-40 opacity-100 lg:max-h-0 lg:opacity-0 overflow-hidden lg:group-hover:max-h-40 lg:group-hover:opacity-100 transition-all duration-300">
         {description}
       </p>
     </div>
