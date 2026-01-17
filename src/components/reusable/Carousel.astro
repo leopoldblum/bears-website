@@ -1,0 +1,132 @@
+---
+// Carousel - Reusable carousel component with auto-scroll and manual navigation
+// Usage: Wrap any content as direct children - carousel will auto-detect and handle them
+
+interface Props {
+  autoScrollInterval?: number;  // Auto-scroll time in ms (default: 5000)
+  showArrows?: boolean;         // Show prev/next arrows (default: true)
+  showDots?: boolean;          // Show dot indicators (default: true)
+  minHeight?: string;          // Min height Tailwind class (default: "min-h-120")
+}
+
+const {
+  autoScrollInterval = 5000,
+  showArrows = true,
+  showDots = true,
+  minHeight = "min-h-120",
+} = Astro.props;
+---
+
+<div
+  x-data={`{
+    currentSlide: 0,
+    totalSlides: 0,
+    autoScrollInterval: null,
+
+    init() {
+      const children = Array.from(this.$refs.slidesContainer.children);
+      this.totalSlides = children.length;
+
+      // Apply Alpine directives and styling to each child dynamically
+      children.forEach((child, index) => {
+        child.setAttribute('x-show', \`currentSlide === \${index}\`);
+        child.setAttribute('x-transition:enter', 'transition ease-out duration-300');
+        child.setAttribute('x-transition:enter-start', 'opacity-0 transform scale-95');
+        child.setAttribute('x-transition:enter-end', 'opacity-100 transform scale-100');
+        child.setAttribute('x-transition:leave', 'transition ease-in duration-200');
+        child.setAttribute('x-transition:leave-start', 'opacity-100 transform scale-100');
+        child.setAttribute('x-transition:leave-end', 'opacity-0 transform scale-95');
+        child.classList.add('absolute', 'w-full');
+      });
+
+      this.startAutoScroll();
+    },
+
+    // Navigation methods
+    nextSlide() {
+      this.currentSlide = (this.currentSlide + 1) % this.totalSlides;
+    },
+    prevSlide() {
+      this.currentSlide = (this.currentSlide - 1 + this.totalSlides) % this.totalSlides;
+      this.resetAutoScroll();
+    },
+    goToSlide(index) {
+      this.currentSlide = index;
+      this.resetAutoScroll();
+    },
+
+    // Auto-scroll methods
+    startAutoScroll() {
+      this.autoScrollInterval = setInterval(() => {
+        this.nextSlide();
+      }, ${autoScrollInterval});
+    },
+    stopAutoScroll() {
+      if (this.autoScrollInterval) {
+        clearInterval(this.autoScrollInterval);
+        this.autoScrollInterval = null;
+      }
+    },
+    resetAutoScroll() {
+      this.stopAutoScroll();
+      this.startAutoScroll();
+    }
+  }`}
+  class="w-full"
+>
+  <!-- Carousel Container with Navigation -->
+  <div class={`relative flex items-center justify-center ${minHeight} gap-4 sm:gap-6 lg:gap-8`}>
+
+    {showArrows && (
+      <!-- Previous Arrow Button -->
+      <button
+        @click="prevSlide()"
+        class="shrink-0 bg-bears-accent-muted hover:scale-105 text-white rounded-lg px-2 py-6 sm:px-3 sm:py-10 md:px-4 md:py-14 transition-colors duration-200 cursor-pointer"
+        aria-label="Previous slide"
+      >
+        <svg class="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+        </svg>
+      </button>
+    )}
+
+    <!-- Slides Container (80% width) -->
+    <div
+      class="relative w-[80%] flex items-center justify-center"
+      :class={minHeight}
+      @mouseenter="stopAutoScroll()"
+      @mouseleave="startAutoScroll()"
+      x-ref="slidesContainer"
+    >
+      <slot />
+    </div>
+
+    {showArrows && (
+      <!-- Next Arrow Button -->
+      <button
+        @click="nextSlide()"
+        class="shrink-0 bg-bears-accent-muted hover:scale-105 text-white rounded-lg px-2 py-6 sm:px-3 sm:py-10 md:px-4 md:py-14 transition-colors duration-200 cursor-pointer"
+        aria-label="Next slide"
+      >
+        <svg class="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+        </svg>
+      </button>
+    )}
+  </div>
+
+  {showDots && (
+    <!-- Dot Indicators (Auto-generated based on slide count) -->
+    <div class="flex justify-center gap-2 sm:gap-3 mt-8 sm:mt-10 lg:mt-12">
+      <template x-for="index in totalSlides" :key="index">
+        <button
+          @click="goToSlide(index - 1)"
+          :class="currentSlide === index - 1 ? 'bg-bears-accent' : 'bg-gray-600 hover:bg-gray-500'"
+          class="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 rounded-full transition-colors duration-200 cursor-pointer"
+          :aria-label="`Go to slide ${index}`"
+          :aria-current="currentSlide === index - 1 ? 'true' : 'false'"
+        ></button>
+      </template>
+    </div>
+  )}
+</div>

@@ -1,6 +1,7 @@
 ---
 // Testimonials - Testimonial Carousel Component
 import { getCollection } from "astro:content";
+import Carousel from "./reusable/Carousel.astro";
 import TestimonialCard from "./TestimonialCard.astro";
 import type { TestimonialEntry } from '../types';
 import type { ImageMetadata } from 'astro';
@@ -32,9 +33,6 @@ const testimonials = testimonialsWithLoadedImages.map((testimonial) => ({
   image: testimonial.loadedImage as ImageMetadata, // Safe: fallback ensures never null
 }));
 
-// Autoscroll time configuration (in milliseconds) for carousel 
-const autoScrollIntervalTime = 5000; // 10 seconds
-
 ---
 
 <section class="container mx-auto px-4 sm:px-8 lg:px-16 pt-4 sm:pt-6 lg:pt-8 pb-16 sm:pb-20 lg:pb-24">
@@ -43,100 +41,15 @@ const autoScrollIntervalTime = 5000; // 10 seconds
     What Members Think
   </h2>
 
-  <!-- Carousel Container -->
-  <div
-    x-data={
-    `{
-      currentSlide: 0,
-      totalSlides: ${testimonials.length},
-      autoScrollInterval: null,
-
-      // Navigation methods
-      nextSlide() {
-        this.currentSlide = (this.currentSlide + 1) % this.totalSlides;
-      },
-      prevSlide() {
-        this.currentSlide = (this.currentSlide - 1 + this.totalSlides) % this.totalSlides;
-        this.resetAutoScroll();
-      },
-      goToSlide(index) {
-        this.currentSlide = index;
-        this.resetAutoScroll();
-      },
-
-      // Autoscroll methods
-      startAutoScroll() {
-        this.autoScrollInterval = setInterval(() => {
-          this.nextSlide();
-        }, ${autoScrollIntervalTime});
-      },
-      stopAutoScroll() {
-        if (this.autoScrollInterval) {
-          clearInterval(this.autoScrollInterval);
-          this.autoScrollInterval = null;
-        }
-      },
-      resetAutoScroll() {
-        this.stopAutoScroll();
-        this.startAutoScroll();
-      }
-    }`
-    }
-    x-init="startAutoScroll()"
-    class="w-full"
-  >
-
-    <!-- Testimonial Cards -->
-    <div class="relative flex items-center justify-center min-h-120 gap-4 sm:gap-6 lg:gap-8">
-
-      <!-- Previous Arrow Button -->
-      <button
-        @click="prevSlide()"
-        class="shrink-0 bg-bears-accent-muted hover:scale-105 text-white rounded-lg px-2 py-6 sm:px-3 sm:py-10 md:px-4 md:py-14 transition-colors duration-200 cursor-pointer"
-        aria-label="Previous testimonial"
-      >
-        <svg class="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-        </svg>
-      </button>
-
-      <!-- Cards Container (80% width) -->
-      <div class="relative w-[80%] min-h-120 flex items-center justify-center" @mouseenter="stopAutoScroll()" @mouseleave="startAutoScroll()">
-        {testimonials.map((testimonial, index) => (
-          <TestimonialCard
-            slideIndex={index}
-            quote={testimonial.quote}
-            name={testimonial.name}
-            role={testimonial.role}
-            image={testimonial.image}
-          />
-        ))}
-      </div>
-
-      <!-- Next Arrow Button -->
-      <button
-        @click="nextSlide()"
-        class="shrink-0 bg-bears-accent-muted hover:scale-105 text-white rounded-lg px-2 py-6 sm:px-3 sm:py-10 md:px-4 md:py-14 transition-colors duration-200 cursor-pointer"
-        aria-label="Next testimonial"
-      >
-        <svg class="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-        </svg>
-      </button>
-    </div>
-
-    <!-- Dot Indicators (Auto-generated based on testimonials array) -->
-    <div class="flex justify-center gap-2 sm:gap-3 mt-8 sm:mt-10 lg:mt-12">
-      {testimonials.map((_, index) => (
-        <button
-          @click={`goToSlide(${index})`}
-          :class={`currentSlide === ${index} ? 'bg-bears-accent' : 'bg-gray-600 hover:bg-gray-500'`}
-          class="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 rounded-full transition-colors duration-200 cursor-pointer"
-          :aria-label={`\`Go to testimonial ${index + 1}\``}
-          :aria-current={`currentSlide === ${index} ? 'true' : 'false'`}
-        ></button>
-      ))
-      }
-    </div>
-  </div>
+  <!-- Testimonial Carousel -->
+  <Carousel autoScrollInterval={5000}>
+    {testimonials.map((testimonial) => (
+      <TestimonialCard
+        quote={testimonial.quote}
+        name={testimonial.name}
+        role={testimonial.role}
+        image={testimonial.image}
+      />
+    ))}
+  </Carousel>
 </section>
