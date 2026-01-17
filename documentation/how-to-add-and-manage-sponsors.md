@@ -13,13 +13,12 @@
 name: "Company Name"
 logo: "company-logo.png"
 url: "https://example.com"
-tier: "gold"
 ---
 ```
 
 Leave the file empty after the frontmatter (no content needed in the markdown body).
 
-**Note**: Sponsors are organized in tier subfolders and sorted alphabetically by filename within each tier. Use numeric prefixes to control order.
+**Note**: Sponsors are organized in tier subfolders and sorted alphabetically by filename within each tier. Use numeric prefixes to control order. The tier is automatically determined by the folder where the file is located.
 
 ## Field Descriptions
 
@@ -37,10 +36,12 @@ Leave the file empty after the frontmatter (no content needed in the markdown bo
 - Must be a valid URL starting with `https://` or `http://`
 - If omitted, the logo will not be clickable
 
-**`tier`** (required) - Sponsorship level
-- Must be one of: `"bronze"`, `"silver"`, or `"gold"`
-- Must match the subfolder where the file is located
-- Determines logo size and display order
+**Tier** (automatically derived) - Sponsorship level
+- Automatically determined by the folder where the file is located
+- `gold/` folder → Gold tier (displayed first, largest logos)
+- `silver/` folder → Silver tier (displayed second, medium logos)
+- `bronze/` folder → Bronze tier (displayed last, smallest logos)
+- No need to specify tier in frontmatter
 
 ## Folder Organization
 
@@ -69,11 +70,12 @@ src/content/sponsors/
 name: "ACME Corporation"
 logo: "acme-logo.png"
 url: "https://acme.example.com"
-tier: "gold"
 ---
 ```
 
 **Logo**: Place `acme-logo.png` (160x160px) in `src/assets/sponsors/`
+
+**Note**: Tier is automatically set to "gold" because the file is in the `gold/` folder.
 
 ### Silver Tier Sponsor
 
@@ -84,11 +86,12 @@ tier: "gold"
 name: "Widgets Inc"
 logo: "widgets-logo.png"
 url: "https://widgets.example.com"
-tier: "silver"
 ---
 ```
 
 **Logo**: Place `widgets-logo.png` (80x80px) in `src/assets/sponsors/`
+
+**Note**: Tier is automatically set to "silver" because the file is in the `silver/` folder.
 
 ### Bronze Tier Sponsor (No URL)
 
@@ -98,13 +101,12 @@ tier: "silver"
 ---
 name: "Local Startup"
 logo: "startup-logo.png"
-tier: "bronze"
 ---
 ```
 
 **Logo**: Place `startup-logo.png` (64x64px) in `src/assets/sponsors/`
 
-**Note**: This sponsor has no URL, so the logo will display without a clickable link.
+**Note**: Tier is automatically set to "bronze" because the file is in the `bronze/` folder. This sponsor has no URL, so the logo will display without a clickable link.
 
 ## Managing Sponsors
 
@@ -113,8 +115,8 @@ tier: "bronze"
 **Reorder within tier**: Rename files to change alphabetical order (e.g., rename `02-name.md` to `01-name.md` to move it first)
 
 **Change tier**:
-1. Move the `.md` file to the new tier folder
-2. Update the `tier` field in the frontmatter to match
-3. Adjust the filename prefix if needed
+1. Move the `.md` file to the new tier folder (e.g., from `silver/` to `gold/`)
+2. The tier will be automatically updated based on the new folder location
+3. Adjust the filename prefix if needed for ordering
 
 **Remove**: Delete the `.md` file (and optionally the logo from `src/assets/sponsors/`)

@@ -17,7 +17,8 @@ const sponsorsCollection = defineCollection({
     name: z.string(),
     logo: z.string(),
     url: z.string().url().optional(),
-    tier: z.enum(['bronze', 'silver', 'gold']),
+    // tier is automatically derived from folder structure (bronze/, silver/, gold/)
+    // and does not need to be specified in frontmatter
   }),
 });
 
