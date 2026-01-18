@@ -15,6 +15,8 @@ Run commands from the project root:
 - `npm run preview` - Preview production build locally
 - `npm run astro -- --help` - Get help with Astro CLI commands
 
+**Important for Claude Code**: If you start a development server (e.g., `npm run dev`) during a task, you MUST stop it before completing the task. Use the KillShell tool with the appropriate shell ID to terminate background processes. This prevents resource accumulation across multiple prompts.
+
 ## Architecture
 
 ### Technology Stack

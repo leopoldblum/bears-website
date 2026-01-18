@@ -62,7 +62,20 @@ const newsItems = allPostsWithImages.map((post) => {
 });
 ---
 
-<section class="container mx-auto px-4 sm:px-8 lg:px-16 py-16 sm:py-20 lg:py-24" x-data="{ showAll: false }">
+<section
+  id="latest-news-section"
+  class="container mx-auto px-4 sm:px-8 lg:px-16 py-16 sm:py-20 lg:py-24"
+  x-data="{
+    showAll: false,
+    hideAndScroll() {
+      this.showAll = false;
+      const section = document.getElementById('latest-news-section');
+      if (section) {
+        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+  }"
+>
   <!-- Header - left aligned -->
   <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-bears-text-onDark mb-6 sm:mb-8 lg:mb-12">
     Latest News from BEARS
@@ -94,7 +107,7 @@ const newsItems = allPostsWithImages.map((post) => {
           postType={news.postType}
         />
       ) : (
-        <div x-show="showAll" x-transition class="lg:block!">
+        <div x-show="showAll" x-transition.duration.300ms class="lg:block!">
           <PostShowcase
             coverImage={news.imageData}
             imageAlt={news.imageAlt}
@@ -122,7 +135,7 @@ const newsItems = allPostsWithImages.map((post) => {
   <!-- Show Less Button - Only visible on mobile when all posts are shown -->
   <div x-show="showAll" class="flex justify-center mt-8 lg:hidden">
     <button
-      @click="showAll = false"
+      @click="hideAndScroll()"
       class="px-6 py-2.5 sm:px-8 sm:py-3 bg-bears-accent text-bears-text-onDark rounded-full hover:bg-bears-accent-muted transition-colors font-medium cursor-pointer"
     >
       Show Less
