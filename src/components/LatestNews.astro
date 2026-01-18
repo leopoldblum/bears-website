@@ -62,7 +62,7 @@ const newsItems = allPostsWithImages.map((post) => {
 });
 ---
 
-<section class="container mx-auto px-4 sm:px-8 lg:px-16 py-16 sm:py-20 lg:py-24">
+<section class="container mx-auto px-4 sm:px-8 lg:px-16 py-16 sm:py-20 lg:py-24" x-data="{ showAll: false }">
   <!-- Header - left aligned -->
   <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-bears-text-onDark mb-6 sm:mb-8 lg:mb-12">
     Latest News from BEARS
@@ -80,18 +80,52 @@ const newsItems = allPostsWithImages.map((post) => {
     </button>
   </div>
 
-    <!-- News Preview Grid -->
+  <!-- News Preview Grid -->
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 my-8 sm:my-12 px-4 sm:px-0">
-    {newsItems.map((news) => (
-      <PostShowcase
-        coverImage={news.imageData}
-        imageAlt={news.imageAlt}
-        date={news.date}
-        title={news.title}
-        description={news.description}
-        href={news.href}
-        postType={news.postType}
-      />
+    {newsItems.map((news, index) => (
+      index < 2 ? (
+        <PostShowcase
+          coverImage={news.imageData}
+          imageAlt={news.imageAlt}
+          date={news.date}
+          title={news.title}
+          description={news.description}
+          href={news.href}
+          postType={news.postType}
+        />
+      ) : (
+        <div x-show="showAll" x-transition class="lg:block!">
+          <PostShowcase
+            coverImage={news.imageData}
+            imageAlt={news.imageAlt}
+            date={news.date}
+            title={news.title}
+            description={news.description}
+            href={news.href}
+            postType={news.postType}
+          />
+        </div>
+      )
     ))}
+  </div>
+
+  <!-- Show All Button - Only visible on mobile when not all posts are shown -->
+  <div x-show="!showAll" class="flex justify-center mt-8 lg:hidden">
+    <button
+      @click="showAll = true"
+      class="px-6 py-2.5 sm:px-8 sm:py-3 bg-bears-accent text-bears-text-onDark rounded-full hover:bg-bears-accent-muted transition-colors font-medium cursor-pointer"
+    >
+      Show More
+    </button>
+  </div>
+
+  <!-- Show Less Button - Only visible on mobile when all posts are shown -->
+  <div x-show="showAll" class="flex justify-center mt-8 lg:hidden">
+    <button
+      @click="showAll = false"
+      class="px-6 py-2.5 sm:px-8 sm:py-3 bg-bears-accent text-bears-text-onDark rounded-full hover:bg-bears-accent-muted transition-colors font-medium cursor-pointer"
+    >
+      Show Less
+    </button>
   </div>
 </section>
