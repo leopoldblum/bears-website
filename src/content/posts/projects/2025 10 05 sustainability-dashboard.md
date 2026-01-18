@@ -4,8 +4,10 @@ description: "An IoT-based monitoring system for tracking energy consumption, wa
 date: 2025-10-05
 domain: "sustainability"
 tags: ["iot", "sustainability", "data-visualization", "sensors", "environmental"]
-# coverImage: "project-3.jpg"
+coverImage: "project-3.jpg"
 isDraft: false
+displayMeetTheTeam: true
+headOfProject: "Julia Anderson"
 ---
 
 ## Project Overview

@@ -2,7 +2,9 @@
 // MeetTheTeam component
 import { getCollection } from 'astro:content';
 import { Image } from 'astro:assets';
-import teamPlaceholder from '../assets/events/event-1.jpg';
+import type { ImageMetadata } from 'astro';
+import defaultProjectImage from '../assets/default-images/default-project.jpg';
+import { loadImagesForCollection } from '../utils/imageLoader';
 
 // Fetch projects that should be displayed in MeetTheTeam accordion
 const allProjects = await getCollection('posts', ({ id, data }) => {
@@ -12,31 +14,70 @@ const allProjects = await getCollection('posts', ({ id, data }) => {
 });
 
 // Sort by date descending (newest first)
-const projects = allProjects.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+const sortedProjects = allProjects.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+
+// Load images for all projects
+const images = import.meta.glob<{ default: ImageMetadata }>("/src/assets/projects/*.{jpg,jpeg,png,webp}");
+const projects = await loadImagesForCollection({
+  glob: images,
+  collection: sortedProjects,
+  baseDir: '/src/assets/projects',
+  imageField: 'coverImage',
+  fallbackImage: defaultProjectImage,
+  postType: 'project'
+});
 ---
 
 <section class="container mx-auto px-4 sm:px-8 lg:px-16 py-16 sm:py-20 lg:py-24">
   <!-- Headline in top left -->
   <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 sm:mb-8 lg:mb-12 text-bears-text-onDark">Meet the Team</h2>
 
-  <!-- Image and text container -->
-  <div class="flex flex-col lg:flex-row gap-6 lg:gap-12">
-    <!-- Image - 2/3 width on larger screens -->
-    <div class="w-full lg:w-2/3">
-      <Image
-        src={teamPlaceholder}
-        alt="BEARS Team"
-        class="w-full h-auto rounded-lg"
-        loading="eager"
-        format="webp"
-      />
+  <!-- 3-column grid: thumbnails | main image | accordion -->
+  <div class="grid grid-cols-1 lg:grid-cols-[100px_1fr_400px] lg:grid-rows-[600px] gap-6 lg:gap-8" x-data="{ activeProject: 0 }">
+
+    <!-- Left: Thumbnail Stack -->
+    <div class="flex flex-row lg:flex-col lg:justify-center gap-3 overflow-x-auto lg:overflow-y-auto lg:overflow-x-visible">
+      {projects.map((project, index) => (
+        <button
+          type="button"
+          class="shrink-0 w-20 h-20 aspect-square rounded-lg overflow-hidden border-2 transition-all duration-200"
+          x-bind:class={`activeProject === ${index} ? 'border-bears-accent scale-100' : 'border-transparent scale-95 hover:scale-100'`}
+          x-on:click={`activeProject = ${index}`}
+          aria-label={`View ${project.data.title} project`}
+        >
+          <Image
+            src={project.loadedImage || defaultProjectImage}
+            alt={project.data.title}
+            class="w-full h-full object-cover"
+            loading="eager"
+            format="webp"
+          />
+        </button>
+      ))}
     </div>
 
-    <!-- Projects Accordion - 1/3 width on larger screens -->
-    <div class="w-full lg:w-1/3 border-t border-b border-bears-text-onDark/20" x-data="{ activeProject: 0 }">
+    <!-- Middle: Main Image -->
+    <div class="relative w-full h-full aspect-4/3 lg:aspect-auto rounded-lg overflow-hidden">
       {projects.map((project, index) => (
-        <div class="border-b border-bears-text-onDark/20 last:border-b-0">
-          <!-- Accordion Title Button -->
+        <div
+          class="absolute inset-0 transition-opacity duration-300"
+          x-bind:class={`activeProject === ${index} ? 'opacity-100 z-10' : 'opacity-0 z-0'`}
+        >
+          <Image
+            src={project.loadedImage || defaultProjectImage}
+            alt={project.data.title}
+            class="w-full h-full object-cover"
+            loading="eager"
+            format="webp"
+          />
+        </div>
+      ))}
+    </div>
+
+    <!-- Right: Projects Accordion -->
+    <div class="flex flex-col lg:justify-center overflow-y-auto">
+      {projects.map((project, index) => (
+        <div class="border-t border-b border-bears-text-onDark/20">
           <button
             type="button"
             class="w-full text-left py-4 px-2 text-base sm:text-lg font-semibold text-bears-text-onDark hover:text-bears-accent transition-colors duration-200 cursor-pointer"
@@ -47,14 +88,13 @@ const projects = allProjects.sort((a, b) => b.data.date.getTime() - a.data.date.
             {project.data.title}
           </button>
 
-          <!-- Accordion Content -->
           <div
             id={`project-${index}`}
             class="grid transition-[grid-template-rows] duration-300 ease-in-out"
             x-bind:class={`activeProject === ${index} ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'`}
           >
             <div class="overflow-hidden">
-              <div class="pb-4 px-2 max-h-120 lg:max-h-160 overflow-y-auto">
+              <div class="pb-4 px-2">
                 {project.data.headOfProject && (
                   <p class="text-xs sm:text-sm text-bears-accent font-medium mb-2">
                     {project.data.headOfProject}
@@ -69,5 +109,6 @@ const projects = allProjects.sort((a, b) => b.data.date.getTime() - a.data.date.
         </div>
       ))}
     </div>
+
   </div>
 </section>

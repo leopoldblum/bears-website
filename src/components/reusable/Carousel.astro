@@ -92,8 +92,7 @@ const {
 
     <!-- Slides Container (80% width) -->
     <div
-      class="relative w-[80%] flex items-center justify-center"
-      :class={minHeight}
+      class={`relative w-[80%] flex items-center justify-center ${minHeight}`}
       @mouseenter="stopAutoScroll()"
       @mouseleave="startAutoScroll()"
       x-ref="slidesContainer"
