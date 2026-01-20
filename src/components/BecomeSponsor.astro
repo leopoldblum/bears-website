@@ -4,23 +4,20 @@ import { getCollection } from "astro:content";
 import SponsorTier from "./SponsorTier.astro";
 import placeholderLogo from "../assets/sponsors/gold-placeholder-1.png";
 import type { SponsorEntry } from '../types';
+import { sponsorLogos } from '../utils/imageGlobs';
+import { loadImageWithSimpleFallback } from '../utils/imageLoader';
 
 // Fetch all sponsors
 const allSponsors = await getCollection("sponsors");
 
-// Import all logo images
-const logos = import.meta.glob<{ default: ImageMetadata }>("/src/assets/sponsors/*.{jpg,jpeg,png}");
-
 // Process sponsors with images and derive tier from folder
 const sponsorsWithImages = await Promise.all(
   allSponsors.map(async (sponsor: SponsorEntry) => {
-    const logoPath = `/src/assets/sponsors/${sponsor.data.logo}`;
-    let logoData = placeholderLogo;
-
-    if (logos[logoPath]) {
-      const logoModule = await logos[logoPath]();
-      logoData = logoModule.default;
-    }
+    const logoData = await loadImageWithSimpleFallback({
+      glob: sponsorLogos,
+      imagePath: `/src/assets/sponsors/${sponsor.data.logo}`,
+      fallbackImage: placeholderLogo
+    });
 
     // Derive tier from folder structure (e.g., "gold/sponsor-name" -> "gold")
     const tier = sponsor.id.split('/')[0] as 'bronze' | 'silver' | 'gold';

@@ -6,6 +6,12 @@
  */
 
 import type { ImageMetadata } from 'astro';
+import defaultEventImage from '../assets/default-images/default-event.jpg';
+import defaultProjectImage from '../assets/default-images/default-project.jpg';
+import defaultTestimonialImage from '../assets/default-images/default-testimonial.jpg';
+
+// Export default images for components that need direct access
+export { defaultEventImage, defaultProjectImage, defaultTestimonialImage };
 
 /**
  * Options for loading a single image
@@ -189,4 +195,235 @@ export async function loadImagesForCollection<
       return { ...item, loadedImage };
     })
   );
+}
+
+/**
+ * Load all images from a glob import
+ *
+ * Useful for carousels, galleries, or any component that needs to display
+ * all images from a directory without filtering.
+ *
+ * @param glob - Glob import result containing image paths
+ * @returns Array of loaded ImageMetadata objects
+ *
+ * @example
+ * ```ts
+ * import { whatIsBearsImages } from '../utils/imageGlobs';
+ * const carouselImages = await loadAllImagesFromDirectory(whatIsBearsImages);
+ * ```
+ */
+export async function loadAllImagesFromDirectory(
+  glob: Record<string, () => Promise<{ default: ImageMetadata }>>
+): Promise<ImageMetadata[]> {
+  const imagePaths = Object.keys(glob);
+
+  const loadedImages = await Promise.all(
+    imagePaths.map(async (path) => {
+      try {
+        const imageModule = await glob[path]();
+        return imageModule.default;
+      } catch (error) {
+        console.warn(`⚠️ Failed to load image from "${path}"`);
+        return null;
+      }
+    })
+  );
+
+  // Filter out null values (failed loads)
+  return loadedImages.filter((img): img is ImageMetadata => img !== null);
+}
+
+/**
+ * Options for loading an image with simple fallback
+ */
+interface LoadImageWithSimpleFallbackOptions {
+  glob: Record<string, () => Promise<{ default: ImageMetadata }>>;
+  imagePath: string;
+  fallbackImage: ImageMetadata;
+}
+
+/**
+ * Load a single image with simple fallback (no logging)
+ *
+ * Simpler variant of loadImage() that doesn't log warnings.
+ * Useful for cases where missing images are expected (e.g., optional logos).
+ *
+ * @param options - Configuration for loading the image
+ * @returns The loaded image or fallback image if not found
+ *
+ * @example
+ * ```ts
+ * const logo = await loadImageWithSimpleFallback({
+ *   glob: sponsorLogos,
+ *   imagePath: `/src/assets/sponsors/${logoFileName}`,
+ *   fallbackImage: placeholderLogo
+ * });
+ * ```
+ */
+export async function loadImageWithSimpleFallback(
+  options: LoadImageWithSimpleFallbackOptions
+): Promise<ImageMetadata> {
+  const { glob, imagePath, fallbackImage } = options;
+
+  if (glob[imagePath]) {
+    try {
+      const imageModule = await glob[imagePath]();
+      return imageModule.default;
+    } catch (error) {
+      // Silent failure - return fallback
+      return fallbackImage;
+    }
+  }
+
+  return fallbackImage;
+}
+
+/**
+ * Pre-configured helper: Load event images for a collection
+ *
+ * @param collection - Collection of event items
+ * @returns Items with loaded images attached as `loadedImage` property (guaranteed non-null)
+ *
+ * @example
+ * ```ts
+ * const eventsWithImages = await loadEventImages(sortedEvents);
+ * ```
+ */
+export async function loadEventImages<T extends { data: { coverImage?: string; coverImageType?: string; title?: string }; slug?: string }>(
+  collection: T[]
+): Promise<Array<T & { loadedImage: ImageMetadata }>> {
+  const { eventImages } = await import('./imageGlobs');
+
+  return loadImagesForCollection({
+    glob: eventImages,
+    collection,
+    baseDir: '/src/assets/events',
+    imageField: 'coverImage',
+    fallbackImage: defaultEventImage,
+    postType: 'event',
+  }) as Promise<Array<T & { loadedImage: ImageMetadata }>>;
+}
+
+/**
+ * Pre-configured helper: Load project images for a collection
+ *
+ * @param collection - Collection of project items
+ * @returns Items with loaded images attached as `loadedImage` property (guaranteed non-null)
+ *
+ * @example
+ * ```ts
+ * const projectsWithImages = await loadProjectImages(sortedProjects);
+ * ```
+ */
+export async function loadProjectImages<T extends { data: { coverImage?: string; coverImageType?: string; title?: string }; slug?: string }>(
+  collection: T[]
+): Promise<Array<T & { loadedImage: ImageMetadata }>> {
+  const { projectImages } = await import('./imageGlobs');
+
+  return loadImagesForCollection({
+    glob: projectImages,
+    collection,
+    baseDir: '/src/assets/projects',
+    imageField: 'coverImage',
+    fallbackImage: defaultProjectImage,
+    postType: 'project',
+  }) as Promise<Array<T & { loadedImage: ImageMetadata }>>;
+}
+
+/**
+ * Pre-configured helper: Load single event cover image
+ *
+ * @param coverImageFileName - Filename of the cover image (without directory path)
+ * @param context - Optional context for logging (item title and slug)
+ * @returns The loaded image or default event image
+ *
+ * @example
+ * ```ts
+ * const coverImage = await loadEventCoverImage(
+ *   entry.data.coverImage,
+ *   { itemTitle: entry.data.title, itemSlug: entry.slug }
+ * );
+ * ```
+ */
+export async function loadEventCoverImage(
+  coverImageFileName: string | undefined,
+  context?: { itemTitle?: string; itemSlug?: string }
+): Promise<ImageMetadata> {
+  const { eventImages } = await import('./imageGlobs');
+
+  if (!coverImageFileName) {
+    return defaultEventImage;
+  }
+
+  const image = await loadImage({
+    glob: eventImages,
+    imagePath: `/src/assets/events/${coverImageFileName}`,
+    fallbackImage: defaultEventImage,
+    context,
+  });
+
+  return image || defaultEventImage;
+}
+
+/**
+ * Pre-configured helper: Load single project cover image
+ *
+ * @param coverImageFileName - Filename of the cover image (without directory path)
+ * @param context - Optional context for logging (item title and slug)
+ * @returns The loaded image or default project image
+ *
+ * @example
+ * ```ts
+ * const coverImage = await loadProjectCoverImage(
+ *   entry.data.coverImage,
+ *   { itemTitle: entry.data.title, itemSlug: entry.slug }
+ * );
+ * ```
+ */
+export async function loadProjectCoverImage(
+  coverImageFileName: string | undefined,
+  context?: { itemTitle?: string; itemSlug?: string }
+): Promise<ImageMetadata> {
+  const { projectImages } = await import('./imageGlobs');
+
+  if (!coverImageFileName) {
+    return defaultProjectImage;
+  }
+
+  const image = await loadImage({
+    glob: projectImages,
+    imagePath: `/src/assets/projects/${coverImageFileName}`,
+    fallbackImage: defaultProjectImage,
+    context,
+  });
+
+  return image || defaultProjectImage;
+}
+
+/**
+ * Pre-configured helper: Load testimonial images
+ *
+ * @param collection - Collection of testimonial items
+ * @returns Items with loaded images attached as `loadedImage` property (guaranteed non-null)
+ *
+ * @example
+ * ```ts
+ * const testimonialsWithImages = await loadTestimonialImages(
+ *   sortedTestimonials
+ * );
+ * ```
+ */
+export async function loadTestimonialImages<T extends { data: { image?: string; title?: string }; slug?: string }>(
+  collection: T[]
+): Promise<Array<T & { loadedImage: ImageMetadata }>> {
+  const { testimonialImages } = await import('./imageGlobs');
+
+  return loadImagesForCollection({
+    glob: testimonialImages,
+    collection,
+    baseDir: '/src/assets/testimonials',
+    imageField: 'image',
+    fallbackImage: defaultTestimonialImage,
+    postType: 'testimonial',
+  }) as Promise<Array<T & { loadedImage: ImageMetadata }>>;
 }

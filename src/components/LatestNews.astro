@@ -2,13 +2,8 @@
 // LatestNews component - Shows latest news from BEARS
 import PostShowcase from "./PostShowcase.astro";
 import { getCollection } from "astro:content";
-import type { ImageMetadata } from 'astro';
 import type { PostType } from '../types';
-import { loadImagesForCollection } from '../utils/imageLoader';
-
-// Import images
-const eventImages = import.meta.glob<{ default: ImageMetadata }>("/src/assets/events/*.{jpg,jpeg,png,webp}");
-const projectImages = import.meta.glob<{ default: ImageMetadata }>("/src/assets/projects/*.{jpg,jpeg,png,webp}");
+import { loadEventImages, loadProjectImages } from '../utils/imageLoader';
 
 // Fetch all posts (events and projects)
 const allPosts = await getCollection("posts", ({ data }) => {
@@ -25,21 +20,8 @@ const events = latestPosts.filter(post => post.slug.startsWith('events/'));
 const projects = latestPosts.filter(post => post.slug.startsWith('projects/'));
 
 // Load images for events and projects
-const eventsWithImages = await loadImagesForCollection({
-  glob: eventImages,
-  collection: events,
-  baseDir: '/src/assets/events',
-  imageField: 'coverImage',
-  postType: 'event',
-});
-
-const projectsWithImages = await loadImagesForCollection({
-  glob: projectImages,
-  collection: projects,
-  baseDir: '/src/assets/projects',
-  imageField: 'coverImage',
-  postType: 'project',
-});
+const eventsWithImages = await loadEventImages(events);
+const projectsWithImages = await loadProjectImages(projects);
 
 // Merge and sort by date again
 const allPostsWithImages = [...eventsWithImages, ...projectsWithImages]

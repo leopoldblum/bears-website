@@ -1,19 +1,11 @@
 ---
 // WhatIsBears component - Explains what BEARS e.V. is
 import { Image } from 'astro:assets';
-import type { ImageMetadata } from 'astro';
 import Marquee from './reusable/Marquee.astro';
+import { whatIsBearsImages } from '../utils/imageGlobs';
+import { loadAllImagesFromDirectory } from '../utils/imageLoader';
 
-// Dynamically import all images from whatIsBears directory
-const images = import.meta.glob<{ default: ImageMetadata }>("/src/assets/whatIsBears/*.{jpg,jpeg,png,webp}");
-
-// Load all images into an array
-const carouselImages = await Promise.all(
-  Object.keys(images).map(async (path) => {
-    const imageModule = await images[path]();
-    return imageModule.default;
-  })
-);
+const carouselImages = await loadAllImagesFromDirectory(whatIsBearsImages);
 ---
 
 <section class="container mx-auto px-4 sm:px-8 lg:px-16 py-16 sm:py-20 lg:py-24">
