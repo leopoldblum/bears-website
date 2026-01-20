@@ -8,7 +8,7 @@ The BEARS website has a **solid architectural foundation** with good type safety
 - ✅ Strong type safety with TypeScript strict mode
 - ✅ Well-organized content collections with Zod validation
 - ✅ Mobile-first Tailwind CSS approach
-- ⚠️ **Critical**: Image loading code duplicated across 9 files
+- ✅ Centralized image loading utilities eliminate duplication
 - ⚠️ **Critical**: Sorting/filtering logic repeated in 5+ locations
 - ⚠️ **Critical**: Header component violates single responsibility principle
 - ⚠️ **High**: Missing button component leads to inconsistent styling
@@ -42,35 +42,7 @@ src/
 
 ## Critical Design Flaws
 
-<!-- ### 1. Image Loading Code Duplication ⚠️ CRITICAL
-
-**Issue**: Nearly identical image loading code appears in 9 different files:
-- [src/pages/events.astro](src/pages/events.astro)
-- [src/pages/projects.astro](src/pages/projects.astro)
-- [src/pages/events/[slug].astro](src/pages/events/[slug].astro)
-- [src/pages/projects/[slug].astro](src/pages/projects/[slug].astro)
-- [src/components/BecomeSponsor.astro](src/components/BecomeSponsor.astro)
-- [src/components/LatestNews.astro](src/components/LatestNews.astro)
-- [src/components/Testimonials.astro](src/components/Testimonials.astro)
-- [src/components/MeetTheTeam.astro](src/components/MeetTheTeam.astro)
-
-**Pattern duplicated**:
-```typescript
-const images = import.meta.glob<{ default: ImageMetadata }>("/src/assets/...");
-const itemsWithImages = await loadImagesForCollection({...});
-```
-
-**Impact**:
-- Bug fixes require updating 9 locations
-- Inconsistent error handling between components
-- Different fallback behavior between list and detail pages
-- Performance: Multiple glob imports create separate bundles
-
-**Recommendation**: Extract to utility functions in `src/utils/imageLoader.ts` -->
-
----
-
-### 2. Sorting/Filtering Logic Duplication ⚠️ CRITICAL
+### 1. Sorting/Filtering Logic Duplication ⚠️ CRITICAL
 
 **Issue**: Common sorting and filtering patterns repeated throughout codebase:
 
@@ -98,7 +70,7 @@ const itemsWithImages = await loadImagesForCollection({...});
 
 ---
 
-### 3. Header Component Monolithic Design ⚠️ CRITICAL
+### 2. Header Component Monolithic Design ⚠️ CRITICAL
 
 **Issue**: [src/components/Header.astro](src/components/Header.astro) violates single responsibility principle (108 lines)
 
@@ -123,7 +95,7 @@ const itemsWithImages = await loadImagesForCollection({...});
 
 ## High Priority Issues
 
-### 4. Missing Button Component ⚠️ HIGH
+### 3. Missing Button Component ⚠️ HIGH
 
 **Issue**: 4+ button variants scattered throughout components with inconsistent styling:
 - Primary accent buttons: `bg-bears-accent hover:bg-bears-accent-dark`
@@ -142,7 +114,7 @@ const itemsWithImages = await loadImagesForCollection({...});
 
 ---
 
-### 5. Sponsor Tier Data Duplication ⚠️ HIGH
+### 4. Sponsor Tier Data Duplication ⚠️ HIGH
 
 **Issue**: Sponsor tier exists in two places:
 1. **Folder structure**: `src/content/sponsors/gold/`, `silver/`, `bronze/`
@@ -156,22 +128,8 @@ const itemsWithImages = await loadImagesForCollection({...});
 **Recommendation**: Add Zod validation in content schema or remove manual derivation
 
 ---
-<!-- 
-### 6. Detail Page Image Fallback Missing ⚠️ HIGH
 
-**Issue**: [src/pages/events/[slug].astro](src/pages/events/[slug].astro) and [src/pages/projects/[slug].astro](src/pages/projects/[slug].astro) don't use fallback images
-
-**Behavior**:
-- **List pages**: Use `default-event.jpg` / `default-project.jpg` fallbacks ✅
-- **Detail pages**: Show no image if `coverImage` missing ❌
-
-**Impact**: Broken images on detail pages vs proper fallback on list pages
-
-**Recommendation**: Use same fallback pattern as list pages -->
-
----
-
-### 7. Incomplete Page Implementations ⚠️ HIGH
+### 5. Incomplete Page Implementations ⚠️ HIGH
 
 **Issue**: Two pages have incomplete implementations:
 - [src/pages/sponsors.astro](src/pages/sponsors.astro) - Renders `BecomeSponsor` component (duplicate of homepage section)
@@ -183,7 +141,7 @@ const itemsWithImages = await loadImagesForCollection({...});
 
 ---
 
-### 8. Hardcoded Placeholder Images ⚠️ HIGH
+### 6. Hardcoded Placeholder Images ⚠️ HIGH
 
 **Issue**: Placeholder images imported directly without type checking:
 - [MeetTheTeam.astro:14](src/components/MeetTheTeam.astro#L14) - `import defaultProjectImage from '../assets/default-images/default-project.jpg'`
@@ -197,7 +155,7 @@ const itemsWithImages = await loadImagesForCollection({...});
 
 ## Medium Priority Issues
 
-### 9. Container/Padding Pattern Inconsistency 🔸 MEDIUM
+### 7. Container/Padding Pattern Inconsistency 🔸 MEDIUM
 
 **Issue**: Two different padding patterns used inconsistently:
 - **Pattern A** (sections): `px-4 sm:px-8 lg:px-16`
@@ -209,7 +167,7 @@ const itemsWithImages = await loadImagesForCollection({...});
 
 ---
 
-### 10. Image Glob Pattern Inconsistency 🔸 MEDIUM
+### 8. Image Glob Pattern Inconsistency 🔸 MEDIUM
 
 **Issue**: Different glob patterns across files:
 - **Events/Projects**: `.{jpg,jpeg,png,webp}` (includes webp) ✅
@@ -222,7 +180,7 @@ const itemsWithImages = await loadImagesForCollection({...});
 
 ---
 
-### 11. Missing ImageMetadata Import 🔸 MEDIUM
+### 9. Missing ImageMetadata Import 🔸 MEDIUM
 
 **Issue**: [BecomeSponsor.astro:12](src/components/BecomeSponsor.astro#L12) uses `ImageMetadata` without explicit import:
 ```typescript
@@ -235,20 +193,8 @@ const logos = import.meta.glob<{ default: ImageMetadata }>(...);
 **Recommendation**: Add explicit import for type safety
 
 ---
-<!-- 
-### 12. Non-Functional UI Elements 🔸 MEDIUM
 
-**Issue**: [Header.astro](src/components/Header.astro) contains non-functional elements:
-- Search bar (disabled, lines 47 & 88)
-- Language toggle (non-functional, lines 60-64 & 100-105)
-
-**Impact**: False affordances confuse users who expect these to work
-
-**Recommendation**: Remove or implement these features -->
-
----
-
-### 13. Alpine.js Loaded Globally 🔸 MEDIUM
+### 10. Alpine.js Loaded Globally 🔸 MEDIUM
 
 **Issue**: [BaseLayout.astro:22](src/layouts/BaseLayout.astro#L22) loads Alpine.js CDN on every page
 
@@ -258,7 +204,7 @@ const logos = import.meta.glob<{ default: ImageMetadata }>(...);
 
 ---
 
-### 14. No Image Extension Validation 🔸 MEDIUM
+### 11. No Image Extension Validation 🔸 MEDIUM
 
 **Issue**: Content schema accepts any string for `coverImage`:
 ```yaml
@@ -275,7 +221,7 @@ coverImage: z.string().regex(/\.(jpg|jpeg|png|webp)$/i).optional()
 
 ## Low Priority Issues
 
-### 15. Missing Props Documentation 🔹 LOW
+### 12. Missing Props Documentation 🔹 LOW
 
 **Issue**: Most components lack JSDoc comments explaining props and usage
 
@@ -283,7 +229,7 @@ coverImage: z.string().regex(/\.(jpg|jpeg|png|webp)$/i).optional()
 
 ---
 
-### 16. Footer Grid Layout Bug 🔹 LOW
+### 13. Footer Grid Layout Bug 🔹 LOW
 
 **Issue**: [Footer.astro:122](src/components/Footer.astro#L122) has extra closing `</div>` tag
 
@@ -313,11 +259,10 @@ coverImage: z.string().regex(/\.(jpg|jpeg|png|webp)$/i).optional()
 
 ### Scaling Bottlenecks
 
-1. **Image loading becomes N²**: Each new content type requires updating 9+ locations
-2. **Navigation maintenance**: Header hardcodes routes; adding sections needs Header + Footer updates
-3. **Button styling scattered**: Adding variants means updating all components
-4. **No content query builder**: Manual filter/sort in each component
-5. **Alpine.js state management**: x-data strings become unmaintainable as interactivity grows
+1. **Navigation maintenance**: Header hardcodes routes; adding sections needs Header + Footer updates
+2. **Button styling scattered**: Adding variants means updating all components
+3. **No content query builder**: Manual filter/sort in each component
+4. **Alpine.js state management**: x-data strings become unmaintainable as interactivity grows
 
 ---
 
@@ -325,28 +270,24 @@ coverImage: z.string().regex(/\.(jpg|jpeg|png|webp)$/i).optional()
 
 | Priority | Issue | Effort | Impact | Files Affected |
 |----------|-------|--------|--------|----------------|
-| 1 | Image loading duplication | Medium | Critical | 9 files |
-| 2 | Sort/filter duplication | Low | Critical | 5+ files |
-| 3 | Header complexity | Medium | Critical | Header.astro |
-| 4 | Missing button component | Low | High | 4 components |
-| 5 | Sponsor tier redundancy | Low | High | BecomeSponsor + schema |
-| 6 | Detail page fallbacks | Low | High | 2 detail pages |
-| 7 | Incomplete pages | Medium | High | sponsors, about-us |
-| 8 | Non-functional UI | Low | Medium | Header.astro |
-| 9 | Alpine.js global load | Low | Medium | BaseLayout.astro |
-| 10 | Image glob inconsistency | Low | Low | 3 files |
+| 1 | Sort/filter duplication | Low | Critical | 5+ files |
+| 2 | Header complexity | Medium | Critical | Header.astro |
+| 3 | Missing button component | Low | High | 4 components |
+| 4 | Sponsor tier redundancy | Low | High | BecomeSponsor + schema |
+| 5 | Incomplete pages | Medium | High | sponsors, about-us |
+| 6 | Alpine.js global load | Low | Medium | BaseLayout.astro |
+| 7 | Image glob inconsistency | Low | Low | 3 files |
 
 ---
 
 ## Conclusion
 
-The BEARS website has a solid foundation but suffers from **code duplication and maintenance debt**. The three critical issues (image duplication, sorting logic repetition, header complexity) should be addressed before scaling.
+The BEARS website has a solid foundation with centralized image loading utilities now in place. However, it still suffers from some **code duplication and maintenance debt** that should be addressed before scaling.
 
 **Recommended Next Steps:**
-1. Extract image loading patterns to utility functions
-2. Create query builder utilities for sorting/filtering
-3. Refactor Header component into sub-components
-4. Create Button component for consistent styling
-5. Implement incomplete pages (sponsors, about-us)
+1. Create query builder utilities for sorting/filtering
+2. Refactor Header component into sub-components
+3. Create Button component for consistent styling
+4. Implement incomplete pages (sponsors, about-us)
 
 With 2-3 targeted refactoring efforts, this becomes a highly maintainable codebase positioned for growth.

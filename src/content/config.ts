@@ -7,7 +7,7 @@ const testimonialsCollection = defineCollection({
     quote: z.string(),
     name: z.string(),
     role: z.string(),
-    image: z.string(),
+    coverImage: z.string(),
   }),
 });
 

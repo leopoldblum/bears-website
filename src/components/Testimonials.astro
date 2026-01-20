@@ -21,7 +21,7 @@ const testimonialsWithLoadedImages = await loadTestimonialImages(
 // Map to format expected by TestimonialCard
 const testimonials = testimonialsWithLoadedImages.map((testimonial) => ({
   ...testimonial.data,
-  image: testimonial.loadedImage, // Guaranteed non-null by loader
+  image: testimonial.loadedImage, // Guaranteed non-null by loader (schema field: coverImage, component prop: image)
 }));
 
 ---
