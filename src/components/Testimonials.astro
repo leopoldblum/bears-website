@@ -5,7 +5,7 @@ import Carousel from "./reusable/Carousel.astro";
 import TestimonialCard from "./TestimonialCard.astro";
 import type { TestimonialEntry } from '../types';
 import type { ImageMetadata } from 'astro';
-import { loadTestimonialImages } from '../utils/imageLoader';
+import { loadCollectionImages } from '../utils/imageLoader';
 
 // Fetch testimonials from content collection
 const allTestimonials = await getCollection("testimonials");
@@ -14,8 +14,9 @@ const allTestimonials = await getCollection("testimonials");
 const sortedTestimonials = allTestimonials.sort((a: TestimonialEntry, b: TestimonialEntry) => a.slug.localeCompare(b.slug));
 
 // Load images for testimonials
-const testimonialsWithLoadedImages = await loadTestimonialImages(
-  sortedTestimonials
+const testimonialsWithLoadedImages = await loadCollectionImages(
+  sortedTestimonials,
+  'testimonial'
 );
 
 // Map to format expected by TestimonialCard

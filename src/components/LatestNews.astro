@@ -3,7 +3,7 @@
 import PostShowcase from "./PostShowcase.astro";
 import { getCollection } from "astro:content";
 import type { PostType } from '../types';
-import { loadEventImages, loadProjectImages } from '../utils/imageLoader';
+import { loadCollectionImages } from '../utils/imageLoader';
 
 // Fetch all posts (events and projects)
 const allPosts = await getCollection("posts", ({ data }) => {
@@ -20,8 +20,8 @@ const events = latestPosts.filter(post => post.slug.startsWith('events/'));
 const projects = latestPosts.filter(post => post.slug.startsWith('projects/'));
 
 // Load images for events and projects
-const eventsWithImages = await loadEventImages(events);
-const projectsWithImages = await loadProjectImages(projects);
+const eventsWithImages = await loadCollectionImages(events, 'event');
+const projectsWithImages = await loadCollectionImages(projects, 'project');
 
 // Merge and sort by date again
 const allPostsWithImages = [...eventsWithImages, ...projectsWithImages]

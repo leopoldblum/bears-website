@@ -2,7 +2,7 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { getCollection } from "astro:content";
 import PostShowcase from "../components/PostShowcase.astro";
-import { loadEventImages } from "../utils/imageLoader";
+import { loadCollectionImages } from "../utils/imageLoader";
 
 // Filter and sort events
 const allEvents = await getCollection("posts", ({ id, data }) => {
@@ -14,7 +14,7 @@ const sortedEvents = allEvents.sort((a, b) =>
 );
 
 // Load images for events
-const eventsWithLoadedImages = await loadEventImages(sortedEvents);
+const eventsWithLoadedImages = await loadCollectionImages(sortedEvents, 'event');
 
 // Map to format expected by PostShowcase
 const eventsWithImages = eventsWithLoadedImages.map((event) => ({

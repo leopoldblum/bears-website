@@ -2,7 +2,7 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import { getCollection } from "astro:content";
 import PostShowcase from "../components/PostShowcase.astro";
-import { loadProjectImages } from "../utils/imageLoader";
+import { loadCollectionImages } from "../utils/imageLoader";
 
 // Filter and sort projects
 const allProjects = await getCollection("posts", ({ id, data }) => {
@@ -14,7 +14,7 @@ const sortedProjects = allProjects.sort((a, b) =>
 );
 
 // Load images for projects
-const projectsWithLoadedImages = await loadProjectImages(sortedProjects);
+const projectsWithLoadedImages = await loadCollectionImages(sortedProjects, 'project');
 
 // Map to format expected by PostShowcase
 const projectsWithImages = projectsWithLoadedImages.map((project) => ({

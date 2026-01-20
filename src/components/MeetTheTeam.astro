@@ -2,7 +2,7 @@
 // MeetTheTeam component
 import { getCollection } from 'astro:content';
 import { Image } from 'astro:assets';
-import { loadProjectImages } from '../utils/imageLoader';
+import { loadCollectionImages } from '../utils/imageLoader';
 import Accordion from './reusable/Accordion.astro';
 
 // Fetch projects that should be displayed in MeetTheTeam accordion
@@ -18,7 +18,7 @@ const sortedProjects = allProjects
   // No limit - display all projects with displayMeetTheTeam: true
 
 // Load images for all projects
-const projects = await loadProjectImages(sortedProjects);
+const projects = await loadCollectionImages(sortedProjects, 'project');
 ---
 
 <section class="container mx-auto px-4 sm:px-8 lg:px-16 py-16 sm:py-20 lg:py-24">
