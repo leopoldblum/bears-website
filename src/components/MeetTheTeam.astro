@@ -13,8 +13,10 @@ const allProjects = await getCollection('posts', ({ id, data }) => {
          (import.meta.env.DEV || !data.isDraft);
 });
 
-// Sort by date descending (newest first)
-const sortedProjects = allProjects.sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+// Sort by date descending (newest first) and limit to 5 projects
+const sortedProjects = allProjects
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
+  .slice(0, 5); // Limit to maximum 5 projects
 
 // Load images for all projects
 const images = import.meta.glob<{ default: ImageMetadata }>("/src/assets/projects/*.{jpg,jpeg,png,webp}");
@@ -33,14 +35,14 @@ const projects = await loadImagesForCollection({
   <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 sm:mb-8 lg:mb-12 text-bears-text-onDark">Meet the Team</h2>
 
   <!-- 3-column grid: thumbnails | main image | accordion -->
-  <div class="grid grid-cols-1 lg:grid-cols-[100px_1fr_400px] lg:grid-rows-[600px] gap-6 lg:gap-8" x-data="{ activeProject: 0 }">
+  <div class="grid grid-cols-1 lg:grid-cols-[120px_1fr_400px] gap-6 lg:gap-8" x-data="{ activeProject: 0 }">
 
     <!-- Left: Thumbnail Stack -->
-    <div class="flex flex-row lg:flex-col lg:justify-center gap-3 overflow-x-auto lg:overflow-y-auto lg:overflow-x-visible">
+    <div class="flex flex-row lg:flex-col lg:justify-between gap-3 overflow-x-auto lg:overflow-y-auto lg:overflow-x-visible lg:h-[550px]">
       {projects.map((project, index) => (
         <button
           type="button"
-          class="shrink-0 w-20 h-20 aspect-square rounded-lg overflow-hidden border-2 transition-all duration-200"
+          class="shrink-0 w-24 h-24 aspect-square rounded-lg overflow-hidden border-2 transition-all duration-200"
           x-bind:class={`activeProject === ${index} ? 'border-bears-accent scale-100' : 'border-transparent scale-95 hover:scale-100'`}
           x-on:click={`activeProject = ${index}`}
           aria-label={`View ${project.data.title} project`}
@@ -57,7 +59,7 @@ const projects = await loadImagesForCollection({
     </div>
 
     <!-- Middle: Main Image -->
-    <div class="relative w-full h-full aspect-4/3 lg:aspect-auto rounded-lg overflow-hidden">
+    <div class="relative w-full aspect-4/3 lg:aspect-auto lg:h-[550px] rounded-lg overflow-hidden">
       {projects.map((project, index) => (
         <div
           class="absolute inset-0 transition-opacity duration-300"
@@ -75,7 +77,7 @@ const projects = await loadImagesForCollection({
     </div>
 
     <!-- Right: Projects Accordion -->
-    <div class="flex flex-col lg:justify-center overflow-y-auto">
+    <div class="flex flex-col lg:h-[550px] overflow-y-auto lg:border-y lg:border-bears-text-onDark/20">
       {projects.map((project, index) => (
         <div class="border-t border-b border-bears-text-onDark/20">
           <button
