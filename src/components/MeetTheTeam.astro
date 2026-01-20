@@ -13,10 +13,10 @@ const allProjects = await getCollection('posts', ({ id, data }) => {
          (import.meta.env.DEV || !data.isDraft);
 });
 
-// Sort by date descending (newest first) and limit to 5 projects
+// Sort by date descending (newest first)
 const sortedProjects = allProjects
-  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
-  .slice(0, 5); // Limit to maximum 5 projects
+  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+  // No limit - display all projects with displayMeetTheTeam: true
 
 // Load images for all projects
 const images = import.meta.glob<{ default: ImageMetadata }>("/src/assets/projects/*.{jpg,jpeg,png,webp}");
