@@ -1,6 +1,7 @@
 ---
 // LatestNews component - Shows latest news from BEARS
 import PostShowcase from "./PostShowcase.astro";
+import Button from "./reusable/Button.astro";
 import type { PostType } from '../types';
 import { loadCollectionImages } from '../utils/imageLoader';
 import { getLatestPosts, sortByDateDesc } from '../utils/contentQueries';
@@ -62,9 +63,7 @@ const newsItems = allPostsWithImages.map((post) => {
 
   <!-- Learn More Button -->
   <div>
-    <button class="px-4 py-2.5 sm:px-6 sm:py-2 bg-bears-accent text-bears-text-onDark rounded-full hover:bg-bears-accent-muted transition-colors font-medium cursor-pointer">
-      Learn More
-    </button>
+    <Button variant="primary">Learn More</Button>
   </div>
 
   <!-- News Preview Grid -->
@@ -96,21 +95,15 @@ const newsItems = allPostsWithImages.map((post) => {
 
   <!-- Show All Button - Only visible on mobile when not all posts are shown -->
   <div x-show="!showAll" class="flex justify-center mt-8 lg:hidden">
-    <button
-      @click="showAll = true"
-      class="px-6 py-2.5 sm:px-8 sm:py-3 bg-bears-accent text-bears-text-onDark rounded-full hover:bg-bears-accent-muted transition-colors font-medium cursor-pointer"
-    >
+    <Button variant="primary" size="large" onClick="showAll = true">
       Show More
-    </button>
+    </Button>
   </div>
 
   <!-- Show Less Button - Only visible on mobile when all posts are shown -->
   <div x-show="showAll" class="flex justify-center mt-8 lg:hidden">
-    <button
-      @click="hideAndScroll()"
-      class="px-6 py-2.5 sm:px-8 sm:py-3 bg-bears-accent text-bears-text-onDark rounded-full hover:bg-bears-accent-muted transition-colors font-medium cursor-pointer"
-    >
+    <Button variant="primary" size="large" onClick="hideAndScroll()">
       Show Less
-    </button>
+    </Button>
   </div>
 </section>

@@ -1,0 +1,108 @@
+---
+// Button component - Reusable button with multiple variants
+// Supports both button and link elements, Alpine.js integration, and MDX usage
+
+interface Props {
+  // Content (slot takes priority over content prop)
+  content?: string;
+
+  // Navigation
+  href?: string; // If provided, renders <a>, else <button>
+
+  // Styling
+  variant?: 'primary' | 'secondary' | 'inverse'; // Default: 'primary'
+  size?: 'standard' | 'large'; // Default: 'standard'
+
+  // HTML attributes
+  type?: 'button' | 'submit' | 'reset'; // Default: 'button' (only for <button> elements)
+  disabled?: boolean;
+
+  // Accessibility
+  ariaLabel?: string;
+
+  // Alpine.js integration
+  xData?: string;
+  onClick?: string;
+  xShow?: string;
+  xBind?: string;
+
+  // Escape hatch for additional classes
+  class?: string;
+}
+
+const {
+  content,
+  href,
+  variant = 'primary',
+  size = 'standard',
+  type = 'button',
+  disabled = false,
+  ariaLabel,
+  xData,
+  onClick,
+  xShow,
+  xBind,
+  class: className,
+} = Astro.props;
+
+// Dynamic element selection (pattern from PostShowcase.astro)
+const Element = href ? 'a' : 'button';
+
+// Base classes (all variants)
+const baseClasses = 'rounded-full font-medium cursor-pointer transition-colors inline-flex items-center justify-center';
+
+// Size classes
+const sizeClasses = {
+  standard: 'px-4 py-2.5 sm:px-6 sm:py-2 text-sm sm:text-base',
+  large: 'px-6 py-2.5 sm:px-8 sm:py-3',
+};
+
+// Variant classes
+const variantClasses = {
+  primary: 'bg-bears-accent text-bears-text-onDark hover:bg-bears-accent-muted',
+  secondary: 'bg-bears-bg text-bears-text-onDark border-2 border-bears-accent-muted hover:bg-bears-accent hover:border-bears-accent',
+  inverse: 'bg-bears-text-onLight text-bears-text-onDark hover:opacity-80 transition-all',
+};
+
+// Disabled state classes
+const disabledClasses = disabled ? 'opacity-50 cursor-not-allowed' : '';
+
+// Compose final classes
+const buttonClasses = [
+  baseClasses,
+  sizeClasses[size],
+  variantClasses[variant],
+  disabledClasses,
+  className || '',
+].filter(Boolean).join(' ');
+
+// Build Alpine.js attributes object
+const alpineAttrs: Record<string, string> = {};
+if (xData) alpineAttrs['x-data'] = xData;
+if (onClick) alpineAttrs['@click'] = onClick;
+if (xShow) alpineAttrs['x-show'] = xShow;
+if (xBind) alpineAttrs['x-bind:class'] = xBind;
+
+// Build element-specific attributes
+const elementAttrs = href
+  ? {
+      href,
+      ...(disabled && { 'aria-disabled': 'true', class: buttonClasses + ' pointer-events-none' }),
+    }
+  : {
+      type,
+      disabled,
+    };
+
+// Merge classes for disabled links
+const finalClasses = href && disabled ? elementAttrs.class as string : buttonClasses;
+---
+
+<Element
+  class={finalClasses}
+  aria-label={ariaLabel}
+  {...alpineAttrs}
+  {...(href ? { href } : { type, disabled })}
+>
+  <slot>{content}</slot>
+</Element>

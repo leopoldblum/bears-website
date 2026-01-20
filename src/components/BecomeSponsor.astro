@@ -2,6 +2,7 @@
 // BecomeSponsor component - Displays sponsor showcase with tier-based system
 import { getCollection } from "astro:content";
 import SponsorTier from "./SponsorTier.astro";
+import Button from "./reusable/Button.astro";
 import placeholderLogo from "../assets/sponsors/gold-placeholder-1.png";
 import type { SponsorEntry } from '../types';
 import { sponsorLogos } from '../utils/imageGlobs';
@@ -73,9 +74,7 @@ const bronzeSponsors = sortBySlug(sponsorsWithImages.filter(s => s.tier === 'bro
 
     <!-- Learn more button -->
     <div class="flex justify-center">
-      <button class="px-6 sm:px-8 py-2.5 sm:py-3 bg-bears-text-onLight text-bears-text-onDark rounded-full hover:opacity-80 transition-all font-medium cursor-pointer">
-        Learn More
-      </button>
+      <Button variant="inverse" size="large">Learn More</Button>
     </div>
   </div>
 </section>

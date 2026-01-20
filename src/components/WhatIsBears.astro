@@ -2,6 +2,7 @@
 // WhatIsBears component - Explains what BEARS e.V. is
 import { Image } from 'astro:assets';
 import Marquee from './reusable/Marquee.astro';
+import Button from './reusable/Button.astro';
 import { whatIsBearsImages } from '../utils/imageGlobs';
 import { loadAllImagesFromDirectory } from '../utils/imageLoader';
 
@@ -22,9 +23,7 @@ const carouselImages = await loadAllImagesFromDirectory(whatIsBearsImages);
 
     <!-- Button -->
     <div class="mt-4 sm:mt-6">
-      <button class="px-4 py-2.5 sm:px-6 sm:py-2 bg-bears-accent text-bears-text-onDark rounded-full hover:bg-bears-accent-muted transition-colors font-medium cursor-pointer">
-        Learn More
-      </button>
+      <Button variant="primary">Learn More</Button>
     </div>
   </div>
 
