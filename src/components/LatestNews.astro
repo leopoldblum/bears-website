@@ -1,19 +1,12 @@
 ---
 // LatestNews component - Shows latest news from BEARS
 import PostShowcase from "./PostShowcase.astro";
-import { getCollection } from "astro:content";
 import type { PostType } from '../types';
 import { loadCollectionImages } from '../utils/imageLoader';
+import { getLatestPosts, sortByDateDesc } from '../utils/contentQueries';
 
-// Fetch all posts (events and projects)
-const allPosts = await getCollection("posts", ({ data }) => {
-  return import.meta.env.DEV || !data.isDraft;
-});
-
-// Sort by date (newest first) and limit to 4 items
-const latestPosts = allPosts
-  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
-  .slice(0, 4);
+// Get latest 4 posts (filtered and sorted)
+const latestPosts = await getLatestPosts(4);
 
 // Separate events and projects for batch image loading
 const events = latestPosts.filter(post => post.slug.startsWith('events/'));
@@ -24,8 +17,7 @@ const eventsWithImages = await loadCollectionImages(events, 'event');
 const projectsWithImages = await loadCollectionImages(projects, 'project');
 
 // Merge and sort by date again
-const allPostsWithImages = [...eventsWithImages, ...projectsWithImages]
-  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
+const allPostsWithImages = sortByDateDesc([...eventsWithImages, ...projectsWithImages]);
 
 // Build news items for PostShowcase
 const newsItems = allPostsWithImages.map((post) => {

@@ -1,14 +1,13 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
-import { getCollection, type CollectionEntry } from "astro:content";
+import { type CollectionEntry } from "astro:content";
 import { Image } from "astro:assets";
 import { loadCoverImage } from "../../utils/imageLoader";
+import { getPublishedEvents } from "../../utils/contentQueries";
 
 
 export async function getStaticPaths() {
-  const allEvents = await getCollection("posts", ({ id, data }) => {
-    return id.startsWith('events/') && (import.meta.env.DEV || !data.isDraft);
-  });
+  const allEvents = await getPublishedEvents();
 
   return allEvents.map(entry => ({
     params: { slug: entry.slug.replace('events/', '') },

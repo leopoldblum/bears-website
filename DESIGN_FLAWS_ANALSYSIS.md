@@ -2,14 +2,14 @@
 
 ## Executive Summary
 
-The BEARS website has a **solid architectural foundation** with good type safety, mobile-first design, and reusable components. However, it suffers from **code duplication and maintenance debt** that will compound as the project grows.
+The BEARS website has a **solid architectural foundation** with good type safety, mobile-first design, and reusable components. Recent improvements have significantly reduced code duplication through centralized content query utilities. However, some **maintenance debt** remains that should be addressed as the project grows.
 
 **Key Findings:**
 - ✅ Strong type safety with TypeScript strict mode
 - ✅ Well-organized content collections with Zod validation
 - ✅ Mobile-first Tailwind CSS approach
 - ✅ Centralized image loading utilities eliminate duplication
-- ⚠️ **Critical**: Sorting/filtering logic repeated in 5+ locations
+- ✅ Centralized content query utilities (`contentQueries.ts`) eliminate sorting/filtering duplication
 - ⚠️ **Critical**: Header component violates single responsibility principle
 - ⚠️ **High**: Missing button component leads to inconsistent styling
 - ⚠️ **High**: Incomplete page implementations (sponsors, about-us)
@@ -42,35 +42,7 @@ src/
 
 ## Critical Design Flaws
 
-### 1. Sorting/Filtering Logic Duplication ⚠️ CRITICAL
-
-**Issue**: Common sorting and filtering patterns repeated throughout codebase:
-
-**Date sorting** (4+ instances):
-```typescript
-.sort((a, b) => b.data.date.getTime() - a.data.date.getTime())
-```
-
-**Draft filtering** (5+ instances):
-```typescript
-.filter(({data}) => import.meta.env.DEV || !data.isDraft)
-```
-
-**Slug sorting** (sponsors):
-```typescript
-.sort((a, b) => a.slug.localeCompare(b.slug))
-```
-
-**Impact**:
-- No single source of truth for query logic
-- Changes require updating multiple locations
-- Risk of inconsistent behavior across pages
-
-**Recommendation**: Create utility functions in `src/utils/` for common queries
-
----
-
-### 2. Header Component Monolithic Design ⚠️ CRITICAL
+### 1. Header Component Monolithic Design ⚠️ CRITICAL
 
 **Issue**: [src/components/Header.astro](src/components/Header.astro) violates single responsibility principle (108 lines)
 
@@ -95,7 +67,7 @@ src/
 
 ## High Priority Issues
 
-### 3. Missing Button Component ⚠️ HIGH
+### 2. Missing Button Component ⚠️ HIGH
 
 **Issue**: 4+ button variants scattered throughout components with inconsistent styling:
 - Primary accent buttons: `bg-bears-accent hover:bg-bears-accent-dark`
@@ -114,22 +86,7 @@ src/
 
 ---
 
-### 4. Sponsor Tier Data Duplication ⚠️ HIGH
-
-**Issue**: Sponsor tier exists in two places:
-1. **Folder structure**: `src/content/sponsors/gold/`, `silver/`, `bronze/`
-2. **Manual derivation**: `const tier = sponsor.id.split('/')[0]` ([BecomeSponsor.astro:26](src/components/BecomeSponsor.astro#L26))
-
-**Impact**:
-- No validation ensures folder matches derivation logic
-- Documentation warns users to keep synchronized (line 42 of sponsorship docs)
-- Risk of mismatched display if folder/derivation disagree
-
-**Recommendation**: Add Zod validation in content schema or remove manual derivation
-
----
-
-### 5. Incomplete Page Implementations ⚠️ HIGH
+### 3. Incomplete Page Implementations ⚠️ HIGH
 
 **Issue**: Two pages have incomplete implementations:
 - [src/pages/sponsors.astro](src/pages/sponsors.astro) - Renders `BecomeSponsor` component (duplicate of homepage section)
@@ -141,21 +98,20 @@ src/
 
 ---
 
-### 6. Hardcoded Placeholder Images ⚠️ HIGH
+### 4. Hardcoded Placeholder Images ⚠️ HIGH
 
-**Issue**: Placeholder images imported directly without type checking:
-- [MeetTheTeam.astro:14](src/components/MeetTheTeam.astro#L14) - `import defaultProjectImage from '../assets/default-images/default-project.jpg'`
-- [BecomeSponsor.astro:13](src/components/BecomeSponsor.astro#L13) - `import placeholderLogo from "../assets/sponsors/gold-placeholder-1.png"`
+**Issue**: Placeholder images still imported directly in some components, despite the existence of `imageGlobs.ts`:
+- [BecomeSponsor.astro:5](src/components/BecomeSponsor.astro#L5) - `import placeholderLogo from "../assets/sponsors/gold-placeholder-1.png"`
 
-**Impact**: Renaming/removing images won't be caught by TypeScript; silent runtime failures
+**Impact**: Renaming/removing images won't be caught by TypeScript; inconsistent with the centralized `imageGlobs.ts` approach
 
-**Recommendation**: Reference via constants in central configuration file
+**Recommendation**: Move remaining placeholder image references to central configuration file or use the glob pattern approach consistently
 
 ---
 
 ## Medium Priority Issues
 
-### 7. Container/Padding Pattern Inconsistency 🔸 MEDIUM
+### 5. Container/Padding Pattern Inconsistency 🔸 MEDIUM
 
 **Issue**: Two different padding patterns used inconsistently:
 - **Pattern A** (sections): `px-4 sm:px-8 lg:px-16`
@@ -167,22 +123,23 @@ src/
 
 ---
 
-### 8. Image Glob Pattern Inconsistency 🔸 MEDIUM
+### 6. Image Glob Pattern Inconsistency 🔸 MEDIUM
 
-**Issue**: Different glob patterns across files:
+**Issue**: Image glob patterns in [src/utils/imageGlobs.ts](src/utils/imageGlobs.ts) are inconsistent:
 - **Events/Projects**: `.{jpg,jpeg,png,webp}` (includes webp) ✅
 - **Testimonials**: `.{jpg,jpeg,png}` (no webp) ❌
 - **Sponsors**: `.{jpg,jpeg,png}` (no webp) ❌
+- **WhatIsBears**: `.{jpg,jpeg,png,webp}` (includes webp) ✅
 
 **Impact**: WebP images for sponsors/testimonials fail silently
 
-**Recommendation**: Standardize all patterns to include `.webp`
+**Recommendation**: Standardize all patterns in `imageGlobs.ts` to include `.webp`
 
 ---
 
-### 9. Missing ImageMetadata Import 🔸 MEDIUM
+### 7. Missing ImageMetadata Import 🔸 MEDIUM
 
-**Issue**: [BecomeSponsor.astro:12](src/components/BecomeSponsor.astro#L12) uses `ImageMetadata` without explicit import:
+**Issue**: [BecomeSponsor.astro:6-7](src/components/BecomeSponsor.astro#L6) uses `ImageMetadata` without explicit import:
 ```typescript
 const logos = import.meta.glob<{ default: ImageMetadata }>(...);
 // Missing: import type { ImageMetadata } from 'astro';
@@ -194,7 +151,7 @@ const logos = import.meta.glob<{ default: ImageMetadata }>(...);
 
 ---
 
-### 10. Alpine.js Loaded Globally 🔸 MEDIUM
+### 8. Alpine.js Loaded Globally 🔸 MEDIUM
 
 **Issue**: [BaseLayout.astro:22](src/layouts/BaseLayout.astro#L22) loads Alpine.js CDN on every page
 
@@ -204,7 +161,7 @@ const logos = import.meta.glob<{ default: ImageMetadata }>(...);
 
 ---
 
-### 11. No Image Extension Validation 🔸 MEDIUM
+### 9. No Image Extension Validation 🔸 MEDIUM
 
 **Issue**: Content schema accepts any string for `coverImage`:
 ```yaml
@@ -221,7 +178,7 @@ coverImage: z.string().regex(/\.(jpg|jpeg|png|webp)$/i).optional()
 
 ## Low Priority Issues
 
-### 12. Missing Props Documentation 🔹 LOW
+### 10. Missing Props Documentation 🔹 LOW
 
 **Issue**: Most components lack JSDoc comments explaining props and usage
 
@@ -229,19 +186,14 @@ coverImage: z.string().regex(/\.(jpg|jpeg|png|webp)$/i).optional()
 
 ---
 
-### 13. Footer Grid Layout Bug 🔹 LOW
-
-**Issue**: [Footer.astro:122](src/components/Footer.astro#L122) has extra closing `</div>` tag
-
-**Impact**: Semantic markup violation (minor)
-
----
-
 ## Strengths (What Works Well)
 
 ✅ **Type Safety**: Comprehensive TypeScript with strict mode
 ✅ **Reusable Components**: Carousel, Accordion, Marquee properly abstracted
-✅ **Centralized Utilities**: `imageLoader.ts` with `loadImage()` and `loadImagesForCollection()`
+✅ **Centralized Utilities**:
+   - `imageLoader.ts` with `loadImage()` and `loadImagesForCollection()`
+   - `contentQueries.ts` with composable sort/filter functions and pre-composed queries
+   - `imageGlobs.ts` with centralized glob pattern definitions
 ✅ **Mobile-First Design**: Proper Tailwind breakpoint usage (sm:, lg:)
 ✅ **Content Schema Validation**: Zod schemas with cross-field validation
 ✅ **Semantic HTML**: Proper landmark elements and accessibility
@@ -261,8 +213,7 @@ coverImage: z.string().regex(/\.(jpg|jpeg|png|webp)$/i).optional()
 
 1. **Navigation maintenance**: Header hardcodes routes; adding sections needs Header + Footer updates
 2. **Button styling scattered**: Adding variants means updating all components
-3. **No content query builder**: Manual filter/sort in each component
-4. **Alpine.js state management**: x-data strings become unmaintainable as interactivity grows
+3. **Alpine.js state management**: x-data strings become unmaintainable as interactivity grows
 
 ---
 
@@ -270,24 +221,36 @@ coverImage: z.string().regex(/\.(jpg|jpeg|png|webp)$/i).optional()
 
 | Priority | Issue | Effort | Impact | Files Affected |
 |----------|-------|--------|--------|----------------|
-| 1 | Sort/filter duplication | Low | Critical | 5+ files |
-| 2 | Header complexity | Medium | Critical | Header.astro |
-| 3 | Missing button component | Low | High | 4 components |
-| 4 | Sponsor tier redundancy | Low | High | BecomeSponsor + schema |
-| 5 | Incomplete pages | Medium | High | sponsors, about-us |
+| 1 | Header complexity | Medium | Critical | Header.astro |
+| 2 | Missing button component | Low | High | 4 components |
+| 3 | Incomplete pages | Medium | High | sponsors, about-us |
+| 4 | Hardcoded placeholders | Low | High | BecomeSponsor.astro |
+| 5 | Image glob inconsistency | Low | Medium | imageGlobs.ts |
 | 6 | Alpine.js global load | Low | Medium | BaseLayout.astro |
-| 7 | Image glob inconsistency | Low | Low | 3 files |
+| 7 | Image extension validation | Low | Medium | content/config.ts |
 
 ---
 
 ## Conclusion
 
-The BEARS website has a solid foundation with centralized image loading utilities now in place. However, it still suffers from some **code duplication and maintenance debt** that should be addressed before scaling.
+The BEARS website has made **significant progress** in reducing technical debt. The introduction of centralized utilities (`contentQueries.ts`, `imageGlobs.ts`, `imageLoader.ts`) has eliminated major sources of code duplication and established a solid foundation for scaling.
+
+**Recent Improvements:**
+✅ Sorting/filtering logic centralized with composable utilities
+✅ Content queries unified with pre-composed functions
+✅ Image glob patterns centralized (partial)
+✅ Footer markup corrected
+
+**Remaining Technical Debt:**
+The primary remaining concerns are:
+1. Header component complexity (monolithic design)
+2. Missing button component (scattered styling)
+3. Incomplete page implementations (sponsors, about-us)
 
 **Recommended Next Steps:**
-1. Create query builder utilities for sorting/filtering
-2. Refactor Header component into sub-components
-3. Create Button component for consistent styling
-4. Implement incomplete pages (sponsors, about-us)
+1. Refactor Header component into sub-components (MobileMenu, NavLinks)
+2. Create Button component for consistent styling
+3. Implement dedicated content for sponsors and about-us pages
+4. Standardize image glob patterns to include `.webp` for all collections
 
-With 2-3 targeted refactoring efforts, this becomes a highly maintainable codebase positioned for growth.
+With 2-3 targeted refactoring efforts addressing these remaining issues, this becomes a highly maintainable codebase well-positioned for growth. The core architectural patterns are now in place, making future development more predictable and efficient.

@@ -1,17 +1,11 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
-import { getCollection } from "astro:content";
 import PostShowcase from "../components/PostShowcase.astro";
 import { loadCollectionImages } from "../utils/imageLoader";
+import { getPublishedProjects } from "../utils/contentQueries";
 
-// Filter and sort projects
-const allProjects = await getCollection("posts", ({ id, data }) => {
-  return id.startsWith('projects/') && (import.meta.env.DEV || !data.isDraft);
-});
-
-const sortedProjects = allProjects.sort((a, b) =>
-  b.data.date.getTime() - a.data.date.getTime()
-);
+// Get all published projects (filtered and sorted)
+const sortedProjects = await getPublishedProjects();
 
 // Load images for projects
 const projectsWithLoadedImages = await loadCollectionImages(sortedProjects, 'project');

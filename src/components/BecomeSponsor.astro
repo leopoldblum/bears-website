@@ -31,18 +31,13 @@ const sponsorsWithImages = await Promise.all(
   })
 );
 
+// Import sortBySlug utility
+import { sortBySlug } from '../utils/contentQueries';
+
 // Group sponsors by tier and sort alphabetically within each tier
-const goldSponsors = sponsorsWithImages
-  .filter(s => s.tier === 'gold')
-  .sort((a, b) => a.slug.localeCompare(b.slug));
-
-const silverSponsors = sponsorsWithImages
-  .filter(s => s.tier === 'silver')
-  .sort((a, b) => a.slug.localeCompare(b.slug));
-
-const bronzeSponsors = sponsorsWithImages
-  .filter(s => s.tier === 'bronze')
-  .sort((a, b) => a.slug.localeCompare(b.slug));
+const goldSponsors = sortBySlug(sponsorsWithImages.filter(s => s.tier === 'gold'));
+const silverSponsors = sortBySlug(sponsorsWithImages.filter(s => s.tier === 'silver'));
+const bronzeSponsors = sortBySlug(sponsorsWithImages.filter(s => s.tier === 'bronze'));
 ---
 
 <section class="bg-bears-bg-light py-16 sm:py-20 lg:py-24">
