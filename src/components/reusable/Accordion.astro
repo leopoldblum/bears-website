@@ -1,0 +1,70 @@
+---
+// Accordion - Reusable accordion component with self-managed state
+// Usage: Pass items array with title, subtitle (optional), and content
+// Works standalone or can sync with parent via x-ref
+
+interface Props {
+  items: Array<{
+    title: string;           // Accordion header text (required)
+    subtitle?: string;       // Optional subtitle/metadata
+    content: string;         // Content to display (plain text or HTML)
+    id?: string;             // Optional custom ID (auto-generated if not provided)
+  }>;
+  defaultOpen?: number;      // Index of initially opened item (default: 0)
+  maxHeight?: string;        // Max height Tailwind class (default: "lg:max-h-[550px]")
+  showBorders?: boolean;     // Show border separators (default: true)
+  id?: string;               // Optional ID for the accordion root element
+}
+
+const {
+  items = [],
+  defaultOpen = 0,
+  maxHeight = "lg:max-h-[550px]",
+  showBorders = true,
+  id,
+} = Astro.props;
+---
+
+<div
+  {id}
+  class={`flex flex-col ${maxHeight} overflow-y-auto ${showBorders ? 'lg:border-y lg:border-bears-text-onDark/20' : ''}`}
+  x-data={`{ activeIndex: ${defaultOpen} }`}
+>
+  {items.map((item, index) => {
+    const itemId = item.id || `accordion-item-${index}`;
+
+    return (
+      <div class={showBorders ? "border-t border-b border-bears-text-onDark/20" : ""}>
+        <button
+          type="button"
+          class="w-full text-left py-4 px-2 text-base sm:text-lg font-semibold text-bears-text-onDark hover:text-bears-accent transition-colors duration-200 cursor-pointer"
+          x-on:click={`activeIndex !== ${index} && (activeIndex = ${index})`}
+          x-bind:aria-expanded={`activeIndex === ${index} ? 'true' : 'false'`}
+          aria-controls={itemId}
+        >
+          {item.title}
+        </button>
+
+        <div
+          id={itemId}
+          class="grid transition-[grid-template-rows] duration-300 ease-in-out"
+          x-bind:class={`activeIndex === ${index} ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'`}
+        >
+          <div class="overflow-hidden">
+            <div class="pb-4 px-2">
+              {item.subtitle && (
+                <p class="text-xs sm:text-sm text-bears-accent font-medium mb-2">
+                  {item.subtitle}
+                </p>
+              )}
+              <div
+                class="text-sm sm:text-base text-bears-text-onDark/90 leading-relaxed"
+                set:html={item.content}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  })}
+</div>
