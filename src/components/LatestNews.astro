@@ -86,7 +86,6 @@ const newsItems = allPostsWithImages.map((post) => {
           title={news.title}
           description={news.description}
           href={news.href}
-          postType={news.postType}
         />
       ) : (
         <div x-show="showAll" x-transition.duration.300ms class="lg:block!">
@@ -97,7 +96,6 @@ const newsItems = allPostsWithImages.map((post) => {
             title={news.title}
             description={news.description}
             href={news.href}
-            postType={news.postType}
           />
         </div>
       )
