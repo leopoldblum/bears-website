@@ -42,7 +42,7 @@ src/
 
 ## Critical Design Flaws
 
-### 1. Image Loading Code Duplication ⚠️ CRITICAL
+<!-- ### 1. Image Loading Code Duplication ⚠️ CRITICAL
 
 **Issue**: Nearly identical image loading code appears in 9 different files:
 - [src/pages/events.astro](src/pages/events.astro)
@@ -66,7 +66,7 @@ const itemsWithImages = await loadImagesForCollection({...});
 - Different fallback behavior between list and detail pages
 - Performance: Multiple glob imports create separate bundles
 
-**Recommendation**: Extract to utility functions in `src/utils/imageLoader.ts`
+**Recommendation**: Extract to utility functions in `src/utils/imageLoader.ts` -->
 
 ---
 
@@ -156,7 +156,7 @@ const itemsWithImages = await loadImagesForCollection({...});
 **Recommendation**: Add Zod validation in content schema or remove manual derivation
 
 ---
-
+<!-- 
 ### 6. Detail Page Image Fallback Missing ⚠️ HIGH
 
 **Issue**: [src/pages/events/[slug].astro](src/pages/events/[slug].astro) and [src/pages/projects/[slug].astro](src/pages/projects/[slug].astro) don't use fallback images
@@ -167,7 +167,7 @@ const itemsWithImages = await loadImagesForCollection({...});
 
 **Impact**: Broken images on detail pages vs proper fallback on list pages
 
-**Recommendation**: Use same fallback pattern as list pages
+**Recommendation**: Use same fallback pattern as list pages -->
 
 ---
 
@@ -235,7 +235,7 @@ const logos = import.meta.glob<{ default: ImageMetadata }>(...);
 **Recommendation**: Add explicit import for type safety
 
 ---
-
+<!-- 
 ### 12. Non-Functional UI Elements 🔸 MEDIUM
 
 **Issue**: [Header.astro](src/components/Header.astro) contains non-functional elements:
@@ -244,7 +244,7 @@ const logos = import.meta.glob<{ default: ImageMetadata }>(...);
 
 **Impact**: False affordances confuse users who expect these to work
 
-**Recommendation**: Remove or implement these features
+**Recommendation**: Remove or implement these features -->
 
 ---
 
