@@ -123,7 +123,7 @@ export async function loadImagesForCollection<
     };
     slug?: string;
   }
->(options: LoadImagesForCollectionOptions<T>): Promise<Array<T & { loadedImage: ImageMetadata | null }>> {
+>(options: LoadImagesForCollectionOptions<T>): Promise<Array<T & { loadedImage: ImageMetadata }>> {
   const { glob, collection, baseDir, imageField, fallbackImage, postType } = options;
 
   return await Promise.all(
@@ -143,9 +143,9 @@ export async function loadImagesForCollection<
           console.warn(
             `🔹 ${postType ? postType.charAt(0).toUpperCase() + postType.slice(1) : 'Item'} ${titleInfo} ${slugInfo} has no image provided, using DEFAULT cover image`
           );
-          
-          // Return early with null image (component will use default)
-          return { ...item, loadedImage: null };
+
+          // Apply fallback for DEFAULT cases (don't return early)
+          loadedImage = fallbackImage || null;
         }
 
         // Only try to load if coverImageType is CUSTOM and we have an image filename
@@ -194,7 +194,17 @@ export async function loadImagesForCollection<
 
       return { ...item, loadedImage };
     })
-  );
+  ).then(items => {
+    // For collections with fallbackImage, guarantee non-null loadedImage
+    if (fallbackImage) {
+      return items.map(item => ({
+        ...item,
+        loadedImage: item.loadedImage || fallbackImage
+      })) as Array<T & { loadedImage: ImageMetadata }>;
+    }
+
+    return items as Array<T & { loadedImage: ImageMetadata }>;
+  });
 }
 
 /**
@@ -301,7 +311,7 @@ export async function loadEventImages<T extends { data: { coverImage?: string; c
     imageField: 'coverImage',
     fallbackImage: defaultEventImage,
     postType: 'event',
-  }) as Promise<Array<T & { loadedImage: ImageMetadata }>>;
+  });
 }
 
 /**
@@ -327,7 +337,7 @@ export async function loadProjectImages<T extends { data: { coverImage?: string;
     imageField: 'coverImage',
     fallbackImage: defaultProjectImage,
     postType: 'project',
-  }) as Promise<Array<T & { loadedImage: ImageMetadata }>>;
+  });
 }
 
 /**
@@ -425,5 +435,5 @@ export async function loadTestimonialImages<T extends { data: { image?: string; 
     imageField: 'image',
     fallbackImage: defaultTestimonialImage,
     postType: 'testimonial',
-  }) as Promise<Array<T & { loadedImage: ImageMetadata }>>;
+  });
 }
