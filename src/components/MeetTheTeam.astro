@@ -3,7 +3,6 @@
 import { Image } from 'astro:assets';
 import { loadCollectionImages } from '../utils/imageLoader';
 import { getMeetTheTeamProjects } from '../utils/contentQueries';
-import Accordion from './reusable/Accordion.astro';
 
 // Get projects for MeetTheTeam section (filtered and sorted)
 const sortedProjects = await getMeetTheTeamProjects();
@@ -19,8 +18,7 @@ const projects = await loadCollectionImages(sortedProjects, 'project');
   <!-- 3-column grid: thumbnails | main image | accordion -->
   <div
     class="grid grid-cols-1 lg:grid-cols-[120px_1fr_400px] gap-6 lg:gap-8"
-    x-data="{ activeProject: 0 }"
-    x-init="$watch(() => $refs.teamAccordion?.activeIndex, value => { if (value !== undefined) activeProject = value })"
+    x-data="{ activeIndex: 0 }"
   >
 
     <!-- Left: Thumbnail Stack -->
@@ -29,8 +27,8 @@ const projects = await loadCollectionImages(sortedProjects, 'project');
         <button
           type="button"
           class="shrink-0 w-24 h-24 aspect-square rounded-lg overflow-hidden border-2 transition-all duration-200 hover:cursor-pointer"
-          x-bind:class={`activeProject === ${index} ? 'border-bears-accent scale-100' : 'border-transparent scale-95 hover:scale-100'`}
-          x-on:click={`activeProject = ${index}; if ($refs.teamAccordion) $refs.teamAccordion.activeIndex = ${index}`}
+          x-bind:class={`activeIndex === ${index} ? 'border-bears-accent scale-100' : 'border-transparent scale-95 hover:scale-100'`}
+          x-on:click={`activeIndex = ${index}`}
           aria-label={`View ${project.data.title} project`}
         >
           <Image
@@ -47,9 +45,12 @@ const projects = await loadCollectionImages(sortedProjects, 'project');
     <!-- Middle: Main Image -->
     <div class="relative w-full aspect-4/3 lg:aspect-auto lg:h-[550px] rounded-lg overflow-hidden">
       {projects.map((project, index) => (
-        <div
-          class="absolute inset-0 transition-opacity duration-300"
-          x-bind:class={`activeProject === ${index} ? 'opacity-100 z-10' : 'opacity-0 z-0'`}
+        <button
+          type="button"
+          class="absolute inset-0 transition-opacity duration-300 hover:cursor-pointer"
+          x-bind:class={`activeIndex === ${index} ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'`}
+          x-on:click={`activeIndex = ${index}`}
+          aria-label={`View ${project.data.title} project details`}
         >
           <Image
             src={project.loadedImage}
@@ -58,21 +59,50 @@ const projects = await loadCollectionImages(sortedProjects, 'project');
             loading="eager"
             format="webp"
           />
-        </div>
+        </button>
       ))}
     </div>
 
-    <!-- Right: Projects Accordion -->
-    <Accordion
-      x-ref="teamAccordion"
-      items={projects.map(p => ({
-        title: p.data.title,
-        subtitle: p.data.headOfProject,
-        content: p.data.description
-      }))}
-      defaultOpen={0}
-      maxHeight="lg:h-[550px]"
-    />
+    <!-- Right: Projects Accordion (Inline) -->
+    <div class="flex flex-col lg:h-[550px] overflow-y-auto lg:border-t lg:border-bears-text-onDark/20">
+      {projects.map((project, index) => {
+        const itemId = `team-accordion-${index}`;
+
+        return (
+          <div class="border-t border-b border-bears-text-onDark/20">
+            <button
+              type="button"
+              class="w-full text-left py-4 px-2 text-base sm:text-lg font-semibold text-bears-text-onDark hover:text-bears-accent transition-colors duration-200 cursor-pointer"
+              x-on:click={`activeIndex = ${index}`}
+              x-bind:aria-expanded={`activeIndex === ${index} ? 'true' : 'false'`}
+              aria-controls={itemId}
+            >
+              {project.data.title}
+            </button>
+
+            <div
+              id={itemId}
+              class="grid transition-[grid-template-rows] duration-300 ease-in-out"
+              x-bind:class={`activeIndex === ${index} ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'`}
+            >
+              <div class="overflow-hidden">
+                <div class="pb-4 px-2">
+                  {project.data.headOfProject && (
+                    <p class="text-xs sm:text-sm text-bears-accent font-medium mb-2">
+                      {project.data.headOfProject}
+                    </p>
+                  )}
+                  <div
+                    class="text-sm sm:text-base text-bears-text-onDark/90 leading-relaxed"
+                    set:html={project.data.description}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      })}
+    </div>
 
   </div>
 </section>

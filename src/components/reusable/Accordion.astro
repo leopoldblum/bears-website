@@ -1,44 +1,40 @@
 ---
 // Accordion - Reusable accordion component with self-managed state
 // Usage: Pass items array with title, subtitle (optional), and content
-// Works standalone or can sync with parent via x-ref
 
 interface Props {
   items: Array<{
     title: string;           // Accordion header text (required)
     subtitle?: string;       // Optional subtitle/metadata
     content: string;         // Content to display (plain text or HTML)
-    id?: string;             // Optional custom ID (auto-generated if not provided)
   }>;
-  defaultOpen?: number;      // Index of initially opened item (default: 0)
-  maxHeight?: string;        // Max height Tailwind class (default: "lg:max-h-[550px]")
-  showBorders?: boolean;     // Show border separators (default: true)
-  id?: string;               // Optional ID for the accordion root element
+  defaultOpen?: number | null;  // Index of initially opened item (default: null - all closed)
 }
 
 const {
   items = [],
-  defaultOpen = 0,
-  maxHeight = "lg:max-h-[550px]",
-  showBorders = true,
-  id,
+  defaultOpen = null,
 } = Astro.props;
 ---
 
 <div
-  {id}
-  class={`flex flex-col ${maxHeight} overflow-y-auto ${showBorders ? 'lg:border-y lg:border-bears-text-onDark/20' : ''}`}
-  x-data={`{ activeIndex: ${defaultOpen} }`}
+  class="flex flex-col lg:max-h-[550px] overflow-y-auto lg:border-y lg:border-bears-text-onDark/20"
+  x-data={`{
+    activeIndex: ${defaultOpen === null ? 'null' : defaultOpen},
+    init() {
+      this.$watch('activeIndex', () => {});
+    }
+  }`}
 >
   {items.map((item, index) => {
-    const itemId = item.id || `accordion-item-${index}`;
+    const itemId = `accordion-item-${index}`;
 
     return (
-      <div class={showBorders ? "border-t border-b border-bears-text-onDark/20" : ""}>
+      <div class="border-t border-b border-bears-text-onDark/20">
         <button
           type="button"
           class="w-full text-left py-4 px-2 text-base sm:text-lg font-semibold text-bears-text-onDark hover:text-bears-accent transition-colors duration-200 cursor-pointer"
-          x-on:click={`activeIndex !== ${index} && (activeIndex = ${index})`}
+          x-on:click={`activeIndex = ${index}; const parent = $el.closest('[x-data]'); if (parent && parent !== $root && parent.activeProject !== undefined) parent.activeProject = ${index}`}
           x-bind:aria-expanded={`activeIndex === ${index} ? 'true' : 'false'`}
           aria-controls={itemId}
         >
