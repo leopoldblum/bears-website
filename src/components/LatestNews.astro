@@ -10,8 +10,8 @@ import { getLatestPosts, sortByDateDesc } from '../utils/contentQueries';
 const latestPosts = await getLatestPosts(4);
 
 // Separate events and projects for batch image loading
-const events = latestPosts.filter(post => post.slug.startsWith('events/'));
-const projects = latestPosts.filter(post => post.slug.startsWith('projects/'));
+const events = latestPosts.filter(post => post._collectionType === 'events');
+const projects = latestPosts.filter(post => post._collectionType === 'projects');
 
 // Load images for events and projects
 const eventsWithImages = await loadCollectionImages(events, 'event');
@@ -22,8 +22,8 @@ const allPostsWithImages = sortByDateDesc([...eventsWithImages, ...projectsWithI
 
 // Build news items for PostShowcase
 const newsItems = allPostsWithImages.map((post) => {
-  const postType: PostType = post.slug.startsWith('events/') ? 'events' : 'projects';
-  const href = `/${postType}/${post.slug.replace(`${postType}/`, '')}`;
+  const postType: PostType = post._collectionType;
+  const href = `/${postType}/${post.slug}`;
 
   return {
     imageData: post.loadedImage,

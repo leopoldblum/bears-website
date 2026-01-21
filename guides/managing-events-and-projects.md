@@ -3,33 +3,57 @@
 ## Quick Start
 
 ### For Events:
-1. Create a new `.md` file in `src/content/posts/events/`
+1. Create a new `.md` file in `src/content/events/`
 2. Add a cover image to `src/assets/events/` (optional)
 3. Fill in the frontmatter fields using the template below
 
 ### For Projects:
-1. Create a new `.md` file in `src/content/posts/projects/`
+1. Create a new `.md` file in `src/content/projects/`
 2. Add a cover image to `src/assets/projects/` (optional)
 3. Fill in the frontmatter fields using the template below
 
 ## Template
 
-```markdown
+### Event Template
+
+Create a new `.md` file in `src/content/events/` with this frontmatter:
+
+```yaml
 ---
-title: "Your Event or Project Title"
-description: "A brief one or two sentence summary."
+title: "Event Title"
+description: "Brief description of the event"
 date: 2026-01-15
-domain: "robotics"
-tags: ["tag1", "tag2"]
-coverImage: "cover-image.jpg"
+categoryEvent: "kick-off-events"
+tags: ["workshop", "networking"]
+# coverImage: "event-image.jpg"  # Optional: Custom cover image
 isDraft: false
-displayMeetTheTeam: false  # Set to true to feature project in MeetTheTeam accordion (projects only)
-headOfProject: "Your Name"  # Required when displayMeetTheTeam is true, optional otherwise
 ---
 
-# Main Content
+# Event Content
 
-Write your full event or project description here using markdown.
+Write your full event description here using markdown.
+```
+
+### Project Template
+
+Create a new `.md` file in `src/content/projects/` with this frontmatter:
+
+```yaml
+---
+title: "Project Title"
+description: "Brief description of the project"
+date: 2025-08-20
+categoryProject: "experimental-rocketry"
+tags: ["aerospace", "rocketry"]
+coverImage: "project-image.jpg"  # Optional: Custom cover image
+displayMeetTheTeam: false  # Optional: Show in Meet the Team section
+headOfProject: "Student Name"  # Required if displayMeetTheTeam is true
+isDraft: false
+---
+
+# Project Content
+
+Write your full project description here using markdown.
 ```
 
 **Note**: Events and projects are sorted by the `date` field (newest first). The filename does NOT affect display order.
@@ -46,10 +70,23 @@ Write your full event or project description here using markdown.
 - **Controls display order** - newest dates appear first
 - Example: `2026-02-10`
 
-**`domain`** (required) - Category classification
-- Must be one of: `"aerospace"`, `"robotics"`, `"ai"`, `"sustainability"`, `"education"`, `"research"`, `"other"`
-- Use `"other"` for posts that don't fit the existing categories
+**`categoryEvent`** (required for events) - Event category classification
+- Must be one of: `"trade-fairs-and-conventions"`, `"competitions-and-workshops"`, `"kick-off-events"`, `"other"`
+- Use `"other"` for events that don't fit the existing categories
 - Used for categorization and filtering
+- Examples:
+  - Guest lectures, networking events → `"trade-fairs-and-conventions"`
+  - Hackathons, workshops, competitions → `"competitions-and-workshops"`
+  - Semester kickoffs, orientation events → `"kick-off-events"`
+
+**`categoryProject`** (required for projects) - Project category classification
+- Must be one of: `"experimental-rocketry"`, `"science-and-experiments"`, `"robotics"`, `"other"`
+- Use `"other"` for projects that don't fit the existing categories
+- Used for categorization and filtering
+- Examples:
+  - Rocket propulsion, CubeSat, launch vehicles → `"experimental-rocketry"`
+  - Research projects, experiments, prototypes → `"science-and-experiments"`
+  - Autonomous systems, rovers, drones → `"robotics"`
 
 **`tags`** (optional) - Array of tags for categorization
 - Format: `["tag1", "tag2", "tag3"]`
@@ -91,14 +128,14 @@ Write your full event or project description here using markdown.
 
 ### Event Example
 
-**File**: `src/content/posts/events/guest-lecture-mars-rover.md`
+**File**: `src/content/events/guest-lecture-mars-rover.md`
 
 ```markdown
 ---
 title: "Guest Lecture: Mars Rover Engineering"
 description: "A special guest lecture featuring Dr. Sarah Chen from NASA's JPL discussing Mars rover technology."
 date: 2026-02-10
-domain: "aerospace"
+categoryEvent: "trade-fairs-and-conventions"
 tags: ["lecture", "mars", "robotics", "nasa"]
 coverImage: "guest-lecture-mars.jpg"
 isDraft: false
@@ -119,14 +156,14 @@ BEARS is thrilled to host Dr. Sarah Chen, a leading engineer from NASA's Jet Pro
 
 ### Project Example
 
-**File**: `src/content/posts/projects/cubesat-tracking.md`
+**File**: `src/content/projects/cubesat-tracking.md`
 
 ```markdown
 ---
 title: "CubeSat Tracking System"
 description: "A real-time tracking system for monitoring CubeSat positions and telemetry data."
 date: 2025-12-10
-domain: "aerospace"
+categoryProject: "experimental-rocketry"
 tags: ["cubesat", "tracking", "satellite"]
 coverImage: "cubesat-tracker.jpg"
 isDraft: false
@@ -148,14 +185,14 @@ The CubeSat Tracking System is an initiative to develop affordable tracking tech
 
 ### Draft Example (Work in Progress)
 
-**File**: `src/content/posts/events/upcoming-workshop.md`
+**File**: `src/content/events/upcoming-workshop.md`
 
 ```markdown
 ---
 title: "Workshop: Intro to Robotics"
 description: "Hands-on workshop covering basic robotics principles."
 date: 2026-03-15
-domain: "robotics"
+categoryEvent: "competitions-and-workshops"
 tags: ["workshop", "robotics", "beginner"]
 isDraft: true
 ---

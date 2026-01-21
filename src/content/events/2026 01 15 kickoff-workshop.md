@@ -2,7 +2,7 @@
 title: "Spring 2026 Kickoff Workshop"
 description: "Join us for our semester kickoff workshop where we'll introduce new projects, meet the team, and plan our exciting initiatives for the upcoming semester."
 date: 2026-01-15
-domain: "education"
+categoryEvent: "kick-off-events"
 tags: ["workshop", "networking", "onboarding"]
 # coverImage: "event-1.jpg"
 isDraft: false

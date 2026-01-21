@@ -6,7 +6,8 @@ import { z } from 'astro:content';
  * image loading, and display logic.
  *
  * @example
- * const postType: PostType = post.slug.startsWith('events/') ? 'events' : 'projects';
+ * // When using getPublishedPosts(), posts have a _collectionType marker
+ * const postType: PostType = post._collectionType;
  */
 export type PostType = 'events' | 'projects';
 
@@ -17,32 +18,54 @@ export type PostType = 'events' | 'projects';
 export type SponsorTier = 'bronze' | 'silver' | 'gold';
 
 /**
- * Zod enum for domain categories used for filtering and organization.
- * Defines valid domain values for posts (events and projects).
+ * Zod enum for event categories used for filtering and organization.
+ * Defines valid category values for events.
  *
- * Used in content collection schema validation.
+ * Used in events collection schema validation.
  *
  * @example
- * // Access all valid domain options:
- * const allDomains = DomainEnum.options; // ['aerospace', 'robotics', ...]
+ * // Access all valid event category options:
+ * const allEventCategories = CategoryEventEnum.options;
  *
  * // Use in filtering:
- * const filteredPosts = posts.filter(p => p.data.domain === 'aerospace');
+ * const workshops = events.filter(e => e.data.categoryEvent === 'competitions-and-workshops');
  */
-export const DomainEnum = z.enum([
-  'aerospace',
-  'robotics',
-  'ai',
-  'sustainability',
-  'education',
-  'research',
+export const CategoryEventEnum = z.enum([
+  'trade-fairs-and-conventions',
+  'competitions-and-workshops',
+  'kick-off-events',
   'other'
 ]);
 
 /**
- * Inferred TypeScript type from DomainEnum Zod schema.
+ * Inferred TypeScript type from CategoryEventEnum Zod schema.
  */
-export type Domain = z.infer<typeof DomainEnum>;
+export type CategoryEvent = z.infer<typeof CategoryEventEnum>;
+
+/**
+ * Zod enum for project categories used for filtering and organization.
+ * Defines valid category values for projects.
+ *
+ * Used in projects collection schema validation.
+ *
+ * @example
+ * // Access all valid project category options:
+ * const allProjectCategories = CategoryProjectEnum.options;
+ *
+ * // Use in filtering:
+ * const rocketryProjects = projects.filter(p => p.data.categoryProject === 'experimental-rocketry');
+ */
+export const CategoryProjectEnum = z.enum([
+  'experimental-rocketry',
+  'science-and-experiments',
+  'robotics',
+  'other'
+]);
+
+/**
+ * Inferred TypeScript type from CategoryProjectEnum Zod schema.
+ */
+export type CategoryProject = z.infer<typeof CategoryProjectEnum>;
 
 /**
  * Zod enum for cover image type discrimination.

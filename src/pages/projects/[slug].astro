@@ -10,16 +10,16 @@ export async function getStaticPaths() {
   const allProjects = await getPublishedProjects();
 
   return allProjects.map(entry => ({
-    params: { slug: entry.slug.replace('projects/', '') },
+    params: { slug: entry.slug },
     props: { entry }
   }));
 }
 
 interface Props {
-  entry: CollectionEntry<'posts'>;
+  entry: CollectionEntry<'projects'>;
 }
 
-const { entry } = Astro.props;
+const { entry } = Astro.props as any;
 const { Content } = await entry.render();
 
 // Load cover image
@@ -28,16 +28,19 @@ const coverImageData = await loadCoverImage(
   'project',
   { itemTitle: entry.data.title, itemSlug: entry.slug }
 );
+
+// Extract data for template use
+const { title, date } = entry.data;
 ---
 
-<BaseLayout title={entry.data.title}>
+<BaseLayout title={title}>
   <article class="container mx-auto px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
     <!-- Cover Image -->
     {coverImageData && (
       <div class="mb-6 sm:mb-8 rounded-lg overflow-hidden">
         <Image
           src={coverImageData}
-          alt={entry.data.title}
+          alt={title}
           class="w-full h-48 sm:h-64 lg:h-96 object-cover"
           loading="eager"
           format="webp"
@@ -48,10 +51,10 @@ const coverImageData = await loadCoverImage(
     <!-- Title and Date -->
     <header class="mb-6 sm:mb-8">
       <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4 text-bears-accent">
-        {entry.data.title}
+        {title}
       </h1>
       <time class="text-sm sm:text-base text-bears-text-onDark/80">
-        {entry.data.date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+        {date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
       </time>
     </header>
 

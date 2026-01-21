@@ -2,7 +2,7 @@
 title: "Summer Workshop Series 2026"
 description: "Intensive hands-on workshops covering CAD design, embedded programming, electronics fundamentals, and rapid prototyping. Build skills and projects over six weeks."
 date: 2026-06-10
-domain: "education"
+categoryEvent: "competitions-and-workshops"
 tags: ["workshop", "summer", "CAD", "programming", "electronics", "hands-on"]
 coverImage: "event-6.jpg"
 isDraft: false

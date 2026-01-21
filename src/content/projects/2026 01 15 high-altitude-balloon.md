@@ -2,7 +2,7 @@
 title: "High-Altitude Balloon Research"
 description: "Stratospheric balloon launches for atmospheric research, carrying scientific payloads to altitudes above 100,000 feet to study weather patterns and cosmic radiation."
 date: 2026-01-15
-domain: "aerospace"
+categoryProject: "experimental-rocketry"
 tags: ["balloon", "atmospheric-research", "stratosphere", "telemetry", "weather"]
 coverImage: "project-1.jpg"
 isDraft: false

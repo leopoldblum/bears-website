@@ -6,12 +6,15 @@ export * from './components';
 export type {
   PostType,
   SponsorTier,
-  Domain,
+  CategoryEvent,
+  CategoryProject,
   CoverImageTypeValue,
 } from './content';
 
 export {
   CoverImageType,
+  CategoryEventEnum,
+  CategoryProjectEnum,
 } from './content';
 
 export type {

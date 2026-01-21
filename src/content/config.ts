@@ -1,5 +1,5 @@
 import { defineCollection, z } from 'astro:content';
-import { CoverImageType, DomainEnum } from '../types/content';
+import { CoverImageType, CategoryEventEnum, CategoryProjectEnum } from '../types/content';
 import { IMAGE_EXTENSION_REGEX, VALID_EXTENSIONS_MESSAGE } from '../utils/imageConstants';
 
 /**
@@ -38,13 +38,36 @@ const sponsorsCollection = defineCollection({
   }),
 });
 
-const postsCollection = defineCollection({
+const eventsCollection = defineCollection({
   type: 'content',
   schema: z.object({
     title: z.string(),
     description: z.string(),
     date: z.date(),
-    domain: DomainEnum,
+    categoryEvent: CategoryEventEnum,
+    tags: z.array(z.string()).optional(),
+    coverImage: z.string().optional().refine(
+      validateImageExtension,
+      { message: `coverImage must have a valid image extension: ${VALID_EXTENSIONS_MESSAGE}` }
+    ),
+    isDraft: z.boolean().default(false).optional(),
+  }).transform((data) => {
+    // Derive coverImageType from coverImage presence
+    const coverImageType: z.infer<typeof CoverImageType> = data.coverImage ? "CUSTOM" : "DEFAULT";
+    return {
+      ...data,
+      coverImageType,
+    };
+  }),
+});
+
+const projectsCollection = defineCollection({
+  type: 'content',
+  schema: z.object({
+    title: z.string(),
+    description: z.string(),
+    date: z.date(),
+    categoryProject: CategoryProjectEnum,
     tags: z.array(z.string()).optional(),
     coverImage: z.string().optional().refine(
       validateImageExtension,
@@ -78,5 +101,6 @@ const postsCollection = defineCollection({
 export const collections = {
   testimonials: testimonialsCollection,
   sponsors: sponsorsCollection,
-  posts: postsCollection,
+  events: eventsCollection,
+  projects: projectsCollection,
 };

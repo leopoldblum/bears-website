@@ -65,23 +65,6 @@ export function filterDrafts<T extends { data: { isDraft?: boolean } }>(
   return entries.filter(entry => !entry.data.isDraft);
 }
 
-/**
- * Filters posts by ID prefix (e.g., 'events/' or 'projects/').
- * Used to separate events from projects in the unified posts collection.
- *
- * @param entries - Array of collection entries with an id property
- * @param prefix - The prefix to filter by (e.g., 'events/' or 'projects/')
- * @returns Filtered array of entries matching the prefix
- *
- * @example
- * const events = filterByIdPrefix(allPosts, 'events/');
- */
-export function filterByIdPrefix<T extends { id: string }>(
-  entries: T[],
-  prefix: string
-): T[] {
-  return entries.filter(entry => entry.id.startsWith(prefix));
-}
 
 // ============================================================================
 // PRE-COMPOSED QUERY FUNCTIONS FOR POSTS
@@ -97,8 +80,8 @@ export function filterByIdPrefix<T extends { id: string }>(
  * const events = await getPublishedEvents();
  */
 export async function getPublishedEvents() {
-  const allEvents = await getCollection('posts', ({ id, data }) => {
-    return id.startsWith('events/') && (import.meta.env.DEV || !data.isDraft);
+  const allEvents = await getCollection('events', ({ data }) => {
+    return import.meta.env.DEV || !data.isDraft;
   });
   return sortByDateDesc(allEvents);
 }
@@ -113,8 +96,8 @@ export async function getPublishedEvents() {
  * const projects = await getPublishedProjects();
  */
 export async function getPublishedProjects() {
-  const allProjects = await getCollection('posts', ({ id, data }) => {
-    return id.startsWith('projects/') && (import.meta.env.DEV || !data.isDraft);
+  const allProjects = await getCollection('projects', ({ data }) => {
+    return import.meta.env.DEV || !data.isDraft;
   });
   return sortByDateDesc(allProjects);
 }
@@ -122,17 +105,24 @@ export async function getPublishedProjects() {
 /**
  * Gets all published posts (events + projects combined), sorted by date (newest first).
  * Filters out drafts in production mode.
+ * Adds _collectionType marker to distinguish between events and projects.
  *
- * @returns Array of all posts sorted by date descending
+ * @returns Array of all posts sorted by date descending, with _collectionType property
  *
  * @example
  * const allPosts = await getPublishedPosts();
+ * const events = allPosts.filter(p => p._collectionType === 'events');
  */
 export async function getPublishedPosts() {
-  const allPosts = await getCollection('posts', ({ data }) => {
-    return import.meta.env.DEV || !data.isDraft;
-  });
-  return sortByDateDesc(allPosts);
+  const events = await getPublishedEvents();
+  const projects = await getPublishedProjects();
+
+  // Add collection type markers
+  const eventsWithType = events.map(e => ({ ...e, _collectionType: 'events' as const }));
+  const projectsWithType = projects.map(p => ({ ...p, _collectionType: 'projects' as const }));
+
+  const combined = [...eventsWithType, ...projectsWithType];
+  return sortByDateDesc(combined);
 }
 
 /**
@@ -146,9 +136,8 @@ export async function getPublishedPosts() {
  * const teamProjects = await getMeetTheTeamProjects();
  */
 export async function getMeetTheTeamProjects() {
-  const allProjects = await getCollection('posts', ({ id, data }) => {
-    return id.startsWith('projects/') &&
-           data.displayMeetTheTeam === true &&
+  const allProjects = await getCollection('projects', ({ data }) => {
+    return data.displayMeetTheTeam === true &&
            (import.meta.env.DEV || !data.isDraft);
   });
   return sortByDateDesc(allProjects);

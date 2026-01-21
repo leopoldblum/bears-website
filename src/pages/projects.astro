@@ -8,10 +8,10 @@ import { getPublishedProjects } from "../utils/contentQueries";
 const sortedProjects = await getPublishedProjects();
 
 // Load images for projects
-const projectsWithLoadedImages = await loadCollectionImages(sortedProjects, 'project');
+const projectsWithLoadedImages = await loadCollectionImages(sortedProjects as any, 'project');
 
 // Map to format expected by PostShowcase
-const projectsWithImages = projectsWithLoadedImages.map((project) => ({
+const projectsWithImages = projectsWithLoadedImages.map((project: any) => ({
   ...project.data,
   slug: project.slug,
   coverImage: project.loadedImage,
@@ -31,7 +31,7 @@ const projectsWithImages = projectsWithLoadedImages.map((project) => ({
           date={project.date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
           title={project.title}
           description={project.description}
-          href={`/projects/${project.slug.replace('projects/', '')}`}
+          href={`/projects/${project.slug}`}
         />
       ))}
     </div>

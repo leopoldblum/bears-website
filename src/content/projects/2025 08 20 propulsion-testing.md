@@ -2,7 +2,7 @@
 title: "Propulsion System Testing"
 description: "Testing and analysis of small-scale rocket propulsion systems for student-designed launch vehicles, focusing on thrust measurement and fuel efficiency."
 date: 2025-08-20
-domain: "aerospace"
+categoryProject: "experimental-rocketry"
 tags: ["aerospace", "propulsion", "testing", "rocketry", "engineering"]
 coverImage: "project-1.jpg"
 displayMeetTheTeam: false

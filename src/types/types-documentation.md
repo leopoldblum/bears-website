@@ -11,7 +11,7 @@ This directory contains shared type definitions used across the BEARS website co
 ```
 src/types/
 ├── index.ts               # Barrel export file - import types from here
-├── content.ts             # Content-related types (PostType, SponsorTier, Domain, CoverImageType)
+├── content.ts             # Content-related types (PostType, SponsorTier, CategoryEvent, CategoryProject, CoverImageType)
 ├── components.ts          # Collection entry type aliases (TestimonialEntry, SponsorEntry, PostEntry)
 └── types-documentation.md # This file
 ```
@@ -45,7 +45,11 @@ type PostType = 'events' | 'projects';
 
 **Usage:**
 ```typescript
-const postType: PostType = post.slug.startsWith('events/') ? 'events' : 'projects';
+// When using getPublishedPosts(), posts have a _collectionType marker
+const postType: PostType = post._collectionType;
+
+// Alternatively, when querying collections directly:
+const postType: PostType = 'events'; // or 'projects'
 ```
 
 **Used in:**
@@ -70,40 +74,84 @@ type SponsorTier = 'bronze' | 'silver' | 'gold';
 
 ---
 
-#### `Domain` and `DomainEnum`
+#### `CategoryEvent` and `CategoryEventEnum`
 
-Project domain categories for filtering and organization.
+Event category types for filtering and organization.
 
 **Zod Schema (source of truth):**
 ```typescript
-const DomainEnum = z.enum([
-  'aerospace',
-  'robotics',
-  'ai',
-  'sustainability',
-  'education',
-  'research',
+export const CategoryEventEnum = z.enum([
+  'trade-fairs-and-conventions',
+  'competitions-and-workshops',
+  'kick-off-events',
   'other'
 ]);
 ```
 
 **TypeScript Type (inferred from schema):**
 ```typescript
-type Domain = z.infer<typeof DomainEnum>;
-// Equivalent to: 'aerospace' | 'robotics' | 'ai' | 'sustainability' | 'education' | 'research' | 'other'
+export type CategoryEvent = z.infer<typeof CategoryEventEnum>;
+// Results in: 'trade-fairs-and-conventions' | 'competitions-and-workshops' | 'kick-off-events' | 'other'
 ```
 
-**Usage in content schema:** [src/content/config.ts](../content/config.ts)
+**Usage:**
+- Used in events collection schema validation
+- Categorizes events by type (conventions, workshops, kickoffs)
+- Ensures consistency across event content
 
-**Accessing domain options dynamically:**
+**Accessing category options dynamically:**
 ```typescript
-import { DomainEnum } from '../types';
+import { CategoryEventEnum } from '../types';
 
-// Get array of all valid domains (useful for generating filter UI)
-const allDomains = DomainEnum.options; // ['aerospace', 'robotics', 'ai', ...]
+const allEventCategories = CategoryEventEnum.options;
+// ['trade-fairs-and-conventions', 'competitions-and-workshops', 'kick-off-events', 'other']
+```
 
-// Use in filtering logic
-const filteredPosts = posts.filter(p => p.data.domain === 'aerospace');
+**Example filtering:**
+```typescript
+const allEvents = await getCollection('events');
+const workshops = allEvents.filter(e => e.data.categoryEvent === 'competitions-and-workshops');
+```
+
+---
+
+#### `CategoryProject` and `CategoryProjectEnum`
+
+Project category types for filtering and organization.
+
+**Zod Schema (source of truth):**
+```typescript
+export const CategoryProjectEnum = z.enum([
+  'experimental-rocketry',
+  'science-and-experiments',
+  'robotics',
+  'other'
+]);
+```
+
+**TypeScript Type (inferred from schema):**
+```typescript
+export type CategoryProject = z.infer<typeof CategoryProjectEnum>;
+// Results in: 'experimental-rocketry' | 'science-and-experiments' | 'robotics' | 'other'
+```
+
+**Usage:**
+- Used in projects collection schema validation
+- Categorizes projects by technical domain
+- Ensures consistency across project content
+
+**Accessing category options dynamically:**
+```typescript
+import { CategoryProjectEnum } from '../types';
+
+const allProjectCategories = CategoryProjectEnum.options;
+// ['experimental-rocketry', 'science-and-experiments', 'robotics', 'other']
+```
+
+**Example filtering:**
+```typescript
+const allProjects = await getCollection('projects');
+const rocketryProjects = allProjects.filter(p => p.data.categoryProject === 'experimental-rocketry');
 ```
 
 **Design Pattern:** Follows the same pattern as `CoverImageType` - Zod enum as single source of truth with inferred TypeScript type. This ensures runtime validation and TypeScript type safety stay in sync.
@@ -181,7 +229,7 @@ type PostEntry = CollectionEntry<'posts'>;
 This project uses a **hybrid approach** to type organization:
 
 ### Centralized (in `/src/types/`)
-- Shared primitive types (`PostType`, `SponsorTier`, `Domain`)
+- Shared primitive types (`PostType`, `SponsorTier`, `CategoryEvent`, `CategoryProject`)
 - Collection entry type aliases (`TestimonialEntry`, `SponsorEntry`, `PostEntry`)
 - Types used across multiple unrelated files
 - Zod schemas used in content collections

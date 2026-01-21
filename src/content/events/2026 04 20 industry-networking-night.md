@@ -2,7 +2,7 @@
 title: "Industry Networking Night"
 description: "Connect with aerospace and engineering professionals from leading companies. Get career advice, explore internship opportunities, and build your professional network."
 date: 2026-04-20
-domain: "education"
+categoryEvent: "trade-fairs-and-conventions"
 tags: ["networking", "careers", "industry", "professional-development"]
 coverImage: "event-4.jpg"
 isDraft: false

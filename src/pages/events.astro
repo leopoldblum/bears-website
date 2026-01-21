@@ -8,10 +8,10 @@ import { getPublishedEvents } from "../utils/contentQueries";
 const sortedEvents = await getPublishedEvents();
 
 // Load images for events
-const eventsWithLoadedImages = await loadCollectionImages(sortedEvents, 'event');
+const eventsWithLoadedImages = await loadCollectionImages(sortedEvents as any, 'event');
 
 // Map to format expected by PostShowcase
-const eventsWithImages = eventsWithLoadedImages.map((event) => ({
+const eventsWithImages = eventsWithLoadedImages.map((event: any) => ({
   ...event.data,
   slug: event.slug,
   coverImage: event.loadedImage,
@@ -31,7 +31,7 @@ const eventsWithImages = eventsWithLoadedImages.map((event) => ({
           date={event.date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
           title={event.title}
           description={event.description}
-          href={`/events/${event.slug.replace('events/', '')}`}
+          href={`/events/${event.slug}`}
         />
       ))}
     </div>
