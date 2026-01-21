@@ -17,7 +17,10 @@ const { coverImage, imageAlt, date, title, description, href } = Astro.props;
 const Wrapper = href ? 'a' : 'div';
 ---
 
-<Wrapper href={href} class="relative h-80 rounded-lg overflow-hidden group cursor-pointer transition-transform duration-300 lg:hover:scale-101 block">
+<Wrapper
+  href={href}
+  class="relative h-80 rounded-lg overflow-hidden group cursor-pointer transition-all duration-300 shadow-[0_4px_6px_-2px_rgba(255,255,255,0.1)] lg:hover:shadow-[0_12px_18px_-2px_rgba(255,255,255,0.3)] lg:hover:brightness-110 block"
+>
   <!-- Background Image - Always present -->
   <Image
     src={coverImage}
