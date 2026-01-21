@@ -117,7 +117,7 @@ import placeholderImage from '../assets/events/event-1.jpg';
 
 ## Documentation
 
-The `/documentation/` directory contains user-facing guides for content creators and maintainers. These documents explain how to add and manage content on the website.
+The `/guides/` directory contains user-facing guides for content creators and maintainers. These documents explain how to add and manage content on the website.
 
 **Important**: When you make code changes that affect documented behavior or data structures, you must update the corresponding documentation files to keep them in sync with the implementation.
 
@@ -132,17 +132,20 @@ Update documentation files when:
 
 ### Documentation Files
 
-The `/documentation/` directory is organized by audience:
+The project uses a **hybrid documentation approach**:
 
-**For Content Creators (`/documentation/guides/`):**
+**For Content Creators (`/guides/`):**
+User-friendly guides for managing website content:
 - `using-buttons.md` - Add buttons to MDX pages
 - `managing-events-and-projects.md` - Manage events and projects
 - `managing-sponsors.md` - Manage sponsor content
 - `managing-testimonials.md` - Manage testimonials
 
-**For Developers (`/documentation/docs/`):**
-- `button-component-guide.md` - Button component technical reference
+**For Developers (Co-located with code):**
+Technical documentation lives alongside the source code it documents:
+- `/src/components/reusable/Button.md` - Button component reference
+- `/src/types/types-documentation.md` - TypeScript types reference
 
-**Important:** When you make code changes that affect documented behavior or data structures, update the corresponding documentation files to keep them in sync.
+**Important:** When you change code that affects documented behavior, update the corresponding co-located documentation.
 
-See `/documentation/README.md` for the complete documentation index.
+See `/guides/README.md` for the content creator guides index.

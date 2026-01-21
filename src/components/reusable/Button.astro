@@ -83,26 +83,15 @@ if (onClick) alpineAttrs['@click'] = onClick;
 if (xShow) alpineAttrs['x-show'] = xShow;
 if (xBind) alpineAttrs['x-bind:class'] = xBind;
 
-// Build element-specific attributes
-const elementAttrs = href
-  ? {
-      href,
-      ...(disabled && { 'aria-disabled': 'true', class: buttonClasses + ' pointer-events-none' }),
-    }
-  : {
-      type,
-      disabled,
-    };
-
-// Merge classes for disabled links
-const finalClasses = href && disabled ? elementAttrs.class as string : buttonClasses;
+// Compute final classes (add pointer-events-none for disabled links)
+const finalClasses = href && disabled ? buttonClasses + ' pointer-events-none' : buttonClasses;
 ---
 
 <Element
   class={finalClasses}
   aria-label={ariaLabel}
   {...alpineAttrs}
-  {...(href ? { href } : { type, disabled })}
+  {...(href ? { href, ...(disabled && { 'aria-disabled': 'true' }) } : { type, disabled })}
 >
   <slot>{content}</slot>
 </Element>

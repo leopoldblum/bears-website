@@ -203,4 +203,4 @@ When adding new types, consider:
 ## Related Documentation
 
 - [CLAUDE.md](../../CLAUDE.md) - Project overview and architectural guidance
-- [Content Collections Guide](../../documentation/how-to-add-and-manage-events-and-projects.md) - Using content types in practice
+- [Content Collections Guide](../../guides/managing-events-and-projects.md) - Using content types in practice

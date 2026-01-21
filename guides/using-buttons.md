@@ -1,6 +1,6 @@
 > **👥 For Content Creators**
 >
-> **Looking for technical details?** See [Button Component Guide](../docs/button-component-guide.md) for developers.
+> **Looking for technical details?** See [Button Component Documentation](../src/components/reusable/Button.md) for developers.
 
 # Using Buttons in MDX Content
 
@@ -254,4 +254,4 @@ If you have any questions about membership, check out our FAQ or contact us dire
 
 ## Need Help?
 
-If you need more advanced features (custom styling, JavaScript interactions, etc.), refer to the [full Button Component Guide](../docs/button-component-guide.md) for developers.
+If you need more advanced features (custom styling, JavaScript interactions, etc.), refer to the [full Button Component Documentation](../src/components/reusable/Button.md) for developers.
