@@ -3,6 +3,7 @@
 // Usage: Wrap any content as direct children - carousel will auto-detect and handle them
 
 interface Props {
+  autoScroll?: boolean;         // Enable auto-scroll (default: false)
   autoScrollInterval?: number;  // Auto-scroll time in ms (default: 5000)
   showArrows?: boolean;         // Show prev/next arrows (default: true)
   showDots?: boolean;          // Show dot indicators (default: true)
@@ -10,6 +11,7 @@ interface Props {
 }
 
 const {
+  autoScroll = false,
   autoScrollInterval = 5000,
   showArrows = true,
   showDots = true,
@@ -22,6 +24,7 @@ const {
     currentSlide: 0,
     totalSlides: 0,
     autoScrollInterval: null,
+    autoScrollEnabled: ${autoScroll},
 
     init() {
       const children = Array.from(this.$refs.slidesContainer.children);
@@ -39,7 +42,9 @@ const {
         child.classList.add('absolute', 'w-full');
       });
 
-      this.startAutoScroll();
+      if (this.autoScrollEnabled) {
+        this.startAutoScroll();
+      }
     },
 
     // Navigation methods
@@ -48,18 +53,24 @@ const {
     },
     prevSlide() {
       this.currentSlide = (this.currentSlide - 1 + this.totalSlides) % this.totalSlides;
-      this.resetAutoScroll();
+      if (this.autoScrollEnabled) {
+        this.resetAutoScroll();
+      }
     },
     goToSlide(index) {
       this.currentSlide = index;
-      this.resetAutoScroll();
+      if (this.autoScrollEnabled) {
+        this.resetAutoScroll();
+      }
     },
 
     // Auto-scroll methods
     startAutoScroll() {
-      this.autoScrollInterval = setInterval(() => {
-        this.nextSlide();
-      }, ${autoScrollInterval});
+      if (this.autoScrollEnabled) {
+        this.autoScrollInterval = setInterval(() => {
+          this.nextSlide();
+        }, ${autoScrollInterval});
+      }
     },
     stopAutoScroll() {
       if (this.autoScrollInterval) {
