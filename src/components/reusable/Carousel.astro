@@ -3,11 +3,37 @@
 // Usage: Wrap any content as direct children - carousel will auto-detect and handle them
 
 interface Props {
-  autoScroll?: boolean;         // Enable auto-scroll (default: false)
-  autoScrollInterval?: number;  // Auto-scroll time in ms (default: 5000)
-  showArrows?: boolean;         // Show prev/next arrows (default: true)
-  showDots?: boolean;          // Show dot indicators (default: true)
-  minHeight?: string;          // Min height Tailwind class (default: "min-h-120")
+  /**
+   * Enable automatic scrolling through slides
+   * @default false
+   */
+  autoScroll?: boolean;
+
+  /**
+   * Time interval in milliseconds between automatic slide transitions
+   * Only applies when autoScroll is enabled
+   * @default 5000
+   */
+  autoScrollInterval?: number;
+
+  /**
+   * Show previous/next arrow navigation buttons
+   * @default true
+   */
+  showArrows?: boolean;
+
+  /**
+   * Show dot indicators for slide navigation
+   * @default true
+   */
+  showDots?: boolean;
+
+  /**
+   * Minimum height Tailwind class for the carousel container
+   * @default "min-h-120"
+   * @example "min-h-96", "min-h-[500px]"
+   */
+  minHeight?: string;
 }
 
 const {

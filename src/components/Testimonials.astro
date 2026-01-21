@@ -30,7 +30,7 @@ const testimonials = testimonialsWithLoadedImages.map((testimonial) => ({
   </h2>
 
   <!-- Testimonial Carousel -->
-  <Carousel autoScrollInterval={5000}>
+  <Carousel autoScroll={true} autoScrollInterval={5000}>
     {testimonials.map((testimonial) => (
       <TestimonialCard
         quote={testimonial.quote}
