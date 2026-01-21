@@ -1,5 +1,5 @@
 import { defineCollection, z } from 'astro:content';
-import { CoverImageType } from '../types/content';
+import { CoverImageType, DomainEnum } from '../types/content';
 import { IMAGE_EXTENSION_REGEX, VALID_EXTENSIONS_MESSAGE } from '../utils/imageConstants';
 
 /**
@@ -44,7 +44,7 @@ const postsCollection = defineCollection({
     title: z.string(),
     description: z.string(),
     date: z.date(),
-    domain: z.enum(['aerospace', 'robotics', 'ai', 'sustainability', 'education', 'research', 'other']),
+    domain: DomainEnum,
     tags: z.array(z.string()).optional(),
     coverImage: z.string().optional().refine(
       validateImageExtension,

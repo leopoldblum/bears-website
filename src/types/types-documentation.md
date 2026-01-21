@@ -70,22 +70,43 @@ type SponsorTier = 'bronze' | 'silver' | 'gold';
 
 ---
 
-#### `Domain`
+#### `Domain` and `DomainEnum`
 
 Project domain categories for filtering and organization.
 
+**Zod Schema (source of truth):**
 ```typescript
-type Domain =
-  | 'aerospace'
-  | 'robotics'
-  | 'ai'
-  | 'sustainability'
-  | 'education'
-  | 'research'
-  | 'other';
+const DomainEnum = z.enum([
+  'aerospace',
+  'robotics',
+  'ai',
+  'sustainability',
+  'education',
+  'research',
+  'other'
+]);
 ```
 
-**Defined in:** Content collection schema in [src/content/config.ts](../content/config.ts)
+**TypeScript Type (inferred from schema):**
+```typescript
+type Domain = z.infer<typeof DomainEnum>;
+// Equivalent to: 'aerospace' | 'robotics' | 'ai' | 'sustainability' | 'education' | 'research' | 'other'
+```
+
+**Usage in content schema:** [src/content/config.ts](../content/config.ts)
+
+**Accessing domain options dynamically:**
+```typescript
+import { DomainEnum } from '../types';
+
+// Get array of all valid domains (useful for generating filter UI)
+const allDomains = DomainEnum.options; // ['aerospace', 'robotics', 'ai', ...]
+
+// Use in filtering logic
+const filteredPosts = posts.filter(p => p.data.domain === 'aerospace');
+```
+
+**Design Pattern:** Follows the same pattern as `CoverImageType` - Zod enum as single source of truth with inferred TypeScript type. This ensures runtime validation and TypeScript type safety stay in sync.
 
 ---
 

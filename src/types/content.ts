@@ -17,16 +17,32 @@ export type PostType = 'events' | 'projects';
 export type SponsorTier = 'bronze' | 'silver' | 'gold';
 
 /**
- * Project domain categories used for filtering and organization.
+ * Zod enum for domain categories used for filtering and organization.
+ * Defines valid domain values for posts (events and projects).
+ *
+ * Used in content collection schema validation.
+ *
+ * @example
+ * // Access all valid domain options:
+ * const allDomains = DomainEnum.options; // ['aerospace', 'robotics', ...]
+ *
+ * // Use in filtering:
+ * const filteredPosts = posts.filter(p => p.data.domain === 'aerospace');
  */
-export type Domain =
-  | 'aerospace'
-  | 'robotics'
-  | 'ai'
-  | 'sustainability'
-  | 'education'
-  | 'research'
-  | 'other';
+export const DomainEnum = z.enum([
+  'aerospace',
+  'robotics',
+  'ai',
+  'sustainability',
+  'education',
+  'research',
+  'other'
+]);
+
+/**
+ * Inferred TypeScript type from DomainEnum Zod schema.
+ */
+export type Domain = z.infer<typeof DomainEnum>;
 
 /**
  * Zod enum for cover image type discrimination.
