@@ -1,5 +1,5 @@
 ---
-title: "Microgravity Experiment Platform"
+title: "MDX Showcase"
 description: "Drop tower experiments for testing materials and fluid dynamics in microgravity conditions, enabling research in materials science, biology, and physics."
 date: 2025-09-12
 domain: "research"
@@ -10,37 +10,58 @@ displayMeetTheTeam: true
 headOfProject: "Sarah Williams"
 ---
 
+import Button from '../../../components/reusable/Button.astro';
+import Carousel from '../../../components/reusable/Carousel.astro';
+import Accordion from '../../../components/reusable/Accordion.astro';
+import Marquee from '../../../components/reusable/Marquee.astro';
+
 ## Project Overview
 
 The Microgravity Experiment Platform provides students and researchers with access to near-weightless conditions through drop tower testing. By utilizing a custom-built 15-meter drop tower, we can achieve approximately 2 seconds of microgravity for conducting experiments in materials science, fluid dynamics, combustion research, and biological studies.
 
 ### Research Focus Areas
 
-Our platform supports experiments across multiple disciplines:
-
-**Materials Science**
-- Crystal growth in microgravity
-- Metallurgical solidification processes
-- Polymer behavior without gravitational influence
-- Phase separation in alloys
-
-**Fluid Dynamics**
-- Surface tension effects
-- Capillary flow in reduced gravity
-- Two-phase flow behavior
-- Droplet dynamics and coalescence
-
-**Biological Research**
-- Cell behavior in microgravity
-- Plant growth responses
-- Bacterial colony formation
-- Protein crystallization
-
-**Physics & Combustion**
-- Flame behavior without buoyancy
-- Particle dynamics
-- Heat transfer in microgravity
-- Granular material flow
+<Accordion
+  items={[
+    {
+      title: "Materials Science",
+      content: `<ul class="list-disc pl-5 space-y-1">
+<li>Crystal growth in microgravity</li>
+<li>Metallurgical solidification processes</li>
+<li>Polymer behavior without gravitational influence</li>
+<li>Phase separation in alloys</li>
+</ul>`
+    },
+    {
+      title: "Fluid Dynamics",
+      content: `<ul class="list-disc pl-5 space-y-1">
+<li>Surface tension effects</li>
+<li>Capillary flow in reduced gravity</li>
+<li>Two-phase flow behavior</li>
+<li>Droplet dynamics and coalescence</li>
+</ul>`
+    },
+    {
+      title: "Biological Research",
+      content: `<ul class="list-disc pl-5 space-y-1">
+<li>Cell behavior in microgravity</li>
+<li>Plant growth responses</li>
+<li>Bacterial colony formation</li>
+<li>Protein crystallization</li>
+</ul>`
+    },
+    {
+      title: "Physics & Combustion",
+      content: `<ul class="list-disc pl-5 space-y-1">
+<li>Flame behavior without buoyancy</li>
+<li>Particle dynamics</li>
+<li>Heat transfer in microgravity</li>
+<li>Granular material flow</li>
+</ul>`
+    }
+  ]}
+  defaultOpen={0}
+/>
 
 ### Drop Tower Specifications
 
@@ -48,7 +69,7 @@ Our custom-built facility features:
 
 - **Tower Height**: 15 meters (50 feet)
 - **Microgravity Duration**: 1.7 seconds
-- **Effective g-level**: <0.01g (99% gravity reduction)
+- **Effective g-level**: &lt;0.01g (99% gravity reduction)
 - **Deceleration System**: Multi-stage foam arrest bed
 - **Drop Frequency**: Up to 20 drops per day
 - **Payload Capacity**: 50 kg maximum
@@ -132,13 +153,34 @@ We partner with:
 - High schools for educational demonstrations
 - International microgravity research networks
 
+<div class="mt-8 flex justify-center not-prose">
+  <Button variant="primary" size="large" href="/contact">Submit Experiment Proposal</Button>
+</div>
+
 ### Team Composition
 
-- **Sarah Williams** - Principal Investigator & Project Lead
-- **Alex Thompson** - Drop Tower Operations Manager
-- **Jennifer Lee** - Data Systems & Software Engineer
-- **Christopher Davis** - Mechanical Engineering & Payload Design
-- **Amanda Garcia** - Safety Coordinator & Training
+<Marquee duration={25} gap="3rem" pauseOnHover={true}>
+  <div class="shrink-0 px-6 py-4 bg-neutral-800 rounded-lg border border-neutral-700">
+    <div class="font-semibold text-white">Sarah Williams</div>
+    <div class="text-sm text-neutral-400">Principal Investigator & Project Lead</div>
+  </div>
+  <div class="shrink-0 px-6 py-4 bg-neutral-800 rounded-lg border border-neutral-700">
+    <div class="font-semibold text-white">Alex Thompson</div>
+    <div class="text-sm text-neutral-400">Drop Tower Operations Manager</div>
+  </div>
+  <div class="shrink-0 px-6 py-4 bg-neutral-800 rounded-lg border border-neutral-700">
+    <div class="font-semibold text-white">Jennifer Lee</div>
+    <div class="text-sm text-neutral-400">Data Systems & Software Engineer</div>
+  </div>
+  <div class="shrink-0 px-6 py-4 bg-neutral-800 rounded-lg border border-neutral-700">
+    <div class="font-semibold text-white">Christopher Davis</div>
+    <div class="text-sm text-neutral-400">Mechanical Engineering & Payload Design</div>
+  </div>
+  <div class="shrink-0 px-6 py-4 bg-neutral-800 rounded-lg border border-neutral-700">
+    <div class="font-semibold text-white">Amanda Garcia</div>
+    <div class="text-sm text-neutral-400">Safety Coordinator & Training</div>
+  </div>
+</Marquee>
 
 ### Research Outcomes
 
@@ -151,14 +193,29 @@ To date, our platform has supported:
 
 ### Notable Experiments
 
-**Crystal Growth Study**
-Investigation of protein crystallization for pharmaceutical applications showed 40% improvement in crystal quality under microgravity conditions.
-
-**Combustion Research**
-Flame spread experiments revealed unique spherical flame patterns not visible under normal gravity, advancing fire safety understanding.
-
-**Fluid Mixing**
-Studies of miscible fluid mixing demonstrated enhanced mixing efficiency in microgravity, with applications to chemical processing.
+<Carousel showArrows={true} showDots={true} minHeight="min-h-64">
+  <div class="bg-neutral-800 rounded-lg p-8 border border-neutral-700">
+    <h4 class="text-xl font-bold text-white mb-4">Crystal Growth Study</h4>
+    <p class="text-neutral-300">
+      Investigation of protein crystallization for pharmaceutical applications showed 40% improvement
+      in crystal quality under microgravity conditions.
+    </p>
+  </div>
+  <div class="bg-neutral-800 rounded-lg p-8 border border-neutral-700">
+    <h4 class="text-xl font-bold text-white mb-4">Combustion Research</h4>
+    <p class="text-neutral-300">
+      Flame spread experiments revealed unique spherical flame patterns not visible under normal gravity,
+      advancing fire safety understanding.
+    </p>
+  </div>
+  <div class="bg-neutral-800 rounded-lg p-8 border border-neutral-700">
+    <h4 class="text-xl font-bold text-white mb-4">Fluid Mixing</h4>
+    <p class="text-neutral-300">
+      Studies of miscible fluid mixing demonstrated enhanced mixing efficiency in microgravity,
+      with applications to chemical processing.
+    </p>
+  </div>
+</Carousel>
 
 ### Future Development
 
