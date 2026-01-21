@@ -1,3 +1,7 @@
+> **🔧 For Developers**
+>
+> **Just need to use buttons in content?** See the [Using Buttons guide](../guides/using-buttons.md) for content creators.
+
 # Button Component Guide
 
 ## Overview

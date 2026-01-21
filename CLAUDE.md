@@ -132,6 +132,17 @@ Update documentation files when:
 
 ### Documentation Files
 
-- `how-to-add-and-manage-sponsors.md` - Guide for managing sponsor content
-- `how-to-add-and-manage-testimonials.md` - Guide for managing testimonials
-- `how-to-add-and-manage-events-and-projects.md` - Guide for managing events and projects
+The `/documentation/` directory is organized by audience:
+
+**For Content Creators (`/documentation/guides/`):**
+- `using-buttons.md` - Add buttons to MDX pages
+- `managing-events-and-projects.md` - Manage events and projects
+- `managing-sponsors.md` - Manage sponsor content
+- `managing-testimonials.md` - Manage testimonials
+
+**For Developers (`/documentation/docs/`):**
+- `button-component-guide.md` - Button component technical reference
+
+**Important:** When you make code changes that affect documented behavior or data structures, update the corresponding documentation files to keep them in sync.
+
+See `/documentation/README.md` for the complete documentation index.
