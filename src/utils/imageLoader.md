@@ -68,7 +68,7 @@ import { defaultTestimonialImage } from '../utils/imageLoader';
 import { defaultSponsorImage } from '../utils/imageLoader';
 ```
 
-**Source:** [/src/assets/default-images/default-sponsor.png](../assets/default-images/default-sponsor.png)
+**Source:** [/src/assets/default-images/default-sponsor.jpg](../assets/default-images/default-sponsor.jpg)
 
 **Usage:** Fallback for sponsors with no logo
 
