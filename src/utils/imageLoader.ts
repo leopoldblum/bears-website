@@ -9,9 +9,10 @@ import type { ImageMetadata } from 'astro';
 import defaultEventImage from '../assets/default-images/default-event.jpg';
 import defaultProjectImage from '../assets/default-images/default-project.jpg';
 import defaultTestimonialImage from '../assets/default-images/default-testimonial.jpg';
+import defaultSponsorImage from '../assets/default-images/default-sponsor.png';
 
 // Export default images for components that need direct access
-export { defaultEventImage, defaultProjectImage, defaultTestimonialImage };
+export { defaultEventImage, defaultProjectImage, defaultTestimonialImage, defaultSponsorImage };
 
 /**
  * Options for loading a single image
@@ -120,6 +121,7 @@ export async function loadImagesForCollection<
       image?: string;
       coverImageType?: string;
       title?: string;
+      name?: string;
     };
     slug?: string;
   }
@@ -182,8 +184,19 @@ export async function loadImagesForCollection<
             const imageModule = await glob[imagePath]();
             loadedImage = imageModule.default;
           } catch (error) {
-            // Silent failure - will use fallback if provided
+            imageLoadFailed = true;
           }
+        } else {
+          imageLoadFailed = true;
+        }
+
+        // Log warning if image failed to load
+        if (imageLoadFailed) {
+          const nameInfo = item.data.name ? `"${item.data.name}"` : '';
+          const slugInfo = item.slug ? `(${item.slug})` : '';
+          console.warn(
+            `⚠️ Testimonial ${nameInfo} ${slugInfo} - image "${imageFileName}" failed to load, using default`
+          );
         }
       }
 
@@ -364,48 +377,4 @@ export async function loadCoverImage(
   return image || typeConfig.fallbackImage;
 }
 
-/**
- * Options for loading an image with simple fallback
- */
-interface LoadImageWithSimpleFallbackOptions {
-  glob: Record<string, () => Promise<{ default: ImageMetadata }>>;
-  imagePath: string;
-  fallbackImage: ImageMetadata;
-}
-
-/**
- * Load a single image with simple fallback (no logging)
- *
- * Simpler variant of loadImage() that doesn't log warnings.
- * Useful for cases where missing images are expected (e.g., optional logos).
- *
- * @param options - Configuration for loading the image
- * @returns The loaded image or fallback image if not found
- *
- * @example
- * ```ts
- * const logo = await loadImageWithSimpleFallback({
- *   glob: sponsorLogos,
- *   imagePath: `/src/assets/sponsors/${logoFileName}`,
- *   fallbackImage: placeholderLogo
- * });
- * ```
- */
-export async function loadImageWithSimpleFallback(
-  options: LoadImageWithSimpleFallbackOptions
-): Promise<ImageMetadata> {
-  const { glob, imagePath, fallbackImage } = options;
-
-  if (glob[imagePath]) {
-    try {
-      const imageModule = await glob[imagePath]();
-      return imageModule.default;
-    } catch (error) {
-      // Silent failure - return fallback
-      return fallbackImage;
-    }
-  }
-
-  return fallbackImage;
-}
 
