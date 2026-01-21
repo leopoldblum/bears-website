@@ -143,6 +143,76 @@ If you need different behavior, you can explicitly control it with `allowCloseAl
 - Use it when you need one section to always be open, but want to start with all sections closed
 - Use it when you want to force toggle behavior even with a default open section
 
+## Allowing Multiple Sections Open
+
+By default, only one accordion section can be open at a time. When you click a new section, it opens and the previous one closes automatically.
+
+If you want to allow multiple sections to be open at the same time, use the `allowMultiple` prop:
+
+```mdx
+<Accordion
+  items={[ /* your items */ ]}
+  allowMultiple={true}
+/>
+```
+
+**How it works:**
+- Each section toggles independently - clicking it opens or closes it
+- Other sections stay in their current state (open or closed)
+- You can have all sections open, some open, or all closed
+- Great for checklists, feature comparisons, or when users need to see multiple sections at once
+
+### When to Use Each Mode
+
+**Single mode (default):**
+- FAQ sections - users focus on one question at a time
+- Tutorial steps - show one step at a time
+- Project details - focus on one aspect at a time
+- When you want to guide users through content sequentially
+
+**Multi mode (`allowMultiple={true}`):**
+- Feature checklists - users can compare multiple features
+- Research categories - users can browse multiple areas simultaneously
+- Specification lists - users can view multiple specs at once
+- When sections are independent and users might need to compare them
+
+### Example: Feature Checklist
+
+```mdx
+<Accordion
+  items={[
+    {
+      title: "Data Collection Features",
+      content: `<ul class="list-disc pl-5 space-y-1">
+<li>Temperature sensors</li>
+<li>Pressure monitoring</li>
+<li>Acceleration tracking</li>
+</ul>`
+    },
+    {
+      title: "Analysis Tools",
+      content: `<ul class="list-disc pl-5 space-y-1">
+<li>Real-time graphing</li>
+<li>Statistical analysis</li>
+<li>Export to CSV</li>
+</ul>`
+    },
+    {
+      title: "Safety Features",
+      content: `<ul class="list-disc pl-5 space-y-1">
+<li>Emergency stop system</li>
+<li>Automatic alerts</li>
+<li>Backup systems</li>
+</ul>`
+    }
+  ]}
+  allowMultiple={true}
+  defaultOpen={0}
+/>
+```
+
+**Result:** Users can open multiple sections to compare features side-by-side. The first section starts open, but users can open as many sections as they want.
+
 ## Adding HTML Content
 
 You can use HTML inside the `content` field for richer formatting like lists, bold text, or links.

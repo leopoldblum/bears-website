@@ -70,6 +70,7 @@ import Accordion from '../../../components/reusable/Accordion.astro';
 | `items` | `Array<AccordionItem>` | `[]` | Array of accordion items to display |
 | `defaultOpen` | `number \| null` | `null` | Index of the initially opened item, or `null` to start with all sections closed |
 | `allowCloseAll` | `boolean` | Auto-derived | Whether clicking an open section closes it. Default: `true` when `defaultOpen` is null, `false` when set |
+| `allowMultiple` | `boolean` | `false` | Allow multiple sections to be open simultaneously. When `true`, each section toggles independently |
 
 ### AccordionItem Type
 
@@ -85,9 +86,11 @@ interface AccordionItem {
 
 ### Self-Managed State
 
-The Accordion component manages its own state using Alpine.js `x-data`. Only one item can be open at a time.
+The Accordion component manages its own state using Alpine.js `x-data`.
 
-**Toggle Behavior:**
+**Single Mode (default `allowMultiple={false}`):**
+Only one item can be open at a time. Clicking a section opens it and closes any previously open section.
+
 - When `defaultOpen` is omitted or `null`: Clicking an open section closes it (all sections can be closed)
 - When `defaultOpen` is set to a number: One section must always be open (clicking only switches between sections)
 
@@ -103,6 +106,19 @@ The Accordion component manages its own state using Alpine.js `x-data`. Only one
 />
 ```
 
+**Multi Mode (`allowMultiple={true}`):**
+Multiple items can be open simultaneously. Each section toggles independently without affecting others.
+
+```astro
+<Accordion
+  items={featureList}
+  allowMultiple={true}  // Multiple sections can be open
+  defaultOpen={0}  // First item opens on load
+/>
+```
+
+In multi mode, all sections can be closed regardless of the `defaultOpen` setting.
+
 ### Smooth Animations
 
 Uses CSS Grid transitions for smooth expand/collapse animations:
@@ -110,12 +126,12 @@ Uses CSS Grid transitions for smooth expand/collapse animations:
 - Open state: `grid-rows-[1fr]`
 - Closed state: `grid-rows-[0fr]`
 
-### Fixed Styling
+### Dynamic Styling
 
 The component has consistent styling across the site:
-- **Max Height:** `lg:max-h-[550px]` (fixed at 550px on large screens)
+- **Height:** Dynamically adjusts to fit all content (no fixed height limit)
 - **Borders:** Always visible between items and at top/bottom on large screens
-- **Overflow:** Scrollable on large screens if content exceeds max height
+- **Overflow:** No scrollbar - container grows to accommodate all expanded sections
 
 ## Item Structure
 
@@ -181,36 +197,53 @@ The main content displayed when the section is expanded. Supports both plain tex
 
 ## Alpine.js State Management
 
-### Active Index Tracking
+The component uses different state structures depending on the `allowMultiple` prop.
 
-The component tracks which section is open using `activeIndex`:
+### Single Mode State (`allowMultiple={false}`)
+
+In single mode, the component tracks which section is open using `activeIndex`:
 
 ```javascript
 x-data="{
   activeIndex: null,  // null = all closed, number = index of open section
+  allowCloseAll: true,  // true when defaultOpen is null/undefined
+  allowMultiple: false,
   init() {
     this.$watch('activeIndex', () => {});
   }
 }"
 ```
 
-### Close Behavior Control
+The `allowCloseAll` flag determines click behavior:
+- `allowCloseAll: true` → clicking an open section closes it
+- `allowCloseAll: false` → clicking always switches to that section (one must stay open)
 
-The component tracks whether all sections can be closed via `allowCloseAll`:
+### Multi Mode State (`allowMultiple={true}`)
+
+In multi mode, the component tracks open sections using an array `openIndices`:
 
 ```javascript
 x-data="{
-  activeIndex: null,
-  allowCloseAll: true,  // true when defaultOpen is null/undefined
+  activeIndex: null,  // Not used in multi mode
+  openIndices: [],  // Array of indices of open sections
+  allowCloseAll: true,
+  allowMultiple: true,
   init() {
     this.$watch('activeIndex', () => {});
+    this.$watch('openIndices', () => {});
   }
 }"
 ```
 
-This flag determines click behavior:
-- `allowCloseAll: true` → clicking an open section closes it
-- `allowCloseAll: false` → clicking always switches to that section (one must stay open)
+Each click toggles the section's presence in the `openIndices` array:
+- If the index is in the array → remove it (close the section)
+- If the index is not in the array → add it (open the section)
+
+### Parent Component Sync
+
+In single mode, the accordion syncs its `activeIndex` with parent components that have an `activeProject` property. This allows integration with project showcase pages.
+
+**Note:** Parent sync only works in single mode. In multi mode, parent synchronization is skipped since multiple items can be open.
 
 ### Click Handlers
 
@@ -269,14 +302,14 @@ The component includes proper ARIA attributes for screen readers:
 
 ### Mobile (< 1024px)
 
-- No max-height constraint (full height)
+- Dynamic height (grows with content)
 - No top/bottom borders
 - Borders only between items
 
 ### Desktop (≥ 1024px)
 
-- Max height: 550px
-- Scrollable if content exceeds height
+- Dynamic height (grows with content)
+- No max-height constraint or scrollbar
 - Top and bottom borders on container
 - Borders between items
 
@@ -337,6 +370,43 @@ The component includes proper ARIA attributes for screen readers:
 />
 ```
 
+### Feature Checklist (Multi Mode)
+
+Use multi mode when users need to compare multiple sections or when sections are independent:
+
+```astro
+<Accordion
+  items={[
+    {
+      title: "Data Collection",
+      content: `<ul class="list-disc pl-5 space-y-1">
+<li>Temperature sensors</li>
+<li>Pressure monitoring</li>
+<li>Acceleration tracking</li>
+</ul>`
+    },
+    {
+      title: "Analysis Tools",
+      content: `<ul class="list-disc pl-5 space-y-1">
+<li>Real-time graphing</li>
+<li>Statistical analysis</li>
+<li>Export to CSV</li>
+</ul>`
+    },
+    {
+      title: "Safety Features",
+      content: `<ul class="list-disc pl-5 space-y-1">
+<li>Emergency stop</li>
+<li>Automatic alerts</li>
+<li>Backup systems</li>
+</ul>`
+    }
+  ]}
+  allowMultiple={true}
+  defaultOpen={0}
+/>
+```
+
 ## Advanced Usage
 
 ### Dynamic Content Loading
@@ -377,9 +447,11 @@ The Accordion works well alongside other reusable components:
 
 ```css
 /* Base classes */
-flex flex-col lg:max-h-[550px] overflow-y-auto
+flex flex-col
 lg:border-y lg:border-bears-text-onDark/20
 ```
+
+The container dynamically grows to fit all content without a fixed height or scrollbar.
 
 ### Item Wrapper
 
@@ -461,7 +533,11 @@ content: "<ul><li>Item</li></ul>"
 
 ### Multiple Sections Opening
 
-This should not happen as the component enforces single-open behavior. If you experience this, check for conflicting Alpine.js state in parent components.
+If multiple sections are opening and you don't want this behavior:
+- Ensure `allowMultiple` is not set to `true` (default is `false`)
+- Check for conflicting Alpine.js state in parent components
+
+If you **want** multiple sections to be open, use `allowMultiple={true}`.
 
 ## Performance Considerations
 

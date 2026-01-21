@@ -10,22 +10,27 @@ interface Props {
   }>;
   defaultOpen?: number | null;  // Index of initially opened item (default: null - all closed)
   allowCloseAll?: boolean;      // Whether clicking an open item closes it (default: auto-derived from defaultOpen)
+  allowMultiple?: boolean;      // Allow multiple items to be open simultaneously (default: false)
 }
 
 const {
   items = [],
   defaultOpen = null,
   allowCloseAll = defaultOpen === null || defaultOpen === undefined,  // Auto-derive if not explicitly set
+  allowMultiple = false,  // Default to single-open mode for backward compatibility
 } = Astro.props;
 ---
 
 <div
-  class="flex flex-col lg:max-h-[550px] overflow-y-auto lg:border-y lg:border-bears-text-onDark/20"
+  class="flex flex-col lg:border-y lg:border-bears-text-onDark/20"
   x-data={`{
-    activeIndex: ${defaultOpen === null ? 'null' : defaultOpen},
+    activeIndex: ${defaultOpen !== null && defaultOpen !== undefined && !allowMultiple ? defaultOpen : 'null'},
+    openIndices: ${allowMultiple && defaultOpen !== null && defaultOpen !== undefined ? `[${defaultOpen}]` : '[]'},
     allowCloseAll: ${allowCloseAll},
+    allowMultiple: ${allowMultiple},
     init() {
       this.$watch('activeIndex', () => {});
+      this.$watch('openIndices', () => {});
     }
   }`}
 >
@@ -37,8 +42,14 @@ const {
         <button
           type="button"
           class="w-full text-left py-4 px-2 text-base sm:text-lg font-semibold text-bears-text-onDark hover:text-bears-accent transition-colors duration-200 cursor-pointer"
-          x-on:click={`activeIndex = (allowCloseAll && activeIndex === ${index}) ? null : ${index}; const parent = $el.closest('[x-data]'); if (parent && parent !== $root && parent.activeProject !== undefined) parent.activeProject = activeIndex`}
-          x-bind:aria-expanded={`activeIndex === ${index} ? 'true' : 'false'`}
+          x-on:click={allowMultiple
+            ? `if (openIndices.includes(${index})) { openIndices = openIndices.filter(i => i !== ${index}); } else { openIndices = [...openIndices, ${index}]; }`
+            : `activeIndex = (allowCloseAll && activeIndex === ${index}) ? null : ${index}; const parent = $el.closest('[x-data]'); if (parent && parent !== $root && parent.activeProject !== undefined) parent.activeProject = activeIndex`
+          }
+          x-bind:aria-expanded={allowMultiple
+            ? `openIndices.includes(${index}) ? 'true' : 'false'`
+            : `activeIndex === ${index} ? 'true' : 'false'`
+          }
           aria-controls={itemId}
         >
           {item.title}
@@ -47,7 +58,10 @@ const {
         <div
           id={itemId}
           class="grid transition-[grid-template-rows] duration-300 ease-in-out"
-          x-bind:class={`activeIndex === ${index} ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'`}
+          x-bind:class={allowMultiple
+            ? `openIndices.includes(${index}) ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'`
+            : `activeIndex === ${index} ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'`
+          }
         >
           <div class="overflow-hidden">
             <div class="pb-4 px-2">
