@@ -59,7 +59,8 @@ Write your full event or project description here using markdown.
 **`coverImage`** (optional) - Just the filename (not the full path)
 - For events: Place image in `src/assets/events/`
 - For projects: Place image in `src/assets/projects/`
-- Supported formats: `.jpg`, `.jpeg`, `.png`, `.webp`
+- **Supported formats:** `.jpg`, `.jpeg`, `.png`, `.webp`
+- **Important:** The build will fail if you specify an unsupported file extension (like `.gif`, `.svg`, `.bmp`). Only use the supported formats listed above.
 - Recommended size: 600x400px or larger (3:2 aspect ratio)
 - Images are automatically optimized to WebP format
 - **If omitted or invalid**: The system automatically uses a default placeholder image:

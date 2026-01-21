@@ -13,7 +13,7 @@
 quote: "Your testimonial quote goes here."
 name: "Member Full Name"
 role: "Role / Year / Program"
-image: "member-photo.jpg"
+coverImage: "member-photo.jpg"
 ---
 ```
 
@@ -30,9 +30,10 @@ Leave the file empty after the frontmatter (no content needed in the markdown bo
 **`role`** (required) - Additional context (role, year, program, etc.)
 - Examples: `"Team Lead / 2023 / Electrical Engineering"` or `"Alumni / Class of 2022"`
 
-**`image`** (required) - Just the filename (not the full path)
+**`coverImage`** (required) - Just the filename (not the full path)
 - Place the actual image file in `src/assets/testimonials/`
-- Supported formats: `.jpg`, `.jpeg`, `.png`
+- **Supported formats:** `.jpg`, `.jpeg`, `.png`, `.webp`
+- **Important:** The build will fail if you specify an unsupported file extension. Only use the supported formats listed above.
 - Recommended: 400x400px square images
 
 ## Complete Example
@@ -44,7 +45,7 @@ Leave the file empty after the frontmatter (no content needed in the markdown bo
 quote: "Being part of BEARS taught me not just technical skills, but also how to work effectively in a team."
 name: "Alex Johnson"
 role: "Former President / 2023 / Mechanical Engineering"
-image: "alex-johnson.jpg"
+coverImage: "alex-johnson.jpg"
 ---
 ```
 

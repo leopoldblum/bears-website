@@ -26,7 +26,8 @@ Leave the file empty after the frontmatter (no content needed in the markdown bo
 
 **`logo`** (required) - Just the filename (not the full path)
 - Place the actual logo file in `src/assets/sponsors/`
-- Supported formats: `.jpg`, `.jpeg`, `.png`
+- **Supported formats:** `.jpg`, `.jpeg`, `.png`, `.webp`
+- **Important:** The build will fail if you specify an unsupported file extension. Only use the supported formats listed above.
 - Recommended sizes:
   - Gold: 160x160px
   - Silver: 80x80px

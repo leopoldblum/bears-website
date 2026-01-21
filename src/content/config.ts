@@ -1,5 +1,15 @@
 import { defineCollection, z } from 'astro:content';
 import { CoverImageType } from '../types/content';
+import { IMAGE_EXTENSION_REGEX, VALID_EXTENSIONS_MESSAGE } from '../utils/imageConstants';
+
+/**
+ * Helper for validating image file extensions
+ * Ensures image filenames have valid extensions matching supported glob patterns
+ */
+const validateImageExtension = (value: string | undefined) => {
+  if (!value) return true; // Allow undefined for optional fields
+  return IMAGE_EXTENSION_REGEX.test(value);
+};
 
 const testimonialsCollection = defineCollection({
   type: 'content',
@@ -7,7 +17,10 @@ const testimonialsCollection = defineCollection({
     quote: z.string(),
     name: z.string(),
     role: z.string(),
-    coverImage: z.string(),
+    coverImage: z.string().refine(
+      validateImageExtension,
+      { message: `coverImage must have a valid image extension: ${VALID_EXTENSIONS_MESSAGE}` }
+    ),
   }),
 });
 
@@ -15,7 +28,10 @@ const sponsorsCollection = defineCollection({
   type: 'content',
   schema: z.object({
     name: z.string(),
-    logo: z.string(),
+    logo: z.string().refine(
+      validateImageExtension,
+      { message: `logo must have a valid image extension: ${VALID_EXTENSIONS_MESSAGE}` }
+    ),
     url: z.string().url().optional(),
     // tier is automatically derived from folder structure (bronze/, silver/, gold/)
     // and does not need to be specified in frontmatter
@@ -30,7 +46,10 @@ const postsCollection = defineCollection({
     date: z.date(),
     domain: z.enum(['aerospace', 'robotics', 'ai', 'sustainability', 'education', 'research', 'other']),
     tags: z.array(z.string()).optional(),
-    coverImage: z.string().optional(),
+    coverImage: z.string().optional().refine(
+      validateImageExtension,
+      { message: `coverImage must have a valid image extension: ${VALID_EXTENSIONS_MESSAGE}` }
+    ),
     isDraft: z.boolean().default(false).optional(),
     displayMeetTheTeam: z.boolean().optional(),
     headOfProject: z.string().optional(),

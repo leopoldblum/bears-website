@@ -30,6 +30,42 @@ const eventImages = import.meta.glob<{ default: ImageMetadata }>(
 - Automatically pick up new images without code changes
 - Type-safe with TypeScript
 
+## Centralized Image Format Configuration
+
+All supported image formats are defined in a centralized constants file: [/src/utils/imageConstants.ts](imageConstants.ts)
+
+This ensures consistency between:
+- Glob patterns for loading images (this file)
+- Schema validation for content collections ([config.ts](../content/config.ts))
+- Error messages shown to users
+
+### Supported Formats
+
+The `VALID_IMAGE_EXTENSIONS` constant defines all supported formats:
+- `.jpg` - JPEG images (most common)
+- `.jpeg` - Alternative JPEG extension
+- `.png` - PNG images (used for logos with transparency)
+- `.webp` - Modern WebP format (better compression)
+
+### Adding New Formats
+
+To add support for a new image format (e.g., `.avif`):
+
+1. Open [/src/utils/imageConstants.ts](imageConstants.ts)
+2. Add the extension to the `VALID_IMAGE_EXTENSIONS` array:
+   ```typescript
+   export const VALID_IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp', 'avif'] as const;
+   ```
+3. That's it! All glob patterns and validation automatically update.
+
+**No need to:**
+- Update glob patterns in this file
+- Update schema validation in config.ts
+- Update error messages
+- Update documentation (except this section)
+
+Everything derives from that single array.
+
 ## Basic Usage
 
 ### Import a Glob Pattern
@@ -155,12 +191,12 @@ Glob pattern for testimonial portrait images.
 
 **Pattern:**
 ```typescript
-"/src/assets/testimonials/*.{jpg,jpeg,png}"
+"/src/assets/testimonials/*.{jpg,jpeg,png,webp}"
 ```
 
 **Details:**
 - **Directory**: `/src/assets/testimonials/`
-- **Formats**: JPG, JPEG, PNG
+- **Formats**: JPG, JPEG, PNG, WebP
 - **Purpose**: Portrait images for testimonials
 
 **Used in:**
@@ -183,12 +219,12 @@ Glob pattern for sponsor logo images.
 
 **Pattern:**
 ```typescript
-"/src/assets/sponsors/*.{jpg,jpeg,png}"
+"/src/assets/sponsors/*.{jpg,jpeg,png,webp}"
 ```
 
 **Details:**
 - **Directory**: `/src/assets/sponsors/`
-- **Formats**: JPG, JPEG, PNG
+- **Formats**: JPG, JPEG, PNG, WebP
 - **Purpose**: Logo images for sponsors
 
 **Used in:**
