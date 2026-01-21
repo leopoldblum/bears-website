@@ -1,32 +1,45 @@
-# Astro.js Website for BEARS *rawr*
+# Astro.js Website for BEARS
 
-
-# Astro Starter Kit: Minimal
+## Local Quickstart
 
 ```sh
-npm create astro@latest -- --template minimal
+npm install
+npm run dev
 ```
-
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
 
 ## 🚀 Project Structure
 
-Inside of your Astro project, you'll see the following folders and files:
-
 ```text
 /
-├── public/
+├── public/              # Static assets (favicon, etc.)
 ├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
+│   ├── assets/          # Images organized by content type
+│   │   ├── events/
+│   │   ├── projects/
+│   │   ├── sponsors/
+│   │   ├── testimonials/
+│   │   └── whatIsBears/
+│   │
+│   ├── components/      # Astro components
+│   │   └── reusable/    # Reusable UI components
+│      
+├── content/         # Content collections (MDX)
+│   │   ├── posts/       # Events and projects
+│   │   ├── sponsors/    # Sponsor tiers
+│   │   └── testimonials/
+│   │
+│   ├── layouts/         # Page layouts
+│   ├── pages/           # File-based routing
+│   ├── styles/          # Global styles
+│   ├── types/           # TypeScript type definitions
+│   └── utils/           # Helper functions
+│   
+├── guides/              # Documentation for content creators
+├── astro.config.mjs
+├── CLAUDE.md            # AI assistant instructions
+├── package.json
+└── tsconfig.json
 ```
-
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
-
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
-
-Any static assets, like images, can be placed in the `public/` directory.
 
 ## 🧞 Commands
 
@@ -40,7 +53,3 @@ All commands are run from the root of the project, from a terminal:
 | `npm run preview`         | Preview your build locally, before deploying     |
 | `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
 | `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).

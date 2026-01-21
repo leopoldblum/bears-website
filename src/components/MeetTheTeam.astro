@@ -47,7 +47,7 @@ const projects = await loadCollectionImages(sortedProjects, 'project');
       {projects.map((project, index) => (
         <button
           type="button"
-          class="absolute inset-0 transition-opacity duration-300 hover:cursor-pointer"
+          class="absolute inset-0 transition-opacity duration-300"
           x-bind:class={`activeIndex === ${index} ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'`}
           x-on:click={`activeIndex = ${index}`}
           aria-label={`View ${project.data.title} project details`}
