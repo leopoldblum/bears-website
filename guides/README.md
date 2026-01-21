@@ -6,6 +6,7 @@ Welcome! This folder contains step-by-step guides for creating and managing cont
 
 - **[Using Buttons](using-buttons.md)** - Add buttons to your content pages
 - **[Using Accordions](using-accordion.md)** - Add collapsible accordion sections to your content
+- **[Using Marquees](using-marquee.md)** - Add infinite scrolling content showcases
 - [Managing Events and Projects](managing-events-and-projects.md) - Add and update events/projects
 - [Managing Sponsors](managing-sponsors.md) - Add and update sponsors
 - [Managing Testimonials](managing-testimonials.md) - Add and update testimonials
@@ -16,6 +17,7 @@ Welcome! This folder contains step-by-step guides for creating and managing cont
 
 - **Button Component** - See `/src/components/reusable/Button.md`
 - **Accordion Component** - See `/src/components/reusable/Accordion.md`
+- **Marquee Component** - See `/src/components/reusable/Marquee.md`
 - **Type Definitions** - See `/src/types/types-documentation.md`
 - **Project Architecture** - See `CLAUDE.md` in project root
 

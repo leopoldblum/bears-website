@@ -69,6 +69,7 @@ import Accordion from '../../../components/reusable/Accordion.astro';
 |------|------|---------|-------------|
 | `items` | `Array<AccordionItem>` | `[]` | Array of accordion items to display |
 | `defaultOpen` | `number \| null` | `null` | Index of the initially opened item, or `null` to start with all sections closed |
+| `allowCloseAll` | `boolean` | Auto-derived | Whether clicking an open section closes it. Default: `true` when `defaultOpen` is null, `false` when set |
 
 ### AccordionItem Type
 
@@ -86,15 +87,19 @@ interface AccordionItem {
 
 The Accordion component manages its own state using Alpine.js `x-data`. Only one item can be open at a time.
 
+**Toggle Behavior:**
+- When `defaultOpen` is omitted or `null`: Clicking an open section closes it (all sections can be closed)
+- When `defaultOpen` is set to a number: One section must always be open (clicking only switches between sections)
+
 ```astro
 <Accordion
   items={researchAreas}
-  defaultOpen={0}  // First item opens on load
+  defaultOpen={0}  // First item opens on load, one must always stay open
 />
 
 <Accordion
   items={researchAreas}
-  defaultOpen={null}  // All sections closed on load (default)
+  defaultOpen={null}  // All sections closed on load, can toggle freely (default)
 />
 ```
 
@@ -189,14 +194,37 @@ x-data="{
 }"
 ```
 
+### Close Behavior Control
+
+The component tracks whether all sections can be closed via `allowCloseAll`:
+
+```javascript
+x-data="{
+  activeIndex: null,
+  allowCloseAll: true,  // true when defaultOpen is null/undefined
+  init() {
+    this.$watch('activeIndex', () => {});
+  }
+}"
+```
+
+This flag determines click behavior:
+- `allowCloseAll: true` → clicking an open section closes it
+- `allowCloseAll: false` → clicking always switches to that section (one must stay open)
+
 ### Click Handlers
 
-Each accordion button updates the active index on click:
+Each accordion button updates the active index with conditional toggle logic:
 
 ```astro
-x-on:click="activeIndex = 0"  // Opens first item
-x-on:click="activeIndex = 1"  // Opens second item
+// When allowCloseAll is true
+x-on:click="activeIndex = (allowCloseAll && activeIndex === 0) ? null : 0"  // Toggle first item
+
+// When allowCloseAll is false
+x-on:click="activeIndex = (allowCloseAll && activeIndex === 0) ? null : 0"  // Always opens first item (can't close)
 ```
+
+The logic: if `allowCloseAll` is true AND the clicked item is already open, set to `null`. Otherwise, set to the clicked index.
 
 ### Conditional Classes
 

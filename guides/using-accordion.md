@@ -8,7 +8,11 @@ A quick guide for adding collapsible accordion sections to your content pages.
 
 ## What is an Accordion?
 
-An accordion is a UI component that lets you display multiple sections of content where only one section is expanded at a time. When you click a section header, it expands to show the content while automatically collapsing the previously opened section.
+An accordion is a UI component that lets you display multiple sections of content where only one section can be expanded at a time. When you click a section header, it expands to show the content while automatically collapsing the previously opened section.
+
+**Behavior:**
+- If you don't set a default open section (or use `defaultOpen={null}`), you can click any open section to close it, returning to an all-closed state.
+- If you set a default open section (e.g., `defaultOpen={0}`), one section will always remain open. Clicking a section switches which one is open.
 
 **Perfect for:**
 - Lists of related topics (research areas, features, categories)
@@ -112,6 +116,32 @@ By default, all sections are closed when the page loads. You can change this wit
 ```
 
 **Note:** Counting starts at 0, so the first item is 0, second is 1, third is 2, and so on. Use `null` (or omit the prop) to start with all sections closed.
+
+## Controlling Toggle Behavior
+
+By default, the accordion's toggle behavior automatically matches your `defaultOpen` setting:
+- When `defaultOpen` is omitted or `null` → you can close all sections
+- When `defaultOpen` is set to a number → one section must always be open
+
+If you need different behavior, you can explicitly control it with `allowCloseAll`:
+
+```mdx
+<Accordion
+  items={[ /* your items */ ]}
+  defaultOpen={0}
+  allowCloseAll={true}  // Override: allow closing all even though defaultOpen is set
+/>
+
+<Accordion
+  items={[ /* your items */ ]}
+  allowCloseAll={false}  // Override: one must always be open even though defaultOpen is null
+/>
+```
+
+**When to use `allowCloseAll`:**
+- Usually you don't need this prop - the automatic behavior works for most cases
+- Use it when you need one section to always be open, but want to start with all sections closed
+- Use it when you want to force toggle behavior even with a default open section
 
 ## Adding HTML Content
 

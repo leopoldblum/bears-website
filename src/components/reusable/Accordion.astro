@@ -9,11 +9,13 @@ interface Props {
     content: string;         // Content to display (plain text or HTML)
   }>;
   defaultOpen?: number | null;  // Index of initially opened item (default: null - all closed)
+  allowCloseAll?: boolean;      // Whether clicking an open item closes it (default: auto-derived from defaultOpen)
 }
 
 const {
   items = [],
   defaultOpen = null,
+  allowCloseAll = defaultOpen === null || defaultOpen === undefined,  // Auto-derive if not explicitly set
 } = Astro.props;
 ---
 
@@ -21,6 +23,7 @@ const {
   class="flex flex-col lg:max-h-[550px] overflow-y-auto lg:border-y lg:border-bears-text-onDark/20"
   x-data={`{
     activeIndex: ${defaultOpen === null ? 'null' : defaultOpen},
+    allowCloseAll: ${allowCloseAll},
     init() {
       this.$watch('activeIndex', () => {});
     }
@@ -34,7 +37,7 @@ const {
         <button
           type="button"
           class="w-full text-left py-4 px-2 text-base sm:text-lg font-semibold text-bears-text-onDark hover:text-bears-accent transition-colors duration-200 cursor-pointer"
-          x-on:click={`activeIndex = ${index}; const parent = $el.closest('[x-data]'); if (parent && parent !== $root && parent.activeProject !== undefined) parent.activeProject = ${index}`}
+          x-on:click={`activeIndex = (allowCloseAll && activeIndex === ${index}) ? null : ${index}; const parent = $el.closest('[x-data]'); if (parent && parent !== $root && parent.activeProject !== undefined) parent.activeProject = activeIndex`}
           x-bind:aria-expanded={`activeIndex === ${index} ? 'true' : 'false'`}
           aria-controls={itemId}
         >
