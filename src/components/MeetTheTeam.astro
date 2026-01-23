@@ -15,14 +15,25 @@ const projects = await loadCollectionImages(sortedProjects, 'project');
   <!-- Headline in top left -->
   <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 sm:mb-8 lg:mb-12 text-bears-text-onDark">Meet the Team</h2>
 
-  <!-- 3-column grid: thumbnails | main image | accordion -->
+  <!-- Responsive layout: flex-col for lg, grid for xl -->
   <div
-    class="grid grid-cols-1 lg:grid-cols-[120px_1fr_400px] gap-6 lg:gap-8"
+    class="flex flex-col gap-6 lg:gap-8 xl:grid xl:grid-cols-[120px_minmax(0,2fr)_minmax(0,1fr)]"
     x-data="{ activeIndex: 0 }"
+    x-init="$nextTick(() => {
+      const syncHeight = () => {
+        const img = $refs.mainImage;
+        const thumbs = $refs.thumbnails;
+        if (img && thumbs && window.innerWidth >= 1280) {
+          thumbs.style.height = img.offsetHeight + 'px';
+        }
+      };
+      syncHeight();
+      window.addEventListener('resize', syncHeight);
+    })"
   >
 
-    <!-- Left: Thumbnail Stack -->
-    <div class="flex flex-row lg:flex-col justify-center lg:justify-between gap-3 overflow-x-auto lg:overflow-y-auto lg:overflow-x-visible lg:h-[550px]">
+    <!-- Thumbnail Stack for xl: only (vertical on left) -->
+    <div x-ref="thumbnails" class="hidden xl:flex flex-col gap-3 overflow-y-auto">
       {projects.map((project, index) => (
         <button
           type="button"
@@ -42,66 +53,97 @@ const projects = await loadCollectionImages(sortedProjects, 'project');
       ))}
     </div>
 
-    <!-- Middle: Main Image -->
-    <div class="relative w-full aspect-4/3 lg:aspect-auto lg:h-[550px] rounded-lg overflow-hidden">
-      {projects.map((project, index) => (
-        <button
-          type="button"
-          class="absolute inset-0 transition-opacity duration-300"
-          x-bind:class={`activeIndex === ${index} ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'`}
-          x-on:click={`activeIndex = ${index}`}
-          aria-label={`View ${project.data.title} project details`}
-        >
-          <Image
-            src={project.loadedImage}
-            alt={project.data.title}
-            class="w-full h-full object-cover"
-            loading="eager"
-            format="webp"
-          />
-        </button>
-      ))}
-    </div>
+    <!-- Two-column grid for lg and xl (becomes 2nd and 3rd columns in xl's 3-col grid) -->
+    <div class="grid grid-cols-1 lg:grid-cols-[1fr_400px] xl:grid-cols-subgrid xl:col-span-2 gap-6 lg:gap-8">
 
-    <!-- Right: Projects Accordion (Inline) -->
-    <div class="flex flex-col lg:h-[550px] overflow-y-auto lg:border-t lg:border-bears-text-onDark/20">
-      {projects.map((project, index) => {
-        const itemId = `team-accordion-${index}`;
+      <!-- Left column: thumbnails + image -->
+      <div class="flex flex-col gap-3 lg:gap-4">
 
-        return (
-          <div class="border-t border-b border-bears-text-onDark/20">
+        <!-- Thumbnail Row for < xl: (horizontal above image) -->
+        <div class="flex flex-row justify-center gap-3 overflow-x-auto xl:hidden">
+          {projects.map((project, index) => (
             <button
               type="button"
-              class="w-full text-left py-4 px-2 text-base sm:text-lg font-semibold text-bears-text-onDark hover:text-bears-accent transition-colors duration-200 cursor-pointer"
+              class="shrink-0 w-24 h-24 aspect-square rounded-lg overflow-hidden border-2 transition-all duration-200 hover:cursor-pointer"
+              x-bind:class={`activeIndex === ${index} ? 'border-bears-accent scale-100' : 'border-transparent scale-95 hover:scale-100'`}
               x-on:click={`activeIndex = ${index}`}
-              x-bind:aria-expanded={`activeIndex === ${index} ? 'true' : 'false'`}
-              aria-controls={itemId}
+              aria-label={`View ${project.data.title} project`}
             >
-              {project.data.title}
+              <Image
+                src={project.loadedImage}
+                alt={project.data.title}
+                class="w-full h-full object-cover"
+                loading="eager"
+                format="webp"
+              />
             </button>
+          ))}
+        </div>
 
-            <div
-              id={itemId}
-              class="grid transition-[grid-template-rows] duration-300 ease-in-out"
-              x-bind:class={`activeIndex === ${index} ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'`}
+        <!-- Main Image -->
+        <div x-ref="mainImage" class="relative w-full aspect-4/3 rounded-lg overflow-hidden">
+          {projects.map((project, index) => (
+            <button
+              type="button"
+              class="absolute inset-0 transition-opacity duration-300"
+              x-bind:class={`activeIndex === ${index} ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'`}
+              x-on:click={`activeIndex = ${index}`}
+              aria-label={`View ${project.data.title} project details`}
             >
-              <div class="overflow-hidden">
-                <div class="pb-4 px-2">
-                  {project.data.headOfProject && (
-                    <p class="text-xs sm:text-sm text-bears-accent font-medium mb-2">
-                      {project.data.headOfProject}
-                    </p>
-                  )}
-                  <div
-                    class="text-sm sm:text-base text-bears-text-onDark/90 leading-relaxed"
-                    set:html={project.data.description}
-                  />
+              <Image
+                src={project.loadedImage}
+                alt={project.data.title}
+                class="w-full h-full object-cover"
+                loading="eager"
+                format="webp"
+              />
+            </button>
+          ))}
+        </div>
+
+      </div>
+
+      <!-- Projects Accordion -->
+      <div class="flex flex-col lg:h-[550px] overflow-y-auto lg:border-t lg:border-bears-text-onDark/20">
+        {projects.map((project, index) => {
+          const itemId = `team-accordion-${index}`;
+
+          return (
+            <div class="border-t border-b border-bears-text-onDark/20">
+              <button
+                type="button"
+                class="w-full text-left py-4 px-2 text-base sm:text-lg font-semibold text-bears-text-onDark hover:text-bears-accent transition-colors duration-200 cursor-pointer"
+                x-on:click={`activeIndex = ${index}`}
+                x-bind:aria-expanded={`activeIndex === ${index} ? 'true' : 'false'`}
+                aria-controls={itemId}
+              >
+                {project.data.title}
+              </button>
+
+              <div
+                id={itemId}
+                class="grid transition-[grid-template-rows] duration-300 ease-in-out"
+                x-bind:class={`activeIndex === ${index} ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'`}
+              >
+                <div class="overflow-hidden">
+                  <div class="pb-4 px-2">
+                    {project.data.headOfProject && (
+                      <p class="text-xs sm:text-sm text-bears-accent font-medium mb-2">
+                        {project.data.headOfProject}
+                      </p>
+                    )}
+                    <div
+                      class="text-sm sm:text-base text-bears-text-onDark/90 leading-relaxed"
+                      set:html={project.data.description}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        );
-      })}
+          );
+        })}
+      </div>
+
     </div>
 
   </div>
