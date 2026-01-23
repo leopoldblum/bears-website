@@ -10,9 +10,11 @@ interface Props {
   title: string;
   description: string;
   href?: string;
+  isCompleted?: boolean;
+  isUpcoming?: boolean;
 }
 
-const { coverImage, imageAlt, date, title, description, href } = Astro.props;
+const { coverImage, imageAlt, date, title, description, href, isCompleted, isUpcoming } = Astro.props;
 
 const Wrapper = href ? 'a' : 'div';
 ---
@@ -51,6 +53,54 @@ const Wrapper = href ? 'a' : 'div';
       {date}
     </span>
   </div>
+
+  <!-- Completed Badge - Top Right (only for completed projects) -->
+  {isCompleted && (
+    <div class="absolute top-4 right-4 z-10">
+      <span class="
+        flex items-center gap-2
+        text-xs
+        font-medium
+        uppercase
+        tracking-wide
+        text-white
+        bg-black/70
+        backdrop-blur-sm
+        px-3 py-1
+        rounded-full
+        shadow-md
+      ">
+        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+        </svg>
+        Completed
+      </span>
+    </div>
+  )}
+
+  <!-- Upcoming Badge - Top Right (only for upcoming events) -->
+  {isUpcoming && (
+    <div class="absolute top-4 right-4 z-10">
+      <span class="
+        flex items-center gap-2
+        text-xs
+        font-medium
+        uppercase
+        tracking-wide
+        text-white
+        bg-black/70
+        backdrop-blur-sm
+        px-3 py-1
+        rounded-full
+        shadow-md
+      ">
+        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+        </svg>
+        Upcoming
+      </span>
+    </div>
+  )}
 
   <!-- Title and Description - Bottom with Dynamic Gradient -->
   <div class="absolute inset-x-0 bottom-0 transition-all duration-300">

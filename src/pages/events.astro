@@ -109,6 +109,7 @@ const categoryLabelsMap = Object.fromEntries(
             title={event.title}
             description={event.description}
             href={`/events/${event.slug}`}
+            isUpcoming={event.date.getTime() >= new Date().setHours(0, 0, 0, 0)}
           />
         </div>
       ))}

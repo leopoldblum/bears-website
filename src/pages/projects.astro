@@ -21,8 +21,16 @@ const projectsWithImages = projectsWithLoadedImages.map((project: any) => ({
   coverImage: project.loadedImage,
 }));
 
-// Get category options from enum and build labels map
+// Get category options from enum and build custom labels map
 const projectCategories = CategoryProjectEnum.options;
+
+// const categoryLabelsMap = {
+//   'experimental-rocketry': 'Rockets',
+//   'science-and-experiments': 'Experiments',
+//   'robotics': 'Rovers',
+//   'other': 'Other'
+// };
+
 const categoryLabelsMap = Object.fromEntries(
   projectCategories.map(cat => [cat, getCategoryLabel(cat)])
 );
@@ -107,6 +115,7 @@ const categoryLabelsMap = Object.fromEntries(
             title={project.title}
             description={project.description}
             href={`/projects/${project.slug}`}
+            isCompleted={project.isProjectCompleted}
           />
         </div>
       ))}
