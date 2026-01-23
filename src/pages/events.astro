@@ -1,8 +1,11 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import PostShowcase from "../components/PostShowcase.astro";
+import CategoryFilter from "../components/CategoryFilter.astro";
 import { loadCollectionImages } from "../utils/imageLoader";
 import { getPublishedEvents } from "../utils/contentQueries";
+import { CategoryEventEnum } from "../types/content";
+import { getCategoryLabel } from "../utils/categoryLabels";
 
 // Get all published events (filtered and sorted)
 const sortedEvents = await getPublishedEvents();
@@ -16,23 +19,49 @@ const eventsWithImages = eventsWithLoadedImages.map((event: any) => ({
   slug: event.slug,
   coverImage: event.loadedImage,
 }));
+
+// Get category options from enum and build labels map
+const eventCategories = CategoryEventEnum.options;
+const categoryLabelsMap = Object.fromEntries(
+  eventCategories.map(cat => [cat, getCategoryLabel(cat)])
+);
 ---
 
 <BaseLayout title="Events">
-  <div class="container mx-auto px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+  <div
+    class="container mx-auto px-4 py-6 sm:px-6 sm:py-8 lg:px-8"
+    x-data="{ activeCategory: 'all' }"
+  >
     <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 sm:mb-8 lg:mb-12 text-bears-accent">
       Events
     </h1>
+
+    <!-- Category Filter -->
+    <div class="mb-6 sm:mb-8">
+      <CategoryFilter
+        categories={eventCategories}
+        categoryLabels={categoryLabelsMap}
+      />
+    </div>
+
+    <!-- Events Grid -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
       {eventsWithImages.map((event) => (
-        <PostShowcase
-          coverImage={event.coverImage}
-          imageAlt={event.title}
-          date={event.date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-          title={event.title}
-          description={event.description}
-          href={`/events/${event.slug}`}
-        />
+        <div
+          x-show={`activeCategory === 'all' || activeCategory === '${event.categoryEvent}'`}
+          x-transition:enter="transition ease-out duration-200"
+          x-transition:enter-start="opacity-0 scale-95"
+          x-transition:enter-end="opacity-100 scale-100"
+        >
+          <PostShowcase
+            coverImage={event.coverImage}
+            imageAlt={event.title}
+            date={event.date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+            title={event.title}
+            description={event.description}
+            href={`/events/${event.slug}`}
+          />
+        </div>
       ))}
     </div>
   </div>
