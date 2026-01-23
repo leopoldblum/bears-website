@@ -2,6 +2,7 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import PostShowcase from "../components/PostShowcase.astro";
 import CategoryFilter from "../components/CategoryFilter.astro";
+import Pagination from "../components/Pagination.astro";
 import { loadCollectionImages } from "../utils/imageLoader";
 import { getPublishedEvents } from "../utils/contentQueries";
 import { CategoryEventEnum } from "../types/content";
@@ -28,17 +29,55 @@ const categoryLabelsMap = Object.fromEntries(
 
 ---
 
+<script is:inline define:vars={{ eventsData: eventsWithImages.map((e, i) => ({
+  index: i,
+  category: e.categoryEvent,
+  dateTimestamp: e.date.getTime()
+})) }}>
+  window.eventsData = eventsData;
+</script>
+
 <BaseLayout title="Events">
   <div
     class="container mx-auto px-4 py-6 sm:px-6 sm:py-8 lg:px-8"
-    x-data="{ activeCategory: 'all', dateFilter: 'all', now: new Date().setHours(0,0,0,0) }"
+    x-data="{
+      activeCategory: 'all',
+      dateFilter: 'all',
+      now: new Date().setHours(0,0,0,0),
+      currentPage: 1,
+      itemsPerPage: 6,
+      get filteredIndices() {
+        return window.eventsData.reduce((acc, event) => {
+          const categoryMatch = this.activeCategory === 'all' || this.activeCategory === event.category;
+          const dateMatch = this.dateFilter === 'all' ||
+                           (this.dateFilter === 'upcoming' && event.dateTimestamp >= this.now) ||
+                           (this.dateFilter === 'past' && event.dateTimestamp < this.now);
+          if (categoryMatch && dateMatch) {
+            acc.push(event.index);
+          }
+          return acc;
+        }, []);
+      },
+      get totalPages() {
+        return Math.ceil(this.filteredIndices.length / this.itemsPerPage);
+      },
+      get paginatedIndices() {
+        const start = (this.currentPage - 1) * this.itemsPerPage;
+        const end = start + this.itemsPerPage;
+        return this.filteredIndices.slice(start, end);
+      },
+      goToPage(page) {
+        if (page < 1 || page > this.totalPages) return;
+        this.currentPage = page;
+      }
+    }"
   >
     <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 sm:mb-8 lg:mb-12 text-bears-accent">
       Events
     </h1>
 
     <!-- Category Filter -->
-    <div class="mb-4 sm:mb-6">
+    <div class="mb-4 sm:mb-6" @click="currentPage = 1">
       <CategoryFilter
         categories={eventCategories}
         categoryLabels={categoryLabelsMap}
@@ -46,7 +85,7 @@ const categoryLabelsMap = Object.fromEntries(
     </div>
 
     <!-- Date Filter (Upcoming/Past) -->
-    <div class="mb-6 sm:mb-8">
+    <div class="mb-6 sm:mb-8" @click="currentPage = 1">
       <CategoryFilter
         categories={['upcoming', 'past']}
         categoryLabels={{ upcoming: 'Upcoming', past: 'Past' }}
@@ -55,10 +94,10 @@ const categoryLabelsMap = Object.fromEntries(
     </div>
 
     <!-- Events Grid -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
-      {eventsWithImages.map((event) => (
+    <div class="events-grid grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+      {eventsWithImages.map((event, index) => (
         <div
-          x-show={`(activeCategory === 'all' || activeCategory === '${event.categoryEvent}') && (dateFilter === 'all' || (dateFilter === 'upcoming' && ${event.date.getTime()} >= now) || (dateFilter === 'past' && ${event.date.getTime()} < now))`}
+          x-show={`paginatedIndices.includes(${index})`}
           x-transition:enter="transition ease-out duration-200"
           x-transition:enter-start="opacity-0 scale-95"
           x-transition:enter-end="opacity-100 scale-100"
@@ -74,5 +113,8 @@ const categoryLabelsMap = Object.fromEntries(
         </div>
       ))}
     </div>
+
+    <!-- Pagination Controls -->
+    <Pagination />
   </div>
 </BaseLayout>
