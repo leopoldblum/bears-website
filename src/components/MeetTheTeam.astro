@@ -23,12 +23,31 @@ const projects = await loadCollectionImages(sortedProjects, 'project');
       const syncHeight = () => {
         const img = $refs.mainImage;
         const thumbs = $refs.thumbnails;
-        if (img && thumbs && window.innerWidth >= 1280) {
-          thumbs.style.height = img.offsetHeight + 'px';
+        const accordion = $refs.accordion;
+        if (img && window.innerWidth >= 1280) {
+          const height = img.offsetHeight + 'px';
+          if (thumbs) thumbs.style.height = height;
+          if (accordion) accordion.style.height = height;
         }
       };
       syncHeight();
       window.addEventListener('resize', syncHeight);
+
+      $watch('activeIndex', (index) => {
+        const thumbs = $refs.thumbnails;
+        if (thumbs) {
+          const btn = thumbs.children[index];
+          if (btn) btn.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+        const hThumbs = $refs.horizontalThumbnails;
+        if (hThumbs) {
+          const btn = hThumbs.children[index];
+          if (btn) {
+            const scrollLeft = btn.offsetLeft - hThumbs.offsetWidth / 2 + btn.offsetWidth / 2;
+            hThumbs.scrollTo({ left: scrollLeft, behavior: 'smooth' });
+          }
+        }
+      });
     })"
   >
 
@@ -60,7 +79,7 @@ const projects = await loadCollectionImages(sortedProjects, 'project');
       <div class="flex flex-col gap-3 lg:gap-4">
 
         <!-- Thumbnail Row for < xl: (horizontal above image) -->
-        <div class="flex flex-row gap-3 pb-2 sm:pb-0 overflow-x-auto sm:justify-center xl:hidden">
+        <div x-ref="horizontalThumbnails" class="flex flex-row gap-3 pb-2 sm:pb-0 overflow-x-auto sm:justify-center xl:hidden">
           {projects.map((project, index) => (
             <button
               type="button"
@@ -104,7 +123,7 @@ const projects = await loadCollectionImages(sortedProjects, 'project');
       </div>
 
       <!-- Projects Accordion -->
-      <div class="flex flex-col lg:h-[550px] overflow-y-auto lg:border-t lg:border-bears-text-onDark/20">
+      <div x-ref="accordion" class="flex flex-col lg:h-[550px] xl:h-auto overflow-y-auto lg:border-t lg:border-bears-text-onDark/20">
         {projects.map((project, index) => {
           const itemId = `team-accordion-${index}`;
 
