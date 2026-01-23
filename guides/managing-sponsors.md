@@ -2,7 +2,7 @@
 
 ## Quick Start
 
-1. Create a new `.md` file in the appropriate tier folder (`src/content/sponsors/gold/`, `silver/`, or `bronze/`)
+1. Create a new `.md` file in the appropriate tier folder (`src/content/sponsors/diamond/`, `platinum/`, `gold/`, `silver/`, or `bronze/`)
 2. Add the sponsor logo to `src/assets/sponsors/`
 3. Fill in the frontmatter fields using the template below
 
@@ -29,6 +29,8 @@ Leave the file empty after the frontmatter (no content needed in the markdown bo
 - **Supported formats:** `.jpg`, `.jpeg`, `.png`, `.webp`
 - **Important:** The build will fail if you specify an unsupported file extension. Only use the supported formats listed above.
 - Recommended sizes:
+  - Diamond: 192x192px
+  - Platinum: 176x176px
   - Gold: 160x160px
   - Silver: 80x80px
   - Bronze: 64x64px
@@ -39,8 +41,10 @@ Leave the file empty after the frontmatter (no content needed in the markdown bo
 
 **Tier** (automatically derived) - Sponsorship level
 - Automatically determined by the folder where the file is located
-- `gold/` folder → Gold tier (displayed first, largest logos)
-- `silver/` folder → Silver tier (displayed second, medium logos)
+- `diamond/` folder → Diamond tier (displayed first, largest logos)
+- `platinum/` folder → Platinum tier (displayed second, very large logos)
+- `gold/` folder → Gold tier (displayed third, large logos)
+- `silver/` folder → Silver tier (displayed fourth, medium logos)
 - `bronze/` folder → Bronze tier (displayed last, smallest logos)
 - No need to specify tier in frontmatter
 
@@ -50,8 +54,10 @@ Sponsors are organized in tier-specific subfolders:
 
 ```
 src/content/sponsors/
-├── gold/        (Gold tier sponsors - displayed first, largest logos)
-├── silver/      (Silver tier sponsors - displayed second, medium logos)
+├── diamond/     (Diamond tier sponsors - displayed first, largest logos)
+├── platinum/    (Platinum tier sponsors - displayed second, very large logos)
+├── gold/        (Gold tier sponsors - displayed third, large logos)
+├── silver/      (Silver tier sponsors - displayed fourth, medium logos)
 └── bronze/      (Bronze tier sponsors - displayed last, smallest logos)
 ```
 
@@ -76,7 +82,7 @@ url: "https://acme.example.com"
 
 **Logo**: Place `acme-logo.png` (160x160px) in `src/assets/sponsors/`
 
-**Note**: Tier is automatically set to "gold" because the file is in the `gold/` folder.
+**Note**: Tier is automatically set to "gold" because the file is in the `gold/` folder. This will display as the third tier (after diamond and platinum).
 
 ### Silver Tier Sponsor
 
@@ -92,7 +98,7 @@ url: "https://widgets.example.com"
 
 **Logo**: Place `widgets-logo.png` (80x80px) in `src/assets/sponsors/`
 
-**Note**: Tier is automatically set to "silver" because the file is in the `silver/` folder.
+**Note**: Tier is automatically set to "silver" because the file is in the `silver/` folder. This will display as the fourth tier.
 
 ### Bronze Tier Sponsor (No URL)
 

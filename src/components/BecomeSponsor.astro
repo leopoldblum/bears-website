@@ -24,7 +24,7 @@ const sponsorsWithImages = await Promise.all(
     }) || defaultSponsorImage;
 
     // Derive tier from folder structure (e.g., "gold/sponsor-name" -> "gold")
-    const tier = sponsor.id.split('/')[0] as 'bronze' | 'silver' | 'gold';
+    const tier = sponsor.id.split('/')[0] as 'bronze' | 'silver' | 'gold' | 'platinum' | 'diamond';
 
     return {
       ...sponsor.data,
@@ -39,6 +39,8 @@ const sponsorsWithImages = await Promise.all(
 import { sortBySlug } from '../utils/contentQueries';
 
 // Group sponsors by tier and sort alphabetically within each tier
+const diamondSponsors = sortBySlug(sponsorsWithImages.filter(s => s.tier === 'diamond'));
+const platinumSponsors = sortBySlug(sponsorsWithImages.filter(s => s.tier === 'platinum'));
 const goldSponsors = sortBySlug(sponsorsWithImages.filter(s => s.tier === 'gold'));
 const silverSponsors = sortBySlug(sponsorsWithImages.filter(s => s.tier === 'silver'));
 const bronzeSponsors = sortBySlug(sponsorsWithImages.filter(s => s.tier === 'bronze'));
@@ -51,10 +53,26 @@ const bronzeSponsors = sortBySlug(sponsorsWithImages.filter(s => s.tier === 'bro
       Become a Sponsor
     </h2>
 
+    <!-- Diamond Sponsors Tier -->
+    <SponsorTier sponsors={diamondSponsors} tier="diamond" />
+
+    <!-- Divider: Diamond to other tiers -->
+    {diamondSponsors.length > 0 && (platinumSponsors.length > 0 || goldSponsors.length > 0 || silverSponsors.length > 0 || bronzeSponsors.length > 0) && (
+      <hr class="w-full max-w-3xl mx-auto border-t border-bears-text-onLight opacity-20 my-8 sm:my-10 lg:my-12" />
+    )}
+
+    <!-- Platinum Sponsors Tier -->
+    <SponsorTier sponsors={platinumSponsors} tier="platinum" />
+
+    <!-- Divider: Platinum to other tiers -->
+    {platinumSponsors.length > 0 && (goldSponsors.length > 0 || silverSponsors.length > 0 || bronzeSponsors.length > 0) && (
+      <hr class="w-full max-w-3xl mx-auto border-t border-bears-text-onLight opacity-20 my-8 sm:my-10 lg:my-12" />
+    )}
+
     <!-- Gold Sponsors Tier -->
     <SponsorTier sponsors={goldSponsors} tier="gold" />
 
-    <!-- Divider 1: Only show if gold sponsors exist AND (silver OR bronze exist) -->
+    <!-- Divider: Gold to other tiers -->
     {goldSponsors.length > 0 && (silverSponsors.length > 0 || bronzeSponsors.length > 0) && (
       <hr class="w-full max-w-3xl mx-auto border-t border-bears-text-onLight opacity-20 my-8 sm:my-10 lg:my-12" />
     )}

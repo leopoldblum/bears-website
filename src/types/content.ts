@@ -15,7 +15,7 @@ export type PostType = 'events' | 'projects';
  * Sponsor tier levels for the BecomeSponsor section.
  * Determines logo size, spacing, and display order.
  */
-export type SponsorTier = 'bronze' | 'silver' | 'gold';
+export type SponsorTier = 'bronze' | 'silver' | 'gold' | 'platinum' | 'diamond';
 
 /**
  * Zod enum for event categories used for filtering and organization.

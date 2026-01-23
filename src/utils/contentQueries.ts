@@ -187,6 +187,8 @@ export async function getSponsorsByTier() {
   const allSponsors = await getCollection('sponsors');
 
   const groupedSponsors = {
+    diamond: [] as CollectionEntry<'sponsors'>[],
+    platinum: [] as CollectionEntry<'sponsors'>[],
     gold: [] as CollectionEntry<'sponsors'>[],
     silver: [] as CollectionEntry<'sponsors'>[],
     bronze: [] as CollectionEntry<'sponsors'>[],
@@ -194,12 +196,14 @@ export async function getSponsorsByTier() {
 
   // Group sponsors by tier (derived from folder structure)
   allSponsors.forEach(sponsor => {
-    const tier = sponsor.id.split('/')[0] as 'bronze' | 'silver' | 'gold';
+    const tier = sponsor.id.split('/')[0] as 'bronze' | 'silver' | 'gold' | 'platinum' | 'diamond';
     groupedSponsors[tier].push(sponsor);
   });
 
   // Sort each tier alphabetically by slug
   return {
+    diamond: sortBySlug(groupedSponsors.diamond),
+    platinum: sortBySlug(groupedSponsors.platinum),
     gold: sortBySlug(groupedSponsors.gold),
     silver: sortBySlug(groupedSponsors.silver),
     bronze: sortBySlug(groupedSponsors.bronze),

@@ -19,6 +19,16 @@ const { sponsors, tier } = Astro.props;
 
 // Define tier-specific styling configuration
 const tierConfig = {
+  diamond: {
+    sizeClasses: 'h-32 w-32 sm:h-40 sm:w-40 lg:h-48 lg:w-48',
+    gapClasses: 'gap-10 sm:gap-14 lg:gap-20',
+    marginClasses: 'mb-6 sm:mb-8',
+  },
+  platinum: {
+    sizeClasses: 'h-28 w-28 sm:h-36 sm:w-36 lg:h-44 lg:w-44',
+    gapClasses: 'gap-9 sm:gap-12 lg:gap-18',
+    marginClasses: 'mb-6 sm:mb-8',
+  },
   gold: {
     sizeClasses: 'h-24 w-24 sm:h-32 sm:w-32 lg:h-40 lg:w-40',
     gapClasses: 'gap-8 sm:gap-10 lg:gap-12',
@@ -36,7 +46,7 @@ const tierConfig = {
   },
 };
 
-const config = tierConfig[tier];
+const config = tierConfig[tier] || tierConfig.bronze;
 ---
 
 {sponsors.length > 0 && (
