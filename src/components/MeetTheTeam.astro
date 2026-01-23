@@ -60,7 +60,7 @@ const projects = await loadCollectionImages(sortedProjects, 'project');
       <div class="flex flex-col gap-3 lg:gap-4">
 
         <!-- Thumbnail Row for < xl: (horizontal above image) -->
-        <div class="flex flex-row justify-center gap-3 overflow-x-auto xl:hidden">
+        <div class="flex flex-row gap-3 pb-2 overflow-x-auto xl:hidden">
           {projects.map((project, index) => (
             <button
               type="button"
