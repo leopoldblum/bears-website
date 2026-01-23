@@ -8,6 +8,7 @@ coverImage: "project-2.jpg"
 isDraft: false
 displayMeetTheTeam: true
 headOfProject: "Emma Watson"
+isProjectCompleted: true
 ---
 
 ## Project Overview

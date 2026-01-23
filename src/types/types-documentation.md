@@ -158,6 +158,36 @@ const rocketryProjects = allProjects.filter(p => p.data.categoryProject === 'exp
 
 ---
 
+#### Project Schema Fields
+
+In addition to category types, projects have specific schema fields defined in [src/content/config.ts](../content/config.ts):
+
+**`isProjectCompleted`** (boolean, required)
+- Indicates whether a project is completed or ongoing
+- **Required field** - must be explicitly set for all projects
+- Type: `z.boolean()` (no default value)
+- When `true`: project is completed
+- When `false`: project is ongoing/in-progress
+
+**Usage:**
+```typescript
+const allProjects = await getCollection('projects');
+const completedProjects = allProjects.filter(p => p.data.isProjectCompleted === true);
+const ongoingProjects = allProjects.filter(p => p.data.isProjectCompleted === false);
+```
+
+**Frontmatter example:**
+```yaml
+---
+title: "CubeSat Tracking System"
+date: 2025-12-10
+categoryProject: "experimental-rocketry"
+isProjectCompleted: true
+---
+```
+
+---
+
 #### `CoverImageType`
 
 Zod enum for discriminating between default and custom cover images.

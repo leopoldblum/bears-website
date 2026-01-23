@@ -7,6 +7,7 @@ tags: ["ai", "robotics", "navigation", "machine-learning", "computer-vision"]
 coverImage: "project-2.jpg"
 displayMeetTheTeam: false
 headOfProject: "Sophie Taylor"
+isProjectCompleted: true
 ---
 
 ## Overview

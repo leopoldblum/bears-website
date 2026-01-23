@@ -76,6 +76,7 @@ const projectsCollection = defineCollection({
     isDraft: z.boolean().default(false).optional(),
     displayMeetTheTeam: z.boolean().optional(),
     headOfProject: z.string().optional(),
+    isProjectCompleted: z.boolean(),
   }).refine(
     (data) => {
       // If displayMeetTheTeam is true, headOfProject must be provided

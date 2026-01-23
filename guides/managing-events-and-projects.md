@@ -48,6 +48,7 @@ tags: ["aerospace", "rocketry"]
 coverImage: "project-image.jpg"  # Optional: Custom cover image
 displayMeetTheTeam: false  # Optional: Show in Meet the Team section
 headOfProject: "Student Name"  # Required if displayMeetTheTeam is true
+isProjectCompleted: true  # Required: true for completed, false for ongoing
 isDraft: false
 ---
 
@@ -124,6 +125,15 @@ Write your full project description here using markdown.
 - Example: `"Emma Watson"`, `"Alice Johnson"`
 - Only displayed when project appears in MeetTheTeam component
 
+**`isProjectCompleted`** (required for projects) - Project completion status
+- **Required field** - you must explicitly specify the completion status
+- When `true`: project is completed
+- When `false`: project is ongoing/in-progress
+- Use this to distinguish between finished projects and active work
+- Examples:
+  - Past projects from previous years → `true`
+  - Current projects still in development → `false`
+
 ## Complete Examples
 
 ### Event Example
@@ -169,6 +179,7 @@ coverImage: "cubesat-tracker.jpg"
 isDraft: false
 displayMeetTheTeam: true
 headOfProject: "Alice Johnson"
+isProjectCompleted: true
 ---
 
 ## Project Overview

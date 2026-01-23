@@ -8,6 +8,7 @@ coverImage: "project-3.jpg"
 isDraft: false
 displayMeetTheTeam: true
 headOfProject: "Julia Anderson"
+isProjectCompleted: true
 ---
 
 ## Project Overview

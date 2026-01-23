@@ -8,6 +8,7 @@ coverImage: "project-1.jpg"
 isDraft: false
 displayMeetTheTeam: true
 headOfProject: "Marcus Chen"
+isProjectCompleted: false
 ---
 
 ## Project Overview

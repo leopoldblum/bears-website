@@ -7,6 +7,7 @@ tags: ["aerospace", "propulsion", "testing", "rocketry", "engineering"]
 coverImage: "project-1.jpg"
 displayMeetTheTeam: false
 headOfProject: "David Martinez"
+isProjectCompleted: true
 ---
 
 ## Overview
