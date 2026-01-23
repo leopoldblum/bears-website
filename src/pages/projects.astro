@@ -30,17 +30,26 @@ const categoryLabelsMap = Object.fromEntries(
 <BaseLayout title="Projects">
   <div
     class="container mx-auto px-4 py-6 sm:px-6 sm:py-8 lg:px-8"
-    x-data="{ activeCategory: 'all' }"
+    x-data="{ activeCategory: 'all', completionStatus: 'all' }"
   >
     <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 sm:mb-8 lg:mb-12 text-bears-accent">
       Projects
     </h1>
 
     <!-- Category Filter -->
-    <div class="mb-6 sm:mb-8">
+    <div class="mb-4 sm:mb-6">
       <CategoryFilter
         categories={projectCategories}
         categoryLabels={categoryLabelsMap}
+      />
+    </div>
+
+    <!-- Completion Status Filter -->
+    <div class="mb-6 sm:mb-8">
+      <CategoryFilter
+        categories={['completed', 'ongoing']}
+        categoryLabels={{ completed: 'Completed', ongoing: 'Ongoing' }}
+        stateVariable="completionStatus"
       />
     </div>
 
@@ -48,7 +57,7 @@ const categoryLabelsMap = Object.fromEntries(
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
       {projectsWithImages.map((project) => (
         <div
-          x-show={`activeCategory === 'all' || activeCategory === '${project.categoryProject}'`}
+          x-show={`(activeCategory === 'all' || activeCategory === '${project.categoryProject}') && (completionStatus === 'all' || (completionStatus === 'completed' && ${project.isProjectCompleted}) || (completionStatus === 'ongoing' && !${project.isProjectCompleted}))`}
           x-transition:enter="transition ease-out duration-200"
           x-transition:enter-start="opacity-0 scale-95"
           x-transition:enter-end="opacity-100 scale-100"

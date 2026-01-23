@@ -9,9 +9,15 @@ interface Props {
    * Mapping of category values to human-readable labels
    */
   categoryLabels: Record<string, string>;
+
+  /**
+   * Alpine.js state variable name to use for tracking the active filter
+   * @default 'activeCategory'
+   */
+  stateVariable?: string;
 }
 
-const { categories, categoryLabels } = Astro.props;
+const { categories, categoryLabels, stateVariable = 'activeCategory' } = Astro.props;
 ---
 
 <div class="flex flex-wrap justify-end gap-2 sm:gap-3">
@@ -19,8 +25,8 @@ const { categories, categoryLabels } = Astro.props;
   <button
     type="button"
     class="px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-sm sm:text-base font-medium transition-all duration-200 cursor-pointer"
-    :class="activeCategory === 'all' ? 'bg-bears-accent text-bears-text-onDark' : 'bg-bears-bg border border-bears-accent-muted text-bears-text-onDark hover:bg-bears-accent hover:border-bears-accent'"
-    @click="activeCategory = 'all'"
+    :class={`${stateVariable} === 'all' ? 'bg-bears-accent text-bears-text-onDark' : 'bg-bears-bg border border-bears-accent-muted text-bears-text-onDark hover:bg-bears-accent hover:border-bears-accent'`}
+    @click={`${stateVariable} = 'all'`}
   >
     All
   </button>
@@ -30,8 +36,8 @@ const { categories, categoryLabels } = Astro.props;
     <button
       type="button"
       class="px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-sm sm:text-base font-medium transition-all duration-200 cursor-pointer"
-      :class={`activeCategory === '${category}' ? 'bg-bears-accent text-bears-text-onDark' : 'bg-bears-bg border border-bears-accent-muted text-bears-text-onDark hover:bg-bears-accent hover:border-bears-accent'`}
-      @click={`activeCategory = '${category}'`}
+      :class={`${stateVariable} === '${category}' ? 'bg-bears-accent text-bears-text-onDark' : 'bg-bears-bg border border-bears-accent-muted text-bears-text-onDark hover:bg-bears-accent hover:border-bears-accent'`}
+      @click={`${stateVariable} = '${category}'`}
     >
       {categoryLabels[category] || category}
     </button>
