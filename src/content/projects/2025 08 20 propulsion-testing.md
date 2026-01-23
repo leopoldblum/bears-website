@@ -5,7 +5,7 @@ date: 2025-08-20
 categoryProject: "experimental-rocketry"
 tags: ["aerospace", "propulsion", "testing", "rocketry", "engineering"]
 coverImage: "project-1.jpg"
-displayMeetTheTeam: false
+displayMeetTheTeam: true
 headOfProject: "David Martinez"
 isProjectCompleted: true
 ---

@@ -5,7 +5,7 @@ date: 2025-07-10
 categoryProject: "science-and-experiments"
 tags: ["ai", "robotics", "navigation", "machine-learning", "computer-vision"]
 coverImage: "project-2.jpg"
-displayMeetTheTeam: false
+displayMeetTheTeam: true
 headOfProject: "Sophie Taylor"
 isProjectCompleted: true
 ---
