@@ -1,7 +1,7 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import PostShowcase from "../components/PostShowcase.astro";
-import CategoryFilter from "../components/CategoryFilter.astro";
+import FilterMenu from "../components/FilterMenu.astro";
 import Pagination from "../components/Pagination.astro";
 import { loadCollectionImages } from "../utils/imageLoader";
 import { getPublishedProjects } from "../utils/contentQueries";
@@ -48,10 +48,19 @@ const categoryLabelsMap = Object.fromEntries(
   <div
     class="container mx-auto px-4 py-6 sm:px-6 sm:py-8 lg:px-8"
     x-data="{
+      filterMenuOpen: false,
       activeCategory: 'all',
       completionStatus: 'all',
       currentPage: 1,
       itemsPerPage: 6,
+      get hasActiveFilters() {
+        return this.activeCategory !== 'all' || this.completionStatus !== 'all';
+      },
+      clearFilters() {
+        this.activeCategory = 'all';
+        this.completionStatus = 'all';
+        this.currentPage = 1;
+      },
       get filteredIndices() {
         return window.projectsData.reduce((acc, project) => {
           const categoryMatch = this.activeCategory === 'all' || this.activeCategory === project.category;
@@ -78,24 +87,25 @@ const categoryLabelsMap = Object.fromEntries(
       }
     }"
   >
-    <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 sm:mb-8 lg:mb-12 text-bears-accent">
-      Projects
-    </h1>
-
-    <!-- Category Filter -->
-    <div class="mb-4 sm:mb-6" @click="currentPage = 1">
-      <CategoryFilter
-        categories={projectCategories}
-        categoryLabels={categoryLabelsMap}
-      />
-    </div>
-
-    <!-- Completion Status Filter -->
-    <div class="mb-6 sm:mb-8" @click="currentPage = 1">
-      <CategoryFilter
-        categories={['completed', 'ongoing']}
-        categoryLabels={{ completed: 'Completed', ongoing: 'Ongoing' }}
-        stateVariable="completionStatus"
+    <div class="flex items-center justify-between mb-6 sm:mb-8 lg:mb-12">
+      <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-bears-accent">
+        Projects
+      </h1>
+      <FilterMenu
+        filterGroups={[
+          {
+            label: 'Category',
+            stateVariable: 'activeCategory',
+            categories: projectCategories,
+            categoryLabels: categoryLabelsMap
+          },
+          {
+            label: 'Status',
+            stateVariable: 'completionStatus',
+            categories: ['completed', 'ongoing'],
+            categoryLabels: { completed: 'Completed', ongoing: 'Ongoing' }
+          }
+        ]}
       />
     </div>
 
