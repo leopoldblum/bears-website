@@ -2,6 +2,7 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import PostShowcase from "../components/PostShowcase.astro";
 import FilterMenu from "../components/FilterMenu.astro";
+import SortMenu from "../components/SortMenu.astro";
 import Pagination from "../components/Pagination.astro";
 import { loadCollectionImages } from "../utils/imageLoader";
 import { getPublishedEvents } from "../utils/contentQueries";
@@ -42,8 +43,10 @@ const categoryLabelsMap = Object.fromEntries(
     class="container mx-auto px-4 py-6 sm:px-6 sm:py-8 lg:px-8"
     x-data="{
       filterMenuOpen: false,
+      sortMenuOpen: false,
       activeCategory: [],
       dateFilter: [],
+      sortOrder: 'newest',
       now: new Date().setHours(0,0,0,0),
       currentPage: 1,
       itemsPerPage: 6,
@@ -65,7 +68,7 @@ const categoryLabelsMap = Object.fromEntries(
         this.currentPage = 1;
       },
       get filteredIndices() {
-        return window.eventsData.reduce((acc, event) => {
+        const filtered = window.eventsData.reduce((acc, event) => {
           const categoryMatch = this.activeCategory.length === 0 || this.activeCategory.includes(event.category);
           const dateMatch = this.dateFilter.length === 0 ||
                            (this.dateFilter.includes('upcoming') && event.dateTimestamp >= this.now) ||
@@ -75,6 +78,15 @@ const categoryLabelsMap = Object.fromEntries(
           }
           return acc;
         }, []);
+
+        // Sort by date based on sortOrder
+        filtered.sort((a, b) => {
+          const dateA = window.eventsData[a].dateTimestamp;
+          const dateB = window.eventsData[b].dateTimestamp;
+          return this.sortOrder === 'newest' ? dateB - dateA : dateA - dateB;
+        });
+
+        return filtered;
       },
       get totalPages() {
         return Math.ceil(this.filteredIndices.length / this.itemsPerPage);
@@ -94,22 +106,25 @@ const categoryLabelsMap = Object.fromEntries(
       <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-bears-accent">
         Events
       </h1>
-      <FilterMenu
-        filterGroups={[
-          {
-            label: 'Category',
-            stateVariable: 'activeCategory',
-            categories: eventCategories,
-            categoryLabels: categoryLabelsMap
-          },
-          {
-            label: 'Date',
-            stateVariable: 'dateFilter',
-            categories: ['upcoming', 'past'],
-            categoryLabels: { upcoming: 'Upcoming', past: 'Past' }
-          }
-        ]}
-      />
+      <div class="flex items-center gap-2">
+        <SortMenu />
+        <FilterMenu
+          filterGroups={[
+            {
+              label: 'Category',
+              stateVariable: 'activeCategory',
+              categories: eventCategories,
+              categoryLabels: categoryLabelsMap
+            },
+            {
+              label: 'Date',
+              stateVariable: 'dateFilter',
+              categories: ['upcoming', 'past'],
+              categoryLabels: { upcoming: 'Upcoming', past: 'Past' }
+            }
+          ]}
+        />
+      </div>
     </div>
 
     <!-- Events Grid -->
@@ -117,6 +132,7 @@ const categoryLabelsMap = Object.fromEntries(
       {eventsWithImages.map((event, index) => (
         <div
           x-show={`paginatedIndices.includes(${index})`}
+          :style={`'order: ' + (paginatedIndices.indexOf(${index}) !== -1 ? paginatedIndices.indexOf(${index}) : 9999)`}
           x-transition:enter="transition ease-out duration-200"
           x-transition:enter-start="opacity-0 scale-95"
           x-transition:enter-end="opacity-100 scale-100"

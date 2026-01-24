@@ -18,3 +18,50 @@ body {
 [x-cloak] {
   display: none !important;
 }
+
+/* Filter chip stagger animation */
+.filter-chip {
+  animation: filterChipIn 0.25s ease-out both;
+}
+
+.filter-group {
+  animation: filterGroupIn 0.3s ease-out both;
+}
+
+@keyframes filterChipIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes filterGroupIn {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Sort option stagger animation */
+.sort-option {
+  animation: sortOptionIn 0.2s ease-out both;
+}
+
+@keyframes sortOptionIn {
+  from {
+    opacity: 0;
+    transform: translateX(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}

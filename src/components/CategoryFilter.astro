@@ -20,18 +20,18 @@ interface Props {
 const { categories, categoryLabels, stateVariable = 'activeCategory' } = Astro.props;
 ---
 
-<div class="flex flex-col gap-2">
-  {categories.map((category) => (
-    <label
-      class="flex items-center gap-3 w-full px-4 py-2.5 rounded-lg text-sm font-medium text-bears-text-onDark bg-bears-bg/90 border border-bears-bg-light/60 hover:bg-bears-accent/20 hover:border-bears-accent transition-all duration-200 cursor-pointer select-none"
+<div class="flex flex-wrap gap-2">
+  {categories.map((category, index) => (
+    <button
+      type="button"
+      @click={`toggleFilter(${stateVariable}, '${category}')`}
+      :class={`${stateVariable}.includes('${category}')
+        ? 'bg-bears-accent text-white border-bears-accent shadow-[0_0_12px_rgba(197,14,31,0.35)]'
+        : 'bg-transparent text-bears-text-onDark/80 border-white/15 hover:border-bears-accent/50 hover:text-bears-text-onDark'`}
+      class="filter-chip px-3.5 py-1.5 text-sm font-medium rounded-md border transition-all duration-200 cursor-pointer select-none"
+      style={`animation-delay: ${index * 40}ms`}
     >
-      <input
-        type="checkbox"
-        :checked={`${stateVariable}.includes('${category}')`}
-        @change={`toggleFilter(${stateVariable}, '${category}')`}
-        class="w-4 h-4 rounded border-bears-accent-muted bg-bears-bg text-bears-accent focus:ring-bears-accent focus:ring-offset-bears-bg accent-bears-accent cursor-pointer"
-      />
-      <span>{categoryLabels[category] || category}</span>
-    </label>
+      {categoryLabels[category] || category}
+    </button>
   ))}
 </div>
