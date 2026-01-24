@@ -42,25 +42,34 @@ const categoryLabelsMap = Object.fromEntries(
     class="container mx-auto px-4 py-6 sm:px-6 sm:py-8 lg:px-8"
     x-data="{
       filterMenuOpen: false,
-      activeCategory: 'all',
-      dateFilter: 'all',
+      activeCategory: [],
+      dateFilter: [],
       now: new Date().setHours(0,0,0,0),
       currentPage: 1,
       itemsPerPage: 6,
       get hasActiveFilters() {
-        return this.activeCategory !== 'all' || this.dateFilter !== 'all';
+        return this.activeCategory.length > 0 || this.dateFilter.length > 0;
       },
       clearFilters() {
-        this.activeCategory = 'all';
-        this.dateFilter = 'all';
+        this.activeCategory = [];
+        this.dateFilter = [];
+        this.currentPage = 1;
+      },
+      toggleFilter(array, value) {
+        const idx = array.indexOf(value);
+        if (idx === -1) {
+          array.push(value);
+        } else {
+          array.splice(idx, 1);
+        }
         this.currentPage = 1;
       },
       get filteredIndices() {
         return window.eventsData.reduce((acc, event) => {
-          const categoryMatch = this.activeCategory === 'all' || this.activeCategory === event.category;
-          const dateMatch = this.dateFilter === 'all' ||
-                           (this.dateFilter === 'upcoming' && event.dateTimestamp >= this.now) ||
-                           (this.dateFilter === 'past' && event.dateTimestamp < this.now);
+          const categoryMatch = this.activeCategory.length === 0 || this.activeCategory.includes(event.category);
+          const dateMatch = this.dateFilter.length === 0 ||
+                           (this.dateFilter.includes('upcoming') && event.dateTimestamp >= this.now) ||
+                           (this.dateFilter.includes('past') && event.dateTimestamp < this.now);
           if (categoryMatch && dateMatch) {
             acc.push(event.index);
           }

@@ -49,24 +49,33 @@ const categoryLabelsMap = Object.fromEntries(
     class="container mx-auto px-4 py-6 sm:px-6 sm:py-8 lg:px-8"
     x-data="{
       filterMenuOpen: false,
-      activeCategory: 'all',
-      completionStatus: 'all',
+      activeCategory: [],
+      completionStatus: [],
       currentPage: 1,
       itemsPerPage: 6,
       get hasActiveFilters() {
-        return this.activeCategory !== 'all' || this.completionStatus !== 'all';
+        return this.activeCategory.length > 0 || this.completionStatus.length > 0;
       },
       clearFilters() {
-        this.activeCategory = 'all';
-        this.completionStatus = 'all';
+        this.activeCategory = [];
+        this.completionStatus = [];
+        this.currentPage = 1;
+      },
+      toggleFilter(array, value) {
+        const idx = array.indexOf(value);
+        if (idx === -1) {
+          array.push(value);
+        } else {
+          array.splice(idx, 1);
+        }
         this.currentPage = 1;
       },
       get filteredIndices() {
         return window.projectsData.reduce((acc, project) => {
-          const categoryMatch = this.activeCategory === 'all' || this.activeCategory === project.category;
-          const statusMatch = this.completionStatus === 'all' ||
-                             (this.completionStatus === 'completed' && project.isCompleted) ||
-                             (this.completionStatus === 'ongoing' && !project.isCompleted);
+          const categoryMatch = this.activeCategory.length === 0 || this.activeCategory.includes(project.category);
+          const statusMatch = this.completionStatus.length === 0 ||
+                             (this.completionStatus.includes('completed') && project.isCompleted) ||
+                             (this.completionStatus.includes('ongoing') && !project.isCompleted);
           if (categoryMatch && statusMatch) {
             acc.push(project.index);
           }

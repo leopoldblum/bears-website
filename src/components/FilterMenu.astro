@@ -77,11 +77,12 @@ const { filterGroups } = Astro.props;
     x-transition:leave-end="opacity-0 -translate-y-2"
     @click.away="filterMenuOpen = false"
     @keydown.escape.window="filterMenuOpen = false"
-    class="absolute right-0 top-full mt-2 z-30 w-72 sm:w-80 bg-bears-bg border border-bears-accent-muted rounded-lg shadow-xl p-4"
+    class="absolute right-0 top-full mt-2 z-30 w-72 sm:w-80 border border-bears-text-onDark/60 rounded-lg shadow-xl p-5"
+    style="background: linear-gradient(to bottom left, #2a2a2a 0%, rgba(26, 26, 26, 0.9) 100%);"
   >
     <!-- Panel Header -->
     <div class="flex items-center justify-between mb-4">
-      <h3 class="text-lg font-semibold text-bears-text-onDark">Filters</h3>
+      <h3 class="text-lg font-semibold text-bears-text-onDark select-none">Filters</h3>
       <button
         type="button"
         @click="clearFilters()"
@@ -94,7 +95,7 @@ const { filterGroups } = Astro.props;
     <!-- Filter Groups -->
     {filterGroups.map((group, index) => (
       <div class={index < filterGroups.length - 1 ? "mb-4" : ""}>
-        <h4 class="text-sm font-medium text-bears-text-muted mb-2">{group.label}</h4>
+        <h4 class="text-sm font-medium text-bears-text-onDark mb-2 select-none">{group.label}</h4>
         <div @click="currentPage = 1">
           <CategoryFilter
             categories={group.categories}

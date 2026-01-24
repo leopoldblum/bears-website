@@ -11,7 +11,7 @@ interface Props {
   categoryLabels: Record<string, string>;
 
   /**
-   * Alpine.js state variable name to use for tracking the active filter
+   * Alpine.js state variable name to use for tracking the active filter (should be an array)
    * @default 'activeCategory'
    */
   stateVariable?: string;
@@ -20,26 +20,18 @@ interface Props {
 const { categories, categoryLabels, stateVariable = 'activeCategory' } = Astro.props;
 ---
 
-<div class="flex flex-wrap justify-end gap-2 sm:gap-3">
-  <!-- "All" button -->
-  <button
-    type="button"
-    class="px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-sm sm:text-base font-medium transition-all duration-200 cursor-pointer"
-    :class={`${stateVariable} === 'all' ? 'bg-bears-accent text-bears-text-onDark' : 'bg-bears-bg border border-bears-accent-muted text-bears-text-onDark hover:bg-bears-accent hover:border-bears-accent'`}
-    @click={`${stateVariable} = 'all'`}
-  >
-    All
-  </button>
-
-  <!-- Category buttons -->
+<div class="flex flex-col gap-2">
   {categories.map((category) => (
-    <button
-      type="button"
-      class="px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-sm sm:text-base font-medium transition-all duration-200 cursor-pointer"
-      :class={`${stateVariable} === '${category}' ? 'bg-bears-accent text-bears-text-onDark' : 'bg-bears-bg border border-bears-accent-muted text-bears-text-onDark hover:bg-bears-accent hover:border-bears-accent'`}
-      @click={`${stateVariable} = '${category}'`}
+    <label
+      class="flex items-center gap-3 w-full px-4 py-2.5 rounded-lg text-sm font-medium text-bears-text-onDark bg-bears-bg border border-bears-bg-light/60 hover:bg-bears-accent/20 hover:border-bears-accent transition-all duration-200 cursor-pointer select-none"
     >
-      {categoryLabels[category] || category}
-    </button>
+      <input
+        type="checkbox"
+        :checked={`${stateVariable}.includes('${category}')`}
+        @change={`toggleFilter(${stateVariable}, '${category}')`}
+        class="w-4 h-4 rounded border-bears-accent-muted bg-bears-bg text-bears-accent focus:ring-bears-accent focus:ring-offset-bears-bg accent-bears-accent cursor-pointer"
+      />
+      <span>{categoryLabels[category] || category}</span>
+    </label>
   ))}
 </div>
