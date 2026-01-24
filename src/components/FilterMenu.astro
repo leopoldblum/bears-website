@@ -77,8 +77,7 @@ const { filterGroups } = Astro.props;
     x-transition:leave-end="opacity-0 -translate-y-2"
     @click.away="filterMenuOpen = false"
     @keydown.escape.window="filterMenuOpen = false"
-    class="absolute right-0 top-full mt-2 z-30 w-72 sm:w-80 border border-bears-text-onDark/60 rounded-lg shadow-xl p-5"
-    style="background: linear-gradient(to bottom left, #2a2a2a 0%, rgba(26, 26, 26, 0.9) 100%);"
+    class="absolute right-0 top-full mt-2 z-30 w-72 sm:w-80 bg-black/30 backdrop-blur-xl border border-white/20 rounded-xl shadow-2xl p-5"
   >
     <!-- Panel Header -->
     <div class="flex items-center justify-between mb-4">
