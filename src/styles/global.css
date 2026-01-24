@@ -66,6 +66,22 @@ body {
   }
 }
 
+/* Accordion item stagger animation */
+.accordion-item {
+  animation: accordionItemIn 0.3s ease-out both;
+}
+
+@keyframes accordionItemIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* PostShowcase card entrance animation */
 .showcase-card {
   animation: showcaseCardIn 0.4s ease-out both;
@@ -98,7 +114,8 @@ body {
 
 /* Respect user preference for reduced motion */
 @media (prefers-reduced-motion: reduce) {
-  .showcase-card {
+  .showcase-card,
+  .accordion-item {
     animation: none;
   }
 

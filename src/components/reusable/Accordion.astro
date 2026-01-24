@@ -24,7 +24,7 @@ const {
 ---
 
 <div
-  class="flex flex-col lg:border-y lg:border-bears-text-onDark/20"
+  class="flex flex-col gap-2"
   style={`width: ${width}`}
   x-data={`{
     activeIndex: ${defaultOpen !== null && defaultOpen !== undefined && !allowMultiple ? defaultOpen : 'null'},
@@ -39,12 +39,16 @@ const {
 >
   {items.map((item, index) => {
     const itemId = `accordion-item-${index}`;
+    const isNotLast = index < items.length - 1;
 
     return (
-      <div class="border-t border-b border-bears-text-onDark/20">
+      <div
+        class="accordion-item rounded-lg overflow-hidden"
+        style={`animation-delay: ${index * 60}ms`}
+      >
         <button
           type="button"
-          class="w-full text-left py-4 px-2 text-base sm:text-lg font-semibold text-bears-text-onDark hover:text-bears-accent transition-colors duration-200 cursor-pointer"
+          class="flex items-center justify-between w-full text-left py-3.5 px-4 text-base sm:text-lg font-semibold text-bears-text-onDark hover:bg-white/5 transition-all duration-200 cursor-pointer group"
           x-on:click={allowMultiple
             ? `if (openIndices.includes(${index})) { openIndices = openIndices.filter(i => i !== ${index}); } else { openIndices = [...openIndices, ${index}]; }`
             : `activeIndex = (allowCloseAll && activeIndex === ${index}) ? null : ${index}; const parent = $el.closest('[x-data]'); if (parent && parent !== $root && parent.activeProject !== undefined) parent.activeProject = activeIndex`
@@ -55,19 +59,32 @@ const {
           }
           aria-controls={itemId}
         >
-          {item.title}
+          <span>{item.title}</span>
+          <svg
+            class="w-4 h-4 flex-shrink-0 ml-3 transition-all duration-200"
+            x-bind:class={allowMultiple
+              ? `openIndices.includes(${index}) ? 'rotate-180 text-bears-accent' : 'rotate-0 text-bears-text-onDark/60 group-hover:text-bears-accent'`
+              : `activeIndex === ${index} ? 'rotate-180 text-bears-accent' : 'rotate-0 text-bears-text-onDark/60 group-hover:text-bears-accent'`
+            }
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            stroke-width="2"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+          </svg>
         </button>
 
         <div
           id={itemId}
-          class="grid transition-[grid-template-rows] duration-300 ease-in-out"
+          class="grid transition-[grid-template-rows] duration-200 ease-in-out"
           x-bind:class={allowMultiple
             ? `openIndices.includes(${index}) ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'`
             : `activeIndex === ${index} ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'`
           }
         >
           <div class="overflow-hidden">
-            <div class="pb-4 px-2">
+            <div class="px-4 pb-4">
               {item.subtitle && (
                 <p class="not-prose text-xs sm:text-sm text-bears-accent font-medium mb-2">
                   {item.subtitle}
@@ -80,6 +97,10 @@ const {
             </div>
           </div>
         </div>
+
+        {isNotLast && (
+          <div class="border-b border-white/5 mx-4"></div>
+        )}
       </div>
     );
   })}
