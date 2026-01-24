@@ -1,12 +1,14 @@
 ---
+import { markdownToHtml } from '../../utils/markdown';
+
 // Accordion - Reusable accordion component with self-managed state
-// Usage: Pass items array with title, subtitle (optional), and content
+// Usage: Pass items array with title, subtitle (optional), and content (Markdown format)
 
 interface Props {
   items: Array<{
     title: string;           // Accordion header text (required)
     subtitle?: string;       // Optional subtitle/metadata
-    content: string;         // Content to display (plain text or HTML)
+    content: string;         // Content in Markdown format (processed server-side to HTML)
   }>;
   defaultOpen?: number | null;  // Index of initially opened item (default: null - all closed)
   allowCloseAll?: boolean;      // Whether clicking an open item closes it (default: auto-derived from defaultOpen)
@@ -21,6 +23,14 @@ const {
   allowMultiple = false,  // Default to single-open mode for backward compatibility
   width = "100%",
 } = Astro.props;
+
+// Process Markdown content to HTML for all items
+const processedItems = await Promise.all(
+  items.map(async (item) => ({
+    ...item,
+    content: await markdownToHtml(item.content)
+  }))
+);
 ---
 
 <div
@@ -37,9 +47,9 @@ const {
     }
   }`}
 >
-  {items.map((item, index) => {
+  {processedItems.map((item, index) => {
     const itemId = `accordion-item-${index}`;
-    const isNotLast = index < items.length - 1;
+    const isNotLast = index < processedItems.length - 1;
 
     return (
       <div

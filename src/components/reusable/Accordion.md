@@ -8,6 +8,8 @@
 
 The Accordion component is a reusable, accessible component that displays collapsible content sections. It uses Alpine.js for state management and provides smooth expand/collapse animations with keyboard accessibility.
 
+Content is written in Markdown and automatically converted to HTML at build time using the unified/remark/rehype pipeline.
+
 ## Location
 
 `/src/components/reusable/Accordion.astro`
@@ -49,14 +51,14 @@ import Accordion from '../../../components/reusable/Accordion.astro';
   items={[
     {
       title: "Materials Science",
-      content: `<ul class="list-disc pl-5 space-y-1">
-<li>Crystal growth in microgravity</li>
-<li>Metallurgical solidification processes</li>
-</ul>`
+      content: `
+- Crystal growth in microgravity
+- Metallurgical solidification processes
+      `
     },
     {
       title: "Fluid Dynamics",
-      content: "<p>Surface tension effects and capillary flow.</p>"
+      content: `Surface tension effects and capillary flow.`
     }
   ]}
   defaultOpen={0}
@@ -78,7 +80,7 @@ import Accordion from '../../../components/reusable/Accordion.astro';
 interface AccordionItem {
   title: string;      // Header text (required)
   subtitle?: string;  // Optional subtitle/metadata
-  content: string;    // Content (plain text or HTML)
+  content: string;    // Content in Markdown format (processed server-side to HTML)
 }
 ```
 
@@ -170,7 +172,7 @@ Optional metadata or additional context displayed below the title when expanded.
 
 ### Content (Required)
 
-The main content displayed when the section is expanded. Supports both plain text and HTML.
+The main content displayed when the section is expanded. Written in Markdown and automatically converted to HTML at build time.
 
 ```javascript
 // Plain text
@@ -179,13 +181,15 @@ The main content displayed when the section is expanded. Supports both plain tex
   content: "Simple text content"
 }
 
-// HTML content
+// Markdown with formatting
 {
   title: "Section",
-  content: `<ul class="list-disc pl-5">
-    <li>Item 1</li>
-    <li>Item 2</li>
-  </ul>`
+  content: `
+- Item 1
+- Item 2
+
+Visit our [projects page](/projects) for more info.
+  `
 }
 ```
 
@@ -194,6 +198,61 @@ The main content displayed when the section is expanded. Supports both plain tex
 - Color: `text-bears-text-onDark/90`
 - Line height: `leading-relaxed`
 - Padding: `pb-4 px-2`
+
+## Markdown Processing
+
+The Accordion component processes Markdown content at build time using the unified/remark/rehype pipeline.
+
+### Processing Pipeline
+
+```
+Markdown → remark-parse → remark-gfm → remark-rehype → rehype-raw → rehype-stringify → HTML
+```
+
+**Pipeline stages:**
+1. **remark-parse** - Parses Markdown string into an abstract syntax tree (AST)
+2. **remark-gfm** - Adds GitHub Flavored Markdown support (tables, strikethrough, task lists, autolinks)
+3. **remark-rehype** - Converts Markdown AST to HTML AST (with `allowDangerousHtml: true` for raw HTML passthrough)
+4. **rehype-raw** - Parses raw HTML nodes in the Markdown
+5. **rehype-stringify** - Serializes HTML AST to HTML string
+
+### Supported Markdown Features
+
+- **Text formatting**: Bold (`**text**`), italic (`*text*`), strikethrough (`~~text~~`)
+- **Lists**: Ordered (`1.`, `2.`) and unordered (`-`, `*`)
+- **Links**: `[text](url)` and autolinks
+- **Code**: Inline code (`` `code` ``) and code blocks (` ``` `)
+- **Headings**: `#`, `##`, `###`, etc.
+- **Blockquotes**: `> quote`
+- **Tables**: GitHub Flavored Markdown table syntax
+- **Task lists**: `- [ ]` and `- [x]`
+- **Horizontal rules**: `---` or `***`
+- **Raw HTML**: HTML tags embedded in Markdown are preserved
+
+### Performance
+
+- **Build time processing**: All Markdown is converted to HTML during the Astro build process
+- **Zero runtime overhead**: No client-side JavaScript for Markdown parsing
+- **Parallel processing**: Uses `Promise.all` to process all accordion items simultaneously
+- **Caching**: Astro's build cache handles unchanged content automatically
+
+### Utility Function
+
+The processing is handled by a reusable utility at `/src/utils/markdown.ts`:
+
+```typescript
+import { markdownToHtml } from '../../utils/markdown';
+
+// In component frontmatter
+const processedItems = await Promise.all(
+  items.map(async (item) => ({
+    ...item,
+    content: await markdownToHtml(item.content)
+  }))
+);
+```
+
+This utility can be reused by other components that need Markdown processing.
 
 ## Alpine.js State Management
 
@@ -322,18 +381,18 @@ The component includes proper ARIA attributes for screen readers:
   items={[
     {
       title: "Materials Science",
-      content: `<ul class="list-disc pl-5 space-y-1">
-<li>Crystal growth experiments</li>
-<li>Alloy phase separation</li>
-<li>Polymer behavior studies</li>
-</ul>`
+      content: `
+- Crystal growth experiments
+- Alloy phase separation
+- Polymer behavior studies
+      `
     },
     {
       title: "Fluid Dynamics",
-      content: `<ul class="list-disc pl-5 space-y-1">
-<li>Surface tension analysis</li>
-<li>Capillary flow research</li>
-</ul>`
+      content: `
+- Surface tension analysis
+- Capillary flow research
+      `
     }
   ]}
   defaultOpen={0}
@@ -359,11 +418,11 @@ The component includes proper ARIA attributes for screen readers:
   items={[
     {
       title: "How do I join BEARS?",
-      content: "<p>Visit our membership page and fill out the application form. We welcome all students interested in aerospace.</p>"
+      content: "Visit our membership page and fill out the application form. We welcome all students interested in aerospace."
     },
     {
       title: "What projects can I work on?",
-      content: "<p>We have ongoing projects in rocketry, satellite systems, and microgravity research. New members can join any team.</p>"
+      content: "We have ongoing projects in rocketry, satellite systems, and microgravity research. New members can join any team."
     }
   ]}
   defaultOpen={0}
@@ -379,27 +438,27 @@ Use multi mode when users need to compare multiple sections or when sections are
   items={[
     {
       title: "Data Collection",
-      content: `<ul class="list-disc pl-5 space-y-1">
-<li>Temperature sensors</li>
-<li>Pressure monitoring</li>
-<li>Acceleration tracking</li>
-</ul>`
+      content: `
+- Temperature sensors
+- Pressure monitoring
+- Acceleration tracking
+      `
     },
     {
       title: "Analysis Tools",
-      content: `<ul class="list-disc pl-5 space-y-1">
-<li>Real-time graphing</li>
-<li>Statistical analysis</li>
-<li>Export to CSV</li>
-</ul>`
+      content: `
+- Real-time graphing
+- Statistical analysis
+- Export to CSV
+      `
     },
     {
       title: "Safety Features",
-      content: `<ul class="list-disc pl-5 space-y-1">
-<li>Emergency stop</li>
-<li>Automatic alerts</li>
-<li>Backup systems</li>
-</ul>`
+      content: `
+- Emergency stop
+- Automatic alerts
+- Backup systems
+      `
     }
   ]}
   allowMultiple={true}
@@ -519,16 +578,19 @@ import Accordion from './reusable/Accordion.astro';
 
 Verify Alpine.js is initialized on the page. The BaseLayout includes Alpine.js automatically.
 
-### Content Not Displaying as HTML
+### Content Not Displaying as Markdown
 
-Make sure you're using template literals (backticks) for HTML content in MDX:
+Make sure you're using template literals (backticks) for Markdown content in MDX:
 
 ```javascript
 // Correct
-content: `<ul><li>Item</li></ul>`
+content: `
+- Item 1
+- Item 2
+`
 
-// Incorrect (will show as plain text)
-content: "<ul><li>Item</li></ul>"
+// Incorrect (single line strings may not render lists properly)
+content: "- Item 1\n- Item 2"
 ```
 
 ### Multiple Sections Opening

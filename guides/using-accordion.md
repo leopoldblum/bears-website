@@ -4,7 +4,7 @@
 
 # Using Accordions in MDX Content
 
-A quick guide for adding collapsible accordion sections to your content pages.
+A quick guide for adding collapsible accordion sections to your content pages. Accordion content is written in Markdown for easy formatting.
 
 ## What is an Accordion?
 
@@ -183,27 +183,27 @@ If you want to allow multiple sections to be open at the same time, use the `all
   items={[
     {
       title: "Data Collection Features",
-      content: `<ul class="list-disc pl-5 space-y-1">
-<li>Temperature sensors</li>
-<li>Pressure monitoring</li>
-<li>Acceleration tracking</li>
-</ul>`
+      content: `
+- Temperature sensors
+- Pressure monitoring
+- Acceleration tracking
+      `
     },
     {
       title: "Analysis Tools",
-      content: `<ul class="list-disc pl-5 space-y-1">
-<li>Real-time graphing</li>
-<li>Statistical analysis</li>
-<li>Export to CSV</li>
-</ul>`
+      content: `
+- Real-time graphing
+- Statistical analysis
+- Export to CSV
+      `
     },
     {
       title: "Safety Features",
-      content: `<ul class="list-disc pl-5 space-y-1">
-<li>Emergency stop system</li>
-<li>Automatic alerts</li>
-<li>Backup systems</li>
-</ul>`
+      content: `
+- Emergency stop system
+- Automatic alerts
+- Backup systems
+      `
     }
   ]}
   allowMultiple={true}
@@ -213,28 +213,39 @@ If you want to allow multiple sections to be open at the same time, use the `all
 
 **Result:** Users can open multiple sections to compare features side-by-side. The first section starts open, but users can open as many sections as they want.
 
-## Adding HTML Content
+## Using Markdown for Content
 
-You can use HTML inside the `content` field for richer formatting like lists, bold text, or links.
+Accordion content supports full Markdown syntax, making it easy to add rich formatting like lists, bold text, links, and more.
 
-**Important:** When using HTML, wrap the content with **backticks** (`` ` ``) instead of quotes:
+**Supported Markdown features:**
+- **Bold** and *italic* text
+- Lists (ordered and unordered)
+- Links and inline code
+- Code blocks
+- Tables (GitHub Flavored Markdown)
+- Headings and blockquotes
+
+**Important:** Wrap content with **backticks** (`` ` ``) to preserve formatting:
 
 ```mdx
 <Accordion
   items={[
     {
       title: "Research Focus Areas",
-      content: `<ul class="list-disc pl-5 space-y-1">
-<li>High-altitude balloon experiments</li>
-<li>Autonomous rover development</li>
-<li>Satellite systems engineering</li>
-<li>Rocketry and propulsion research</li>
-</ul>`
+      content: `
+- High-altitude balloon experiments
+- Autonomous rover development
+- Satellite systems engineering
+- Rocketry and propulsion research
+      `
     },
     {
       title: "Current Projects",
-      content: `<p>We have <strong>12 active projects</strong> across multiple research areas.</p>
-<p>Visit our projects page to learn more about each initiative.</p>`
+      content: `
+We have **12 active projects** across multiple research areas.
+
+Visit our [projects page](/projects) to learn more about each initiative.
+      `
     }
   ]}
 />
@@ -306,30 +317,30 @@ import Accordion from '../../../components/reusable/Accordion.astro';
   items={[
     {
       title: "Materials Science",
-      content: `<ul class="list-disc pl-5 space-y-1">
-<li>Crystal growth in microgravity</li>
-<li>Metallurgical solidification processes</li>
-<li>Polymer behavior without gravitational influence</li>
-<li>Phase separation in alloys</li>
-</ul>`
+      content: `
+- Crystal growth in microgravity
+- Metallurgical solidification processes
+- Polymer behavior without gravitational influence
+- Phase separation in alloys
+      `
     },
     {
       title: "Fluid Dynamics",
-      content: `<ul class="list-disc pl-5 space-y-1">
-<li>Surface tension effects</li>
-<li>Capillary flow in reduced gravity</li>
-<li>Two-phase flow behavior</li>
-<li>Droplet dynamics and coalescence</li>
-</ul>`
+      content: `
+- Surface tension effects
+- Capillary flow in reduced gravity
+- Two-phase flow behavior
+- Droplet dynamics and coalescence
+      `
     },
     {
       title: "Biological Research",
-      content: `<ul class="list-disc pl-5 space-y-1">
-<li>Cell behavior in microgravity</li>
-<li>Plant growth responses</li>
-<li>Bacterial colony formation</li>
-<li>Protein crystallization</li>
-</ul>`
+      content: `
+- Cell behavior in microgravity
+- Plant growth responses
+- Bacterial colony formation
+- Protein crystallization
+      `
     }
   ]}
   defaultOpen={0}
@@ -400,12 +411,13 @@ Adjust the path based on how many folders up you need to go to reach the `src/` 
 - Use 3-6 sections for best user experience (too many can be overwhelming)
 - Keep content concise - users should be able to scan quickly
 
-### Using HTML in Content
+### Using Markdown in Content
 
-- Always wrap HTML content with backticks (`` `content here` ``)
-- Use `<ul class="list-disc pl-5 space-y-1">` for bulleted lists
-- Use `<p>` tags to separate paragraphs
-- Use `<strong>` for bold text emphasis
+- Always wrap Markdown content with backticks (`` `content here` ``)
+- Use `-` or `*` for bulleted lists
+- Use blank lines to separate paragraphs
+- Use `**text**` for bold and `*text*` for italic
+- Use `[text](url)` for links
 - Keep formatting consistent across all sections
 
 ### Accessibility
@@ -435,39 +447,39 @@ Our drop tower facility enables cutting-edge research in near-weightless conditi
   items={[
     {
       title: "Materials Science",
-      content: `<ul class="list-disc pl-5 space-y-1">
-<li>Crystal growth in microgravity</li>
-<li>Metallurgical solidification processes</li>
-<li>Polymer behavior studies</li>
-<li>Phase separation in alloys</li>
-</ul>`
+      content: `
+- Crystal growth in microgravity
+- Metallurgical solidification processes
+- Polymer behavior studies
+- Phase separation in alloys
+      `
     },
     {
       title: "Fluid Dynamics",
-      content: `<ul class="list-disc pl-5 space-y-1">
-<li>Surface tension effects</li>
-<li>Capillary flow in reduced gravity</li>
-<li>Two-phase flow behavior</li>
-<li>Droplet dynamics and coalescence</li>
-</ul>`
+      content: `
+- Surface tension effects
+- Capillary flow in reduced gravity
+- Two-phase flow behavior
+- Droplet dynamics and coalescence
+      `
     },
     {
       title: "Biological Research",
-      content: `<ul class="list-disc pl-5 space-y-1">
-<li>Cell behavior in microgravity</li>
-<li>Plant growth responses</li>
-<li>Bacterial colony formation</li>
-<li>Protein crystallization</li>
-</ul>`
+      content: `
+- Cell behavior in microgravity
+- Plant growth responses
+- Bacterial colony formation
+- Protein crystallization
+      `
     },
     {
       title: "Physics & Combustion",
-      content: `<ul class="list-disc pl-5 space-y-1">
-<li>Flame behavior without buoyancy</li>
-<li>Particle dynamics</li>
-<li>Heat transfer studies</li>
-<li>Granular material flow</li>
-</ul>`
+      content: `
+- Flame behavior without buoyancy
+- Particle dynamics
+- Heat transfer studies
+- Granular material flow
+      `
     }
   ]}
   defaultOpen={0}
