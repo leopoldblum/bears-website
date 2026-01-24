@@ -11,6 +11,7 @@ interface Props {
   defaultOpen?: number | null;  // Index of initially opened item (default: null - all closed)
   allowCloseAll?: boolean;      // Whether clicking an open item closes it (default: auto-derived from defaultOpen)
   allowMultiple?: boolean;      // Allow multiple items to be open simultaneously (default: false)
+  width?: string;               // Optional width (default: "100%")
 }
 
 const {
@@ -18,11 +19,13 @@ const {
   defaultOpen = null,
   allowCloseAll = defaultOpen === null || defaultOpen === undefined,  // Auto-derive if not explicitly set
   allowMultiple = false,  // Default to single-open mode for backward compatibility
+  width = "100%",
 } = Astro.props;
 ---
 
 <div
   class="flex flex-col lg:border-y lg:border-bears-text-onDark/20"
+  style={`width: ${width}`}
   x-data={`{
     activeIndex: ${defaultOpen !== null && defaultOpen !== undefined && !allowMultiple ? defaultOpen : 'null'},
     openIndices: ${allowMultiple && defaultOpen !== null && defaultOpen !== undefined ? `[${defaultOpen}]` : '[]'},
