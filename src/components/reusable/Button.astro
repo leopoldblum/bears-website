@@ -49,23 +49,67 @@ const {
 const Element = href ? 'a' : 'button';
 
 // Base classes (all variants)
-const baseClasses = 'rounded-full font-medium cursor-pointer transition-colors inline-flex items-center justify-center';
+const baseClasses = [
+  'rounded-full',
+  'font-medium',
+  'cursor-pointer',
+  'inline-flex items-center justify-center',
+  'origin-center',
+  'transition-[background-color,border-color,box-shadow,transform,opacity]',
+  'duration-200 ease-out',
+  'hover:duration-150',
+  'active:duration-75 active:ease-in',
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bears-accent',
+  'focus-visible:ring-offset-2 focus-visible:ring-offset-bears-bg',
+].join(' ');
 
 // Size classes
 const sizeClasses = {
-  standard: 'px-4 py-2.5 sm:px-6 sm:py-2 text-sm sm:text-base',
-  large: 'px-6 py-2.5 sm:px-8 sm:py-3',
+  standard: 'px-5 py-2.5 sm:px-7 sm:py-3 text-sm sm:text-base',
+  large: 'px-7 py-3 sm:px-9 sm:py-3.5 text-base sm:text-lg',
 };
 
 // Variant classes
 const variantClasses = {
-  primary: 'bg-bears-accent text-bears-text-onDark hover:bg-bears-accent-muted',
-  secondary: 'bg-bears-bg text-bears-text-onDark border-2 border-bears-accent-muted hover:bg-bears-accent hover:border-bears-accent',
-  inverse: 'bg-bears-text-onLight text-bears-text-onDark hover:opacity-80 transition-all',
+  primary: [
+    'bg-gradient-to-b from-bears-accent to-bears-accent-muted',
+    'text-bears-text-onDark',
+    'shadow-[inset_0_1px_0_0_rgba(255,255,255,0.2),0_4px_16px_rgba(0,0,0,0.4),0_0_20px_rgba(197,14,31,0.3)]',
+    'hover:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.25),0_6px_24px_rgba(0,0,0,0.5),0_0_32px_rgba(197,14,31,0.5)]',
+    'hover:scale-105',
+    'active:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.15),0_2px_8px_rgba(0,0,0,0.4),0_0_12px_rgba(197,14,31,0.2)]',
+  ].join(' '),
+  secondary: [
+    'bg-transparent text-bears-text-onDark',
+    'border-2 border-bears-accent/40',
+    'shadow-[0_0_0_0_rgba(197,14,31,0)]',
+    'hover:border-bears-accent',
+    'hover:bg-bears-accent/10',
+    'hover:shadow-[0_0_20px_rgba(197,14,31,0.25)]',
+    'hover:scale-105',
+    'active:bg-bears-accent/5',
+  ].join(' '),
+  inverse: [
+    'bg-gradient-to-b from-[#2F2F2F] to-bears-text-onLight',
+    'text-bears-text-onDark',
+    'shadow-[inset_0_1px_0_0_rgba(255,255,255,0.15),0_4px_16px_rgba(43,43,43,0.4)]',
+    'hover:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.2),0_6px_24px_rgba(43,43,43,0.5),0_0_16px_rgba(43,43,43,0.2)]',
+    'hover:scale-105',
+    'active:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.1),0_2px_8px_rgba(43,43,43,0.4)]',
+    'focus-visible:ring-offset-bears-bg-light',
+  ].join(' '),
 };
 
 // Disabled state classes
-const disabledClasses = disabled ? 'opacity-50 cursor-not-allowed' : '';
+const disabledClasses = disabled ? [
+  'opacity-40',
+  'cursor-not-allowed',
+  'grayscale',
+  'shadow-none',
+  'hover:shadow-none',
+  'hover:translate-y-0',
+  '!bg-gradient-to-b !from-gray-600 !to-gray-700',
+].join(' ') : '';
 
 // Compose final classes
 const buttonClasses = [

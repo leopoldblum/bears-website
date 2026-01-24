@@ -241,7 +241,7 @@ import Carousel from '../../../components/reusable/Carousel.astro';
 </Carousel>
 ```
 
-**Looks like:** Testimonial cards that automatically advance every 5 seconds. Users can still click arrows to navigate manually or hover to pause the auto-scroll.
+**Looks like:** Testimonial cards that automatically advance every 5 seconds. Users can still click arrows to navigate manually or hover over the carousel or navigation buttons to pause the auto-scroll.
 
 **Tips:**
 - Use `autoScroll={true}` to automatically cycle through testimonials
@@ -273,7 +273,7 @@ Control whether slides advance automatically or require manual navigation.
 
 **Note:** Even with auto-scroll enabled, users can:
 - Click arrows or dots to navigate manually
-- Hover over the carousel to pause auto-scrolling
+- Hover over the carousel or arrow buttons to pause auto-scrolling
 - Resume auto-scroll by moving the mouse away
 
 ### Auto-Scroll Speed (autoScrollInterval)

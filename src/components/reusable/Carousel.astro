@@ -118,10 +118,12 @@ const {
       <!-- Previous Arrow Button -->
       <button
         @click="prevSlide()"
-        class="shrink-0 bg-bears-accent-muted hover:scale-105 text-white rounded-lg px-2 py-6 sm:px-3 sm:py-10 md:px-4 md:py-14 transition-colors duration-200 cursor-pointer"
+        @mouseenter="stopAutoScroll()"
+        @mouseleave="startAutoScroll()"
+        class="shrink-0 bg-gradient-to-b from-bears-accent to-bears-accent-muted text-white rounded-lg px-3 py-7 sm:px-4 sm:py-10 lg:px-5 lg:py-14 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.2),0_4px_16px_rgba(0,0,0,0.4),0_0_20px_rgba(197,14,31,0.3)] hover:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.25),0_6px_24px_rgba(0,0,0,0.5),0_0_32px_rgba(197,14,31,0.5)] hover:scale-110 active:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.15),0_2px_8px_rgba(0,0,0,0.4),0_0_12px_rgba(197,14,31,0.2)] active:scale-105 transition-[box-shadow,transform] duration-200 ease-out hover:duration-150 active:duration-75 active:ease-in focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bears-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bears-bg cursor-pointer"
         aria-label="Previous slide"
       >
-        <svg class="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
         </svg>
       </button>
@@ -141,10 +143,12 @@ const {
       <!-- Next Arrow Button -->
       <button
         @click="nextSlide()"
-        class="shrink-0 bg-bears-accent-muted hover:scale-105 text-white rounded-lg px-2 py-6 sm:px-3 sm:py-10 md:px-4 md:py-14 transition-colors duration-200 cursor-pointer"
+        @mouseenter="stopAutoScroll()"
+        @mouseleave="startAutoScroll()"
+        class="shrink-0 bg-gradient-to-b from-bears-accent to-bears-accent-muted text-white rounded-lg px-3 py-7 sm:px-4 sm:py-10 lg:px-5 lg:py-14 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.2),0_4px_16px_rgba(0,0,0,0.4),0_0_20px_rgba(197,14,31,0.3)] hover:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.25),0_6px_24px_rgba(0,0,0,0.5),0_0_32px_rgba(197,14,31,0.5)] hover:scale-110 active:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.15),0_2px_8px_rgba(0,0,0,0.4),0_0_12px_rgba(197,14,31,0.2)] active:scale-105 transition-[box-shadow,transform] duration-200 ease-out hover:duration-150 active:duration-75 active:ease-in focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bears-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bears-bg cursor-pointer"
         aria-label="Next slide"
       >
-        <svg class="w-5 h-5 sm:w-6 sm:h-6 md:w-7 md:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
         </svg>
       </button>
@@ -157,8 +161,8 @@ const {
       <template x-for="index in totalSlides" :key="index">
         <button
           @click="goToSlide(index - 1)"
-          :class="currentSlide === index - 1 ? 'bg-bears-accent' : 'bg-gray-600 hover:bg-gray-500'"
-          class="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4 rounded-full transition-colors duration-200 cursor-pointer"
+          :class="currentSlide === index - 1 ? 'bg-gradient-to-b from-bears-accent to-bears-accent-muted border-bears-accent/30 shadow-[0_0_16px_rgba(197,14,31,0.5),0_2px_8px_rgba(0,0,0,0.4)] scale-110 hover:shadow-[0_0_20px_rgba(197,14,31,0.6),0_2px_8px_rgba(0,0,0,0.4)]' : 'bg-white/10 backdrop-blur-sm border-white/20 shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:scale-105 hover:border-white/30'"
+          class="w-3 h-3 sm:w-3.5 sm:h-3.5 lg:w-4 lg:h-4 rounded-full border transition-[background,border-color,box-shadow,transform] duration-200 cursor-pointer"
           :aria-label="`Go to slide ${index}`"
           :aria-current="currentSlide === index - 1 ? 'true' : 'false'"
         ></button>

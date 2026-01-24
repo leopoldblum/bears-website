@@ -101,4 +101,11 @@ body {
   .showcase-card {
     animation: none;
   }
+
+  /* Disable button transitions and transforms for reduced motion */
+  button,
+  a[class*="rounded-full"] {
+    transition-duration: 0.01ms !important;
+    transform: none !important;
+  }
 }
