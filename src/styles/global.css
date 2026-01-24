@@ -65,3 +65,40 @@ body {
     transform: translateX(0);
   }
 }
+
+/* PostShowcase card entrance animation */
+.showcase-card {
+  animation: showcaseCardIn 0.4s ease-out both;
+}
+
+@keyframes showcaseCardIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* Staggered animation delays for grid items */
+.projects-grid > div:nth-child(1) .showcase-card,
+.events-grid > div:nth-child(1) .showcase-card { animation-delay: 0ms; }
+.projects-grid > div:nth-child(2) .showcase-card,
+.events-grid > div:nth-child(2) .showcase-card { animation-delay: 60ms; }
+.projects-grid > div:nth-child(3) .showcase-card,
+.events-grid > div:nth-child(3) .showcase-card { animation-delay: 80ms; }
+.projects-grid > div:nth-child(4) .showcase-card,
+.events-grid > div:nth-child(4) .showcase-card { animation-delay: 120ms; }
+.projects-grid > div:nth-child(5) .showcase-card,
+.events-grid > div:nth-child(5) .showcase-card { animation-delay: 160ms; }
+.projects-grid > div:nth-child(6) .showcase-card,
+.events-grid > div:nth-child(6) .showcase-card { animation-delay: 200ms; }
+
+/* Respect user preference for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .showcase-card {
+    animation: none;
+  }
+}

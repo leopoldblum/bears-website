@@ -1,5 +1,5 @@
 ---
-// NewsGridElement component - Reusable news preview card with image overlay
+// PostShowcase component - Refined card with glass-morphism badges and polished interactions
 import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
 
@@ -21,56 +21,32 @@ const Wrapper = href ? 'a' : 'div';
 
 <Wrapper
   href={href}
-  class="relative h-80 rounded-lg overflow-hidden group cursor-pointer transition-all duration-300 shadow-[0_4px_6px_-2px_rgba(255,255,255,0.1)] lg:hover:shadow-[0_12px_18px_-2px_rgba(255,255,255,0.3)] lg:hover:brightness-110 block"
+  class="showcase-card relative h-80 rounded-lg overflow-hidden group cursor-pointer transition-all duration-300 border border-transparent shadow-[0_4px_12px_rgba(0,0,0,0.4)] lg:hover:shadow-[0_8px_24px_rgba(0,0,0,0.5),0_0_20px_rgba(197,14,31,0.15)] lg:hover:border-bears-accent/30 lg:hover:scale-[1.02] block"
 >
-  <!-- Background Image - Always present -->
+  <!-- Background Image with hover zoom -->
   <Image
     src={coverImage}
     alt={imageAlt}
-    class="w-full h-full object-cover"
+    class="w-full h-full object-cover transition-transform duration-500 lg:group-hover:scale-105"
     format="webp"
     loading={'eager'}
   />
 
-  <!-- Date Badge - Top Left -->
+  <!-- Date Badge - Glass-morphism style -->
   <div class="absolute top-4 left-4 z-10">
-    <span class="
-      flex items-center gap-2
-      text-xs
-      font-medium
-      uppercase
-      tracking-wide
-      text-white
-      bg-black/70
-      backdrop-blur-sm
-      px-3 py-1
-      rounded-full
-      shadow-md
-    ">
-      <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <span class="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-white bg-black/60 backdrop-blur-xl border border-white/10 px-3 py-1.5 rounded-md shadow-[0_4px_12px_rgba(0,0,0,0.3)]">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
       </svg>
       {date}
     </span>
   </div>
 
-  <!-- Completed Badge - Top Right (only for completed projects) -->
+  <!-- Completed Badge - With accent glow -->
   {isCompleted && (
     <div class="absolute top-4 right-4 z-10">
-      <span class="
-        flex items-center gap-2
-        text-xs
-        font-medium
-        uppercase
-        tracking-wide
-        text-white
-        bg-black/70
-        backdrop-blur-sm
-        px-3 py-1
-        rounded-full
-        shadow-md
-      ">
-        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <span class="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-white bg-black/60 backdrop-blur-xl border border-white/10 px-3 py-1.5 rounded-md shadow-[0_0_12px_rgba(197,14,31,0.35),0_4px_12px_rgba(0,0,0,0.3)]">
+        <svg class="w-4 h-4 text-bears-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
         </svg>
         Completed
@@ -78,23 +54,11 @@ const Wrapper = href ? 'a' : 'div';
     </div>
   )}
 
-  <!-- Upcoming Badge - Top Right (only for upcoming events) -->
+  <!-- Upcoming Badge - With accent glow -->
   {isUpcoming && (
     <div class="absolute top-4 right-4 z-10">
-      <span class="
-        flex items-center gap-2
-        text-xs
-        font-medium
-        uppercase
-        tracking-wide
-        text-white
-        bg-black/70
-        backdrop-blur-sm
-        px-3 py-1
-        rounded-full
-        shadow-md
-      ">
-        <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <span class="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-white bg-black/60 backdrop-blur-xl border border-white/10 px-3 py-1.5 rounded-md shadow-[0_0_12px_rgba(197,14,31,0.35),0_4px_12px_rgba(0,0,0,0.3)]">
+        <svg class="w-4 h-4 text-bears-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
         </svg>
         Upcoming
@@ -102,20 +66,20 @@ const Wrapper = href ? 'a' : 'div';
     </div>
   )}
 
-  <!-- Title and Description - Bottom with Dynamic Gradient -->
+  <!-- Content Overlay - Enhanced with subtle glass effect -->
   <div class="absolute inset-x-0 bottom-0 transition-all duration-300">
-    <!-- Gradient Background - Expands with content -->
-    <div class="absolute inset-0 bg-[linear-gradient(to_top,rgba(0,0,0,0.95)_0%,rgba(0,0,0,0.9)_50%,rgba(0,0,0,0.85)_65%,rgba(0,0,0,0.6)_80%,rgba(0,0,0,0.15)_90%,transparent_100%)] transition-all duration-300"></div>
+    <!-- Gradient with subtle blur for depth -->
+    <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/80 to-transparent backdrop-blur-[2px]"></div>
 
     <!-- Content -->
     <div class="relative p-6">
-      <!-- Title -->
-      <h3 class="text-xl sm:text-2xl font-bold text-bears-text-onDark mb-3 group-hover:text-bears-accent transition-colors">
+      <!-- Title with refined typography -->
+      <h3 class="text-xl sm:text-2xl font-bold text-bears-text-onDark mb-2 tracking-tight group-hover:text-bears-accent transition-colors duration-200">
         {title}
       </h3>
 
-      <!-- Description - Always visible on mobile, shows on hover on desktop -->
-      <p class="text-sm sm:text-base text-bears-text-onDark/90 leading-relaxed max-h-40 opacity-100 lg:max-h-0 lg:opacity-0 overflow-hidden lg:group-hover:max-h-40 lg:group-hover:opacity-100 transition-all duration-300">
+      <!-- Description - Refined visibility transitions -->
+      <p class="text-sm sm:text-base text-bears-text-onDark/80 leading-relaxed line-clamp-3 max-h-[4.5rem] sm:max-h-[5rem] opacity-100 lg:max-h-0 lg:opacity-0 overflow-hidden lg:group-hover:max-h-[5rem] lg:group-hover:opacity-100 transition-all duration-300">
         {description}
       </p>
     </div>
