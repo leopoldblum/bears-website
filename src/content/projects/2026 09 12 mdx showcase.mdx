@@ -16,6 +16,7 @@ import Center from '../../components/reusable/Center.astro';
 import Carousel from '../../components/reusable/Carousel.astro';
 import Accordion from '../../components/reusable/Accordion.astro';
 import Marquee from '../../components/reusable/Marquee.astro';
+import SideBySide from "../../components/reusable/SideBySide.astro"
 import project1 from '../../assets/projects/project-1.jpg';
 import project2 from '../../assets/projects/project-2.jpg';
 import project3 from '../../assets/projects/project-3.jpg';
@@ -29,31 +30,6 @@ The Microgravity Experiment Platform provides students and researchers with acce
 
 ### Research Focus Areas
 
-<Accordion
-  items={[
-    {
-      title: "Materials Science",
-      subtitle: "Dr. Sarah Williams - Lead Researcher",
-      content: `
-- Crystal growth in microgravity
-- Metallurgical solidification processes
-- Polymer behavior without gravitational influence
-- Phase separation in alloys
-      `
-    },
-    {
-      title: "Fluid Dynamics",
-      content: `
-- Surface tension effects
-- Capillary flow in reduced gravity
-- Two-phase flow behavior
-- Droplet dynamics and coalescence
-      `
-    },
-  ]}
-  allowMultiple={true}
-  width='50%'
-/>
 
 ### Drop Tower Specifications
 
@@ -81,6 +57,8 @@ Our custom-built facility features:
    - Ground testing and validation
    - High-g drop tests for structural integrity
 
+
+<Center>
 ### Collaborative Research
 
 We partner with:
@@ -90,14 +68,58 @@ We partner with:
 - High schools for educational demonstrations
 - International microgravity research networks
 
-<Center>
-  - dies ist ein bulletpoint
-  - dies ist noch ein punkt
 
-  dies ist normaler text
-  
-  <Button variant="primary" size="large" href="/contact">Submit Experiment Proposal</Button>
+- dies ist ein bulletpoint
+- dies ist noch ein punkt
+
+### dies ist eine überschrift 
+
+- test
+
+<Button variant="primary" size="large" href="/contact">Submit Experiment Proposal</Button>
+
 </Center>
+
+<SideBySide>
+  <div slot="left">
+    ## Projects 
+
+    Lorem Ipsum
+    Lorem Ipsum
+    Lorem Ipsum
+    Lorem Ipsum
+  </div>
+  <div slot="right">
+  ## projects in accordion
+  <Center>
+  <Accordion
+  items={[
+    {
+      title: "Materials Science",
+      subtitle: "Dr. Sarah Williams - Lead Researcher",
+      content: `
+- Crystal growth in microgravity
+- Metallurgical solidification processes
+- Polymer behavior without gravitational influence
+- Phase separation in alloys
+      `
+    },
+    {
+      title: "Fluid Dynamics",
+      content: `
+- Surface tension effects
+- Capillary flow in reduced gravity
+- Two-phase flow behavior
+- Droplet dynamics and coalescence
+      `
+    },
+  ]}
+  allowMultiple={true}
+  width='50%'
+/>
+</Center>
+  </div>
+</SideBySide>
 
 ### Research Highlights Gallery
 
