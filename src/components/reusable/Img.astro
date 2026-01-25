@@ -1,0 +1,67 @@
+---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface Props {
+  src: string | ImageMetadata; // String URL or imported image
+  alt?: string;
+  class?: string;
+  width?: number;
+  height?: number;
+  loading?: 'eager' | 'lazy';
+  priority?: boolean;
+}
+
+const { src, alt, class: className, width, height, loading, priority } = Astro.props;
+
+// Loading strategy
+const autoLoading = loading ?? 'lazy';
+
+// Base classes
+const defaultClasses = 'h-auto object-cover';
+const finalClasses = `${defaultClasses} ${className ?? ''}`;
+
+// Determine if src is an imported image or URL string
+const isImportedImage = typeof src === 'object' && 'src' in src;
+
+// Generate alt text if not provided
+const finalAlt = alt ?? (
+  isImportedImage 
+    ? (src as ImageMetadata).src.split('/').pop()?.split('.')[0] ?? ''
+    : src.split('/').pop()?.split('.')[0] ?? ''
+);
+
+// Default dimensions if not provided
+const finalWidth = width ?? 800;
+const finalHeight = height ?? 600;
+---
+
+{isImportedImage ? (
+  <!-- Optimized image from src/assets -->
+  <Image
+    src={src as ImageMetadata}
+    alt={finalAlt}
+    width={finalWidth}
+    height={finalHeight}
+    class={finalClasses}
+    loading={autoLoading}
+    decoding={priority ? 'sync' : 'async'}
+  />
+) : (
+  <!-- External URL - fallback to regular img tag -->
+  <img
+    src={src as string}
+    alt={finalAlt}
+    width={finalWidth}
+    height={finalHeight}
+    class={finalClasses}
+    loading={autoLoading}
+    fetchpriority={priority ? 'high' : undefined}
+    onerror="this.style.display='none'; if(this.nextElementSibling){ this.nextElementSibling.style.display='flex'; }"
+  />
+)}
+
+<!-- Fallback placeholder (only shows on error) -->
+<div class="hidden bg-neutral-200 dark:bg-neutral-700 rounded-lg flex items-center justify-center text-neutral-500 dark:text-neutral-400 p-8">
+  <span class="text-sm">Image not available</span>
+</div>

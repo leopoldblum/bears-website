@@ -17,6 +17,7 @@ import Carousel from '../../components/reusable/Carousel.astro';
 import Accordion from '../../components/reusable/Accordion.astro';
 import Marquee from '../../components/reusable/Marquee.astro';
 import { SideBySide, Left, Right } from "../../components/reusable/SideBySide"
+import Img from '../../components/reusable/Img.astro';
 import project1 from '../../assets/projects/project-1.jpg';
 import project2 from '../../assets/projects/project-2.jpg';
 import project3 from '../../assets/projects/project-3.jpg';
@@ -119,6 +120,12 @@ We partner with:
 </Center>
   </Right>
 </SideBySide>
+
+### Img Component Example
+
+Here's how easy the new Img component is to use:
+
+<Img src={project1} alt="Microgravity experiment setup" width="full" priority={true} />
 
 ### Research Highlights Gallery
 
