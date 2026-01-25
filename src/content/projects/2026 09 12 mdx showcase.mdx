@@ -16,7 +16,7 @@ import Center from '../../components/reusable/Center.astro';
 import Carousel from '../../components/reusable/Carousel.astro';
 import Accordion from '../../components/reusable/Accordion.astro';
 import Marquee from '../../components/reusable/Marquee.astro';
-import SideBySide from "../../components/reusable/SideBySide.astro"
+import { SideBySide, Left, Right } from "../../components/reusable/SideBySide"
 import project1 from '../../assets/projects/project-1.jpg';
 import project2 from '../../assets/projects/project-2.jpg';
 import project3 from '../../assets/projects/project-3.jpg';
@@ -81,15 +81,15 @@ We partner with:
 </Center>
 
 <SideBySide>
-  <div slot="left">
+  <Left>
     ## Projects 
 
     Lorem Ipsum
     Lorem Ipsum
     Lorem Ipsum
     Lorem Ipsum
-  </div>
-  <div slot="right">
+  </Left>
+  <Right>
   ## projects in accordion
   <Center>
   <Accordion
@@ -115,10 +115,9 @@ We partner with:
     },
   ]}
   allowMultiple={true}
-  width='50%'
-/>
+  />
 </Center>
-  </div>
+  </Right>
 </SideBySide>
 
 ### Research Highlights Gallery

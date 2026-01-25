@@ -1,8 +1,11 @@
-# SideBySide Component - Technical Documentation
+# SideBySide Component Group - Technical Documentation
 
-A responsive two-column layout component for use in Astro and MDX files. Content stacks vertically on mobile and appears side-by-side on large screens with automatic 50/50 width distribution.
+A responsive two-column layout component group for use in Astro and MDX files. Content stacks vertically on mobile and appears side-by-side on large screens with automatic 50/50 width distribution.
 
-## Props
+## Components
+
+### SideBySide (Container)
+The main container component that provides responsive layout behavior.
 
 ```typescript
 interface Props {
@@ -10,29 +13,43 @@ interface Props {
 }
 ```
 
-### `class` (optional)
+### Left (Column Wrapper)
+Wraps content for the left column with automatic 50% width distribution.
 
-Additional Tailwind CSS classes to apply to the wrapper. Common use cases:
+```typescript
+interface Props {
+  class?: string;  // Additional Tailwind classes
+}
+```
 
-- **Gap override**: `class="gap-12"` - Override default gap spacing
-- **Alignment**: `class="items-center"` - Vertically center columns
-- **Responsive gap**: `class="gap-4 sm:gap-6 lg:gap-12"` - Custom responsive spacing
-- **MDX prose**: `class="not-prose"` - Prevents Tailwind Typography interference
+### Right (Column Wrapper)
+Wraps content for the right column with automatic 50% width distribution.
 
-Note: The component includes `gap-4 lg:gap-8` by default. Use `gap-*` in the class prop to override.
+```typescript
+interface Props {
+  class?: string;  // Additional Tailwind classes
+}
+```
+
+## Import
+
+```typescript
+import { SideBySide, Left, Right } from './SideBySide';
+```
 
 ## Implementation
 
-The component uses flexbox with named slots for responsive layout:
+The component group uses flexbox with nested components for responsive layout:
 
 ```astro
+<!-- SideBySide.astro -->
 <div class="flex flex-col lg:flex-row gap-4 lg:gap-8 {className}">
-  <div class="flex-1">
-    <slot name="left" />
-  </div>
-  <div class="flex-1">
-    <slot name="right" />
-  </div>
+  <slot />
+</div>
+
+<!-- Left.astro & Right.astro -->
+<div class="flex-1 {className}">
+  <slot />
 </div>
 ```
 
@@ -53,26 +70,27 @@ The component uses flexbox with named slots for responsive layout:
 - **Mobile-first**: Ensures comfortable reading on small screens
 - **Skip md: breakpoint**: Follows project convention - tablets get mobile layout for better readability
 - **Flexbox over Grid**: Simpler for equal-width columns, more flexible for customization
-- **Named slots**: Explicit left/right positioning prevents confusion
+- **Component composition**: Clean Left/Right components provide intuitive structure
 - **No JavaScript**: Pure CSS solution with no runtime overhead
 - **Flexible children**: Works with any content type (text, images, components, Markdown)
+- **Unified imports**: Barrel export provides clean single import statement
 
 ## Usage Examples
 
 ### Basic Two-Column Layout
 
 ```mdx
-import SideBySide from '../../components/reusable/SideBySide.astro';
+import { SideBySide, Left, Right } from '../../components/reusable/SideBySide';
 
 <SideBySide>
-  <div slot="left">
+  <Left>
     ## Left Column
     Content for the left side.
-  </div>
-  <div slot="right">
+  </Left>
+  <Right>
     ## Right Column
     Content for the right side.
-  </div>
+  </Right>
 </SideBySide>
 ```
 
@@ -80,59 +98,68 @@ import SideBySide from '../../components/reusable/SideBySide.astro';
 
 ```mdx
 import { Image } from 'astro:assets';
+import { SideBySide, Left, Right } from '../../components/reusable/SideBySide';
 import rocketImage from '../../assets/projects/rocket.jpg';
 
 <SideBySide>
-  <Image slot="left" src={rocketImage} alt="Rocket launch" class="w-full rounded-lg" loading="eager" />
-  <div slot="right">
+  <Left>
+    <Image src={rocketImage} alt="Rocket launch" class="w-full rounded-lg" loading="eager" />
+  </Left>
+  <Right>
     ## Our Mission
     We design and build experimental rockets for microgravity research...
-  </div>
+  </Right>
 </SideBySide>
 ```
 
 ### With Custom Gap
 
 ```mdx
+import { SideBySide, Left, Right } from '../../components/reusable/SideBySide';
+
 <SideBySide class="gap-12">
-  <div slot="left">Left content</div>
-  <div slot="right">Right content</div>
+  <Left>Left content</Left>
+  <Right>Right content</Right>
 </SideBySide>
 ```
 
 ### Vertically Centered
 
 ```mdx
+import { SideBySide, Left, Right } from '../../components/reusable/SideBySide';
+
 <SideBySide class="items-center">
-  <img slot="left" src="/images/logo.png" alt="Logo" />
-  <div slot="right">
+  <Left>
+    <img src="/images/logo.png" alt="Logo" />
+  </Left>
+  <Right>
     ## About BEARS
     Berlin Experimental Astronautics Research Student team
-  </div>
+  </Right>
 </SideBySide>
 ```
 
 ### With Components
 
 ```mdx
-import SideBySide from '../../components/reusable/SideBySide.astro';
+import { SideBySide, Left, Right } from '../../components/reusable/SideBySide';
 import Button from '../../components/reusable/Button.astro';
 
 <SideBySide>
-  <div slot="left">
+  <Left>
     ## Join Our Team
     - Work on real rockets
     - Conduct experiments
     - Present at conferences
-  </div>
-  <div slot="right">
+  </Left>
+  <Right>
     ## Get Started
     Ready to launch your career in aerospace?
 
     <Button variant="primary" href="/apply">
       Apply Now
     </Button>
-  </div>
+  </Right>
 </SideBySide>
 ```
 
@@ -140,21 +167,21 @@ import Button from '../../components/reusable/Button.astro';
 
 ```astro
 ---
-import SideBySide from './reusable/SideBySide.astro';
+import { SideBySide, Left, Right } from './reusable/SideBySide';
 ---
 
 <SideBySide>
-  <div slot="left" class="prose">
+  <Left class="prose">
     <h2>Research Areas</h2>
     <p>Our team focuses on microgravity experiments...</p>
-  </div>
-  <div slot="right" class="prose">
+  </Left>
+  <Right class="prose">
     <h2>Current Projects</h2>
     <ul>
       <li>REXUS/BEXUS program</li>
       <li>Sounding rocket development</li>
     </ul>
-  </div>
+  </Right>
 </SideBySide>
 ```
 
@@ -163,43 +190,51 @@ import SideBySide from './reusable/SideBySide.astro';
 Stack multiple `<SideBySide>` components for alternating layouts:
 
 ```mdx
+import { SideBySide, Left, Right } from '../../components/reusable/SideBySide';
+
 <SideBySide>
-  <img slot="left" src="/images/research-1.jpg" alt="Research" />
-  <div slot="right">
+  <Left>
+    <img src="/images/research-1.jpg" alt="Research" />
+  </Left>
+  <Right>
     ## Materials Science
     Studying crystal growth in microgravity...
-  </div>
+  </Right>
 </SideBySide>
 
 <SideBySide class="mt-8">
-  <div slot="left">
+  <Left>
     ## Fluid Dynamics
     Understanding surface tension effects...
-  </div>
-  <img slot="right" src="/images/research-2.jpg" alt="Fluid dynamics" />
+  </Left>
+  <Right>
+    <img src="/images/research-2.jpg" alt="Fluid dynamics" />
+  </Right>
 </SideBySide>
 ```
 
 ### Two-Column Feature Comparison
 
 ```mdx
+import { SideBySide, Left, Right } from '../../components/reusable/SideBySide';
+
 <SideBySide class="gap-12">
-  <div slot="left">
+  <Left>
     ### Traditional Testing
 
     - Ground-based simulations
     - Limited microgravity duration
     - Constrained by 1g environment
     - Lower cost per test
-  </div>
-  <div slot="right">
+  </Left>
+  <Right>
     ### Space-Based Research
 
     - True microgravity conditions
     - Extended experiment duration
     - Unrestricted environment
     - Higher research fidelity
-  </div>
+  </Right>
 </SideBySide>
 ```
 
@@ -208,10 +243,11 @@ Stack multiple `<SideBySide>` components for alternating layouts:
 ```mdx
 import Button from '../../components/reusable/Button.astro';
 import { Image } from 'astro:assets';
+import { SideBySide, Left, Right } from '../../components/reusable/SideBySide';
 import teamImage from '../../assets/team.jpg';
 
 <SideBySide class="items-center mt-12">
-  <div slot="left">
+  <Left>
     ## Join BEARS Today
 
     Work on cutting-edge aerospace projects, collaborate with talented students,
@@ -222,46 +258,60 @@ import teamImage from '../../assets/team.jpg';
         Start Your Application
       </Button>
     </div>
-  </div>
-  <Image slot="right" src={teamImage} alt="BEARS team members" />
+  </Left>
+  <Right>
+    <Image src={teamImage} alt="BEARS team members" />
+  </Right>
 </SideBySide>
 ```
 
 ## Design Decisions
 
 - **Minimal props**: Only `class` escape hatch keeps the component simple
-- **Named slots**: Explicit `left` and `right` slots prevent order confusion
+- **Component composition**: Left and Right components provide clear structure
 - **Responsive gap**: Larger gap on desktop for better visual separation
 - **Top alignment**: Default top alignment (override with `class="items-center"`)
 - **No Alpine.js**: Pure CSS solution with no JavaScript overhead
 - **Breakpoint choice**: `lg:` (1024px) ensures comfortable column width, follows project convention
+- **Unified imports**: Barrel export provides clean developer experience
 
 ## Common Patterns
 
 ### Text + Image (Most Common)
 
 ```mdx
+import { SideBySide, Left, Right } from './SideBySide';
+
 <SideBySide>
-  <div slot="left">Text content</div>
-  <img slot="right" src="..." alt="..." />
+  <Left>Text content</Left>
+  <Right>
+    <img src="..." alt="..." />
+  </Right>
 </SideBySide>
 ```
 
 ### Two Text Columns
 
 ```mdx
+import { SideBySide, Left, Right } from './SideBySide';
+
 <SideBySide>
-  <div slot="left">Column 1 text</div>
-  <div slot="right">Column 2 text</div>
+  <Left>Column 1 text</Left>
+  <Right>Column 2 text</Right>
 </SideBySide>
 ```
 
 ### Component + Markdown
 
 ```mdx
+import { SideBySide, Left, Right } from './SideBySide';
+import Button from './Button.astro';
+
 <SideBySide class="items-center">
-  <Button slot="left" variant="primary">Click Me</Button>
-  <div slot="right">Supporting text or description</div>
+  <Left>
+    <Button variant="primary">Click Me</Button>
+  </Left>
+  <Right>Supporting text or description</Right>
 </SideBySide>
 ```
 
@@ -291,4 +341,13 @@ This is expected behavior. Columns are top-aligned by default. Use `class="items
 
 ### Missing Content
 
-Make sure you're using the named slots correctly: `<div slot="left">` and `<div slot="right">`. Content without a slot attribute won't be displayed.
+Make sure you're importing and using the components correctly:
+```mdx
+import { SideBySide, Left, Right } from './SideBySide';
+
+<SideBySide>
+  <Left>Content</Left>
+  <Right>Content</Right>
+</SideBySide>
+```
+Content must be wrapped in Left and Right components to be displayed.

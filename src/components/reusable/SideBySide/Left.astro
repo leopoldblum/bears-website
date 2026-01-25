@@ -1,0 +1,15 @@
+---
+// Left - Left column wrapper for SideBySide component
+// Usage: Wrap content for the left column in SideBySide layouts
+// Automatically applies flex-1 for 50% width distribution
+
+interface Props {
+  class?: string;
+}
+
+const { class: className } = Astro.props;
+---
+
+<div class={`flex-1 ${className || ''}`}>
+  <slot />
+</div>

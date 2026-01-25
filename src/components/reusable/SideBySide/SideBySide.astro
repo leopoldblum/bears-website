@@ -1,6 +1,6 @@
 ---
 // SideBySide - Side-by-side layout component for two-column content
-// Usage: Use slot="left" and slot="right" to specify content for each column
+// Usage: Wrap Left and Right components for two-column responsive layout
 // Columns stack on mobile, appear side-by-side on large screens with 50/50 width
 
 interface Props {
@@ -11,10 +11,5 @@ const { class: className } = Astro.props;
 ---
 
 <div class={`flex flex-col lg:flex-row gap-4 lg:gap-8 ${className || ''}`}>
-  <div class="flex-1">
-    <slot name="left" />
-  </div>
-  <div class="flex-1">
-    <slot name="right" />
-  </div>
+  <slot />
 </div>
