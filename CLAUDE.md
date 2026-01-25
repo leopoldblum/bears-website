@@ -115,6 +115,51 @@ import placeholderImage from '../assets/events/event-1.jpg';
 - Use `loading="eager"` for above-the-fold images (e.g., cover images on detail pages)
 - Use `loading="lazy"` for below-the-fold images (e.g., cards, carousels, logos)
 
+### MDX Components
+
+When creating reusable components intended for use in `.mdx` files, consider supporting Markdown input for string content properties. This allows content creators to format text with rich styling (bold, lists, links, code blocks, etc.) without writing HTML.
+
+**When to support Markdown:**
+- Components with string content properties (e.g., `content`, `description`, `text`)
+- Not needed for components using slots, where content comes from MDX as JSX/HTML
+- Typical examples: components that display collapsible content, cards with descriptions, tooltips
+
+**Implementation Pattern:**
+
+Use the `markdownToHtml` utility from [src/utils/markdown.ts](src/utils/markdown.ts) to process Markdown strings server-side:
+
+```astro
+---
+import { markdownToHtml } from '../../utils/markdown';
+
+interface Props {
+  items: Array<{
+    title: string;
+    content: string;  // Markdown format
+  }>;
+}
+
+const { items } = Astro.props;
+
+// Process Markdown to HTML server-side
+const processedItems = await Promise.all(
+  items.map(async (item) => ({
+    ...item,
+    content: await markdownToHtml(item.content)
+  }))
+);
+---
+
+<div>
+  {processedItems.map((item) => (
+    <div set:html={item.content} />
+  ))}
+</div>
+```
+
+**Reference Implementation:**
+See [Accordion.astro](src/components/reusable/Accordion.astro) for a complete example of Markdown support in a reusable component. It accepts content in Markdown format and processes it server-side for optimal performance.
+
 ## Documentation
 
 The `/guides/` directory contains user-facing guides for content creators and maintainers. These documents explain how to add and manage content on the website.

@@ -22,40 +22,60 @@ The Marquee component is a lightweight, CSS-only infinite horizontal auto-scroll
 
 ## Basic Usage
 
-### In .astro Files
+### Images Prop Approach (Recommended)
+
+**In .astro Files:**
 
 ```astro
 ---
 import Marquee from './reusable/Marquee.astro';
-import { Image } from 'astro:assets';
 import photo1 from '../assets/photo1.jpg';
+import photo2 from '../assets/photo2.jpg';
 ---
 
-<Marquee duration={20} gap="2rem">
-  <Image
-    src={photo1}
-    alt="Photo 1"
-    class="h-64 w-96 object-cover rounded-lg shrink-0"
-  />
-  {/* More items... */}
-</Marquee>
+<Marquee
+  images={[
+    { src: photo1, alt: "Photo 1" },
+    { src: photo2, alt: "Photo 2" },
+  ]}
+  duration={20}
+  gap="2rem"
+/>
 ```
 
-### In .mdx Files
+**In .mdx Files:**
 
 ```mdx
 ---
 import Marquee from '../../components/reusable/Marquee.astro'
-import { Image } from 'astro:assets'
 import photo1 from '../assets/photo1.jpg'
+import photo2 from '../assets/photo2.jpg'
 ---
 
-<Marquee duration={20} gap="2rem">
-  <Image
-    src={photo1}
-    alt="Photo 1"
-    class="h-64 w-96 object-cover rounded-lg shrink-0"
-  />
+<Marquee
+  images={[
+    { src: photo1, alt: "Photo 1" },
+    { src: photo2, alt: "Photo 2" },
+  ]}
+  duration={20}
+  gap="2rem"
+/>
+```
+
+### Slot Approach (For HTML Content)
+
+**In .astro Files:**
+
+```astro
+---
+import Marquee from './reusable/Marquee.astro';
+---
+
+<Marquee duration={25} gap="3rem">
+  <div class="shrink-0 px-6 py-4 bg-neutral-800 rounded-lg">
+    Content here
+  </div>
+  {/* More items... */}
 </Marquee>
 ```
 
@@ -63,9 +83,94 @@ import photo1 from '../assets/photo1.jpg'
 
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
-| `duration` | `number` | `30` | Animation duration in seconds. Higher values = slower scrolling. |
-| `gap` | `string` | `"2rem"` | CSS gap value between items. Any valid CSS length unit (`"1rem"`, `"24px"`, `"3em"`, etc.). |
-| `pauseOnHover` | `boolean` | `true` | Whether to pause the animation when the user hovers over the marquee. |
+| `images` | `MarqueeImage[]?` | `undefined` | Optional array of images to display. Each object needs `src` (ImageMetadata) and `alt` (string). When provided, renders images automatically instead of using slot. |
+| `imageClass` | `string?` | `"h-48 sm:h-56 lg:h-64 w-80 sm:w-96 object-cover rounded-lg shrink-0"` | CSS classes applied to each image when using `images` prop. Override for custom styling (e.g., logos). |
+| `imageLoading` | `"lazy" \| "eager"?` | `"lazy"` | Loading strategy for images. Use `"eager"` for above-the-fold content, `"lazy"` for below-the-fold. |
+| `imageFormat` | `"webp" \| "avif" \| "png" \| "jpg"?` | `"webp"` | Output format for optimized images. WebP recommended for best compression. |
+| `duration` | `number?` | `30` | Animation duration in seconds. Higher values = slower scrolling. |
+| `gap` | `string?` | `"2rem"` | CSS gap value between items. Any valid CSS length unit (`"1rem"`, `"24px"`, `"3em"`, etc.). |
+| `pauseOnHover` | `boolean?` | `true` | Whether to pause the animation when the user hovers over the marquee. |
+
+**Type Definition:**
+```typescript
+interface MarqueeImage {
+  src: ImageMetadata;
+  alt: string;
+}
+```
+
+## Image Arrays API
+
+The Marquee component supports two rendering modes:
+
+### 1. Images Prop (Recommended for Image Galleries)
+
+Pass an array of images for automatic optimization and rendering:
+
+```astro
+---
+import Marquee from './reusable/Marquee.astro';
+import photo1 from '../assets/photo1.jpg';
+import photo2 from '../assets/photo2.jpg';
+---
+
+<Marquee
+  images={[
+    { src: photo1, alt: "Description 1" },
+    { src: photo2, alt: "Description 2" },
+  ]}
+  duration={20}
+  gap="2rem"
+/>
+```
+
+**Benefits:**
+- Zero boilerplate - no manual `<Image/>` components
+- Automatic optimization (WebP, lazy loading, responsive sizing)
+- Type-safe with required alt text
+- Consistent styling across all images
+- 90% less code than manual approach
+
+**Default Styling:**
+Images receive these classes by default:
+```
+h-48 sm:h-56 lg:h-64 w-80 sm:w-96 object-cover rounded-lg shrink-0
+```
+
+**Custom Styling:**
+Override with `imageClass` prop for different use cases (logos, different aspect ratios):
+```astro
+<Marquee
+  images={logos}
+  imageClass="h-16 w-32 object-contain shrink-0 opacity-70 hover:opacity-100"
+/>
+```
+
+### 2. Slot (For Custom HTML Content)
+
+For text-based content or complex layouts, use the slot:
+
+```astro
+<Marquee duration={25} gap="3rem">
+  <div class="shrink-0 w-80 bg-neutral-800 rounded-lg p-4">
+    <h3>Card Title</h3>
+    <p>Card content</p>
+  </div>
+  <div class="shrink-0 w-80 bg-neutral-800 rounded-lg p-4">
+    <h3>Another Card</h3>
+    <p>More content</p>
+  </div>
+</Marquee>
+```
+
+**When to use slot:**
+- Team member cards with text
+- Technology badges
+- Mixed content (images + text)
+- Complex nested layouts
+- Custom styling that can't be achieved with `imageClass`
+
+**Important:** You cannot use both `images` prop and slot together. If `images` is provided, the slot is ignored.
 
 ## Features
 
@@ -367,20 +472,45 @@ class="shrink-0 px-4 py-2 bg-neutral-800 rounded-md"
 
 ## Common Patterns
 
-### 1. Image Gallery
+### 1. Image Gallery (New API)
 
-From [src/components/WhatIsBears.astro:31-41](../../components/WhatIsBears.astro#L31-L41):
+**Recommended approach using `images` prop:**
 
 ```astro
 ---
 import Marquee from './reusable/Marquee.astro';
-import { Image } from 'astro:assets';
 import { whatIsBearsImages } from '../utils/imageGlobs';
 import { loadAllImagesFromDirectory } from '../utils/imageLoader';
 
 const carouselImages = await loadAllImagesFromDirectory(whatIsBearsImages);
+
+// Map to MarqueeImage format
+const images = carouselImages.map((img, index) => ({
+  src: img,
+  alt: `BEARS Gallery ${index + 1}`
+}));
 ---
 
+<Marquee
+  images={images}
+  duration={15}
+  gap="2rem"
+  imageLoading="eager"
+/>
+```
+
+**Key aspects:**
+- Clean array mapping to `{ src, alt }` format
+- Fast duration (15s) for many images
+- `imageLoading="eager"` since it's above the fold
+- Default responsive sizing applied automatically
+- No manual Image component boilerplate
+
+**Alternative: Slot approach (still valid):**
+
+If you need more control, you can still use the slot:
+
+```astro
 <Marquee duration={15} gap="2rem">
   {carouselImages.map((img, index) => (
     <Image
@@ -394,12 +524,7 @@ const carouselImages = await loadAllImagesFromDirectory(whatIsBearsImages);
 </Marquee>
 ```
 
-**Key aspects:**
-- Fast duration (15s) for many images
-- Responsive sizing with Tailwind breakpoints
-- `object-cover` to fill frame while maintaining aspect ratio
-- `loading="eager"` since it's above the fold
-- Maps over dynamic image array
+Use slot when you need custom per-image styling or complex layouts.
 
 ### 2. Card Layout
 
@@ -734,6 +859,67 @@ Use BEARS CSS variables for consistency:
 - Borders: `border-neutral-700`
 - Text: `text-white`, `text-neutral-400`, `text-bears-text-onDark`
 - Accents: `bg-bears-accent`, `text-bears-accent`
+
+## Migration Guide
+
+### Migrating from Slot to Images Prop
+
+**Old approach (still works):**
+```astro
+---
+import { Image } from 'astro:assets';
+import photo1 from '../assets/photo1.jpg';
+import photo2 from '../assets/photo2.jpg';
+---
+
+<Marquee duration={20} gap="2rem">
+  <Image
+    src={photo1}
+    alt="Photo 1"
+    class="h-48 sm:h-56 lg:h-64 w-80 sm:w-96 object-cover rounded-lg shrink-0"
+    loading="lazy"
+    format="webp"
+  />
+  <Image
+    src={photo2}
+    alt="Photo 2"
+    class="h-48 sm:h-56 lg:h-64 w-80 sm:w-96 object-cover rounded-lg shrink-0"
+    loading="lazy"
+    format="webp"
+  />
+</Marquee>
+```
+
+**New approach (recommended for image galleries):**
+```astro
+---
+import photo1 from '../assets/photo1.jpg';
+import photo2 from '../assets/photo2.jpg';
+---
+
+<Marquee
+  images={[
+    { src: photo1, alt: "Photo 1" },
+    { src: photo2, alt: "Photo 2" },
+  ]}
+  duration={20}
+  gap="2rem"
+/>
+```
+
+**Migration steps:**
+1. Remove `Image` import (no longer needed)
+2. Keep image imports
+3. Create `images` array with `{ src, alt }` objects
+4. Pass to `images` prop
+5. Remove manual `<Image/>` components
+6. (Optional) Customize with `imageClass`, `imageLoading`, `imageFormat` props
+
+**When NOT to migrate:**
+- If you need per-image custom styling
+- If you have HTML content (cards, badges)
+- If you have mixed content layouts
+- If you're happy with current implementation (no breaking changes!)
 
 ## Migration & Alternatives
 

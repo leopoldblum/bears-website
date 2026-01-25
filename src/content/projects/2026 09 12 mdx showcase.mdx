@@ -15,6 +15,12 @@ import Button from '../../components/reusable/Button.astro';
 import Carousel from '../../components/reusable/Carousel.astro';
 import Accordion from '../../components/reusable/Accordion.astro';
 import Marquee from '../../components/reusable/Marquee.astro';
+import project1 from '../../assets/projects/project-1.jpg';
+import project2 from '../../assets/projects/project-2.jpg';
+import project3 from '../../assets/projects/project-3.jpg';
+import project4 from '../../assets/projects/project-4.jpg';
+import project5 from '../../assets/projects/project-5.jpg';
+import project6 from '../../assets/projects/project-6.jpg';
 
 ## Project Overview
 
@@ -87,30 +93,21 @@ We partner with:
   <Button variant="primary" size="large" href="/contact">Submit Experiment Proposal</Button>
 </div>
 
-### Team Composition
+### Research Highlights Gallery
 
-<Marquee duration={25} gap="3rem" pauseOnHover={true}>
-  <div class="shrink-0 px-6 py-4 bg-neutral-800 rounded-lg border border-neutral-700">
-    <div class="font-semibold text-white">Sarah Williams</div>
-    <div class="text-sm text-neutral-400">Principal Investigator & Project Lead</div>
-  </div>
-  <div class="shrink-0 px-6 py-4 bg-neutral-800 rounded-lg border border-neutral-700">
-    <div class="font-semibold text-white">Alex Thompson</div>
-    <div class="text-sm text-neutral-400">Drop Tower Operations Manager</div>
-  </div>
-  <div class="shrink-0 px-6 py-4 bg-neutral-800 rounded-lg border border-neutral-700">
-    <div class="font-semibold text-white">Jennifer Lee</div>
-    <div class="text-sm text-neutral-400">Data Systems & Software Engineer</div>
-  </div>
-  <div class="shrink-0 px-6 py-4 bg-neutral-800 rounded-lg border border-neutral-700">
-    <div class="font-semibold text-white">Christopher Davis</div>
-    <div class="text-sm text-neutral-400">Mechanical Engineering & Payload Design</div>
-  </div>
-  <div class="shrink-0 px-6 py-4 bg-neutral-800 rounded-lg border border-neutral-700">
-    <div class="font-semibold text-white">Amanda Garcia</div>
-    <div class="text-sm text-neutral-400">Safety Coordinator & Training</div>
-  </div>
-</Marquee>
+<Marquee
+  images={[
+    { src: project1, alt: "Microgravity experiment setup" },
+    { src: project2, alt: "Drop tower facility exterior" },
+    { src: project3, alt: "Crystal growth samples under analysis" },
+    { src: project4, alt: "Fluid dynamics experiment in progress" },
+    { src: project5, alt: "Team preparing payload for drop test" },
+    { src: project6, alt: "High-speed camera capturing microgravity phenomena" },
+  ]}
+  duration={18}
+  gap="2rem"
+  pauseOnHover={false}
+/>
 
 ### Research Outcomes
 

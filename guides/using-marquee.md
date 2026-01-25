@@ -11,96 +11,168 @@ A quick guide for adding infinite scrolling content showcases to your pages.
 A Marquee creates a **smooth, continuous horizontal scrolling effect** that loops infinitely. Imagine a never-ending conveyor belt of content moving across your page - that's a Marquee!
 
 **Perfect for:**
-- Image galleries and photo showcases
+- Image galleries and photo showcases (primary use case)
 - Sponsor and partner logos
-- Team member highlights
-- Client testimonials
-- Technology/tool badges
-- Any content that benefits from continuous visual movement
+- Any visual content that benefits from continuous movement
+- Team member highlights or text-based content (see HTML examples section)
 
 ## Quick Start
 
-Every MDX file that uses Marquees needs this import at the top:
+Every MDX file that uses Marquees needs these imports at the top:
 
 ```mdx
 ---
 import Marquee from '../../components/reusable/Marquee.astro'
+import image1 from '../assets/photo-1.jpg'
+import image2 from '../assets/photo-2.jpg'
+import image3 from '../assets/photo-3.jpg'
 ---
 
 # Your Page Title
 
 Your content here...
 
-<Marquee>
-  <div class="shrink-0 w-64 h-48 bg-neutral-800 rounded-lg p-4">Item 1</div>
-  <div class="shrink-0 w-64 h-48 bg-neutral-800 rounded-lg p-4">Item 2</div>
-  <div class="shrink-0 w-64 h-48 bg-neutral-800 rounded-lg p-4">Item 3</div>
-</Marquee>
+<Marquee
+  images={[
+    { src: image1, alt: "Description of image 1" },
+    { src: image2, alt: "Description of image 2" },
+    { src: image3, alt: "Description of image 3" },
+  ]}
+  duration={18}
+  gap="2rem"
+/>
 ```
 
-**Result:** Three cards that scroll continuously from right to left in an infinite loop.
+**Result:** Three images that scroll continuously from right to left in an infinite loop with smooth, optimized performance.
 
-**Important:** Always add the `shrink-0` class to your items to prevent them from squishing!
+**That's it!** The Marquee component automatically handles:
+- Image optimization and responsive sizing
+- WebP format conversion for better performance
+- Lazy loading for images below the fold
+- Proper CSS classes to prevent squishing
 
 ## Common Use Cases
 
-### 1. Image Gallery
+### 1. Image Gallery (Recommended)
 
-Display a collection of images in a smooth scrolling showcase.
+The Marquee component excels at displaying image galleries. Simply pass an array of images and the component handles all the optimization automatically.
+
+**Basic Usage:**
 
 ```mdx
 ---
 import Marquee from '../../components/reusable/Marquee.astro'
-import { Image } from 'astro:assets'
 import gallery1 from '../assets/gallery-1.jpg'
 import gallery2 from '../assets/gallery-2.jpg'
 import gallery3 from '../assets/gallery-3.jpg'
 import gallery4 from '../assets/gallery-4.jpg'
+import gallery5 from '../assets/gallery-5.jpg'
+import gallery6 from '../assets/gallery-6.jpg'
 ---
 
-<Marquee duration={15} gap="2rem">
-  <Image
-    src={gallery1}
-    alt="Gallery Image 1"
-    class="h-48 sm:h-56 lg:h-64 w-72 sm:w-80 lg:w-96 object-cover rounded-lg shrink-0"
-    loading="lazy"
-    format="webp"
-  />
-  <Image
-    src={gallery2}
-    alt="Gallery Image 2"
-    class="h-48 sm:h-56 lg:h-64 w-72 sm:w-80 lg:w-96 object-cover rounded-lg shrink-0"
-    loading="lazy"
-    format="webp"
-  />
-  <Image
-    src={gallery3}
-    alt="Gallery Image 3"
-    class="h-48 sm:h-56 lg:h-64 w-72 sm:w-80 lg:w-96 object-cover rounded-lg shrink-0"
-    loading="lazy"
-    format="webp"
-  />
-  <Image
-    src={gallery4}
-    alt="Gallery Image 4"
-    class="h-48 sm:h-56 lg:h-64 w-72 sm:w-80 lg:w-96 object-cover rounded-lg shrink-0"
-    loading="lazy"
-    format="webp"
-  />
-</Marquee>
+<Marquee
+  images={[
+    { src: gallery1, alt: "Gallery Image 1" },
+    { src: gallery2, alt: "Gallery Image 2" },
+    { src: gallery3, alt: "Gallery Image 3" },
+    { src: gallery4, alt: "Gallery Image 4" },
+    { src: gallery5, alt: "Gallery Image 5" },
+    { src: gallery6, alt: "Gallery Image 6" },
+  ]}
+  duration={18}
+  gap="2rem"
+  pauseOnHover={false}
+/>
 ```
 
 **Looks like:** A continuous stream of photos scrolling smoothly across the page. Images are responsive and properly sized for mobile, tablet, and desktop.
 
+**Why This Works Best:**
+- **Zero boilerplate:** No need to write `<Image/>` components manually
+- **Automatic optimization:** WebP format, lazy loading, and responsive sizing by default
+- **Type-safe:** TypeScript ensures you don't forget alt text
+- **Consistent styling:** All images use the same optimized classes
+- **90% less code** compared to manual approach
+
+**What Happens Automatically:**
+- ✅ Responsive sizing: `h-48 sm:h-56 lg:h-64 w-80 sm:w-96`
+- ✅ Aspect ratio handling: `object-cover rounded-lg`
+- ✅ Flex prevention: `shrink-0` (prevents squishing)
+- ✅ WebP format conversion
+- ✅ Lazy loading (configurable)
+
+**Customizing Image Styling:**
+
+If you need different sizing (e.g., for sponsor logos), use the `imageClass` prop:
+
+```mdx
+<Marquee
+  images={[
+    { src: logo1, alt: "Company 1" },
+    { src: logo2, alt: "Company 2" },
+  ]}
+  imageClass="h-16 w-32 object-contain shrink-0 opacity-70 hover:opacity-100"
+  duration={40}
+  gap="4rem"
+/>
+```
+
+**Recommended Settings:**
+- **Duration:** 15-20 seconds for dynamic energy, 25-30 for slower viewing
+- **Gap:** "2rem" provides comfortable spacing between images
+- **Number of images:** 6-12 images create a smooth, continuous loop
+
+### 2. Sponsor Logos
+
+Display partner and sponsor logos in a continuous loop with custom styling.
+
+```mdx
+---
+import Marquee from '../../components/reusable/Marquee.astro'
+import sponsor1 from '../assets/sponsors/company-1.png'
+import sponsor2 from '../assets/sponsors/company-2.png'
+import sponsor3 from '../assets/sponsors/company-3.png'
+---
+
+<Marquee
+  images={[
+    { src: sponsor1, alt: "Company 1" },
+    { src: sponsor2, alt: "Company 2" },
+    { src: sponsor3, alt: "Company 3" },
+  ]}
+  imageClass="h-16 w-32 object-contain shrink-0 opacity-70 hover:opacity-100 transition-opacity"
+  duration={40}
+  gap="4rem"
+/>
+```
+
+**Looks like:** Sponsor logos slowly scrolling by, slightly faded by default, and becoming fully visible on hover.
+
+**Key Differences from Gallery:**
+- **`imageClass` override:** Logos need `object-contain` (not `object-cover`) to preserve proportions
+- **Fixed dimensions:** `h-16 w-32` keeps logos consistent size
+- **Opacity effect:** `opacity-70 hover:opacity-100` adds visual polish
+
 **Tips:**
-- Use `duration={15}` for a faster scroll (good for many images)
-- Always use the Astro `Image` component for optimization
-- Include `loading="lazy"` for images below the fold
-- Use `format="webp"` for better performance
+- Use `duration={40}` for very slow scrolling (easier to read)
+- Use `gap="4rem"` for spacious layout
+- Always include `shrink-0` in custom classes to prevent squishing
 
-### 2. Team Member Cards
+## Using the Slot for Custom HTML Content
 
-Showcase your team members in scrolling cards.
+While the `images` prop is the simplest way to create image galleries, you can also use Marquee's slot to pass custom HTML content. This is useful for text-based content like team member cards, technology badges, or mixed layouts.
+
+**When to use the slot:**
+- Text-heavy content (team cards, testimonials, badges)
+- Complex layouts with nested elements
+- Mixed content (images + text in cards)
+- Custom styling that can't be achieved with `imageClass`
+
+**Note:** For pure image galleries, the `images` prop is simpler and recommended. The slot is for when you need more control or non-image content.
+
+### Team Member Cards
+
+Showcase your team members in scrolling cards with text.
 
 ```mdx
 ---
@@ -120,14 +192,6 @@ import Marquee from '../../components/reusable/Marquee.astro'
     <div class="font-semibold text-white">Emily Rodriguez</div>
     <div class="text-sm text-neutral-400">Engineering Lead</div>
   </div>
-  <div class="shrink-0 px-6 py-4 bg-neutral-800 rounded-lg border border-neutral-700">
-    <div class="font-semibold text-white">James Anderson</div>
-    <div class="text-sm text-neutral-400">Data Analyst</div>
-  </div>
-  <div class="shrink-0 px-6 py-4 bg-neutral-800 rounded-lg border border-neutral-700">
-    <div class="font-semibold text-white">Lisa Thompson</div>
-    <div class="text-sm text-neutral-400">Systems Engineer</div>
-  </div>
 </Marquee>
 ```
 
@@ -139,52 +203,9 @@ import Marquee from '../../components/reusable/Marquee.astro'
 - Keep card widths consistent (they'll auto-size based on content)
 - Use `gap="3rem"` for comfortable spacing between cards
 
-### 3. Sponsor Logos
+### Technology Badges
 
-Display partner and sponsor logos in a continuous loop.
-
-```mdx
----
-import Marquee from '../../components/reusable/Marquee.astro'
-import { Image } from 'astro:assets'
-import sponsor1 from '../assets/sponsors/company-1.png'
-import sponsor2 from '../assets/sponsors/company-2.png'
-import sponsor3 from '../assets/sponsors/company-3.png'
----
-
-<Marquee duration={40} gap="4rem">
-  <Image
-    src={sponsor1}
-    alt="Company 1"
-    class="h-16 w-32 object-contain shrink-0 opacity-70 hover:opacity-100 transition-opacity"
-    loading="lazy"
-  />
-  <Image
-    src={sponsor2}
-    alt="Company 2"
-    class="h-16 w-32 object-contain shrink-0 opacity-70 hover:opacity-100 transition-opacity"
-    loading="lazy"
-  />
-  <Image
-    src={sponsor3}
-    alt="Company 3"
-    class="h-16 w-32 object-contain shrink-0 opacity-70 hover:opacity-100 transition-opacity"
-    loading="lazy"
-  />
-</Marquee>
-```
-
-**Looks like:** Sponsor logos slowly scrolling by, slightly faded by default, and becoming fully visible on hover.
-
-**Tips:**
-- Use `duration={40}` for very slow scrolling (easier to read)
-- Use `gap="4rem"` for spacious layout
-- Add `opacity-70 hover:opacity-100` for a subtle hover effect
-- Use `object-contain` to preserve logo proportions
-
-### 4. Technology Badges
-
-Show off the technologies and tools you use.
+Show off the technologies and tools you use with simple text badges.
 
 ```mdx
 ---
@@ -203,12 +224,6 @@ import Marquee from '../../components/reusable/Marquee.astro'
   </div>
   <div class="shrink-0 px-4 py-2 bg-neutral-800 rounded-md text-sm font-medium text-neutral-200">
     Tailwind CSS
-  </div>
-  <div class="shrink-0 px-4 py-2 bg-neutral-800 rounded-md text-sm font-medium text-neutral-200">
-    Node.js
-  </div>
-  <div class="shrink-0 px-4 py-2 bg-neutral-800 rounded-md text-sm font-medium text-neutral-200">
-    Docker
   </div>
 </Marquee>
 ```
@@ -375,17 +390,18 @@ import Marquee from '../components/reusable/Marquee.astro'
 
 ## Complete Example
 
-Here's a full MDX page that uses Marquees effectively:
+Here's a full MDX page that uses Marquees effectively with the new simplified API:
 
 ```mdx
 ---
 import Marquee from '../../components/reusable/Marquee.astro'
 import Button from '../../components/reusable/Button.astro'
-import { Image } from 'astro:assets'
 import photo1 from '../assets/event-photos/photo1.jpg'
 import photo2 from '../assets/event-photos/photo2.jpg'
 import photo3 from '../assets/event-photos/photo3.jpg'
 import photo4 from '../assets/event-photos/photo4.jpg'
+import photo5 from '../assets/event-photos/photo5.jpg'
+import photo6 from '../assets/event-photos/photo6.jpg'
 import sponsor1 from '../assets/sponsors/company1.png'
 import sponsor2 from '../assets/sponsors/company2.png'
 import sponsor3 from '../assets/sponsors/company3.png'
@@ -397,83 +413,39 @@ import sponsor3 from '../assets/sponsors/company3.png'
 
 Check out some amazing moments from our recent gathering:
 
-<Marquee duration={15} gap="2rem">
-  <Image
-    src={photo1}
-    alt="Event Photo 1"
-    class="h-64 w-96 object-cover rounded-lg shrink-0"
-    loading="lazy"
-    format="webp"
-  />
-  <Image
-    src={photo2}
-    alt="Event Photo 2"
-    class="h-64 w-96 object-cover rounded-lg shrink-0"
-    loading="lazy"
-    format="webp"
-  />
-  <Image
-    src={photo3}
-    alt="Event Photo 3"
-    class="h-64 w-96 object-cover rounded-lg shrink-0"
-    loading="lazy"
-    format="webp"
-  />
-  <Image
-    src={photo4}
-    alt="Event Photo 4"
-    class="h-64 w-96 object-cover rounded-lg shrink-0"
-    loading="lazy"
-    format="webp"
-  />
-</Marquee>
-
-## Our Team
-
-Meet the people who made it happen:
-
-<Marquee duration={30} gap="3rem" pauseOnHover={true}>
-  <div class="shrink-0 px-6 py-4 bg-neutral-800 rounded-lg border border-neutral-700">
-    <div class="font-semibold text-white">Alex Johnson</div>
-    <div class="text-sm text-neutral-400">Event Coordinator</div>
-  </div>
-  <div class="shrink-0 px-6 py-4 bg-neutral-800 rounded-lg border border-neutral-700">
-    <div class="font-semibold text-white">Maria Garcia</div>
-    <div class="text-sm text-neutral-400">Technical Lead</div>
-  </div>
-  <div class="shrink-0 px-6 py-4 bg-neutral-800 rounded-lg border border-neutral-700">
-    <div class="font-semibold text-white">David Kim</div>
-    <div class="text-sm text-neutral-400">Logistics Manager</div>
-  </div>
-</Marquee>
+<Marquee
+  images={[
+    { src: photo1, alt: "Event Photo 1" },
+    { src: photo2, alt: "Event Photo 2" },
+    { src: photo3, alt: "Event Photo 3" },
+    { src: photo4, alt: "Event Photo 4" },
+    { src: photo5, alt: "Event Photo 5" },
+    { src: photo6, alt: "Event Photo 6" },
+  ]}
+  duration={18}
+  gap="2rem"
+  pauseOnHover={false}
+/>
 
 ## Special Thanks to Our Sponsors
 
-<Marquee duration={40} gap="4rem">
-  <Image
-    src={sponsor1}
-    alt="Sponsor 1"
-    class="h-16 w-32 object-contain shrink-0 opacity-70 hover:opacity-100 transition-opacity"
-    loading="lazy"
-  />
-  <Image
-    src={sponsor2}
-    alt="Sponsor 2"
-    class="h-16 w-32 object-contain shrink-0 opacity-70 hover:opacity-100 transition-opacity"
-    loading="lazy"
-  />
-  <Image
-    src={sponsor3}
-    alt="Sponsor 3"
-    class="h-16 w-32 object-contain shrink-0 opacity-70 hover:opacity-100 transition-opacity"
-    loading="lazy"
-  />
-</Marquee>
+<Marquee
+  images={[
+    { src: sponsor1, alt: "Sponsor 1" },
+    { src: sponsor2, alt: "Sponsor 2" },
+    { src: sponsor3, alt: "Sponsor 3" },
+  ]}
+  imageClass="h-16 w-32 object-contain shrink-0 opacity-70 hover:opacity-100 transition-opacity"
+  duration={40}
+  gap="4rem"
+/>
 
 <div class="mt-8">
   <Button href="/events">View More Events</Button>
 </div>
 ```
+
+**Look how clean this is!** No manual `<Image/>` components, no repetitive class strings, just simple arrays of images with descriptions.
 
 ## Need Help?
 

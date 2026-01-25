@@ -1,15 +1,31 @@
 ---
 // Marquee - Seamless infinite horizontal auto-scroll component
-// Usage: Wrap any content as children
+// Usage: Pass images array OR wrap any content as children
 // Cross-platform safe (no % transform assumptions)
 
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+interface MarqueeImage {
+  src: ImageMetadata;
+  alt: string;
+}
+
 interface Props {
-  duration?: number;       // Animation duration in seconds (default: 30)
-  gap?: string;            // Gap between items (default: "2rem")
-  pauseOnHover?: boolean;  // Pause animation on hover (default: true)
+  images?: MarqueeImage[];        // Image array for simplified image galleries
+  imageClass?: string;            // Custom classes for images (default: responsive gallery sizing)
+  imageLoading?: "lazy" | "eager"; // Image loading strategy (default: "lazy")
+  imageFormat?: "webp" | "avif" | "png" | "jpg"; // Image format (default: "webp")
+  duration?: number;              // Animation duration in seconds (default: 30)
+  gap?: string;                   // Gap between items (default: "2rem")
+  pauseOnHover?: boolean;         // Pause animation on hover (default: true)
 }
 
 const {
+  images,
+  imageClass = "h-48 sm:h-56 lg:h-64 w-80 sm:w-96 object-cover rounded-lg shrink-0",
+  imageLoading = "lazy",
+  imageFormat = "webp",
   duration = 30,
   gap = "2rem",
   pauseOnHover = true,
@@ -20,12 +36,36 @@ const {
   <div class={`marquee-track ${pauseOnHover ? 'pause-on-hover' : ''}`}>
     <!-- First set -->
     <div class="marquee-items">
-      <slot />
+      {images ? (
+        images.map((image) => (
+          <Image
+            src={image.src}
+            alt={image.alt}
+            class={imageClass}
+            loading={imageLoading}
+            format={imageFormat}
+          />
+        ))
+      ) : (
+        <slot />
+      )}
     </div>
 
     <!-- Duplicate set for seamless loop -->
     <div class="marquee-items" aria-hidden="true">
-      <slot />
+      {images ? (
+        images.map((image) => (
+          <Image
+            src={image.src}
+            alt={image.alt}
+            class={imageClass}
+            loading={imageLoading}
+            format={imageFormat}
+          />
+        ))
+      ) : (
+        <slot />
+      )}
     </div>
   </div>
 </div>
