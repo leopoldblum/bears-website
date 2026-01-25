@@ -12,6 +12,7 @@ isProjectCompleted: true
 ---
 
 import Button from '../../components/reusable/Button.astro';
+import Center from '../../components/reusable/Center.astro';
 import Carousel from '../../components/reusable/Carousel.astro';
 import Accordion from '../../components/reusable/Accordion.astro';
 import Marquee from '../../components/reusable/Marquee.astro';
@@ -89,9 +90,14 @@ We partner with:
 - High schools for educational demonstrations
 - International microgravity research networks
 
-<div class="mt-8 flex justify-center not-prose">
+<Center>
+  - dies ist ein bulletpoint
+  - dies ist noch ein punkt
+
+  dies ist normaler text
+  
   <Button variant="primary" size="large" href="/contact">Submit Experiment Proposal</Button>
-</div>
+</Center>
 
 ### Research Highlights Gallery
 

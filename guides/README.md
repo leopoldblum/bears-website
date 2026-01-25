@@ -5,6 +5,7 @@ Welcome! This folder contains step-by-step guides for creating and managing cont
 ## 📝 Available Guides
 
 - **[Using Buttons](using-buttons.md)** - Add buttons to your content pages
+- **[Using Center](using-center.md)** - Horizontally center content on your pages
 - **[Using Accordions](using-accordion.md)** - Add collapsible accordion sections to your content
 - **[Using Carousels](using-carousel.md)** - Add interactive slide shows with user-controlled navigation
 - **[Using Marquees](using-marquee.md)** - Add infinite scrolling content showcases
@@ -17,6 +18,7 @@ Welcome! This folder contains step-by-step guides for creating and managing cont
 **Modifying components or working with the codebase?** Technical documentation lives alongside the source code:
 
 - **Button Component** - See `/src/components/reusable/Button.md`
+- **Center Component** - See `/src/components/reusable/Center.md`
 - **Accordion Component** - See `/src/components/reusable/Accordion.md`
 - **Carousel Component** - See `/src/components/reusable/Carousel.md`
 - **Marquee Component** - See `/src/components/reusable/Marquee.md`
