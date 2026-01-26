@@ -1,7 +1,6 @@
 ---
-import BaseLayout from "../../layouts/BaseLayout.astro";
+import PostLayout from "../../layouts/PostLayout.astro";
 import { type CollectionEntry } from "astro:content";
-import { Image } from "astro:assets";
 import { loadCoverImage } from "../../utils/imageLoader";
 import { getPublishedProjects } from "../../utils/contentQueries";
 
@@ -33,40 +32,6 @@ const coverImageData = await loadCoverImage(
 const { title, date } = entry.data;
 ---
 
-<BaseLayout title={title}>
-  <article class="container mx-auto px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
-    <!-- Cover Image -->
-    {coverImageData && (
-      <div class="mb-6 sm:mb-8 rounded-lg overflow-hidden">
-        <Image
-          src={coverImageData}
-          alt={title}
-          class="w-full h-48 sm:h-64 lg:h-96 object-cover"
-          loading="eager"
-          format="webp"
-        />
-      </div>
-    )}
-
-    <!-- Title and Date -->
-    <header class="mb-6 sm:mb-8">
-      <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold mb-3 sm:mb-4 text-bears-accent">
-        {title}
-      </h1>
-      <time class="text-sm sm:text-base text-bears-text-onDark/80">
-        {date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-      </time>
-    </header>
-
-    <!-- Content -->
-    <div class="prose prose-invert prose-lg max-w-none
-                prose-headings:text-bears-text-onDark
-                prose-p:text-bears-text-onDark/90
-                prose-a:text-bears-accent prose-a:no-underline hover:prose-a:underline
-                prose-strong:text-bears-text-onDark
-                prose-ul:text-bears-text-onDark/90
-                prose-ol:text-bears-text-onDark/90">
-      <Content />
-    </div>
-  </article>
-</BaseLayout>
+<PostLayout title={title} date={date} coverImage={coverImageData}>
+  <Content />
+</PostLayout>
