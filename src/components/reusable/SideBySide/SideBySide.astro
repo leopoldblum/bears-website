@@ -5,11 +5,48 @@
 
 interface Props {
   class?: string;
+  showDivider?: boolean;
 }
 
-const { class: className } = Astro.props;
+const { class: className, showDivider = true } = Astro.props;
 ---
 
-<div class={`flex flex-col lg:flex-row divide-y lg:divide-y-0 lg:divide-x divide-bears-text-onDark/20 ${className || ''}`}>
+<div class={`side-by-side flex flex-col lg:flex-row relative ${className || ''}`}>
   <slot />
+  {showDivider && <div class="side-by-side-divider"></div>}
 </div>
+
+<style>
+  .side-by-side-divider {
+    position: absolute;
+    /* Mobile: horizontal line at vertical center */
+    left: 0;
+    right: 0;
+    top: 50%;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.15),
+      rgba(255, 255, 255, 0.05),
+      transparent
+    );
+  }
+
+  @media (min-width: 1024px) {
+    .side-by-side-divider {
+      /* Desktop: vertical line at horizontal center */
+      top: 0;
+      bottom: 0;
+      left: 50%;
+      right: auto;
+      width: 1px;
+      height: auto;
+      background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.15),
+        rgba(255, 255, 255, 0.05),
+        transparent
+      );
+    }
+  }
+</style>
