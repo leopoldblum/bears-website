@@ -112,10 +112,44 @@ body {
 .projects-grid > div:nth-child(6) .showcase-card,
 .events-grid > div:nth-child(6) .showcase-card { animation-delay: 200ms; }
 
+/* Post content entrance animation */
+.post-container {
+  animation: postContentIn 0.5s ease-out both;
+}
+
+@keyframes postContentIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Metadata card entrance (slightly delayed) */
+.metadata-card {
+  animation: metadataCardIn 0.4s ease-out 0.15s both;
+}
+
+@keyframes metadataCardIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Respect user preference for reduced motion */
 @media (prefers-reduced-motion: reduce) {
   .showcase-card,
-  .accordion-item {
+  .accordion-item,
+  .post-container,
+  .metadata-card {
     animation: none;
   }
 

@@ -1,0 +1,50 @@
+---
+// ReadingProgress.astro - Elegant reading progress indicator
+---
+
+<div
+  x-data="{
+    scrollProgress: 0,
+    updateProgress() {
+      const winScroll = window.scrollY;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      this.scrollProgress = (winScroll / height) * 100;
+    }
+  }"
+  x-init="updateProgress()"
+  @scroll.window="updateProgress()"
+  class="reading-progress-container"
+>
+  <div
+    class="reading-progress-bar"
+    :style="`width: ${scrollProgress}%`"
+  ></div>
+</div>
+
+<style>
+  .reading-progress-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background-color: rgba(255, 255, 255, 0.05);
+    z-index: 1000;
+  }
+
+  .reading-progress-bar {
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      var(--color-bears-accent-muted),
+      var(--color-bears-accent)
+    );
+    transition: width 0.1s ease-out;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .reading-progress-bar {
+      transition: none;
+    }
+  }
+</style>
