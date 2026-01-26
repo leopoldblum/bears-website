@@ -3,6 +3,7 @@ import BaseLayout from "./BaseLayout.astro";
 import { Image } from "astro:assets";
 import type { ImageMetadata } from "astro";
 import ReadingProgress from "../components/post/ReadingProgress.astro";
+import MetadataCard from "../components/post/MetadataCard.astro";
 
 interface Props {
   title: string;
@@ -38,20 +39,23 @@ const { title, date, coverImage, category, tags = [], isCompleted, type } = Astr
       <!-- Header -->
       <header class="post-header">
         <h1 class="post-title">{title}</h1>
-        <div class="post-meta">
-          <time class="post-date">
-            {date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
-          </time>
-        </div>
         <div class="header-divider"></div>
       </header>
 
-      <!-- Content -->
-      <div class="content-wrapper">
-        <!-- Main Content -->
+      <!-- Content Layout: Prose + Metadata Sidebar -->
+      <div class="content-layout">
         <div class="prose-content">
           <slot />
         </div>
+        <aside class="metadata-sidebar">
+          <MetadataCard
+            category={category}
+            tags={tags}
+            date={date}
+            isCompleted={isCompleted}
+            type={type}
+          />
+        </aside>
       </div>
     </div>
   </article>
@@ -61,7 +65,6 @@ const { title, date, coverImage, category, tags = [], isCompleted, type } = Astr
   .post-container {
     width: 100%;
     padding: 1.5rem 0.75rem;
-    overflow-x: hidden;
   }
 
   .post-inner {
@@ -105,20 +108,6 @@ const { title, date, coverImage, category, tags = [], isCompleted, type } = Astr
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
   }
 
-  .post-meta {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-  }
-
-  .post-date {
-    font-size: 0.9375rem;
-    color: var(--color-bears-text-onDark);
-    opacity: 0.7;
-    font-weight: 500;
-  }
-
   .header-divider {
     height: 1px;
     background: linear-gradient(
@@ -130,10 +119,20 @@ const { title, date, coverImage, category, tags = [], isCompleted, type } = Astr
     margin-top: 1.5rem;
   }
 
-  /* Content Wrapper */
-  .content-wrapper {
-    max-width: 100%;
-    overflow: hidden;
+  /* Content Layout: Two-column on desktop */
+  .content-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    max-width: min(110ch, 100%);
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* Metadata Sidebar */
+  .metadata-sidebar {
+    width: 100%;
+    order: -1; /* Show above content on mobile */
   }
 
   /* Prose Content */
@@ -142,9 +141,7 @@ const { title, date, coverImage, category, tags = [], isCompleted, type } = Astr
     color: var(--color-bears-text-onDark);
     font-size: 1.0625rem;
     line-height: 1.75;
-    max-width: min(100ch, 100%);
     width: 100%;
-    margin: 0 auto;
   }
 
   /* Typography Enhancements */
@@ -271,6 +268,19 @@ const { title, date, coverImage, category, tags = [], isCompleted, type } = Astr
     color: var(--color-bears-text-onDark);
   }
 
+  /* Horizontal Rule / Divider */
+  .prose-content :global(hr) {
+    margin: 2.5rem 0;
+    border: none;
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.15),
+      rgba(255, 255, 255, 0.05),
+      transparent
+    );
+  }
+
   /* Prevent child elements from causing overflow */
   .prose-content :global(img) {
     max-width: 100%;
@@ -327,16 +337,34 @@ const { title, date, coverImage, category, tags = [], isCompleted, type } = Astr
       margin-bottom: 3rem;
     }
 
+    .content-layout {
+      flex-direction: row;
+      gap: 3rem;
+      align-items: flex-start;
+    }
+
     .prose-content {
+      flex: 1;
+      min-width: 0; /* Prevent flex child overflow */
       font-size: 1.125rem;
-      padding-left: 2rem;
+    }
+
+    .metadata-sidebar {
+      width: 280px;
+      flex-shrink: 0;
+      order: 1; /* Show on right side on desktop */
+      align-self: stretch; /* Stretch to full height so sticky works inside */
     }
   }
 
   /* Responsive: Large Desktop */
   @media (min-width: 1280px) {
-    .prose-content {
-      padding-left: 3rem;
+    .content-layout {
+      gap: 4rem;
+    }
+
+    .metadata-sidebar {
+      width: 300px;
     }
   }
 

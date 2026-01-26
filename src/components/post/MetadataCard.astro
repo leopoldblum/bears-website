@@ -75,6 +75,14 @@ const formattedDate = date.toLocaleDateString('en-US', {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   }
 
+  /* Desktop: Sticky positioning */
+  @media (min-width: 1024px) {
+    .metadata-card {
+      position: sticky;
+      top: 6.5rem;
+    }
+  }
+
   .metadata-section {
     display: flex;
     flex-direction: column;
@@ -186,6 +194,20 @@ const formattedDate = date.toLocaleDateString('en-US', {
 
   .status-indicator.in-progress .status-text {
     color: rgb(59, 130, 246);
+  }
+
+  /* Mobile: Horizontal compact layout */
+  @media (max-width: 1023px) {
+    .metadata-card {
+      flex-direction: row;
+      flex-wrap: wrap;
+      gap: 1rem 1.5rem;
+    }
+
+    .metadata-section {
+      flex: 1 1 auto;
+      min-width: 120px;
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
