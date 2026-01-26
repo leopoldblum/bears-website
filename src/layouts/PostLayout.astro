@@ -183,13 +183,13 @@ const { title, date, coverImage, category, tags = [], isCompleted, type } = Astr
     opacity: 0.9;
   }
 
-  .prose-content :global(a) {
+  .prose-content :global(a:not(.not-prose)) {
     color: var(--color-bears-accent);
     text-decoration: none;
     transition: opacity 0.2s ease;
   }
 
-  .prose-content :global(a:hover) {
+  .prose-content :global(a:not(.not-prose):hover) {
     opacity: 0.8;
     text-decoration: underline;
   }
@@ -213,6 +213,14 @@ const { title, date, coverImage, category, tags = [], isCompleted, type } = Astr
   }
 
   .prose-content :global(ul > li::marker) {
+    color: var(--color-bears-accent);
+  }
+
+  .prose-content :global(ol > li) {
+    list-style-type: decimal;
+  }
+
+  .prose-content :global(ol > li::marker) {
     color: var(--color-bears-accent);
   }
 
@@ -334,7 +342,7 @@ const { title, date, coverImage, category, tags = [], isCompleted, type } = Astr
 
   /* Reduced Motion */
   @media (prefers-reduced-motion: reduce) {
-    .prose-content :global(a) {
+    .prose-content :global(a:not(.not-prose)) {
       transition: none;
     }
   }
