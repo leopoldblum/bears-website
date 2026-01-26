@@ -78,7 +78,7 @@ const {
 
   .marquee-track {
     display: flex;
-    gap: var(--gap);
+    /* No gap here - gap between sets breaks the -50% animation calculation */
     width: max-content;
     animation: marquee-scroll var(--duration) linear infinite;
     will-change: transform;
@@ -88,6 +88,7 @@ const {
     display: flex;
     gap: var(--gap);
     flex-shrink: 0;
+    padding-right: var(--gap); /* Creates seam gap, included in -50% width calc */
   }
 
   @keyframes marquee-scroll {

@@ -132,10 +132,10 @@ import photo2 from '../assets/photo2.jpg';
 - 90% less code than manual approach
 
 **Default Styling:**
-Images receive these classes by default:
-```
-h-48 sm:h-56 lg:h-64 w-80 sm:w-96 object-cover rounded-lg shrink-0
-```
+Images receive responsive sizing classes that scale based on viewport width:
+- Mobile: 192px tall, 320px wide
+- sm (640px+): 224px tall, 384px wide
+- lg (1024px+): 256px tall, 384px wide
 
 **Custom Styling:**
 Override with `imageClass` prop for different use cases (logos, different aspect ratios):
