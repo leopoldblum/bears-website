@@ -1,0 +1,449 @@
+---
+title: "Complete Styling & Component Showcase"
+description: "A comprehensive showcase of all typography, components, and design elements available in the BEARS website."
+date: 2026-01-26
+categoryProject: "other"
+tags: ["design-system", "components", "typography", "showcase"]
+coverImage: "project-1.jpg"
+isDraft: false
+displayMeetTheTeam: false
+isProjectCompleted: true
+---
+
+import Button from '../../components/reusable/Button.astro';
+import Center from '../../components/reusable/Center.astro';
+import Carousel from '../../components/reusable/Carousel.astro';
+import Accordion from '../../components/reusable/Accordion.astro';
+import Marquee from '../../components/reusable/Marquee.astro';
+import { SideBySide, Left, Right } from "../../components/reusable/SideBySide"
+import Img from '../../components/reusable/Img.astro';
+import project1 from '../../assets/projects/project-1.jpg';
+import project2 from '../../assets/projects/project-2.jpg';
+import project3 from '../../assets/projects/project-3.jpg';
+import project4 from '../../assets/projects/project-4.jpg';
+import project5 from '../../assets/projects/project-5.jpg';
+import project6 from '../../assets/projects/project-6.jpg';
+
+## Typography & Text Styling
+
+This page demonstrates all the typography and styling elements used throughout the BEARS website. Everything from headings to body text follows a carefully designed typographic hierarchy.
+
+### Heading Hierarchy
+
+All headings use responsive font sizes that scale with screen size. This ensures readability on both mobile and desktop devices.
+
+#### Subheading Level 4
+This is a level 4 heading, often used for subsections within major content blocks.
+
+##### Heading Level 5
+Level 5 headings work for nested topics.
+
+###### Heading Level 6
+Level 6 headings for deeply nested content.
+
+### Body Text & Paragraphs
+
+Body text uses a generous line-height (1.75) for comfortable reading. Paragraphs are spaced with consistent margins to create visual rhythm. The font size adapts: 1.0625rem on mobile, scaling up to 1.125rem on desktop.
+
+This paragraph demonstrates **bold text**, *italic text*, and ***bold italic text***. You can also use `inline code` which appears with a subtle background. Links are styled in the accent color and become underlined on hover.
+
+### Lists & Indentation
+
+Bullet points and numbered lists maintain consistent indentation and spacing:
+
+- First item with explanation
+- Second item demonstrating list flow
+- Nested items can go multiple levels deep:
+  - Sub-item one
+  - Sub-item two
+  - Sub-item three
+- Fourth item continues the main list
+
+Numbered lists work too:
+
+1. First step in a process
+2. Second step with more details
+3. Third step completing the workflow
+   1. Sub-step A
+   2. Sub-step B
+4. Final step
+
+### Blockquotes
+
+> Blockquotes stand out with a left border in the accent color. They're perfect for highlighting important quotes, testimonials, or key insights from research.
+
+> This is another blockquote demonstrating the styling. Multiple blockquotes maintain consistent formatting throughout the page.
+
+### Code Blocks
+
+Inline code like `const myVariable = 42;` appears with subtle styling. For larger code samples:
+
+```javascript
+// Example JavaScript code block
+function demonstrateCode() {
+  const greeting = "Hello, BEARS!";
+  console.log(greeting);
+  return greeting;
+}
+
+// Code blocks support syntax highlighting
+const result = demonstrateCode();
+```
+
+```python
+# Python code example
+def fibonacci(n):
+    if n <= 1:
+        return n
+    return fibonacci(n-1) + fibonacci(n-2)
+
+# Calculate and print
+for i in range(10):
+    print(fibonacci(i))
+```
+
+---
+
+## Button Components
+
+Buttons come in multiple variants and sizes for different use cases:
+
+<Center>
+### Primary Buttons
+
+<Button variant="primary" size="standard" href="#buttons">Standard Primary</Button>
+
+<Button variant="primary" size="large">Large Primary Button</Button>
+
+### Secondary Buttons
+
+<Button variant="secondary" size="standard">Standard Secondary</Button>
+
+<Button variant="secondary" size="large">Large Secondary</Button>
+
+### Inverse Buttons
+
+<Button variant="inverse" size="standard">Standard Inverse</Button>
+
+<Button variant="inverse" size="large">Large Inverse Button</Button>
+
+</Center>
+
+---
+
+## Image Component
+
+The `Img` component provides optimized, responsive image display with flexible sizing:
+
+<Center>
+
+### Full Width Image
+<Img src={project1} alt="Full width project showcase" width="100%" priority={true} />
+
+### 80% Width Image
+<Img src={project2} alt="80% width image" width="80%" />
+
+### 60% Width Image
+<Img src={project3} alt="60% width image" width="60%" />
+
+</Center>
+
+---
+
+## Carousel Component
+
+Carousels display multiple slides with navigation arrows and dot indicators:
+
+<Carousel showArrows={true} showDots={true} minHeight="min-h-64">
+  <div class="bg-bears-accent/20 border border-bears-accent/40 rounded-lg p-8 flex items-center justify-center min-h-64">
+    <div class="text-center">
+      <h3 class="text-2xl font-bold mb-2">Slide 1</h3>
+      <p>First carousel slide with custom content</p>
+    </div>
+  </div>
+  <div class="bg-bears-accent/20 border border-bears-accent/40 rounded-lg p-8 flex items-center justify-center min-h-64">
+    <div class="text-center">
+      <h3 class="text-2xl font-bold mb-2">Slide 2</h3>
+      <p>Second slide demonstrating carousel navigation</p>
+    </div>
+  </div>
+  <div class="bg-bears-accent/20 border border-bears-accent/40 rounded-lg p-8 flex items-center justify-center min-h-64">
+    <div class="text-center">
+      <h3 class="text-2xl font-bold mb-2">Slide 3</h3>
+      <p>Third slide showing manual slide selection</p>
+    </div>
+  </div>
+  <div class="bg-bears-accent/20 border border-bears-accent/40 rounded-lg p-8 flex items-center justify-center min-h-64">
+    <div class="text-center">
+      <h3 class="text-2xl font-bold mb-2">Slide 4</h3>
+      <p>Fourth slide completing the carousel example</p>
+    </div>
+  </div>
+</Carousel>
+
+---
+
+## Accordion Component
+
+Accordions organize content into expandable sections:
+
+<Accordion
+  items={[
+    {
+      title: "What is the BEARS program?",
+      subtitle: "General Information",
+      content: `
+The BEARS program is a comprehensive initiative focused on advancing research and innovation. It brings together students, researchers, and industry partners to tackle real-world challenges through collaborative projects.
+
+- Multi-disciplinary approach
+- Industry partnerships
+- Student-led research
+- Real-world applications
+      `
+    },
+    {
+      title: "How do I join a project?",
+      subtitle: "Getting Started",
+      content: `
+Joining a BEARS project is straightforward:
+
+1. Browse available projects on the website
+2. Check the project requirements and timeline
+3. Contact the project lead
+4. Attend the kickoff meeting
+5. Start collaborating with the team
+
+Each project has different requirements, so check individual project pages for specific details.
+      `
+    },
+    {
+      title: "What skills do I need?",
+      subtitle: "Technical Requirements",
+      content: `
+Required and preferred skills vary by project:
+
+- **Always helpful:** Problem-solving, teamwork, communication
+- **Technical:** Programming, CAD, data analysis (project-dependent)
+- **Soft skills:** Leadership, project management, documentation
+- **Nice to have:** Previous research experience, domain knowledge
+
+Don't worry if you lack specific skills—the BEARS community is collaborative and supportive.
+      `
+    },
+    {
+      title: "Are there deadlines?",
+      subtitle: "Project Timeline",
+      content: `
+Yes, each project has specific milestones and deadlines:
+
+- Project kickoff: Usually at semester start
+- Checkpoint reviews: Monthly progress checks
+- Final presentation: End of semester
+- Documentation deadline: One week before final presentation
+
+Deadlines help keep projects on track and ensure quality deliverables.
+      `
+    }
+  ]}
+  allowMultiple={true}
+  width="100%"
+/>
+
+---
+
+## Side-by-Side Layout
+
+The SideBySide component creates responsive two-column layouts that stack on mobile:
+
+<SideBySide>
+  <Left>
+
+### Left Column Content
+
+This is the left column of a side-by-side layout. On mobile devices, this content will stack vertically above the right column.
+
+- Point one explaining left content
+- Point two with additional details
+- Point three completing the section
+
+The left column can contain any content type: text, images, lists, buttons, etc.
+
+  </Left>
+  <Right>
+
+### Right Column Content
+
+This is the right column content. It maintains equal width with the left column on desktop displays.
+
+The SideBySide component is useful for:
+- Comparing two approaches
+- Showing before/after scenarios
+- Creating visual balance
+- Organizing related content
+
+Both columns remain equally readable and well-proportioned.
+
+  </Right>
+</SideBySide>
+
+---
+
+## Marquee Component
+
+The marquee creates a scrolling image gallery that's perfect for showcasing multiple projects:
+
+<Marquee
+  images={[
+    { src: project1, alt: "Project 1 showcase" },
+    { src: project2, alt: "Project 2 showcase" },
+    { src: project3, alt: "Project 3 showcase" },
+    { src: project4, alt: "Project 4 showcase" },
+    { src: project5, alt: "Project 5 showcase" },
+    { src: project6, alt: "Project 6 showcase" },
+  ]}
+  duration={20}
+  gap="2rem"
+  pauseOnHover={true}
+/>
+
+---
+
+## Combined Layout Example
+
+Here's a more complex example combining multiple components:
+
+<SideBySide>
+  <Left>
+
+### Gallery Section
+
+<Marquee
+  images={[
+    { src: project1, alt: "Featured project 1" },
+    { src: project2, alt: "Featured project 2" },
+    { src: project3, alt: "Featured project 3" },
+  ]}
+  duration={15}
+  gap="1rem"
+  pauseOnHover={true}
+/>
+
+  </Left>
+  <Right>
+
+### Information Accordion
+
+<Accordion
+  items={[
+    {
+      title: "Gallery Features",
+      content: `
+This marquee showcases featured projects with smooth scrolling animation. Hover to pause.
+      `
+    },
+    {
+      title: "Component Benefits",
+      content: `
+These components create engaging, interactive user experiences that keep visitors engaged.
+      `
+    }
+  ]}
+  allowMultiple={false}
+  width="100%"
+/>
+
+  </Right>
+</SideBySide>
+
+---
+
+## Responsive Design Features
+
+The entire design system is built with mobile-first principles:
+
+### Breakpoint Strategy
+
+- **Mobile (< 640px)**: Single column layouts, optimized spacing
+- **Small Tablet (640px - 1023px)**: Enhanced padding, improved readability
+- **Desktop (≥ 1024px)**: Full two-column layouts, optimal line lengths
+- **Large Desktop (≥ 1280px)**: Additional padding, maximum content width
+
+### Responsive Text Sizing
+
+All text uses `clamp()` for fluid scaling:
+- Titles scale from 2rem → 3.5rem
+- Subheadings scale fluidly with viewport
+- Body text remains consistently readable
+- Line heights maintain readability across sizes
+
+### Image Optimization
+
+- Automatic format conversion (WebP with fallbacks)
+- Responsive image sizing
+- Lazy loading for below-fold images
+- Eager loading for cover images
+- Adaptive image resolution
+
+---
+
+## Color System
+
+The design uses a carefully chosen color palette:
+
+<Center>
+
+### Background Colors
+
+- **Primary Background:** Deep dark (`#1A1A1A`)
+- **Light Background:** Off-white (`#F5F5F5`)
+- **Borders/Dividers:** Subtle transparency layers
+
+### Text Colors
+
+- **On Dark:** Light gray (`#E1E1E1`)
+- **On Light:** Dark gray (`#2B2B2B`)
+- **Accent:** Deep red (`#C50E1F`)
+- **Accent Muted:** Dark red (`#A00B19`)
+
+### Interactive Elements
+
+All interactive elements use consistent color treatment:
+
+<Button variant="primary" size="standard">See Color in Action</Button>
+
+</Center>
+
+---
+
+## Typography Color Examples
+
+This text is **bold** (uses bold font weight). This text is *italic* (uses italic styling). Here's some `code` with special styling.
+
+> This blockquote demonstrates text color on a subtle background. The left border provides visual hierarchy.
+
+---
+
+## Content Width & Spacing
+
+All content automatically centers and constrains to optimal reading width:
+
+- Mobile: 100% of viewport (with padding)
+- Desktop: Up to 90 characters wide
+- Maximum width: Prevents text lines from becoming too long
+- Consistent margins around all elements
+
+The responsive max-width ensures readability on any device.
+
+---
+
+## Conclusion
+
+This showcase demonstrates the complete design system and component library available for BEARS project pages. Every element is designed with:
+
+- **Accessibility** in mind
+- **Responsive** behavior across all devices
+- **Consistent** styling throughout
+- **Performance** optimization
+- **User experience** as the priority
+
+Use these components and styling patterns to create engaging, professional project pages that effectively communicate your work and research.

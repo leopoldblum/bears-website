@@ -3,7 +3,6 @@ import BaseLayout from "./BaseLayout.astro";
 import { Image } from "astro:assets";
 import type { ImageMetadata } from "astro";
 import ReadingProgress from "../components/post/ReadingProgress.astro";
-import MetadataCard from "../components/post/MetadataCard.astro";
 
 interface Props {
   title: string;
@@ -47,24 +46,11 @@ const { title, date, coverImage, category, tags = [], isCompleted, type } = Astr
         <div class="header-divider"></div>
       </header>
 
-      <!-- Content Grid: Main + Sidebar -->
-      <div class="content-grid">
+      <!-- Content -->
+      <div class="content-wrapper">
         <!-- Main Content -->
         <div class="prose-content">
           <slot />
-        </div>
-
-        <!-- Sidebar (Desktop) / Top Card (Mobile) -->
-        <div class="sidebar-wrapper">
-          <div class="sidebar-sticky">
-            <MetadataCard
-              category={category}
-              tags={tags}
-              date={date}
-              isCompleted={isCompleted}
-              type={type}
-            />
-          </div>
         </div>
       </div>
     </div>
@@ -74,7 +60,8 @@ const { title, date, coverImage, category, tags = [], isCompleted, type } = Astr
 <style>
   .post-container {
     width: 100%;
-    padding: 2rem 1rem;
+    padding: 1.5rem 0.75rem;
+    overflow-x: hidden;
   }
 
   .post-inner {
@@ -89,6 +76,9 @@ const { title, date, coverImage, category, tags = [], isCompleted, type } = Astr
     overflow: hidden;
     border: 1px solid rgba(255, 255, 255, 0.08);
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+    max-width: min(90ch, 100%);
+    margin-left: auto;
+    margin-right: auto;
   }
 
   .cover-image {
@@ -100,6 +90,9 @@ const { title, date, coverImage, category, tags = [], isCompleted, type } = Astr
   /* Header */
   .post-header {
     margin-bottom: 2rem;
+    max-width: min(110ch, 100%);
+    margin-left: auto;
+    margin-right: auto;
   }
 
   .post-title {
@@ -137,20 +130,10 @@ const { title, date, coverImage, category, tags = [], isCompleted, type } = Astr
     margin-top: 1.5rem;
   }
 
-  /* Content Grid */
-  .content-grid {
-    display: grid;
-    gap: 2rem;
-    grid-template-columns: 1fr;
-  }
-
-  /* Sidebar */
-  .sidebar-wrapper {
-    order: -1; /* Show metadata card above content on mobile */
-  }
-
-  .sidebar-sticky {
-    position: relative;
+  /* Content Wrapper */
+  .content-wrapper {
+    max-width: 100%;
+    overflow: hidden;
   }
 
   /* Prose Content */
@@ -159,8 +142,9 @@ const { title, date, coverImage, category, tags = [], isCompleted, type } = Astr
     color: var(--color-bears-text-onDark);
     font-size: 1.0625rem;
     line-height: 1.75;
-    max-width: 75ch;
-    padding-left: 1rem;
+    max-width: min(100ch, 100%);
+    width: 100%;
+    margin: 0 auto;
   }
 
   /* Typography Enhancements */
@@ -279,6 +263,33 @@ const { title, date, coverImage, category, tags = [], isCompleted, type } = Astr
     color: var(--color-bears-text-onDark);
   }
 
+  /* Prevent child elements from causing overflow */
+  .prose-content :global(img) {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .prose-content :global(pre) {
+    max-width: 100%;
+  }
+
+  .prose-content :global(table) {
+    max-width: 100%;
+    overflow-x: auto;
+    display: block;
+  }
+
+  /* Constrain ALL child and nested elements */
+  .prose-content :global(*) {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* Specifically target wrapper divs that might overflow */
+  .prose-content :global(div) {
+    max-width: 100%;
+  }
+
   /* Responsive: Tablet */
   @media (min-width: 640px) {
     .post-container {
@@ -308,20 +319,6 @@ const { title, date, coverImage, category, tags = [], isCompleted, type } = Astr
       margin-bottom: 3rem;
     }
 
-    .content-grid {
-      grid-template-columns: 1fr 320px;
-      gap: 2.5rem;
-    }
-
-    .sidebar-wrapper {
-      order: 0; /* Sidebar on right for desktop */
-    }
-
-    .sidebar-sticky {
-      position: sticky;
-      top: 2rem;
-    }
-
     .prose-content {
       font-size: 1.125rem;
       padding-left: 2rem;
@@ -330,10 +327,6 @@ const { title, date, coverImage, category, tags = [], isCompleted, type } = Astr
 
   /* Responsive: Large Desktop */
   @media (min-width: 1280px) {
-    .content-grid {
-      gap: 3rem;
-    }
-
     .prose-content {
       padding-left: 3rem;
     }
