@@ -1,6 +1,6 @@
 # SideBySide Component Group - Technical Documentation
 
-A responsive two-column layout component group for use in Astro and MDX files. Content stacks vertically on mobile and appears side-by-side on large screens with automatic 50/50 width distribution.
+A responsive two-column layout component group for use in Astro and MDX files. Content stacks vertically on mobile and appears side-by-side on large screens with automatic 50/50 width distribution. Features a subtle divider line between columns (horizontal on mobile, vertical on desktop).
 
 ## Components
 
@@ -39,30 +39,46 @@ import { SideBySide, Left, Right } from './SideBySide';
 
 ## Implementation
 
-The component group uses flexbox with nested components for responsive layout:
+The component group uses flexbox with nested components for responsive layout, with a divider line between columns:
 
 ```astro
 <!-- SideBySide.astro -->
-<div class="flex flex-col lg:flex-row gap-4 lg:gap-8 {className}">
+<div class="flex flex-col lg:flex-row divide-y lg:divide-y-0 lg:divide-x divide-white/10 {className}">
   <slot />
 </div>
 
-<!-- Left.astro & Right.astro -->
-<div class="flex-1 {className}">
+<!-- Left.astro -->
+<div class="flex-1 py-6 lg:py-8 lg:pr-8 {className}">
+  <slot />
+</div>
+
+<!-- Right.astro -->
+<div class="flex-1 py-6 lg:py-8 lg:pl-8 {className}">
   <slot />
 </div>
 ```
+
+### Visual Styling
+
+The container uses Tailwind's divide utilities for automatic divider placement:
+
+- **Divider color**: `divide-white/10` - Subtle white line at 10% opacity
+- **Mobile divider**: `divide-y` - Horizontal line between stacked columns
+- **Desktop divider**: `lg:divide-x` with `lg:divide-y-0` - Vertical line between side-by-side columns
+- **Divider margin**: Padding on columns creates space so divider doesn't extend full height/width
+  - Vertical padding: `py-6 lg:py-8` (24px → 32px) creates top/bottom margin
+  - Horizontal padding: `lg:pr-8` (left) and `lg:pl-8` (right) creates side spacing on desktop
 
 ### Layout Behavior
 
 - **Mobile (< 1024px)**:
   - `flex flex-col` - Stacks columns vertically
-  - `gap-4` - 1rem (16px) spacing between stacked items
+  - `divide-y` - Horizontal divider between columns
   - Full width for each column
 
 - **Large screens (≥ 1024px)**:
   - `lg:flex-row` - Places columns side by side
-  - `lg:gap-8` - 2rem (32px) spacing between columns
+  - `lg:divide-x lg:divide-y-0` - Vertical divider between columns
   - `flex-1` ensures automatic 50/50 width distribution
 
 ### Why This Approach?
@@ -71,6 +87,8 @@ The component group uses flexbox with nested components for responsive layout:
 - **Skip md: breakpoint**: Follows project convention - tablets get mobile layout for better readability
 - **Flexbox over Grid**: Simpler for equal-width columns, more flexible for customization
 - **Component composition**: Clean Left/Right components provide intuitive structure
+- **Simple divider**: Automatic divider placement without manual spacing calculations
+- **Minimal styling**: Content-first approach - columns are unstyled containers
 - **No JavaScript**: Pure CSS solution with no runtime overhead
 - **Flexible children**: Works with any content type (text, images, components, Markdown)
 - **Unified imports**: Barrel export provides clean single import statement
@@ -269,7 +287,10 @@ import teamImage from '../../assets/team.jpg';
 
 - **Minimal props**: Only `class` escape hatch keeps the component simple
 - **Component composition**: Left and Right components provide clear structure
-- **Responsive gap**: Larger gap on desktop for better visual separation
+- **Simple divider**: Tailwind's divide utilities handle responsive divider placement automatically
+- **Content-first**: Columns have no default styling - content defines appearance
+- **Responsive divider**: Horizontal on mobile (stacked), vertical on desktop (side-by-side)
+- **Subtle separation**: `divide-white/10` provides gentle visual boundary without overwhelming content
 - **Top alignment**: Default top alignment (override with `class="items-center"`)
 - **No Alpine.js**: Pure CSS solution with no JavaScript overhead
 - **Breakpoint choice**: `lg:` (1024px) ensures comfortable column width, follows project convention
