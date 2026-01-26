@@ -62,7 +62,6 @@ const baseClasses = [
   'active:duration-200 active:ease-in',
   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bears-accent',
   'focus-visible:ring-offset-2 focus-visible:ring-offset-bears-bg',
-  '!not-prose',
 ].join(' ');
 
 // Size classes
@@ -75,11 +74,15 @@ const sizeClasses = {
 const variantClasses = {
   primary: [
     'bg-gradient-to-b from-bears-accent to-bears-accent-muted',
-    'text-bears-text-onDark',
+    '!text-bears-text-onDark',
     'shadow-[inset_0_1px_0_0_rgba(255,255,255,0.2),0_4px_16px_rgba(0,0,0,0.4),0_0_20px_rgba(197,14,31,0.3)]',
     'hover:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.25),0_6px_24px_rgba(0,0,0,0.5),0_0_32px_rgba(197,14,31,0.5)]',
     'hover:scale-105',
     'active:shadow-[inset_0_1px_0_0_rgba(255,255,255,0.15),0_2px_8px_rgba(0,0,0,0.4),0_0_12px_rgba(197,14,31,0.2)]',
+    'not-prose',
+    'leading-none',
+    'transition-all',
+    'duration-300',
   ].join(' '),
   secondary: [
     'bg-transparent text-bears-text-onDark',
