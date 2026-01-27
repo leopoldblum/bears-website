@@ -7,6 +7,14 @@ import { whatIsBearsImages } from '../utils/imageGlobs';
 import { loadAllImagesFromDirectory } from '../utils/imageLoader';
 
 const carouselImages = await loadAllImagesFromDirectory(whatIsBearsImages);
+
+import Img from '../components/reusable/Img.astro';
+import project1 from '../assets/projects/project-1.jpg';
+import project2 from '../assets/projects/project-2.jpg';
+import project3 from '../assets/projects/project-3.jpg';
+import project4 from '../assets/projects/project-4.jpg';
+import project5 from '../assets/projects/project-5.jpg';
+import project6 from '../assets/projects/project-6.jpg';
 ---
 
 <section class="container mx-auto px-4 sm:px-8 lg:px-16 py-16 sm:py-20 lg:py-24">
@@ -28,16 +36,23 @@ const carouselImages = await loadAllImagesFromDirectory(whatIsBearsImages);
   </div>
 
   <div class="mt-12 sm:mt-16">
-    <Marquee duration={15} gap="2rem">
-      {carouselImages.map((img, index) => (
+    <Marquee speed={160} gap="1.5rem" height="16rem">
+      <!-- {carouselImages.map((img, index) => (
         <Image
           src={img}
           alt={`BEARS Gallery ${index + 1}`}
-          class="w-64 sm:w-72 lg:w-80 aspect-4/3 object-cover rounded-lg shrink-0"
+          class="rounded-lg"
           loading="eager"
           format="webp"
         />
-      ))}
+      ))} -->
+
+  <Img src={project1} alt="Project 1 showcase" class="rounded-lg" />
+  <Img src={project2} alt="Project 2 showcase" class="rounded-lg" />
+  <Img src={project3} alt="Project 3 showcase" class="rounded-lg" />
+  <Img src={project1} alt="Project 1 showcase" class="rounded-lg" />
+  <Img src={project2} alt="Project 2 showcase" class="rounded-lg" />
+  <Img src={project3} alt="Project 3 showcase" class="rounded-lg" />
     </Marquee>
   </div>
 </section>

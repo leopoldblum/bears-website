@@ -290,21 +290,26 @@ Both columns remain equally readable and well-proportioned.
 
 ## Marquee Component
 
-The marquee creates a scrolling image gallery that's perfect for showcasing multiple projects:
+The marquee creates a scrolling image gallery that's perfect for showcasing multiple projects. It handles images with different aspect ratios gracefully:
 
-<Marquee
-  images={[
-    { src: project1, alt: "Project 1 showcase" },
-    { src: project2, alt: "Project 2 showcase" },
-    { src: project3, alt: "Project 3 showcase" },
-    { src: project4, alt: "Project 4 showcase" },
-    { src: project5, alt: "Project 5 showcase" },
-    { src: project6, alt: "Project 6 showcase" },
-  ]}
-  duration={20}
-  gap="2rem"
-  pauseOnHover={true}
-/>
+<Marquee speed={80} gap="1.5rem" height="16rem" direction='left'>
+  <Img src={project1} alt="Project 1 showcase" class="rounded-lg" />
+  <Img src={project2} alt="Project 2 showcase" class="rounded-lg" />
+  <Img src={project3} alt="Project 3 showcase" class="rounded-lg" />
+  <Img src={project4} alt="Project 4 showcase" class="rounded-lg" />
+</Marquee>
+
+### Reverse Direction Marquee
+
+The marquee also supports scrolling in the opposite direction:
+
+<Marquee speed={180} gap="2rem" height="12rem" direction="right">
+  <Img src={project1} alt="Project 1 showcase" class="rounded-lg" />
+  <Img src={project2} alt="Project 2 showcase" class="rounded-lg" />
+  <Img src={project3} alt="Project 3 showcase" class="rounded-lg" />
+  <Img src={project4} alt="Project 4 showcase" class="rounded-lg" />
+  <Img src={project5} alt="Project 5 showcase" class="rounded-lg" />
+</Marquee>
 
 ---
 
@@ -314,10 +319,12 @@ Here's a more complex example combining multiple components:
 
 <SideBySide>
   <Left>
-
-### 60% Width Image
-<Img src={project3} alt="60% width image" width="100%" />
-
+<Marquee speed={80} gap="1.5rem" height="16rem" direction='left'>
+  <Img src={project1} alt="Project 1 showcase" class="rounded-lg" />
+  <Img src={project2} alt="Project 2 showcase" class="rounded-lg" />
+  <Img src={project3} alt="Project 3 showcase" class="rounded-lg" />
+  <Img src={project4} alt="Project 4 showcase" class="rounded-lg" />
+</Marquee>
 
   </Left>
   <Right>

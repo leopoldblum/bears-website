@@ -114,19 +114,14 @@ We partner with:
 </Center>
   </Left>
     <Right>
-<Marquee
-  images={[
-    { src: project1, alt: "Microgravity experiment setup" },
-    { src: project2, alt: "Drop tower facility exterior" },
-    { src: project3, alt: "Crystal growth samples under analysis" },
-    { src: project4, alt: "Fluid dynamics experiment in progress" },
-    { src: project5, alt: "Team preparing payload for drop test" },
-    { src: project6, alt: "High-speed camera capturing microgravity phenomena" },
-  ]}
-  duration={3}
-  gap="2rem"
-  pauseOnHover={true}
-/>  
+<Marquee speed={100} gap="1.5rem" height="12rem" pauseOnHover={true}>
+  <Img src={project1} alt="Microgravity experiment setup" class="rounded-lg" />
+  <Img src={project2} alt="Drop tower facility exterior" class="rounded-lg" />
+  <Img src={project3} alt="Crystal growth samples under analysis" class="rounded-lg" />
+  <Img src={project4} alt="Fluid dynamics experiment in progress" class="rounded-lg" />
+  <Img src={project5} alt="Team preparing payload for drop test" class="rounded-lg" />
+  <Img src={project6} alt="High-speed camera capturing microgravity phenomena" class="rounded-lg" />
+</Marquee>
 </Right>
 </SideBySide>
 
@@ -139,19 +134,14 @@ Here's how easy the new Img component is to use:
 </Center>
 ### Research Highlights Gallery
 
-<Marquee
-  images={[
-    { src: project1, alt: "Microgravity experiment setup" },
-    { src: project2, alt: "Drop tower facility exterior" },
-    { src: project3, alt: "Crystal growth samples under analysis" },
-    { src: project4, alt: "Fluid dynamics experiment in progress" },
-    { src: project5, alt: "Team preparing payload for drop test" },
-    { src: project6, alt: "High-speed camera capturing microgravity phenomena" },
-  ]}
-  duration={18}
-  gap="2rem"
-  pauseOnHover={false}
-/>
+<Marquee speed={60} gap="1.5rem" height="14rem" pauseOnHover={false}>
+  <Img src={project1} alt="Microgravity experiment setup" class="rounded-lg" />
+  <Img src={project2} alt="Drop tower facility exterior" class="rounded-lg" />
+  <Img src={project3} alt="Crystal growth samples under analysis" class="rounded-lg" />
+  <Img src={project4} alt="Fluid dynamics experiment in progress" class="rounded-lg" />
+  <Img src={project5} alt="Team preparing payload for drop test" class="rounded-lg" />
+  <Img src={project6} alt="High-speed camera capturing microgravity phenomena" class="rounded-lg" />
+</Marquee>
 
 ### Research Outcomes
 

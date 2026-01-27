@@ -1,76 +1,96 @@
 ---
 // Marquee - Seamless infinite horizontal auto-scroll component
-// Usage: Pass images array OR wrap any content as children
-// Cross-platform safe (no % transform assumptions)
-
-import { Image } from 'astro:assets';
-import type { ImageMetadata } from 'astro';
-
-interface MarqueeImage {
-  src: ImageMetadata;
-  alt: string;
-}
+// Uses dynamic cloning to ensure content always fills viewport
+// Works with any content: images (via Img component), HTML, etc.
 
 interface Props {
-  images?: MarqueeImage[];        // Image array for simplified image galleries
-  imageClass?: string;            // Custom classes for images (default: responsive gallery sizing)
-  imageLoading?: "lazy" | "eager"; // Image loading strategy (default: "lazy")
-  imageFormat?: "webp" | "avif" | "png" | "jpg"; // Image format (default: "webp")
-  duration?: number;              // Animation duration in seconds (default: 30)
-  gap?: string;                   // Gap between items (default: "2rem")
-  pauseOnHover?: boolean;         // Pause animation on hover (default: true)
+  speed?: number;           // Pixels per second (default: 50)
+  gap?: string;             // Gap between items (default: "2rem")
+  pauseOnHover?: boolean;   // Pause animation on hover (default: true)
+  height?: string;          // Item height, CSS value (default: "16rem")
+  direction?: 'left' | 'right'; // Scroll direction (default: 'left')
 }
 
 const {
-  images,
-  imageClass = "h-48 sm:h-56 lg:h-64 w-80 sm:w-96 object-cover rounded-lg shrink-0",
-  imageLoading = "lazy",
-  imageFormat = "webp",
-  duration = 30,
+  speed = 50,
   gap = "2rem",
   pauseOnHover = true,
+  height = "16rem",
+  direction = 'left',
 } = Astro.props;
 ---
 
-<div class="marquee-container">
-  <div class={`marquee-track ${pauseOnHover ? 'pause-on-hover' : ''}`}>
-    <!-- First set -->
-    <div class="marquee-items">
-      {images ? (
-        images.map((image) => (
-          <Image
-            src={image.src}
-            alt={image.alt}
-            class={imageClass}
-            loading={imageLoading}
-            format={imageFormat}
-          />
-        ))
-      ) : (
-        <slot />
-      )}
-    </div>
+<div
+  class="marquee-container"
+  x-data={`{
+    ready: false,
+    originalChildren: [],
+    originalWidth: 0,
 
-    <!-- Duplicate set for seamless loop -->
-    <div class="marquee-items" aria-hidden="true">
-      {images ? (
-        images.map((image) => (
-          <Image
-            src={image.src}
-            alt={image.alt}
-            class={imageClass}
-            loading={imageLoading}
-            format={imageFormat}
-          />
-        ))
-      ) : (
-        <slot />
-      )}
+    async init() {
+      const content = this.$refs.content;
+      const container = this.$el;
+
+      // Wait for images to load before measuring
+      const images = content.querySelectorAll('img');
+      if (images.length > 0) {
+        await Promise.all(
+          Array.from(images).map(img => {
+            return new Promise((resolve) => {
+              if (img.complete) {
+                resolve();
+              } else {
+                img.addEventListener('load', resolve, { once: true });
+                img.addEventListener('error', resolve, { once: true });
+              }
+            });
+          })
+        );
+      }
+
+      // Store original children and measure original width
+      this.originalChildren = Array.from(content.children).map(child => child.cloneNode(true));
+      this.originalWidth = content.scrollWidth;
+
+      // Get gap in pixels for width calculation
+      const computedGap = parseFloat(getComputedStyle(content).gap) || 0;
+      const totalOriginalWidth = this.originalWidth + computedGap;
+
+      // Clone items until content overflows the container
+      let safetyCounter = 0;
+      while (content.scrollWidth <= container.clientWidth && safetyCounter < 100) {
+        this.originalChildren.forEach(child => {
+          content.appendChild(child.cloneNode(true));
+        });
+        safetyCounter++;
+      }
+
+      // Add one more complete set for seamless animation buffer
+      this.originalChildren.forEach(child => {
+        content.appendChild(child.cloneNode(true));
+      });
+
+      // Set CSS variables for animation
+      this.$el.style.setProperty('--marquee-width', totalOriginalWidth + 'px');
+      this.$el.style.setProperty('--marquee-duration', (totalOriginalWidth / ${speed}) + 's');
+
+      this.ready = true;
+    }
+  }`}
+  x-bind:class="{ 'marquee-ready': ready }"
+  style={`--marquee-gap: ${gap}; --marquee-height: ${height};`}
+>
+  <div
+    class={`marquee-track ${direction === 'right' ? 'marquee-reverse' : ''} ${pauseOnHover ? 'marquee-pause-on-hover' : ''}`}
+    x-ref="track"
+  >
+    <div class="marquee-content" x-ref="content">
+      <slot />
     </div>
   </div>
 </div>
 
-<style define:vars={{ duration: `${duration}s`, gap }}>
+<style>
   .marquee-container {
     width: 100%;
     overflow: hidden;
@@ -78,29 +98,52 @@ const {
 
   .marquee-track {
     display: flex;
-    /* No gap here - gap between sets breaks the -50% animation calculation */
     width: max-content;
-    animation: marquee-scroll var(--duration) linear infinite;
     will-change: transform;
   }
 
-  .marquee-items {
+  /* Only animate when ready */
+  .marquee-ready .marquee-track {
+    animation: marquee-scroll var(--marquee-duration, 20s) linear infinite;
+  }
+
+  /* Reverse direction */
+  .marquee-ready .marquee-track.marquee-reverse {
+    animation-direction: reverse;
+  }
+
+  .marquee-track.marquee-pause-on-hover:hover {
+    animation-play-state: paused;
+  }
+
+  .marquee-content {
     display: flex;
-    gap: var(--gap);
+    align-items: center;
+    gap: var(--marquee-gap);
     flex-shrink: 0;
-    padding-right: var(--gap); /* Creates seam gap, included in -50% width calc */
+    height: var(--marquee-height);
+  }
+
+  /* Ensure slotted items fit within height */
+  .marquee-content :global(> *) {
+    height: 100%;
+    width: auto;
+    flex-shrink: 0;
+  }
+
+  /* Handle images specifically */
+  .marquee-content :global(img) {
+    height: 100%;
+    width: auto;
+    object-fit: cover;
   }
 
   @keyframes marquee-scroll {
-    from {
+    0% {
       transform: translateX(0);
     }
-    to {
-      transform: translateX(-50%);
+    100% {
+      transform: translateX(calc(-1 * var(--marquee-width)));
     }
-  }
-
-  .marquee-track.pause-on-hover:hover {
-    animation-play-state: paused;
   }
 </style>
