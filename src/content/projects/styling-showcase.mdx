@@ -17,6 +17,7 @@ import Accordion from '../../components/reusable/Accordion.astro';
 import Marquee from '../../components/reusable/Marquee.astro';
 import { SideBySide, Left, Right } from "../../components/reusable/SideBySide"
 import Img from '../../components/reusable/Img.astro';
+import ImageGrid from '../../components/reusable/ImageGrid.astro';
 import project1 from '../../assets/projects/project-1.jpg';
 import project2 from '../../assets/projects/project-2.jpg';
 import project3 from '../../assets/projects/project-3.jpg';
@@ -149,6 +150,17 @@ The `Img` component provides optimized, responsive image display with flexible s
 <Img src={project3} alt="60% width image" width="60%" />
 
 </Center>
+
+### Image Grid
+
+<ImageGrid cols={2}>
+  <Img src={project1} alt="Project 1 grid example" class="rounded-lg" />
+  <Img src={project2} alt="Project 2 grid example" class="rounded-lg" />
+  <Img src={project3} alt="Project 3 grid example" class="rounded-lg" />
+  <Img src={project4} alt="Project 4 grid example" class="rounded-lg" />
+  <Img src={project5} alt="Project 5 grid example" class="rounded-lg" />
+  <Img src={project6} alt="Project 6 grid example" class="rounded-lg" />
+</ImageGrid>
 
 ---
 

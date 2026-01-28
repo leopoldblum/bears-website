@@ -17,7 +17,6 @@ export type TestimonialEntry = CollectionEntry<'testimonials'>;
 export type SponsorEntry = CollectionEntry<'sponsors'>;
 
 /**
- * Type alias for posts collection entries (events and projects).
- * Use with PostType to determine if entry is an event or project.
+ * Type alias for content entries that represent events or projects.
  */
-export type PostEntry = CollectionEntry<'posts'>;
+export type PostEntry = CollectionEntry<'events'> | CollectionEntry<'projects'>;

@@ -1,0 +1,71 @@
+---
+// ImageGrid - Responsive grid for slotted images with minimal configuration
+
+type ColCount = 1 | 2 | 3;
+
+interface Props {
+  /** Number of columns at the large breakpoint (≥1024px). Defaults to 3. */
+  cols?: ColCount;
+  class?: string;
+}
+
+const { cols = 3, class: className } = Astro.props;
+
+const colClasses: Record<ColCount, string> = {
+  1: 'grid-cols-1',
+  2: 'grid-cols-2',
+  3: 'grid-cols-3',
+};
+
+const resolvedCols = colClasses[cols] ? cols : 3;
+const smClass = resolvedCols >= 2 ? 'sm:grid-cols-2' : 'sm:grid-cols-1';
+const lgClass = `lg:${colClasses[resolvedCols]}`;
+---
+
+<div class={`image-grid grid grid-cols-1 ${smClass} ${lgClass} gap-4 sm:gap-6 lg:gap-8 ${className ?? ''}`}>
+  <slot />
+</div>
+
+<style>
+  :global(.image-grid) {
+    align-items: stretch;
+  }
+
+  :global(.image-grid > *) {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 1 / 1;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.02));
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 0.75rem;
+    padding: 0.75rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    transition: border-color 180ms ease, box-shadow 200ms ease, transform 200ms ease;
+  }
+
+  :global(.image-grid picture),
+  :global(.image-grid img) {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border: 1px solid transparent;
+    border-radius: 0.5rem;
+    transition: transform 180ms ease, border-color 180ms ease, filter 180ms ease;
+  }
+
+  :global(.image-grid > *:hover) {
+    border-color: var(--color-bears-accent, #c50e1f);
+    box-shadow: 0 14px 38px rgba(0, 0, 0, 0.32);
+    transform: translateY(-2px);
+  }
+
+  :global(.image-grid > *:hover picture),
+  :global(.image-grid > *:hover img) {
+    border-color: var(--color-bears-accent, #c50e1f);
+    filter: saturate(1.05);
+    transform: scale(1.01);
+  }
+</style>
