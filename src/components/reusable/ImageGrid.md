@@ -1,11 +1,12 @@
 ## ImageGrid
 
-Responsive grid that displays slotted images while keeping their native aspect ratios. Items are squared for balanced sizing between landscape and portrait images, with card-like styling and accent hover outlines. Mobile: 1 column; small screens: 2 columns (when cols ≥ 2); large screens: `cols` columns. Intended for MDX usage with minimal props.
+Simple responsive grid that displays slotted images in their native aspect ratios without cropping. Single column on mobile, configurable columns on large screens (≥1024px).
 
 ### Props
 ```typescript
 interface Props {
-  cols?: 1 | 2 | 3 | 4; // columns at ≥1024px (default 3); auto 1 col mobile, 2 col small
+  cols?: 1 | 2 | 3 | 4; // columns on large screens (default: 2)
+  gap?: 'sm' | 'md' | 'lg'; // gap between items (default: 'md')
   class?: string;       // optional extra classes
 }
 ```
@@ -18,11 +19,11 @@ import firstImage from '../assets/projects/example-1.jpg';
 import secondImage from '../assets/projects/example-2.jpg';
 import thirdImage from '../assets/projects/example-3.jpg';
 
-<ImageGrid cols={2}>
-  <Img src={firstImage} alt="Project image one" />
-  <Img src={secondImage} alt="Project image two" />
-  <Img src={thirdImage} alt="Project image three" />
+<ImageGrid cols={3} gap="lg">
+  <Img src={firstImage} alt="Wide landscape photo" />
+  <Img src={secondImage} alt="Portrait photo" />
+  <Img src={thirdImage} alt="Square image" />
 </ImageGrid>
 ```
 
-Images automatically scale to the column width and retain their original proportions.
+Images fill the column width and display at their natural height, preserving aspect ratios.

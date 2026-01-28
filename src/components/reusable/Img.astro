@@ -14,9 +14,10 @@ interface Props {
   height?: number;
   loading?: 'eager' | 'lazy';
   priority?: boolean;
+  enableClickToEnlarge?: boolean;
 }
 
-const { src, alt, class: className, width, height, loading, priority } = Astro.props;
+const { src, alt, class: className, width, height, loading, priority, enableClickToEnlarge = true } = Astro.props;
 
 // Loading strategy
 const autoLoading = loading ?? 'lazy';
@@ -32,30 +33,99 @@ const isImportedImage = typeof src === 'object' && 'src' in src;
 const isPercentageWidth = typeof width === 'string' && width.endsWith('%');
 const widthStyle = isPercentageWidth ? `width: ${width}` : undefined;
 const numericWidth = typeof width === 'number' ? width : undefined;
+
+// Get the image source URL for the modal
+const modalImageSrc = isImportedImage ? (src as ImageMetadata).src : (src as string);
 ---
 
-{isImportedImage ? (
-  <!-- Optimized image from src/assets -->
-  <Image
-    src={src as ImageMetadata}
-    alt={alt}
-    width={numericWidth}
-    height={height}
-    class={finalClasses}
+{enableClickToEnlarge ? (
+  <div
+    x-data="{ modalOpen: false }"
+    @keydown.escape.window="modalOpen = false"
+    class="inline-block h-full overflow-hidden"
     style={widthStyle}
-    loading={autoLoading}
-    decoding={priority ? 'sync' : 'async'}
-  />
+  >
+    <!-- Clickable image -->
+    <div @click="modalOpen = true" class="cursor-pointer h-full">
+      {isImportedImage ? (
+        <Image
+          src={src as ImageMetadata}
+          alt={alt}
+          width={numericWidth}
+          height={height}
+          class={finalClasses}
+          loading={autoLoading}
+          decoding={priority ? 'sync' : 'async'}
+        />
+      ) : (
+        <img
+          src={src as string}
+          alt={alt}
+          width={numericWidth}
+          height={height}
+          class={finalClasses}
+          loading={autoLoading}
+          fetchpriority={priority ? 'high' : undefined}
+        />
+      )}
+    </div>
+
+    <!-- Modal -->
+    <template x-teleport="body">
+      <div
+        x-show="modalOpen"
+        x-transition:enter="transition ease-out duration-200"
+        x-transition:enter-start="opacity-0"
+        x-transition:enter-end="opacity-100"
+        x-transition:leave="transition ease-in duration-150"
+        x-transition:leave-start="opacity-100"
+        x-transition:leave-end="opacity-0"
+        @click.self="modalOpen = false"
+        class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 backdrop-blur-md"
+        x-cloak
+      >
+        <!-- Close button -->
+        <button
+          @click="modalOpen = false"
+          class="fixed top-4 right-4 z-[10000] p-2 text-white/80 hover:text-white bg-black/40 hover:bg-black/60 rounded-full transition-colors duration-150"
+          aria-label="Close enlarged image"
+        >
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+
+        <!-- Enlarged image -->
+        <img
+          src={modalImageSrc}
+          alt={alt}
+          class="max-w-[90vw] max-h-[90vh] object-contain rounded-lg shadow-2xl"
+        />
+      </div>
+    </template>
+  </div>
 ) : (
-  <!-- External URL - fallback to regular img tag -->
-  <img
-    src={src as string}
-    alt={alt}
-    width={numericWidth}
-    height={height}
-    class={finalClasses}
-    style={widthStyle}
-    loading={autoLoading}
-    fetchpriority={priority ? 'high' : undefined}
-  />
+  isImportedImage ? (
+    <Image
+      src={src as ImageMetadata}
+      alt={alt}
+      width={numericWidth}
+      height={height}
+      class={finalClasses}
+      style={widthStyle}
+      loading={autoLoading}
+      decoding={priority ? 'sync' : 'async'}
+    />
+  ) : (
+    <img
+      src={src as string}
+      alt={alt}
+      width={numericWidth}
+      height={height}
+      class={finalClasses}
+      style={widthStyle}
+      loading={autoLoading}
+      fetchpriority={priority ? 'high' : undefined}
+    />
+  )
 )}
