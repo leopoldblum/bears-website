@@ -46,7 +46,7 @@ const modalImageSrc = isImportedImage ? (src as ImageMetadata).src : (src as str
     style={widthStyle}
   >
     <!-- Clickable image -->
-    <div @click="modalOpen = true" class="cursor-pointer h-full">
+    <div @click="modalOpen = true" class="cursor-pointer h-full flex items-center justify-center">
       {isImportedImage ? (
         <Image
           src={src as ImageMetadata}
