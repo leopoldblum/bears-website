@@ -28,20 +28,18 @@ const categoryLabelsMap = Object.fromEntries(
   eventCategories.map(cat => [cat, getCategoryLabel(cat)])
 );
 
----
-
-<script is:inline define:vars={{ eventsData: eventsWithImages.map((e, i) => ({
+// Prepare data for Alpine.js (embedded directly in x-data to avoid race conditions)
+const eventsData = JSON.stringify(eventsWithImages.map((e, i) => ({
   index: i,
   category: e.categoryEvent,
   dateTimestamp: e.date.getTime()
-})) }}>
-  window.eventsData = eventsData;
-</script>
+})));
+---
 
 <BaseLayout title="Events">
   <div
     class="container mx-auto px-4 py-6 sm:px-6 sm:py-8 lg:px-8"
-    x-data="{
+    x-data={`{
       filterMenuOpen: false,
       sortMenuOpen: false,
       activeCategory: [],
@@ -50,6 +48,7 @@ const categoryLabelsMap = Object.fromEntries(
       now: new Date().setHours(0,0,0,0),
       currentPage: 1,
       itemsPerPage: 6,
+      eventsData: ${eventsData},
       get hasActiveFilters() {
         return this.activeCategory.length > 0 || this.dateFilter.length > 0;
       },
@@ -68,7 +67,7 @@ const categoryLabelsMap = Object.fromEntries(
         this.currentPage = 1;
       },
       get filteredIndices() {
-        const filtered = window.eventsData.reduce((acc, event) => {
+        const filtered = this.eventsData.reduce((acc, event) => {
           const categoryMatch = this.activeCategory.length === 0 || this.activeCategory.includes(event.category);
           const dateMatch = this.dateFilter.length === 0 ||
                            (this.dateFilter.includes('upcoming') && event.dateTimestamp >= this.now) ||
@@ -81,8 +80,8 @@ const categoryLabelsMap = Object.fromEntries(
 
         // Sort by date based on sortOrder
         filtered.sort((a, b) => {
-          const dateA = window.eventsData[a].dateTimestamp;
-          const dateB = window.eventsData[b].dateTimestamp;
+          const dateA = this.eventsData[a].dateTimestamp;
+          const dateB = this.eventsData[b].dateTimestamp;
           return this.sortOrder === 'newest' ? dateB - dateA : dateA - dateB;
         });
 
@@ -100,7 +99,7 @@ const categoryLabelsMap = Object.fromEntries(
         if (page < 1 || page > this.totalPages) return;
         this.currentPage = page;
       }
-    }"
+    }`}
   >
     <div class="flex items-center justify-between mb-6 sm:mb-8 lg:mb-12">
       <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-bears-accent">
@@ -131,11 +130,8 @@ const categoryLabelsMap = Object.fromEntries(
     <div class="events-grid grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
       {eventsWithImages.map((event, index) => (
         <div
-          x-show={`paginatedIndices.includes(${index})`}
+          :class={`{ 'hidden': !paginatedIndices.includes(${index}) }`}
           :style={`'order: ' + (paginatedIndices.indexOf(${index}) !== -1 ? paginatedIndices.indexOf(${index}) : 9999)`}
-          x-transition:enter="transition ease-out duration-200"
-          x-transition:enter-start="opacity-0 scale-95"
-          x-transition:enter-end="opacity-100 scale-100"
         >
           <PostShowcase
             coverImage={event.coverImage}
