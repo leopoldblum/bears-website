@@ -1,6 +1,6 @@
 > **For Content Creators**
 >
-> **Looking for technical details?** See [Marquee Component Documentation](../src/components/reusable/Marquee.md) for developers.
+> **Looking for technical details?** See [Marquee Component Documentation](../src/components/mdx/Marquee.md) for developers.
 
 # Using Marquees in MDX Content
 
@@ -22,8 +22,8 @@ Every MDX file that uses Marquees needs these imports at the top:
 
 ```mdx
 ---
-import Marquee from '../../components/reusable/Marquee.astro'
-import Img from '../../components/reusable/Img.astro'
+import Marquee from '@mdx/Marquee.astro'
+import Img from '@mdx/Img.astro'
 import image1 from '../../assets/photo-1.jpg'
 import image2 from '../../assets/photo-2.jpg'
 import image3 from '../../assets/photo-3.jpg'
@@ -66,8 +66,8 @@ Display photos in a scrolling gallery.
 
 ```mdx
 ---
-import Marquee from '../../components/reusable/Marquee.astro'
-import Img from '../../components/reusable/Img.astro'
+import Marquee from '@mdx/Marquee.astro'
+import Img from '@mdx/Img.astro'
 import gallery1 from '../../assets/gallery-1.jpg'
 import gallery2 from '../../assets/gallery-2.jpg'
 import gallery3 from '../../assets/gallery-3.jpg'
@@ -95,7 +95,7 @@ Display partner and sponsor logos slowly.
 
 ```mdx
 ---
-import Marquee from '../../components/reusable/Marquee.astro'
+import Marquee from '@mdx/Marquee.astro'
 import { Image } from 'astro:assets'
 import sponsor1 from '../../assets/sponsors/company-1.png'
 import sponsor2 from '../../assets/sponsors/company-2.png'
@@ -131,7 +131,7 @@ Showcase team members in scrolling cards with text.
 
 ```mdx
 ---
-import Marquee from '../../components/reusable/Marquee.astro'
+import Marquee from '@mdx/Marquee.astro'
 ---
 
 <Marquee speed={40} gap="2rem" height="auto">
@@ -228,8 +228,8 @@ Enabled by default. Users can hover to stop the animation and interact with cont
 
 ```mdx
 ---
-import Marquee from '../../components/reusable/Marquee.astro'
-import Img from '../../components/reusable/Img.astro'
+import Marquee from '@mdx/Marquee.astro'
+import Img from '@mdx/Img.astro'
 import photo1 from '../../assets/event-photos/photo1.jpg'
 import photo2 from '../../assets/event-photos/photo2.jpg'
 import photo3 from '../../assets/event-photos/photo3.jpg'
@@ -261,4 +261,4 @@ Check out some amazing moments from our recent gathering:
 
 **Looking for more technical details?**
 
-See the [Marquee Component Technical Reference](../src/components/reusable/Marquee.md) for developers.
+See the [Marquee Component Technical Reference](../src/components/mdx/Marquee.md) for developers.

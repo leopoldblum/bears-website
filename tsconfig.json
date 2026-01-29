@@ -7,6 +7,7 @@
     "paths": {
       "@utils/*": ["src/utils/*"],
       "@components/*": ["src/components/*"],
+      "@mdx/*": ["src/components/mdx/*"],
       "@layouts/*": ["src/layouts/*"],
       "@types": ["src/types/index.ts"],
       "@types/*": ["src/types/*"],

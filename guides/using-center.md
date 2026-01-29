@@ -1,6 +1,6 @@
 > **👥 For Content Creators**
 >
-> **Looking for technical details?** See [Center Component Documentation](../src/components/reusable/Center.md) for developers.
+> **Looking for technical details?** See [Center Component Documentation](../src/components/mdx/Center.md) for developers.
 
 # Using Center in MDX Content
 
@@ -12,7 +12,7 @@ Import at the top of your MDX file:
 
 ```mdx
 ---
-import Center from '../components/reusable/Center.astro'
+import Center from '@mdx/Center.astro'
 ---
 
 <Center>

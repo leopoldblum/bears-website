@@ -1,6 +1,6 @@
 > **👥 For Content Creators**
 >
-> **Looking for technical details?** See [Carousel Component Documentation](../src/components/reusable/Carousel.md) for developers.
+> **Looking for technical details?** See [Carousel Component Documentation](../src/components/mdx/Carousel.md) for developers.
 
 # Using Carousels in MDX Content
 
@@ -25,7 +25,7 @@ Every MDX file that uses Carousels needs this import at the top:
 
 ```mdx
 ---
-import Carousel from '../../../components/reusable/Carousel.astro';
+import Carousel from '@mdx/Carousel.astro';
 ---
 
 # Your Page Title
@@ -58,7 +58,7 @@ Display different aspects of a project or highlight multiple experiments.
 
 ```mdx
 ---
-import Carousel from '../../../components/reusable/Carousel.astro';
+import Carousel from '@mdx/Carousel.astro';
 ---
 
 ## Notable Experiments
@@ -96,7 +96,7 @@ Show different features or capabilities of a project.
 
 ```mdx
 ---
-import Carousel from '../../../components/reusable/Carousel.astro';
+import Carousel from '@mdx/Carousel.astro';
 ---
 
 ## Key Features
@@ -145,7 +145,7 @@ Display images with captions or descriptions where users need time to examine ea
 
 ```mdx
 ---
-import Carousel from '../../../components/reusable/Carousel.astro';
+import Carousel from '@mdx/Carousel.astro';
 import { Image } from 'astro:assets';
 import launch1 from '../assets/launches/launch-1.jpg';
 import launch2 from '../assets/launches/launch-2.jpg';
@@ -208,7 +208,7 @@ Let testimonials advance automatically while giving users control to stop and re
 
 ```mdx
 ---
-import Carousel from '../../../components/reusable/Carousel.astro';
+import Carousel from '@mdx/Carousel.astro';
 ---
 
 ## What Members Say
@@ -515,16 +515,14 @@ The import path depends on where your MDX file is located:
 If your file is in `/src/content/posts/projects/` or `/src/content/posts/events/`:
 
 ```mdx
-import Carousel from '../../../components/reusable/Carousel.astro';
+import Carousel from '@mdx/Carousel.astro';
 ```
 
 ### For Other Locations
 
 Adjust the path based on how many folders up you need to go to reach the `src/` directory:
 
-- One level up: `../components/reusable/Carousel.astro`
-- Two levels up: `../../components/reusable/Carousel.astro`
-- Three levels up: `../../../components/reusable/Carousel.astro`
+- Use `@mdx/Carousel.astro` for a cleaner import path
 
 **Tip:** Count how many folders deep your file is from `/src/`, then use that many `../` to go back up, then add `components/reusable/Carousel.astro`.
 
@@ -534,8 +532,8 @@ Here's a full MDX page demonstrating effective carousel usage:
 
 ```mdx
 ---
-import Carousel from '../../../components/reusable/Carousel.astro';
-import Button from '../../../components/reusable/Button.astro';
+import Carousel from '@mdx/Carousel.astro';
+import Button from '@mdx/Button.astro';
 import { Image } from 'astro:assets';
 import experiment1 from '../assets/experiments/exp-1.jpg';
 import experiment2 from '../assets/experiments/exp-2.jpg';

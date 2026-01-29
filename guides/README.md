@@ -17,11 +17,15 @@ Welcome! This folder contains step-by-step guides for creating and managing cont
 
 **Modifying components or working with the codebase?** Technical documentation lives alongside the source code:
 
-- **Button Component** - See `/src/components/reusable/Button.md`
-- **Center Component** - See `/src/components/reusable/Center.md`
-- **Accordion Component** - See `/src/components/reusable/Accordion.md`
-- **Carousel Component** - See `/src/components/reusable/Carousel.md`
-- **Marquee Component** - See `/src/components/reusable/Marquee.md`
+- **Button Component** - See `/src/components/mdx/Button.md`
+- **Center Component** - See `/src/components/mdx/Center.md`
+- **Accordion Component** - See `/src/components/mdx/Accordion.md`
+- **Carousel Component** - See `/src/components/mdx/Carousel.md`
+- **Marquee Component** - See `/src/components/mdx/Marquee.md`
+- **ImageGrid Component** - See `/src/components/mdx/ImageGrid.md`
+- **Img Component** - See `/src/components/mdx/Img.md`
+- **SideBySide Component** - See `/src/components/mdx/SideBySide/SideBySide.md`
+- **MediaAccordion Component** - See `/src/components/mdx/MediaAccordion.astro`
 - **Type Definitions** - See `/src/types/types-documentation.md`
 - **Project Architecture** - See `CLAUDE.md` in project root
 

@@ -1,6 +1,6 @@
 > **👥 For Content Creators**
 >
-> **Looking for technical details?** See [Button Component Documentation](../src/components/reusable/Button.md) for developers.
+> **Looking for technical details?** See [Button Component Documentation](../src/components/mdx/Button.md) for developers.
 
 # Using Buttons in MDX Content
 
@@ -12,7 +12,7 @@ Every MDX file that uses buttons needs this import at the top:
 
 ```mdx
 ---
-import Button from '../components/reusable/Button.astro'
+import Button from '@mdx/Button.astro'
 ---
 
 # Your Page Title
@@ -115,7 +115,7 @@ Link to external websites (downloads, social media, etc.):
 
 ```mdx
 ---
-import Button from '../components/reusable/Button.astro'
+import Button from '@mdx/Button.astro'
 ---
 
 # Our Amazing Project
@@ -221,7 +221,7 @@ Here's a complete MDX file using buttons:
 
 ```mdx
 ---
-import Button from '../components/reusable/Button.astro'
+import Button from '@mdx/Button.astro'
 ---
 
 # Join the BEARS Community
@@ -254,4 +254,4 @@ If you have any questions about membership, check out our FAQ or contact us dire
 
 ## Need Help?
 
-If you need more advanced features (custom styling, JavaScript interactions, etc.), refer to the [full Button Component Documentation](../src/components/reusable/Button.md) for developers.
+If you need more advanced features (custom styling, JavaScript interactions, etc.), refer to the [full Button Component Documentation](../src/components/mdx/Button.md) for developers.

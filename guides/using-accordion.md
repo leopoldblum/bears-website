@@ -1,6 +1,6 @@
 > **👥 For Content Creators**
 >
-> **Looking for technical details?** See [Accordion Component Documentation](../src/components/reusable/Accordion.md) for developers.
+> **Looking for technical details?** See [Accordion Component Documentation](../src/components/mdx/Accordion.md) for developers.
 
 # Using Accordions in MDX Content
 
@@ -26,7 +26,7 @@ Every MDX file that uses accordions needs this import at the top:
 
 ```mdx
 ---
-import Accordion from '../../../components/reusable/Accordion.astro';
+import Accordion from '@mdx/Accordion.astro';
 ---
 
 # Your Page Title
@@ -280,7 +280,7 @@ You can add a subtitle or metadata to each section that appears below the title 
 
 ```mdx
 ---
-import Accordion from '../../../components/reusable/Accordion.astro';
+import Accordion from '@mdx/Accordion.astro';
 ---
 
 # Frequently Asked Questions
@@ -382,16 +382,14 @@ The path in your import depends on where your MDX file is located:
 If your file is in `/src/content/posts/projects/` or `/src/content/posts/events/`:
 
 ```mdx
-import Accordion from '../../../components/reusable/Accordion.astro';
+import Accordion from '@mdx/Accordion.astro';
 ```
 
 ### For Other Locations
 
 Adjust the path based on how many folders up you need to go to reach the `src/` directory:
 
-- One level up: `../components/reusable/Accordion.astro`
-- Two levels up: `../../components/reusable/Accordion.astro`
-- Three levels up: `../../../components/reusable/Accordion.astro`
+- Use `@mdx/Accordion.astro` for a cleaner import path
 
 **Tip:** If you're not sure about the path, ask a developer or check how other components are imported in existing MDX files.
 
@@ -433,8 +431,8 @@ Here's a complete MDX file using an accordion:
 
 ```mdx
 ---
-import Accordion from '../../../components/reusable/Accordion.astro';
-import Button from '../../../components/reusable/Button.astro';
+import Accordion from '@mdx/Accordion.astro';
+import Button from '@mdx/Button.astro';
 ---
 
 # Microgravity Research Platform
@@ -519,4 +517,4 @@ Accordions work great alongside other components like buttons and carousels:
 
 ## Need Help?
 
-If you need more advanced features or run into issues, refer to the [full Accordion Component Documentation](../src/components/reusable/Accordion.md) for developers or reach out to the web team.
+If you need more advanced features or run into issues, refer to the [full Accordion Component Documentation](../src/components/mdx/Accordion.md) for developers or reach out to the web team.

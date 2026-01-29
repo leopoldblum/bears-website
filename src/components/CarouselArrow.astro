@@ -6,7 +6,7 @@ interface Props {
   /**
    * Direction of the arrow
    */
-  direction: 'prev' | 'next';
+  direction: 'prev' | 'next' | 'down';
 
   /**
    * Click handler for the arrow button
@@ -62,7 +62,9 @@ const {
 // Arrow path data
 const arrowPath = direction === 'prev'
   ? 'M15 19l-7-7 7-7'
-  : 'M9 5l7 7-7 7';
+  : direction === 'next'
+  ? 'M9 5l7 7-7 7'
+  : 'M19 14l-7 7-7-7';
 
 // Base styles shared between both variants
 const baseStyles = inverted
@@ -83,7 +85,7 @@ const combinedClasses = `${baseStyles} ${variantStyles[variant]} ${className || 
   {...(onMouseEnter && { '@mouseenter': onMouseEnter })}
   {...(onMouseLeave && { '@mouseleave': onMouseLeave })}
   class={combinedClasses}
-  aria-label={direction === 'prev' ? 'Previous slide' : 'Next slide'}
+  aria-label={direction === 'prev' ? 'Previous slide' : direction === 'next' ? 'Next slide' : 'Show more'}
 >
   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d={arrowPath} />

@@ -2,7 +2,7 @@
 // BecomeSponsor component - Displays sponsor showcase with tier-based system
 import { getCollection } from "astro:content";
 import SponsorTier from "./SponsorTier.astro";
-import Button from "./reusable/Button.astro";
+import Button from "@mdx/Button.astro";
 import type { SponsorEntry } from '@types';
 import { sponsorLogos } from '@utils/imageGlobs';
 import { loadImage, defaultSponsorImage } from '@utils/imageLoader';

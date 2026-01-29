@@ -1,14 +1,14 @@
 ---
 // WhatIsBears component - Explains what BEARS e.V. is
 import { Image } from 'astro:assets';
-import Marquee from './reusable/Marquee.astro';
-import Button from './reusable/Button.astro';
+import Marquee from '@mdx/Marquee.astro';
+import Button from '@mdx/Button.astro';
 import { whatIsBearsImages } from '@utils/imageGlobs';
 import { loadAllImagesFromDirectory } from '@utils/imageLoader';
 
 const carouselImages = await loadAllImagesFromDirectory(whatIsBearsImages);
 
-import Img from '@components/reusable/Img.astro';
+import Img from '@mdx/Img.astro';
 import project1 from '@assets/projects/project-1.jpg';
 import project2 from '@assets/projects/project-2.jpg';
 import project3 from '@assets/projects/project-3.jpg';
