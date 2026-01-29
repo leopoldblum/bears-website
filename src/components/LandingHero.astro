@@ -245,31 +245,37 @@ const mediaJson = JSON.stringify(media.map((item, index) => ({
 
   <!-- Content Container -->
   <div class="relative z-10 h-full">
-    <div class="container mx-auto px-4 sm:px-8 lg:px-16 h-full flex flex-col justify-between py-8 sm:py-12 lg:py-20">
-      <div class="max-w-md">
-        <!-- Logo -->
-        <h1 class="text-5xl sm:text-7xl lg:text-9xl font-bold text-bears-accent drop-shadow-lg">BEARS</h1>
+    <div
+      class="container mx-auto px-4 sm:px-8 lg:px-16 h-full flex flex-col md:flex-col justify-end md:justify-between pb-8 sm:pb-12 lg:py-20 transition-all duration-300 ease-out"
+    >
+      <!-- Logo - visible on all breakpoints -->
+      <div class="max-w-md flex-shrink-0 pt-16 pl-4 sm:pt-20 sm:pl-6">
+        <h1 class="text-[3.5rem] sm:text-[5.5rem] lg:text-9xl font-bold text-bears-accent drop-shadow-lg">BEARS</h1>
       </div>
 
-      <div class="max-w-md">
-        <!-- Introduction Content -->
+      <!-- Introduction Content - at bottom on mobile, middle on desktop -->
+      <div class="max-w-md flex-shrink-0 mt-auto md:mt-0 pb-8 sm:pb-10 pl-4 sm:pl-6">
         <div>
-          <h2 class="text-xl sm:text-2xl lg:text-3xl font-bold text-bears-accent mb-6 sm:mb-8 lg:mb-12">Introduction</h2>
+          <h2
+            class="text-xl sm:text-2xl lg:text-3xl font-bold text-bears-accent mb-6 sm:mb-8 lg:mb-12 transition-transform duration-300 ease-out"
+          >
+            Introduction
+          </h2>
           <p class="text-sm sm:text-base text-bears-text-onDark leading-relaxed mb-6">
             Welcome to BEARS - a pioneering initiative at the forefront of innovation and research.
             Our mission is to push boundaries and create meaningful impact through collaboration and excellence.
           </p>
 
-          <!-- CTA Buttons -->
+          <!-- CTA Buttons with minimum 44px touch targets -->
           <div class="flex gap-2 sm:gap-4">
-            <Button variant="primary">Join us!</Button>
-            <Button variant="secondary">Learn more</Button>
+            <Button variant="primary" class="min-h-[44px] flex items-center justify-center">Join us!</Button>
+            <Button variant="secondary" class="min-h-[44px] flex items-center justify-center">Learn more</Button>
           </div>
         </div>
       </div>
 
-      <!-- Empty spacer for bottom -->
-      <div></div>
+      <!-- Spacer - hidden on mobile, visible on desktop -->
+      <div class="hidden md:block"></div>
     </div>
   </div>
 </section>
