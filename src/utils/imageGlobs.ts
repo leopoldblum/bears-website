@@ -59,3 +59,26 @@ export const sponsorLogos: ImageGlob = import.meta.glob<{ default: ImageMetadata
 export const whatIsBearsImages: ImageGlob = import.meta.glob<{ default: ImageMetadata }>(
   "/src/assets/whatIsBears/*.{jpg,jpeg,png,webp}"
 );
+
+/**
+ * Landing Hero background images
+ * Used by: LandingHero.astro
+ */
+export const heroImages: ImageGlob = import.meta.glob<{ default: ImageMetadata }>(
+  "/src/assets/hero/*.{jpg,jpeg,png,webp}"
+);
+
+/**
+ * Type for media glob results (images and videos)
+ */
+export type MediaGlob = Record<string, () => Promise<{ default: string }>>;
+
+/**
+ * Landing Hero all media (images + videos)
+ * Used by: LandingHero.astro
+ * Includes: jpg, jpeg, png, webp, mp4, webm, ogg
+ */
+export const heroMedia: MediaGlob = import.meta.glob<{ default: string }>(
+  "/src/assets/hero/*.{jpg,jpeg,png,webp,mp4,webm,ogg}",
+  { eager: false }
+);

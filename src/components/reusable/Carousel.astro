@@ -2,6 +2,8 @@
 // Carousel - Reusable carousel component with auto-scroll and manual navigation
 // Usage: Wrap any content as direct children - carousel will auto-detect and handle them
 
+import CarouselArrow from '../CarouselArrow.astro';
+
 interface Props {
   /**
    * Enable automatic scrolling through slides
@@ -131,18 +133,13 @@ const {
   <div class={`relative flex items-center justify-between ${minHeight} gap-4 sm:gap-6 lg:gap-8`}>
 
     {showArrows && (
-      <!-- Previous Arrow Button -->
-      <button
-        @click="prevSlide()"
-        @mouseenter="stopAutoScroll()"
-        @mouseleave="startAutoScroll()"
-        class="shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-transparent border-2 border-bears-accent/40 text-bears-text-onDark hover:border-bears-accent hover:bg-bears-accent/10 hover:shadow-[0_0_20px_rgba(197,14,31,0.25)] hover:scale-105 active:bg-bears-accent/5 active:scale-100 transition-all duration-200 flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bears-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bears-bg cursor-pointer"
-        aria-label="Previous slide"
-      >
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-        </svg>
-      </button>
+      <CarouselArrow
+        direction="prev"
+        onClick="prevSlide()"
+        onMouseEnter="stopAutoScroll()"
+        onMouseLeave="startAutoScroll()"
+        variant="flex"
+      />
     )}
 
     <!-- Slides Container -->
@@ -156,18 +153,13 @@ const {
     </div>
 
     {showArrows && (
-      <!-- Next Arrow Button -->
-      <button
-        @click="nextSlide()"
-        @mouseenter="stopAutoScroll()"
-        @mouseleave="startAutoScroll()"
-        class="shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-transparent border-2 border-bears-accent/40 text-bears-text-onDark hover:border-bears-accent hover:bg-bears-accent/10 hover:shadow-[0_0_20px_rgba(197,14,31,0.25)] hover:scale-105 active:bg-bears-accent/5 active:scale-100 transition-all duration-200 flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bears-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bears-bg cursor-pointer"
-        aria-label="Next slide"
-      >
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
-        </svg>
-      </button>
+      <CarouselArrow
+        direction="next"
+        onClick="nextSlide()"
+        onMouseEnter="stopAutoScroll()"
+        onMouseLeave="startAutoScroll()"
+        variant="flex"
+      />
     )}
   </div>
 

@@ -1,0 +1,82 @@
+---
+// CarouselArrow - Reusable carousel navigation arrow button
+// Used by Carousel.astro and LandingHero.astro for consistent navigation styling
+
+interface Props {
+  /**
+   * Direction of the arrow
+   */
+  direction: 'prev' | 'next';
+
+  /**
+   * Click handler for the arrow button
+   */
+  onClick: string;
+
+  /**
+   * Optional mouse enter handler (for auto-scroll pause)
+   */
+  onMouseEnter?: string;
+
+  /**
+   * Optional mouse leave handler (for auto-scroll resume)
+   */
+  onMouseLeave?: string;
+
+  /**
+   * Position variant - 'flex' for inline flex layout, 'absolute' for positioned overlay
+   * @default 'flex'
+   */
+  variant?: 'flex' | 'absolute';
+
+  /**
+   * Position for absolute variant ('left' or 'right')
+   * Only applies when variant is 'absolute'
+   * @default 'left'
+   */
+  position?: 'left' | 'right';
+
+  /**
+   * Additional CSS classes for customization
+   */
+  class?: string;
+}
+
+const {
+  direction,
+  onClick,
+  onMouseEnter,
+  onMouseLeave,
+  variant = 'flex',
+  position = 'left',
+  class: className,
+} = Astro.props;
+
+// Arrow path data
+const arrowPath = direction === 'prev'
+  ? 'M15 19l-7-7 7-7'
+  : 'M9 5l7 7-7 7';
+
+// Base styles shared between both variants
+const baseStyles = 'w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-transparent border-2 border-bears-accent/40 text-bears-text-onDark hover:border-bears-accent hover:bg-bears-accent/10 hover:shadow-[0_0_20px_rgba(197,14,31,0.25)] hover:scale-105 active:bg-bears-accent/5 active:scale-100 transition-all duration-200 flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bears-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bears-bg cursor-pointer';
+
+// Variant-specific styles
+const variantStyles = {
+  flex: 'shrink-0',
+  absolute: `absolute ${position}-4 sm:${position}-6 lg:${position}-8 top-1/2 -translate-y-1/2 z-20`,
+};
+
+const combinedClasses = `${baseStyles} ${variantStyles[variant]} ${className || ''}`.trim();
+---
+
+<button
+  @click={onClick}
+  {...(onMouseEnter && { '@mouseenter': onMouseEnter })}
+  {...(onMouseLeave && { '@mouseleave': onMouseLeave })}
+  class={combinedClasses}
+  aria-label={direction === 'prev' ? 'Previous slide' : 'Next slide'}
+>
+  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d={arrowPath} />
+  </svg>
+</button>

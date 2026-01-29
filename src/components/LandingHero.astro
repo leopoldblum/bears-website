@@ -1,13 +1,249 @@
 ---
-// Landing Hero Component - Main hero section of the landing page
+// Landing Hero Component - Main hero section with video/image carousel background
+// Media is loaded from the landingHero content collection
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
 import Button from './reusable/Button.astro';
+import CarouselArrow from './CarouselArrow.astro';
+import { getLandingHeroSlides } from '../utils/contentQueries';
+import { heroImages, heroMedia } from '../utils/imageGlobs';
+
+interface MediaItem {
+  type: 'video' | 'image';
+  src: string | ImageMetadata;
+  alt?: string;
+  poster?: string;
+  shownText?: string;
+}
+
+interface Props {
+  autoScroll?: boolean;
+  autoScrollInterval?: number;
+  showArrows?: boolean;
+  showDots?: boolean;
+}
+
+const {
+  autoScroll = false,
+  autoScrollInterval = 8000,
+  showArrows = true,
+  showDots = false,
+} = Astro.props;
+
+// Load slides from content collection
+const slides = await getLandingHeroSlides();
+
+// Process slides into media items - all media from src/assets/hero/
+const media: MediaItem[] = await Promise.all(
+  slides.map(async (slide) => {
+    let src: string | ImageMetadata;
+    const mediaPath = `/src/assets/hero/${slide.data.media}`;
+    
+    if (slide.data.type === 'video') {
+      // Videos use the general media glob
+      if (heroMedia[mediaPath]) {
+        const module = await heroMedia[mediaPath]();
+        src = module.default;
+      } else {
+        console.warn(`Hero video not found: ${mediaPath}`);
+        src = '';
+      }
+    } else {
+      // Images use the typed image glob for Astro Image optimization
+      if (heroImages[mediaPath]) {
+        const imageModule = await heroImages[mediaPath]();
+        src = imageModule.default;
+      } else {
+        console.warn(`Hero image not found: ${mediaPath}`);
+        src = '';
+      }
+    }
+
+    // Load poster image if specified
+    let posterSrc: string | undefined;
+    if (slide.data.poster) {
+      const posterPath = `/src/assets/hero/${slide.data.poster}`;
+      if (heroMedia[posterPath]) {
+        const posterModule = await heroMedia[posterPath]();
+        posterSrc = posterModule.default as string;
+      }
+    }
+
+    return {
+      type: slide.data.type,
+      src,
+      alt: slide.data.alt,
+      poster: posterSrc,
+      shownText: slide.data.shownText,
+    };
+  })
+);
+
+const hasMultipleSlides = media.length > 1;
+const mediaJson = JSON.stringify(media.map((item, index) => ({
+  index,
+  type: item.type,
+  shownText: item.shownText || '',
+})));
 ---
 
-<section class="relative h-[calc(100vh-4rem)] w-full overflow-hidden bg-linear-to-br from-[#1F1F1F] to-bears-bg">
-  <!-- Background Image Placeholder -->
-  <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiMzMDMwMzAiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1zaXplPSIyNCIgZmlsbD0iIzUwNTA1MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkJhY2tncm91bmQgSW1hZ2UgUGxhY2Vob2xkZXI8L3RleHQ+PC9zdmc+')] bg-cover bg-center opacity-30"></div>
+<section
+  class="relative h-[calc(100vh-4rem)] w-full overflow-hidden bg-linear-to-br from-[#1F1F1F] to-bears-bg"
+  x-data={`{
+    currentSlide: 0,
+    totalSlides: ${media.length || 1},
+    autoScrollInterval: null,
+    autoScrollEnabled: ${autoScroll && hasMultipleSlides},
+    media: ${mediaJson},
 
-  <!-- Content Container - Top Left Quarter -->
+    init() {
+      if (this.autoScrollEnabled) {
+        this.startAutoScroll();
+      }
+    },
+
+    nextSlide() {
+      this.currentSlide = (this.currentSlide + 1) % this.totalSlides;
+      if (this.autoScrollEnabled) {
+        this.resetAutoScroll();
+      }
+    },
+    prevSlide() {
+      this.currentSlide = (this.currentSlide - 1 + this.totalSlides) % this.totalSlides;
+      if (this.autoScrollEnabled) {
+        this.resetAutoScroll();
+      }
+    },
+    goToSlide(index) {
+      this.currentSlide = index;
+      if (this.autoScrollEnabled) {
+        this.resetAutoScroll();
+      }
+    },
+
+    startAutoScroll() {
+      if (this.autoScrollEnabled) {
+        this.autoScrollInterval = setInterval(() => {
+          this.currentSlide = (this.currentSlide + 1) % this.totalSlides;
+        }, ${autoScrollInterval});
+      }
+    },
+    stopAutoScroll() {
+      if (this.autoScrollInterval) {
+        clearInterval(this.autoScrollInterval);
+        this.autoScrollInterval = null;
+      }
+    },
+    resetAutoScroll() {
+      this.stopAutoScroll();
+      this.startAutoScroll();
+    },
+
+    getCurrentShownText() {
+      return this.media[this.currentSlide]?.shownText || '';
+    }
+  }`}
+  @mouseenter="stopAutoScroll()"
+  @mouseleave="startAutoScroll()"
+>
+  <!-- Media Layer -->
+  <div class="absolute inset-0 z-0">
+    {media.length > 0 ? (
+      media.map((item, index) => (
+        <div
+          x-show={`currentSlide === ${index}`}
+          x-transition:enter="transition ease-out duration-500"
+          x-transition:enter-start="opacity-0"
+          x-transition:enter-end="opacity-100"
+          x-transition:leave="transition ease-in duration-300"
+          x-transition:leave-start="opacity-100"
+          x-transition:leave-end="opacity-0"
+          class="absolute inset-0"
+        >
+          {item.type === 'video' ? (
+            <video
+              class="absolute inset-0 w-full h-full object-cover"
+              src={typeof item.src === 'string' ? item.src : undefined}
+              poster={item.poster}
+              autoplay
+              muted
+              loop
+              playsinline
+            />
+          ) : (
+            typeof item.src === 'object' ? (
+              <Image
+                src={item.src as ImageMetadata}
+                alt={item.alt || ''}
+                class="absolute inset-0 w-full h-full object-cover"
+                loading={index === 0 ? 'eager' : 'lazy'}
+              />
+            ) : (
+              <img
+                src={item.src as string}
+                alt={item.alt || ''}
+                class="absolute inset-0 w-full h-full object-cover"
+                loading={index === 0 ? 'eager' : 'lazy'}
+              />
+            )
+          )}
+        </div>
+      ))
+    ) : (
+      <!-- Fallback placeholder when no media provided -->
+      <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9IiMzMDMwMzAiLz48dGV4dCB4PSI1MCUiIHk9IjUwJSIgZm9udC1zaXplPSIyNCIgZmlsbD0iIzUwNTA1MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkJhY2tncm91bmQgSW1hZ2UgUGxhY2Vob2xkZXI8L3RleHQ+PC9zdmc+')] bg-cover bg-center opacity-30"></div>
+    )}
+
+    <!-- Gradient overlay for text readability -->
+    <div class="absolute inset-0 bg-gradient-to-r from-bears-bg/80 via-bears-bg/40 to-transparent"></div>
+
+    <!-- shownText display (top right corner) -->
+    <div
+      x-show="getCurrentShownText()"
+      x-text="getCurrentShownText()"
+      x-transition:enter="transition ease-out duration-300"
+      x-transition:enter-start="opacity-0 translate-y-2"
+      x-transition:enter-end="opacity-100 translate-y-0"
+      x-transition:leave="transition ease-in duration-200"
+      x-transition:leave-start="opacity-100 translate-y-0"
+      x-transition:leave-end="opacity-0 translate-y-2"
+      class="absolute top-4 right-4 sm:top-8 sm:right-8 lg:top-12 lg:right-12 bg-black/50 backdrop-blur-sm px-4 py-2 rounded-lg text-white text-sm sm:text-base lg:text-lg z-20"
+    ></div>
+
+    <!-- Dot Indicators -->
+    {hasMultipleSlides && showDots && (
+      <div class="absolute bottom-4 sm:bottom-6 lg:bottom-8 left-1/2 -translate-x-1/2 z-20 flex gap-2 sm:gap-3">
+        {media.map((_, index) => (
+          <button
+            @click={`goToSlide(${index})`}
+            :class={`currentSlide === ${index} ? 'bg-white scale-110' : 'bg-white/40 hover:bg-white/60'`}
+            class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full transition-all duration-200 cursor-pointer"
+            aria-label={`Go to slide ${index + 1}`}
+          />
+        ))}
+      </div>
+    )}
+  </div>
+
+  <!-- Navigation Arrows (outside media layer to avoid z-index blocking) -->
+  {hasMultipleSlides && showArrows && (
+    <>
+      <CarouselArrow
+        direction="prev"
+        onClick="prevSlide()"
+        variant="absolute"
+        position="left"
+      />
+      <CarouselArrow
+        direction="next"
+        onClick="nextSlide()"
+        variant="absolute"
+        position="right"
+      />
+    </>
+  )}
+
+  <!-- Content Container -->
   <div class="relative z-10 h-full">
     <div class="container mx-auto px-4 sm:px-8 lg:px-16 h-full flex flex-col justify-between py-8 sm:py-12 lg:py-20">
       <div class="max-w-md">

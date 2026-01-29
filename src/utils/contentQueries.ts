@@ -209,3 +209,17 @@ export async function getSponsorsByTier() {
     bronze: sortBySlug(groupedSponsors.bronze),
   };
 }
+
+/**
+ * Gets all landing hero slides sorted by filename (id).
+ * Files should be prefixed with numbers for ordering (e.g., 01-slide.md, 02-slide.md).
+ *
+ * @returns Array of landing hero slides sorted by id
+ *
+ * @example
+ * const slides = await getLandingHeroSlides();
+ */
+export async function getLandingHeroSlides() {
+  const slides = await getCollection('landingHero');
+  return slides.sort((a, b) => a.id.localeCompare(b.id));
+}

@@ -99,9 +99,36 @@ const projectsCollection = defineCollection({
   }),
 });
 
+/**
+ * Helper for validating media file extensions (images + videos)
+ */
+const validateMediaExtension = (value: string | undefined) => {
+  if (!value) return true;
+  // Allow image extensions and video extensions
+  return IMAGE_EXTENSION_REGEX.test(value) || /\.(mp4|webm|ogg)$/i.test(value);
+};
+
+const landingHeroCollection = defineCollection({
+  type: 'content',
+  schema: z.object({
+    type: z.enum(['image', 'video']),
+    media: z.string().refine(
+      validateMediaExtension,
+      { message: `media must have a valid extension: ${VALID_EXTENSIONS_MESSAGE} or mp4, webm, ogg` }
+    ),
+    alt: z.string().optional(),
+    poster: z.string().optional().refine(
+      validateImageExtension,
+      { message: `poster must have a valid image extension: ${VALID_EXTENSIONS_MESSAGE}` }
+    ),
+    shownText: z.string().optional(),
+  }),
+});
+
 export const collections = {
   testimonials: testimonialsCollection,
   sponsors: sponsorsCollection,
   events: eventsCollection,
   projects: projectsCollection,
+  landingHero: landingHeroCollection,
 };
