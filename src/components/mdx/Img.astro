@@ -42,7 +42,7 @@ const modalImageSrc = isImportedImage ? (src as ImageMetadata).src : (src as str
   <div
     x-data="{ modalOpen: false }"
     @keydown.escape.window="modalOpen = false"
-    class="inline-block overflow-hidden"
+    class="w-full h-full"
     style={widthStyle}
   >
     {isImportedImage ? (
@@ -51,7 +51,7 @@ const modalImageSrc = isImportedImage ? (src as ImageMetadata).src : (src as str
         alt={alt}
         width={numericWidth}
         height={height}
-        class={clickableClasses}
+        class={`${clickableClasses} w-full h-full`}
         loading={autoLoading}
         decoding="async"
         @click="modalOpen = true"
@@ -62,7 +62,7 @@ const modalImageSrc = isImportedImage ? (src as ImageMetadata).src : (src as str
         alt={alt}
         width={numericWidth}
         height={height}
-        class={clickableClasses}
+        class={`${clickableClasses} w-full h-full`}
         loading={autoLoading}
         @click="modalOpen = true"
       />
@@ -109,7 +109,7 @@ const modalImageSrc = isImportedImage ? (src as ImageMetadata).src : (src as str
       alt={alt}
       width={numericWidth}
       height={height}
-      class={baseClasses}
+      class={`${baseClasses} w-full h-full`}
       style={widthStyle}
       loading={autoLoading}
       decoding="async"
@@ -120,7 +120,7 @@ const modalImageSrc = isImportedImage ? (src as ImageMetadata).src : (src as str
       alt={alt}
       width={numericWidth}
       height={height}
-      class={baseClasses}
+      class={`${baseClasses} w-full h-full`}
       style={widthStyle}
       loading={autoLoading}
     />
