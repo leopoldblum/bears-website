@@ -6,8 +6,8 @@
 
 <button
   x-data="{ show: false, scrolling: false }"
-  @scroll.window="if (!scrolling) { show = window.scrollY > 300; } else if (window.scrollY <= 300) { scrolling = false; }"
-  @click="scrolling = true; window.scrollTo({ top: 0, behavior: 'smooth' })"
+  @scroll.window="if (!scrolling) { show = window.scrollY > 300; }"
+  @click="scrolling = true; show = true; window.scrollTo({ top: 0, behavior: 'smooth' }); setTimeout(() => { scrolling = false; show = window.scrollY > 300; }, 1000)"
   x-show="show || scrolling"
   x-cloak
   x-transition:enter="transition ease-out duration-300"
