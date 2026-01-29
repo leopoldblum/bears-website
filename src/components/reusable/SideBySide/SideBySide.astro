@@ -19,7 +19,8 @@ const { class: className, showDivider = true } = Astro.props;
 <style>
   .side-by-side-divider {
     position: absolute;
-    /* Mobile: horizontal line at vertical center */
+    /* Mobile: hidden to prevent overlap with stacked content */
+    display: none;
     left: 0;
     right: 0;
     top: 50%;
@@ -35,6 +36,7 @@ const { class: className, showDivider = true } = Astro.props;
   @media (min-width: 1024px) {
     .side-by-side-divider {
       /* Desktop: vertical line at horizontal center */
+      display: block;
       top: 0;
       bottom: 0;
       left: 50%;
