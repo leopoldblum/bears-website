@@ -264,7 +264,7 @@ const mediaJson = JSON.stringify(media.map((item, index) => ({
       class="container mx-auto px-4 sm:px-8 lg:px-16 h-full flex flex-col md:flex-col justify-end md:justify-between pb-8 sm:pb-12 lg:py-20 transition-all duration-300 ease-out"
     >
       <!-- Logo - visible on all breakpoints -->
-      <div class="max-w-md flex-shrink-0 pt-30 pl-4 sm:pt-20 sm:pl-6">
+      <div class="max-w-md flex-shrink-0 pt-30 sm:pt-20 lg:pt-24">
         <h1 class="text-[3.5rem] sm:text-[5.5rem] lg:text-9xl font-bold text-bears-accent drop-shadow-lg">BEARS</h1>
       </div>
 
@@ -275,7 +275,7 @@ const mediaJson = JSON.stringify(media.map((item, index) => ({
         x-data="{ activeIndex: 0 }"
         @mouseenter="$dispatch('update-active-index', { index: activeIndex })"
       >
-        <div class=" w-[40%] lg:w-[80%] mx-[10vw] lg:mx-auto flex flex-col lg:flex-row lg:justify-around gap-8 lg:gap-12 relative z-10">
+        <div class="w-[40%] lg:w-[80%] mx-[10vw] lg:mx-auto flex flex-col lg:flex-row lg:justify-around gap-8 lg:gap-12 relative z-10">
           <div class="category-item flex-1" x-ref="cat0" @mouseenter="activeIndex = 0; $dispatch('update-active-index', { index: 0 }); const rect0 = $refs.cat0.getBoundingClientRect(); const contRect0 = $refs.categoriesContainer.getBoundingClientRect(); $dispatch('update-category-position', { left: rect0.left - contRect0.left, width: rect0.width, height: rect0.height, bottom: contRect0.bottom - rect0.bottom })">
             <HeroCategory
               title="How to Join"
