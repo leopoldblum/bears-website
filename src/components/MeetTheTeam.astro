@@ -73,7 +73,7 @@ const projects = await loadCollectionImages(sortedProjects, 'project');
     </div>
 
     <!-- Two-column grid for lg and xl (becomes 2nd and 3rd columns in xl's 3-col grid) -->
-    <div class="grid grid-cols-1 lg:grid-cols-[1fr_400px] xl:grid-cols-subgrid xl:col-span-2 gap-6 lg:gap-8">
+    <div class="grid grid-cols-1 xl:grid-cols-subgrid xl:col-span-2 gap-6 lg:gap-8">
 
       <!-- Left column: thumbnails + image -->
       <div class="flex flex-col gap-3 lg:gap-4">
@@ -123,7 +123,7 @@ const projects = await loadCollectionImages(sortedProjects, 'project');
       </div>
 
       <!-- Projects Accordion -->
-      <div x-ref="accordion" class="flex flex-col lg:h-[550px] xl:h-auto overflow-y-auto">
+      <div x-ref="accordion" class="flex flex-col xl:h-auto xl:overflow-y-auto">
         <div class="flex flex-col gap-2">
           {projects.map((project, index) => {
             const itemId = `team-accordion-${index}`;
