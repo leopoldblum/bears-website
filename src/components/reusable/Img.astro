@@ -13,18 +13,17 @@ interface Props {
   width?: WidthValue;
   height?: number;
   loading?: 'eager' | 'lazy';
-  priority?: boolean;
   enableClickToEnlarge?: boolean;
 }
 
-const { src, alt, class: className, width, height, loading, priority, enableClickToEnlarge = true } = Astro.props;
+const { src, alt, class: className, width, height, loading, enableClickToEnlarge = true } = Astro.props;
 
 // Loading strategy
 const autoLoading = loading ?? 'lazy';
 
-// Base classes
-const defaultClasses = 'h-auto object-cover';
-const finalClasses = `${defaultClasses} ${className ?? ''}`;
+// Classes: use custom if provided, otherwise defaults
+const baseClasses = className ?? 'h-auto object-cover';
+const clickableClasses = `${baseClasses} cursor-pointer`;
 
 // Determine if src is an imported image or URL string
 const isImportedImage = typeof src === 'object' && 'src' in src;
@@ -42,33 +41,31 @@ const modalImageSrc = isImportedImage ? (src as ImageMetadata).src : (src as str
   <div
     x-data="{ modalOpen: false }"
     @keydown.escape.window="modalOpen = false"
-    class="inline-block h-full overflow-hidden"
+    class="inline-block overflow-hidden"
     style={widthStyle}
   >
-    <!-- Clickable image -->
-    <div @click="modalOpen = true" class="cursor-pointer h-full flex items-center justify-center">
-      {isImportedImage ? (
-        <Image
-          src={src as ImageMetadata}
-          alt={alt}
-          width={numericWidth}
-          height={height}
-          class={finalClasses}
-          loading={autoLoading}
-          decoding={priority ? 'sync' : 'async'}
-        />
-      ) : (
-        <img
-          src={src as string}
-          alt={alt}
-          width={numericWidth}
-          height={height}
-          class={finalClasses}
-          loading={autoLoading}
-          fetchpriority={priority ? 'high' : undefined}
-        />
-      )}
-    </div>
+    {isImportedImage ? (
+      <Image
+        src={src as ImageMetadata}
+        alt={alt}
+        width={numericWidth}
+        height={height}
+        class={clickableClasses}
+        loading={autoLoading}
+        decoding="async"
+        @click="modalOpen = true"
+      />
+    ) : (
+      <img
+        src={src as string}
+        alt={alt}
+        width={numericWidth}
+        height={height}
+        class={clickableClasses}
+        loading={autoLoading}
+        @click="modalOpen = true"
+      />
+    )}
 
     <!-- Modal -->
     <template x-teleport="body">
@@ -111,10 +108,10 @@ const modalImageSrc = isImportedImage ? (src as ImageMetadata).src : (src as str
       alt={alt}
       width={numericWidth}
       height={height}
-      class={finalClasses}
+      class={baseClasses}
       style={widthStyle}
       loading={autoLoading}
-      decoding={priority ? 'sync' : 'async'}
+      decoding="async"
     />
   ) : (
     <img
@@ -122,10 +119,9 @@ const modalImageSrc = isImportedImage ? (src as ImageMetadata).src : (src as str
       alt={alt}
       width={numericWidth}
       height={height}
-      class={finalClasses}
+      class={baseClasses}
       style={widthStyle}
       loading={autoLoading}
-      fetchpriority={priority ? 'high' : undefined}
     />
   )
 )}

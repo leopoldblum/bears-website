@@ -21,7 +21,7 @@ import myImage from '../../assets/my-photo.jpg';
 ### ✅ **Smart Features**
 - **Error handling**: Shows clean placeholder instead of broken images
 - **Accessibility**: Auto-generates alt text from filename if missing
-- **Priority loading**: Fetch priority control for critical images
+- **Click to enlarge**: Images open in a modal for full-size viewing (can be disabled)
 
 ### ✅ **Developer Experience**
 - **Type safety**: Works with string URLs and ImageMetadata imports
@@ -37,7 +37,7 @@ import myImage from '../../assets/my-photo.jpg';
 | class | `string` | `h-auto object-cover` | Tailwind classes |
 | width | `number \| string` | `undefined` | Width in px (number) or CSS value (string) |
 | loading | `'eager' \| 'lazy'` | `'lazy'` | Loading strategy |
-| priority | `boolean` | `false` | Sets fetchpriority="high" when true |
+| enableClickToEnlarge | `boolean` | `true` | Enable click-to-enlarge modal |
 
 ## Examples
 
@@ -68,12 +68,19 @@ import myImage from '../../assets/my-photo.jpg';
 />
 ```
 
-### High Priority Images
+### Above-the-fold Images
 ```mdx
 <Img 
   src={heroBackground} 
-  priority={true}  // Sets fetchpriority="high"
-  loading="eager"  // Immediate loading
+  loading="eager"  // Immediate loading for important images
+/>
+```
+
+### Disable Click-to-Enlarge
+```mdx
+<Img 
+  src={thumbnailImage} 
+  enableClickToEnlarge={false}  // No modal on click
 />
 ```
 
