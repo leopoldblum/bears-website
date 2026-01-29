@@ -1,0 +1,51 @@
+---
+// HeroCategory Component - Reusable category section for hero area
+// Displays a title with a divider line and description text
+// Can optionally act as a link button
+
+interface Props {
+  /** The title text displayed at the top */
+  title: string;
+  /** The description text displayed below the divider */
+  description: string;
+  /** Optional URL to link to - when provided, the entire component becomes clickable */
+  href?: string;
+  /** Additional Tailwind classes for styling flexibility */
+  class?: string;
+}
+
+const { title, description, href, class: className } = Astro.props;
+---
+
+{href ? (
+  <a
+    href={href}
+    class={`flex-1 block cursor-pointer group hover:opacity-80 transition-opacity duration-200 ${className || ''}`}
+  >
+    <h2
+      class="text-2xl sm:text-3xl lg:text-4xl font-bold text-bears-accent transition-transform duration-300 ease-out"
+    >
+      {title}
+    </h2>
+    <div
+      class="h-0.5 bg-gradient-to-r from-white/20 via-white/10 to-transparent my-5 sm:my-6 lg:my-8"
+    ></div>
+    <p class="text-base sm:text-lg lg:text-xl text-bears-text-onDark leading-relaxed">
+      {description}
+    </p>
+  </a>
+) : (
+  <div class={`flex-1 ${className || ''}`}>
+    <h2
+      class="text-2xl sm:text-3xl lg:text-4xl font-bold text-bears-accent transition-transform duration-300 ease-out"
+    >
+      {title}
+    </h2>
+    <div
+      class="h-0.5 bg-gradient-to-r from-white/20 via-white/10 to-transparent my-5 sm:my-6 lg:my-8"
+    ></div>
+    <p class="text-base sm:text-lg lg:text-xl text-bears-text-onDark leading-relaxed">
+      {description}
+    </p>
+  </div>
+)}
