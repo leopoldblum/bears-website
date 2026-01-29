@@ -63,7 +63,7 @@ const accordionId = `media-accordion-${Math.random().toString(36).substring(2, 9
     x-bind:aria-expanded="isOpen ? 'true' : 'false'"
     aria-controls={accordionId}
   >
-    <div class="flex flex-col pl-10">
+    <div class="flex flex-col pl-4">
       <span class="text-sm sm:text-base text-bears-accent mt-2 mb-4">This is</span>
       <h3 class="text-2xl sm:text-5xl font-bold text-bears-text-onDark pl-2">
         {title}
@@ -93,8 +93,8 @@ const accordionId = `media-accordion-${Math.random().toString(36).substring(2, 9
     {/* Image Grid Container */}
     <div
       class={`grid ${gridCols} ${gridGap} px-4 sm:px-6 overflow-hidden transition-all duration-500 ease-in-out`}
-      x-bind:style="isOpen ? 'max-height: none;' : 'max-height: calc((100vw - 3rem) / 2 * 1.33 + 0.5rem)'"
-      x-bind:class="isOpen ? '' : 'max-h-[calc((min(100vw,1280px)-3rem)/4*1.33+0.75rem)]'"
+      x-bind:style="isOpen ? 'max-height: none;' : 'max-height: calc((100vw - 3rem) / 2 * 1.15 + (100vw - 3rem) / 2 * 1.15 / 2 + 0.25rem)'"
+      x-bind:class="isOpen ? '' : 'max-h-[calc((min(100vw,1280px)-3rem)/4*1.15+(min(100vw,1280px)-3rem)/4*1.15/2+0.5rem)]'"
     >
       {images.map((image, index) => (
         <div class="relative aspect-square overflow-hidden rounded-lg group/image">
@@ -145,16 +145,16 @@ const accordionId = `media-accordion-${Math.random().toString(36).substring(2, 9
     will-change: max-height;
   }
 
-  /* Responsive max-height for closed state - shows 1 full row + 1/3 of second row */
+  /* Responsive max-height for closed state - shows 1 full row + 1/2 of second row */
   @media (min-width: 640px) {
     .media-accordion .grid:not([style*="max-height: none"]) {
-      max-height: calc((100vw - 4rem) / 3 * 1.33 + 0.75rem) !important;
+      max-height: calc((100vw - 4rem) / 3 * 1.15 + (100vw - 4rem) / 3 * 1.15 / 2 + 0.5rem) !important;
     }
   }
 
   @media (min-width: 1024px) {
     .media-accordion .grid:not([style*="max-height: none"]) {
-      max-height: calc((min(100vw, 1280px) - 4rem) / 4 * 1.33 + 1rem) !important;
+      max-height: calc((min(100vw, 1280px) - 4rem) / 4 * 1.15 + (min(100vw, 1280px) - 4rem) / 4 * 1.15 / 2 + 0.75rem) !important;
     }
   }
 </style>

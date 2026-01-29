@@ -3,9 +3,11 @@
 // Each category shows 2 rows of images as preview when closed, full grid when opened
 
 import BaseLayout from "@layouts/BaseLayout.astro";
-import MediaAccordion from "@mdx/MediaAccordion.astro";
+import MediaAccordion from "../components/reusable/MediaAccordion.astro";
+import PageHeroImage from "../components/reusable/PageHeroImage.astro";
 import { loadAllImagesFromDirectory } from "@utils/imageLoader";
 import type { ImageMetadata } from "astro";
+import heroImage from "../assets/events/event-1.jpg";
 
 // Import all image globs statically
 const eventImagesGlob = import.meta.glob<{ default: ImageMetadata }>(
@@ -53,17 +55,13 @@ const categoriesWithImages = categoryImages.filter(
 ---
 
 <BaseLayout title="Media">
+  <PageHeroImage
+    image={heroImage}
+    alt="BEARS event showcasing student astronautics activities"
+    title="Media"
+    subtitle="lorem ipsum"
+  />
   <div class="container mx-auto px-4 py-6 sm:py-8 lg:py-12 sm:px-6 lg:px-8">
-    {/* Page Header */}
-    <div class="mb-8 sm:mb-10 lg:mb-12">
-      <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-bears-text-onDark mb-3 sm:mb-4">
-        Media Gallery
-      </h1>
-      <p class="text-base sm:text-lg text-bears-text-onDark/70 max-w-3xl">
-        Explore our collection of images from events, projects, team activities, and more.
-        Click on any category to view all images.
-      </p>
-    </div>
 
     {/* Media Categories Accordion */}
     <div class="flex flex-col gap-6 sm:gap-20">
@@ -100,3 +98,4 @@ const categoriesWithImages = categoryImages.filter(
     )}
   </div>
 </BaseLayout>
+
