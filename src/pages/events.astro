@@ -4,10 +4,12 @@ import PostShowcase from "@components/PostShowcase.astro";
 import FilterMenu from "@components/FilterMenu.astro";
 import SortMenu from "@components/SortMenu.astro";
 import Pagination from "@components/Pagination.astro";
+import PageHeroImage from "@components/reusable/PageHeroImage.astro";
 import { loadCollectionImages } from "@utils/imageLoader";
 import { getPublishedEvents } from "@utils/contentQueries";
 import { CategoryEventEnum } from "@types";
 import { getCategoryLabel } from "@utils/categoryLabels";
+import eventHeroImage from "@assets/events/event-1.jpg";
 
 // Get all published events (filtered and sorted)
 const sortedEvents = await getPublishedEvents();
@@ -37,6 +39,13 @@ const eventsData = JSON.stringify(eventsWithImages.map((e, i) => ({
 ---
 
 <BaseLayout title="Events">
+  <PageHeroImage
+    image={eventHeroImage}
+    alt="BEARS members collaborating at a workshop event"
+    title="Events"
+    subtitle="Join us for workshops, hackathons, and networking opportunities"
+  />
+
   <div
     class="container mx-auto px-4 py-6 sm:px-6 sm:py-8 lg:px-8"
     x-data={`{
