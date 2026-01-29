@@ -20,7 +20,7 @@ const { title, description, href, class: className } = Astro.props;
 {href ? (
   <a
     href={href}
-    class={`flex-1 block cursor-pointer group hover:opacity-80 transition-opacity duration-200 ${className || ''}`}
+    class={`flex-1 block cursor-pointer group hover:opacity-90 hover:scale-105 transition-all duration-200 ${className || ''}`}
   >
     <h2
       class="text-2xl sm:text-3xl lg:text-4xl font-bold text-bears-accent transition-transform duration-300 ease-out"
@@ -28,16 +28,16 @@ const { title, description, href, class: className } = Astro.props;
       {title}
     </h2>
     <div
-      class="h-0.5 bg-gradient-to-r from-white/20 via-white/10 to-transparent my-5 sm:my-6 lg:my-8"
+      class="h-0.5 lg:h-1  bg-gradient-to-r from-white/30 via-white/20 to-transparent my-2 sm:my-4 lg:my-8"
     ></div>
     <p class="text-base sm:text-lg lg:text-xl text-bears-text-onDark leading-relaxed">
       {description}
     </p>
   </a>
 ) : (
-  <div class={`flex-1 ${className || ''}`}>
+  <div class={`flex-1 ${className || ''}  hover:opacity-90 hover:scale-105 transition-all duration-200`}>
     <h2
-      class="text-2xl sm:text-3xl lg:text-4xl font-bold text-bears-accent transition-transform duration-300 ease-out"
+      class="text-2xl sm:text-3xl lg:text-4xl font-bold text-bears-accent hover:scale-105 transition-transform duration-300 ease-out"
     >
       {title}
     </h2>

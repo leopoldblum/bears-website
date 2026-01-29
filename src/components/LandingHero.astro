@@ -197,6 +197,19 @@ const mediaJson = JSON.stringify(media.map((item, index) => ({
     <!-- Gradient overlay for text readability -->
     <div class="absolute inset-0 bg-gradient-to-r from-bears-bg/80 via-bears-bg/40 to-transparent"></div>
 
+    <!-- Bottom gradient for HeroCategories area -->
+    <div class="absolute bottom-0 left-0 right-0 h-64 bg-gradient-to-t from-bears-bg via-bears-bg/60 to-transparent pointer-events-none"></div>
+
+    <!-- Moving gradient bulge for selected category (positioned relative to media container) -->
+    <!-- <div
+      class="hidden lg:block absolute bg-bears-bg/90 pointer-events-none transition-all duration-700 ease-out z-10"
+      :style="`left: ${categoryLeft}px; width: ${categoryWidth}px; height: ${categoryHeight}px; bottom: ${categoryBottom}px; clip-path: polygon(10% 0, 90% 0, 100% 100%, 0% 100%);`"
+      x-data="{ activeIndex: 0, categoryLeft: 0, categoryWidth: 300, categoryHeight: 200, categoryBottom: 0 }"
+      x-init="categoryLeft = 0; categoryWidth = 300; categoryHeight = 200; categoryBottom = 0;"
+      @update-active-index.window="activeIndex = $event.detail.index"
+      @update-category-position.window="categoryLeft = $event.detail.left - (window.innerWidth * 0.03); categoryWidth = $event.detail.width; categoryHeight = $event.detail.height; categoryBottom = $event.detail.bottom"
+    ></div> -->
+
     <!-- shownText display (top right corner) -->
     <div
       x-show="getCurrentShownText()"
@@ -207,7 +220,7 @@ const mediaJson = JSON.stringify(media.map((item, index) => ({
       x-transition:leave="transition ease-in duration-200"
       x-transition:leave-start="opacity-100 translate-y-0"
       x-transition:leave-end="opacity-0 translate-y-2"
-      class="absolute top-4 right-4 sm:top-8 sm:right-8 lg:top-12 lg:right-12 bg-black/50 backdrop-blur-sm px-4 py-2 rounded-lg text-white text-sm sm:text-base lg:text-lg z-20"
+      class="absolute top-4 right-4 sm:top-8 sm:right-8 lg:top-12 lg:right-12 bg-black/50 backdrop-blur-sm px-4 py-2 text-white text-sm sm:text-base lg:text-lg z-20"
     ></div>
 
     <!-- Dot Indicators -->
@@ -251,28 +264,39 @@ const mediaJson = JSON.stringify(media.map((item, index) => ({
       class="container mx-auto px-4 sm:px-8 lg:px-16 h-full flex flex-col md:flex-col justify-end md:justify-between pb-8 sm:pb-12 lg:py-20 transition-all duration-300 ease-out"
     >
       <!-- Logo - visible on all breakpoints -->
-      <div class="max-w-md flex-shrink-0 pt-16 pl-4 sm:pt-20 sm:pl-6">
+      <div class="max-w-md flex-shrink-0 pt-30 pl-4 sm:pt-20 sm:pl-6">
         <h1 class="text-[3.5rem] sm:text-[5.5rem] lg:text-9xl font-bold text-bears-accent drop-shadow-lg">BEARS</h1>
       </div>
 
       <!-- Hero Categories - three columns on desktop -->
-      <div class="w-full flex-shrink-0 mt-auto md:mt-0 lg:mt-auto pb-8 sm:pb-10 lg:pb-20 px-4 sm:px-6 lg:px-16">
-        <div class="flex flex-col lg:flex-row lg:justify-between gap-8 lg:gap-12">
-          <HeroCategory
-            title="How to Join"
-            description="Becoming a member of Bears e.V."
-            href="/about-us"
-          />
-          <HeroCategory
-            title="Our Projects"
-            description="Explore what we are working on"
-            href="/projects"
-          />
-          <HeroCategory
-            title="Events"
-            description="Upcoming workshops and meetups"
-            href="/events"
-          />
+      <div
+        x-ref="categoriesContainer"
+        class="w-screen relative left-1/2 right-1/2 -translate-x-1/2 mt-auto lg:mt-auto pb-4 lg:pb-20 px-4 sm:px-6 lg:px-16"
+        x-data="{ activeIndex: 0 }"
+        @mouseenter="$dispatch('update-active-index', { index: activeIndex })"
+      >
+        <div class=" w-[40%] lg:w-[80%] mx-[10vw] lg:mx-auto flex flex-col lg:flex-row lg:justify-around gap-8 lg:gap-12 relative z-10">
+          <div class="category-item flex-1" x-ref="cat0" @mouseenter="activeIndex = 0; $dispatch('update-active-index', { index: 0 }); const rect0 = $refs.cat0.getBoundingClientRect(); const contRect0 = $refs.categoriesContainer.getBoundingClientRect(); $dispatch('update-category-position', { left: rect0.left - contRect0.left, width: rect0.width, height: rect0.height, bottom: contRect0.bottom - rect0.bottom })">
+            <HeroCategory
+              title="How to Join"
+              description="Becoming a member of Bears e.V."
+              href="/about-us"
+            />
+          </div>
+          <div class="category-item flex-1" x-ref="cat1" @mouseenter="activeIndex = 1; $dispatch('update-active-index', { index: 1 }); const rect1 = $refs.cat1.getBoundingClientRect(); const contRect1 = $refs.categoriesContainer.getBoundingClientRect(); $dispatch('update-category-position', { left: rect1.left - contRect1.left, width: rect1.width, height: rect1.height, bottom: contRect1.bottom - rect1.bottom })">
+            <HeroCategory
+              title="Our Projects"
+              description="Explore what we are working on"
+              href="/projects"
+            />
+          </div>
+          <div class="category-item flex-1" x-ref="cat2" @mouseenter="activeIndex = 2; $dispatch('update-active-index', { index: 2 }); const rect2 = $refs.cat2.getBoundingClientRect(); const contRect2 = $refs.categoriesContainer.getBoundingClientRect(); $dispatch('update-category-position', { left: rect2.left - contRect2.left, width: rect2.width, height: rect2.height, bottom: contRect2.bottom - rect2.bottom })">
+            <HeroCategory
+              title="Events"
+              description="Upcoming workshops and meetups"
+              href="/events"
+            />
+          </div>
         </div>
       </div>
 
