@@ -81,8 +81,8 @@ const {
             img.classList.remove('object-cover');
           }
         } else {
-          // Content mode: fill width (original behavior)
-          child.classList.add('absolute', 'w-full');
+          // Content mode: fill container with overflow handling
+          child.classList.add('absolute', 'inset-0', 'overflow-y-auto');
         }
       });
 
