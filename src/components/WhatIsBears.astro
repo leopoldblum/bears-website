@@ -3,18 +3,18 @@
 import { Image } from 'astro:assets';
 import Marquee from './reusable/Marquee.astro';
 import Button from './reusable/Button.astro';
-import { whatIsBearsImages } from '../utils/imageGlobs';
-import { loadAllImagesFromDirectory } from '../utils/imageLoader';
+import { whatIsBearsImages } from '@utils/imageGlobs';
+import { loadAllImagesFromDirectory } from '@utils/imageLoader';
 
 const carouselImages = await loadAllImagesFromDirectory(whatIsBearsImages);
 
-import Img from '../components/reusable/Img.astro';
-import project1 from '../assets/projects/project-1.jpg';
-import project2 from '../assets/projects/project-2.jpg';
-import project3 from '../assets/projects/project-3.jpg';
-import project4 from '../assets/projects/project-4.jpg';
-import project5 from '../assets/projects/project-5.jpg';
-import project6 from '../assets/projects/project-6.jpg';
+import Img from '@components/reusable/Img.astro';
+import project1 from '@assets/projects/project-1.jpg';
+import project2 from '@assets/projects/project-2.jpg';
+import project3 from '@assets/projects/project-3.jpg';
+import project4 from '@assets/projects/project-4.jpg';
+import project5 from '@assets/projects/project-5.jpg';
+import project6 from '@assets/projects/project-6.jpg';
 ---
 
 <section class="container mx-auto px-4 sm:px-8 lg:px-16 py-16 sm:py-20 lg:py-24">

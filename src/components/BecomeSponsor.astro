@@ -3,9 +3,9 @@
 import { getCollection } from "astro:content";
 import SponsorTier from "./SponsorTier.astro";
 import Button from "./reusable/Button.astro";
-import type { SponsorEntry } from '../types';
-import { sponsorLogos } from '../utils/imageGlobs';
-import { loadImage, defaultSponsorImage } from '../utils/imageLoader';
+import type { SponsorEntry } from '@types';
+import { sponsorLogos } from '@utils/imageGlobs';
+import { loadImage, defaultSponsorImage } from '@utils/imageLoader';
 
 // Fetch all sponsors
 const allSponsors = await getCollection("sponsors");
@@ -36,7 +36,7 @@ const sponsorsWithImages = await Promise.all(
 );
 
 // Import sortBySlug utility
-import { sortBySlug } from '../utils/contentQueries';
+import { sortBySlug } from '@utils/contentQueries';
 
 // Group sponsors by tier and sort alphabetically within each tier
 const diamondSponsors = sortBySlug(sponsorsWithImages.filter(s => s.tier === 'diamond'));

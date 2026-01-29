@@ -5,8 +5,8 @@ import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
 import Button from './reusable/Button.astro';
 import CarouselArrow from './CarouselArrow.astro';
-import { getLandingHeroSlides } from '../utils/contentQueries';
-import { heroImages, heroMedia } from '../utils/imageGlobs';
+import { getLandingHeroSlides } from '@utils/contentQueries';
+import { heroImages, heroMedia } from '@utils/imageGlobs';
 
 interface MediaItem {
   type: 'video' | 'image';

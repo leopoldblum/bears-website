@@ -1,6 +1,6 @@
 import { defineCollection, z } from 'astro:content';
-import { CoverImageType, CategoryEventEnum, CategoryProjectEnum } from '../types/content';
-import { IMAGE_EXTENSION_REGEX, VALID_EXTENSIONS_MESSAGE } from '../utils/imageConstants';
+import { CoverImageType, CategoryEventEnum, CategoryProjectEnum } from '@types';
+import { IMAGE_EXTENSION_REGEX, VALID_EXTENSIONS_MESSAGE } from '@utils/imageConstants';
 
 /**
  * Helper for validating image file extensions

@@ -1,8 +1,8 @@
 ---
 // MeetTheTeam component
 import { Image } from 'astro:assets';
-import { loadCollectionImages } from '../utils/imageLoader';
-import { getMeetTheTeamProjects } from '../utils/contentQueries';
+import { loadCollectionImages } from '@utils/imageLoader';
+import { getMeetTheTeamProjects } from '@utils/contentQueries';
 
 // Get projects for MeetTheTeam section (filtered and sorted)
 const sortedProjects = await getMeetTheTeamProjects();

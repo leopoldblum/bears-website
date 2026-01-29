@@ -6,10 +6,10 @@
  */
 
 import type { ImageMetadata } from 'astro';
-import defaultEventImage from '../assets/default-images/default-event.jpg';
-import defaultProjectImage from '../assets/default-images/default-project.jpg';
-import defaultTestimonialImage from '../assets/default-images/default-testimonial.jpg';
-import defaultSponsorImage from '../assets/default-images/default-sponsor.jpg';
+import defaultEventImage from '@assets/default-images/default-event.jpg';
+import defaultProjectImage from '@assets/default-images/default-project.jpg';
+import defaultTestimonialImage from '@assets/default-images/default-testimonial.jpg';
+import defaultSponsorImage from '@assets/default-images/default-sponsor.jpg';
 
 // Export default images for components that need direct access
 export { defaultEventImage, defaultProjectImage, defaultTestimonialImage, defaultSponsorImage };

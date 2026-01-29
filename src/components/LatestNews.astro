@@ -2,9 +2,9 @@
 // LatestNews component - Shows latest news from BEARS
 import PostShowcase from "./PostShowcase.astro";
 import Button from "./reusable/Button.astro";
-import type { PostType } from '../types';
-import { loadCollectionImages } from '../utils/imageLoader';
-import { getLatestPosts, sortByDateDesc } from '../utils/contentQueries';
+import type { PostType } from '@types';
+import { loadCollectionImages } from '@utils/imageLoader';
+import { getLatestPosts, sortByDateDesc } from '@utils/contentQueries';
 
 // Get latest 4 posts (filtered and sorted)
 const latestPosts = await getLatestPosts(4);

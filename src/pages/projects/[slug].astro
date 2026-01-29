@@ -1,8 +1,8 @@
 ---
-import PostLayout from "../../layouts/PostLayout.astro";
+import PostLayout from "@layouts/PostLayout.astro";
 import { type CollectionEntry } from "astro:content";
-import { loadCoverImage } from "../../utils/imageLoader";
-import { getPublishedProjects } from "../../utils/contentQueries";
+import { loadCoverImage } from "@utils/imageLoader";
+import { getPublishedProjects } from "@utils/contentQueries";
 
 
 export async function getStaticPaths() {
@@ -18,7 +18,7 @@ interface Props {
   entry: CollectionEntry<'projects'>;
 }
 
-const { entry } = Astro.props as any;
+const { entry } = Astro.props;
 const { Content } = await entry.render();
 
 // Load cover image

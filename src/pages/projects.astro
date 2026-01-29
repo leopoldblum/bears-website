@@ -1,13 +1,13 @@
 ---
-import BaseLayout from "../layouts/BaseLayout.astro";
-import PostShowcase from "../components/PostShowcase.astro";
-import FilterMenu from "../components/FilterMenu.astro";
-import SortMenu from "../components/SortMenu.astro";
-import Pagination from "../components/Pagination.astro";
-import { loadCollectionImages } from "../utils/imageLoader";
-import { getPublishedProjects } from "../utils/contentQueries";
-import { CategoryProjectEnum } from "../types/content";
-import { getCategoryLabel } from "../utils/categoryLabels";
+import BaseLayout from "@layouts/BaseLayout.astro";
+import PostShowcase from "@components/PostShowcase.astro";
+import FilterMenu from "@components/FilterMenu.astro";
+import SortMenu from "@components/SortMenu.astro";
+import Pagination from "@components/Pagination.astro";
+import { loadCollectionImages } from "@utils/imageLoader";
+import { getPublishedProjects } from "@utils/contentQueries";
+import { CategoryProjectEnum } from "@types";
+import { getCategoryLabel } from "@utils/categoryLabels";
 
 // Get all published projects (filtered and sorted)
 const sortedProjects = await getPublishedProjects();
