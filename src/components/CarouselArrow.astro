@@ -40,6 +40,12 @@ interface Props {
    * Additional CSS classes for customization
    */
   class?: string;
+
+  /**
+   * Use inverted colors for maximum visibility on varying backgrounds
+   * @default false
+   */
+  inverted?: boolean;
 }
 
 const {
@@ -50,6 +56,7 @@ const {
   variant = 'flex',
   position = 'left',
   class: className,
+  inverted = false,
 } = Astro.props;
 
 // Arrow path data
@@ -58,7 +65,9 @@ const arrowPath = direction === 'prev'
   : 'M9 5l7 7-7 7';
 
 // Base styles shared between both variants
-const baseStyles = 'w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-transparent border-2 border-bears-accent/40 text-bears-text-onDark hover:border-bears-accent hover:bg-bears-accent/10 hover:shadow-[0_0_20px_rgba(197,14,31,0.25)] hover:scale-105 active:bg-bears-accent/5 active:scale-100 transition-all duration-200 flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bears-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bears-bg cursor-pointer';
+const baseStyles = inverted
+  ? 'w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-transparent border-2 border-white mix-blend-difference text-bears-text-onDark hover:border-white hover:bg-white/10 hover:shadow-[0_0_20px_rgba(255,255,255,0.25)] hover:scale-105 active:bg-white/5 active:scale-100 transition-all duration-200 flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-bears-bg cursor-pointer'
+  : 'w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-transparent border-2 border-bears-accent/40 text-bears-text-onDark hover:border-bears-accent hover:bg-bears-accent/10 hover:shadow-[0_0_20px_rgba(197,14,31,0.25)] hover:scale-105 active:bg-bears-accent/5 active:scale-100 transition-all duration-200 flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bears-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bears-bg cursor-pointer';
 
 // Variant-specific styles
 const variantStyles = {
