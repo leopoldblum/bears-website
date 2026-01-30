@@ -10,12 +10,27 @@ interface HeroCTAIslandProps {
   ctas: HeroCTAItem[];
 }
 
+// Breakpoint constant matching Tailwind's lg breakpoint
+const LG_BREAKPOINT = 1024;
+
 export default function HeroCTAIsland({ ctas }: HeroCTAIslandProps) {
   const [activeIndex, setActiveIndex] = useState<number>(-1);
   const [gradientPos, setGradientPos] = useState({ left: 0, width: 0, height: 0 });
+  const [isLargeScreen, setIsLargeScreen] = useState(true);
   const containerRef = useRef<HTMLDivElement>(null);
   const ctaRefs = useRef<(HTMLDivElement | null)[]>([]);
   const gridRef = useRef<HTMLDivElement>(null);
+
+  // Check screen size on mount and resize
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsLargeScreen(window.innerWidth >= LG_BREAKPOINT);
+    };
+
+    checkScreenSize();
+    window.addEventListener('resize', checkScreenSize);
+    return () => window.removeEventListener('resize', checkScreenSize);
+  }, []);
 
   const updateGradient = useCallback((index: number) => {
     const ctaEl = ctaRefs.current[index];
@@ -69,27 +84,62 @@ export default function HeroCTAIsland({ ctas }: HeroCTAIslandProps) {
 
   if (ctas.length === 0) return null;
 
-  // Square positioned under the hovered CTA, rising from bottom
-  const squareLeft = gradientPos.left;
-  const squareWidth = gradientPos.width;
+  // Rectangle positioned under the hovered CTA, slightly wider with curved-in foot
+  const widthExpansion = 1.02; // 2% wider than CTA
+  const expandedWidth = gradientPos.width * widthExpansion;
+  const widthDiff = expandedWidth - gradientPos.width;
+  const rectLeft = gradientPos.left - widthDiff / 2;
   // Height extends slightly above the CTA element
-  const squareHeight = gradientPos.height + 40;
+  const rectHeight = gradientPos.height + 40;
+
+  // Smooth curve configuration - adjusted for one continuous flowing shape
+  const curveHeight = rectHeight * 0.65; // Height of the curve peak (slightly higher)
+  const bottomWidth = expandedWidth * 0.5; // Width at the bottom (wider to cover all CTAs)
+
+  // Create SVG path with one smooth continuous curve
+  // The shape flows smoothly from left bottom, up to peak, down to right bottom
+  // Control points adjusted to make the base rise faster
+  const svgPath = `
+    M ${-bottomWidth} ${rectHeight}
+    Q ${-bottomWidth * 0.1} ${rectHeight * 0.6}, 0 ${rectHeight * 0.3}
+    Q ${expandedWidth * 0.5} ${-curveHeight}, ${expandedWidth} ${rectHeight * 0.3}
+    Q ${expandedWidth + bottomWidth * 0.1} ${rectHeight * 0.6}, ${expandedWidth + bottomWidth} ${rectHeight}
+    L ${-bottomWidth} ${rectHeight}
+    Z
+  `.trim().replace(/\s+/g, ' ');
 
   return (
     <div
       ref={containerRef}
       className="relative mt-auto pb-8 sm:pb-12 lg:pb-16"
     >
-      {/* Simple square that rises from bottom under the hovered CTA */}
-      <div
-        className="absolute bottom-0 bg-gradient-to-t from-[#1A1A1A] via-[#1A1A1A]/95 to-[#1A1A1A]/60 transition-all duration-500 ease-out pointer-events-none"
+      {/* Shape with one smooth continuous curve */}
+      <svg
+        className="absolute bottom-0 transition-all duration-500 ease-out pointer-events-none overflow-visible"
         style={{
-          left: `${squareLeft}px`,
-          width: `${squareWidth}px`,
-          height: activeIndex >= 0 ? `${squareHeight}px` : '0px',
+          left: `${rectLeft - bottomWidth - 40}px`,
+          width: `${expandedWidth + bottomWidth * 2}px`,
+          height: `${rectHeight + curveHeight}px`,
           opacity: activeIndex >= 0 ? 1 : 0,
         }}
-      />
+        viewBox={`${-bottomWidth} ${-curveHeight} ${expandedWidth + bottomWidth * 2} ${rectHeight + curveHeight}`}
+        preserveAspectRatio="none"
+      >
+        <defs>
+          <radialGradient id="ctaGradient" cx="50%" cy="100%" r="70%" fx="50%" fy="100%">
+            <stop offset="0%" stopColor="#1A1A1A" stopOpacity="1" />
+            <stop offset="50%" stopColor="#1A1A1A" stopOpacity="0.85" />
+            <stop offset="100%" stopColor="#1A1A1A" stopOpacity="0" />
+          </radialGradient>
+        </defs>
+        <path
+          d={svgPath}
+          fill="url(#ctaGradient)"
+          style={{
+            transition: 'all 500ms ease-out',
+          }}
+        />
+      </svg>
 
       {/* CTA Grid */}
       <div ref={gridRef} className="relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 max-w-6xl">
@@ -97,8 +147,8 @@ export default function HeroCTAIsland({ ctas }: HeroCTAIslandProps) {
           <div
             key={index}
             ref={(el) => { ctaRefs.current[index] = el; }}
-            onMouseEnter={() => updateGradient(index)}
-            onMouseLeave={resetGradient}
+            onMouseEnter={() => isLargeScreen && updateGradient(index)}
+            onMouseLeave={() => isLargeScreen && resetGradient()}
             className="relative z-10"
           >
             <a
@@ -119,3 +169,4 @@ export default function HeroCTAIsland({ ctas }: HeroCTAIslandProps) {
     </div>
   );
 }
+
