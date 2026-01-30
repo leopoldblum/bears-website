@@ -115,12 +115,14 @@ export default function HeroCTAIsland({ ctas }: HeroCTAIslandProps) {
     >
       {/* Shape with one smooth continuous curve */}
       <svg
-        className="absolute bottom-0 transition-all duration-500 ease-out pointer-events-none overflow-visible"
+        className="absolute bottom-0 pointer-events-none overflow-visible"
         style={{
           left: `${rectLeft - bottomWidth - 40}px`,
           width: `${expandedWidth + bottomWidth * 2}px`,
           height: `${rectHeight + curveHeight}px`,
           opacity: activeIndex >= 0 ? 1 : 0,
+          clipPath: activeIndex >= 0 ? 'inset(0 0 0 0)' : 'inset(100% 0 0 0)',
+          transition: 'left 500ms ease-out, width 500ms ease-out, opacity 500ms ease-out, clip-path 500ms ease-out',
         }}
         viewBox={`${-bottomWidth} ${-curveHeight} ${expandedWidth + bottomWidth * 2} ${rectHeight + curveHeight}`}
         preserveAspectRatio="none"
@@ -142,13 +144,16 @@ export default function HeroCTAIsland({ ctas }: HeroCTAIslandProps) {
       </svg>
 
       {/* CTA Grid */}
-      <div ref={gridRef} className="relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 max-w-6xl">
+      <div
+        ref={gridRef}
+        className="relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 max-w-6xl"
+        onMouseLeave={() => isLargeScreen && resetGradient()}
+      >
         {ctas.map((cta, index) => (
           <div
             key={index}
             ref={(el) => { ctaRefs.current[index] = el; }}
             onMouseEnter={() => isLargeScreen && updateGradient(index)}
-            onMouseLeave={() => isLargeScreen && resetGradient()}
             className="relative z-10"
           >
             <a
@@ -158,7 +163,7 @@ export default function HeroCTAIsland({ ctas }: HeroCTAIslandProps) {
               <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-[#C50E1F] group-hover:text-white transition-colors duration-300">
                 {cta.title}
               </h3>
-              <div className="h-0.5 lg:h-1 bg-gradient-to-r from-white/50 via-white/30 to-transparent my-2 sm:my-3 lg:my-4 group-hover:from-white/70 group-hover:via-white/50 transition-all duration-300" />
+              <div className="h-0.5 lg:h-1 bg-gradient-to-r from-white/50 via-white/20 to-transparent my-2 sm:my-3 lg:my-4 mr-10 group-hover:from-white/70 group-hover:via-white/20 transition-all duration-300" />
               <p className="text-sm sm:text-base lg:text-lg text-[#E1E1E1] leading-relaxed group-hover:text-white transition-colors duration-300">
                 {cta.description}
               </p>
