@@ -1,0 +1,54 @@
+---
+import MarqueeBetterComponent from './MarqueeBetter.tsx';
+
+interface Props {
+  /**
+   * Scroll speed in pixels per second
+   * @default 50
+   */
+  speed?: number;
+
+  /**
+   * Gap between items (CSS value)
+   * @default "2rem"
+   */
+  gap?: string;
+
+  /**
+   * Pause animation on hover
+   * @default true
+   */
+  pauseOnHover?: boolean;
+
+  /**
+   * Item height (CSS value)
+   * @default "16rem"
+   */
+  height?: string;
+
+  /**
+   * Scroll direction
+   * @default "left"
+   */
+  direction?: 'left' | 'right';
+}
+
+const {
+  speed = 50,
+  gap = '2rem',
+  pauseOnHover = true,
+  height = '16rem',
+  direction = 'left',
+} = Astro.props;
+---
+
+<MarqueeBetterComponent
+  client:visible
+  speed={speed}
+  gap={gap}
+  pauseOnHover={pauseOnHover}
+  height={height}
+  direction={direction}
+>
+  <slot />
+</MarqueeBetterComponent>

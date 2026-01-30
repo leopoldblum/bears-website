@@ -1,0 +1,130 @@
+---
+title: "Img_better Component Test"
+description: "Testing the new Img_better component with srcset, blur loading, click-to-enlarge, marquee, and carousel"
+date: 2026-02-01
+categoryEvent: "other"
+tags: ["test", "srcset", "responsive-images", "Img_better"]
+isDraft: false
+---
+
+import Img_better from '@mdx/Img_better.astro';
+import Marquee_better from '@mdx/Marquee_better.astro';
+import Carousel_better from '@mdx/Carousel_better.astro';
+import testImage from '@assets/projects/project-1.jpg';
+import testImage2 from '@assets/projects/project-2.jpg';
+import testImage3 from '@assets/projects/project-3.jpg';
+import testImage4 from '@assets/projects/project-4.jpg';
+import testImage5 from '@assets/projects/project-5.jpg';
+import testImage6 from '@assets/projects/project-6.jpg';
+
+## Img_better Component - Different Width Values
+
+This section tests the Img_better component's srcset feature and blur loading. Each image below uses the same source but different width props. Click any image to enlarge it in a modal (close button only).
+
+### Small Width (400px)
+<Img_better src={testImage} alt="Test at 400px width with blur loading" width={400} />
+
+### Medium Width (800px)
+<Img_better src={testImage} alt="Test at 800px width with blur loading" width={800} />
+
+### Percentage Width (50%)
+<Img_better src={testImage} alt="Test at 50% width with blur loading" width="50%" />
+
+### Default (No width specified)
+<Img_better src={testImage} alt="Test with default width and blur loading" />
+
+---
+
+## Marquee_better Test
+
+This marquee uses Img_better with `enableClickToEnlarge={false}` for smooth scrolling. Notice the blur preview while images load.
+
+<Marquee_better speed={100} gap="1rem" height="12rem">
+  <Img_better src={testImage} alt="Marquee image 1" enableClickToEnlarge={false} />
+  <Img_better src={testImage2} alt="Marquee image 2" enableClickToEnlarge={false} />
+  <Img_better src={testImage3} alt="Marquee image 3" enableClickToEnlarge={false} />
+  <Img_better src={testImage4} alt="Marquee image 4" enableClickToEnlarge={false} />
+  <Img_better src={testImage5} alt="Marquee image 5" enableClickToEnlarge={false} />
+  <Img_better src={testImage6} alt="Marquee image 6" enableClickToEnlarge={false} />
+</Marquee_better>
+
+---
+
+## Carousel_better Test
+
+This carousel showcases Img_better in a slideshow format with native aspect ratio preservation. Each slide has click-to-enlarge enabled.
+
+<Carousel_better autoScroll={true} autoScrollInterval={4000} showArrows={true} showDots={true} minHeight="min-h-[500px]">
+  <div class="w-full h-full flex items-center justify-center p-4">
+    <Img_better src={testImage} alt="Carousel slide 1" class="rounded-lg" />
+  </div>
+  <div class="w-full h-full flex items-center justify-center p-4">
+    <Img_better src={testImage2} alt="Carousel slide 2" class="rounded-lg" />
+  </div>
+  <div class="w-full h-full flex items-center justify-center p-4">
+    <Img_better src={testImage3} alt="Carousel slide 3" class="rounded-lg" />
+  </div>
+  <div class="w-full h-full flex items-center justify-center p-4">
+    <Img_better src={testImage4} alt="Carousel slide 4" class="rounded-lg" />
+  </div>
+  <div class="w-full h-full flex items-center justify-center p-4">
+    <Img_better src={testImage5} alt="Carousel slide 5" class="rounded-lg" />
+  </div>
+  <div class="w-full h-full flex items-center justify-center p-4">
+    <Img_better src={testImage6} alt="Carousel slide 6" class="rounded-lg" />
+  </div>
+</Carousel_better>
+
+---
+
+## How to Verify Features
+
+### Srcset Verification
+1. Open browser DevTools (F12)
+2. Inspect any image above
+3. Check the `srcset` attribute - it should contain: `400w, 800w, 1200w, 1600w`
+4. The browser loads different sizes based on viewport and DPR
+
+### Blur Loading Verification
+1. Throttle network to "Slow 3G" in DevTools
+2. Reload the page
+3. You should see a blurred preview image while the full image loads
+4. The blur fades out as the main image fades in
+
+### Click-to-Enlarge Verification
+1. Click any image in the "Different Width Values" or "Carousel" sections
+2. A modal opens with the full-resolution image
+3. **Close via close button OR clicking the backdrop**
+4. Press Escape key to close modal
+5. The modal image is generated via `getImage()` without width constraints
+
+### Marquee Verification
+1. The marquee above should auto-scroll smoothly
+2. Images have blur preview while loading
+3. Hover to pause the animation
+4. Click-to-enlarge is disabled in marquee for smooth scrolling
+
+---
+
+## Technical Details
+
+**All components use React** for coherent state management with Astro wrappers for image processing.
+
+**Img_better Features:**
+- **Required props**: `src` and `alt` (TypeScript enforced)
+- **Blur loading**: 20px wide preview with CSS blur while main image loads
+- **Srcset**: Auto-generated `[400, 800, 1200, 1600]` for imported images
+- **Percentage widths**: CSS override prevents Astro's inferred dimensions
+- **Modal**: Full-size image via `getImage()`, close via button, backdrop click, or Escape key
+
+**Marquee_better Features:**
+- React-based with CSS keyframes animation
+- Pause on hover support
+- Use `enableClickToEnlarge={false}` for smooth scrolling
+- Blur loading and srcset still work
+
+**Carousel_better Features:**
+- React hooks for state (currentSlide, isPaused)
+- Works seamlessly with click-to-enlarge
+- Each slide can have independent modal
+- Auto-scroll pauses on hover

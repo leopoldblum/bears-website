@@ -31,9 +31,9 @@ interface Props {
   showDots?: boolean;
 
   /**
-   * Minimum height Tailwind class for the carousel container
-   * @default "min-h-120"
-   * @example "min-h-96", "min-h-[500px]"
+   * Optional fixed height for the carousel container.
+   * If not provided, container height is calculated based on tallest content.
+   * @example "min-h-96", "min-h-[500px]", "h-[400px]"
    */
   minHeight?: string;
 }
@@ -43,7 +43,7 @@ const {
   autoScrollInterval = 5000,
   showArrows = true,
   showDots = true,
-  minHeight = "min-h-120",
+  minHeight,
 } = Astro.props;
 ---
 
@@ -53,10 +53,25 @@ const {
     totalSlides: 0,
     autoScrollInterval: null,
     autoScrollEnabled: ${autoScroll},
+    hasFixedHeight: ${minHeight ? 'true' : 'false'},
+    containerHeight: 0,
 
-    init() {
+    async init() {
       const children = Array.from(this.$refs.slidesContainer.children);
       this.totalSlides = children.length;
+
+      // Wait for all images to load before measuring
+      const images = this.$refs.slidesContainer.querySelectorAll('img');
+      await Promise.all(Array.from(images).map(img => {
+        if (img.complete) return Promise.resolve();
+        return new Promise((resolve) => {
+          img.addEventListener('load', resolve, { once: true });
+          img.addEventListener('error', resolve, { once: true });
+        });
+      }));
+
+      // Calculate height based on tallest slide
+      this.calculateHeight();
 
       // Apply Alpine directives and styling to each child dynamically
       children.forEach((child, index) => {
@@ -73,12 +88,12 @@ const {
           (child.children.length > 0 && child.querySelector('img') && !child.querySelector('p, h1, h2, h3, h4, h5, h6'));
         
         if (isImageContent) {
-          // Image mode: fill container and center content
-          child.classList.add('absolute', 'inset-0', 'flex', 'items-center', 'justify-center');
+          // Image mode: center content, allow natural height
+          child.classList.add('absolute', 'inset-0', 'flex', 'items-center', 'justify-center', 'w-full');
           const img = child.tagName === 'IMG' ? child : child.querySelector('img');
           if (img) {
-            img.classList.add('object-contain', 'max-h-full');
-            img.classList.remove('object-cover');
+            img.classList.add('object-contain', 'max-w-full', 'h-auto');
+            img.classList.remove('object-cover', 'max-h-full', 'h-full');
           }
         } else {
           // Content mode: fill container with overflow handling
@@ -86,9 +101,28 @@ const {
         }
       });
 
+      // Recalculate height on window resize
+      window.addEventListener('resize', () => {
+        this.calculateHeight();
+      });
+
       if (this.autoScrollEnabled) {
         this.startAutoScroll();
       }
+    },
+
+    calculateHeight() {
+      const children = Array.from(this.$refs.slidesContainer.children);
+      let maxHeight = 0;
+      
+      children.forEach(child => {
+        // Get natural height of the content
+        const rect = child.getBoundingClientRect();
+        maxHeight = Math.max(maxHeight, rect.height);
+      });
+      
+      // Add some padding for safety
+      this.containerHeight = maxHeight > 0 ? maxHeight + 20 : 400;
     },
 
     // Navigation methods
@@ -130,7 +164,7 @@ const {
   class="w-full"
 >
   <!-- Carousel Container with Navigation -->
-  <div class={`relative flex items-center justify-between ${minHeight} gap-4 sm:gap-6 lg:gap-8`}>
+  <div class={`relative flex items-center justify-between gap-4 sm:gap-6 lg:gap-8${minHeight ? ` ${minHeight}` : ''}`}>
 
     {showArrows && (
       <CarouselArrow
@@ -144,7 +178,8 @@ const {
 
     <!-- Slides Container -->
     <div
-      class={`relative flex-1 flex items-center justify-center ${minHeight}`}
+      class={`relative flex-1 overflow-hidden w-full${minHeight ? ` ${minHeight}` : ''}`}
+      :style="!hasFixedHeight && containerHeight > 0 ? `height: ${containerHeight}px` : ''"
       @mouseenter="stopAutoScroll()"
       @mouseleave="startAutoScroll()"
       x-ref="slidesContainer"

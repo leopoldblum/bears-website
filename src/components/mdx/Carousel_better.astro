@@ -1,0 +1,55 @@
+---
+import CarouselBetterComponent from './CarouselBetter.tsx';
+
+interface Props {
+  /**
+   * Enable automatic scrolling through slides
+   * @default false
+   */
+  autoScroll?: boolean;
+
+  /**
+   * Time interval in milliseconds between automatic slide transitions
+   * Only applies when autoScroll is enabled
+   * @default 5000
+   */
+  autoScrollInterval?: number;
+
+  /**
+   * Show previous/next arrow navigation buttons
+   * @default true
+   */
+  showArrows?: boolean;
+
+  /**
+   * Show dot indicators for slide navigation
+   * @default true
+   */
+  showDots?: boolean;
+
+  /**
+   * Minimum height for the carousel container
+   * @default "min-h-[400px]"
+   */
+  minHeight?: string;
+}
+
+const {
+  autoScroll = false,
+  autoScrollInterval = 5000,
+  showArrows = true,
+  showDots = true,
+  minHeight = 'min-h-[400px]',
+} = Astro.props;
+---
+
+<CarouselBetterComponent
+  client:visible
+  autoScroll={autoScroll}
+  autoScrollInterval={autoScrollInterval}
+  showArrows={showArrows}
+  showDots={showDots}
+  minHeight={minHeight}
+>
+  <slot />
+</CarouselBetterComponent>

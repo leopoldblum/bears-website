@@ -1,5 +1,5 @@
 ---
-import { Image } from 'astro:assets';
+import { Image, getImage } from 'astro:assets';
 // import type { ImageMetadata } from '@types';
 import type { ImageMetadata } from 'astro';
 
@@ -34,8 +34,15 @@ const isPercentageWidth = typeof width === 'string' && width.endsWith('%');
 const widthStyle = isPercentageWidth ? `width: ${width}` : undefined;
 const numericWidth = typeof width === 'number' ? width : undefined;
 
-// Get the image source URL for the modal
-const modalImageSrc = isImportedImage ? (src as ImageMetadata).src : (src as string);
+// Generate high-res image for modal (without srcset constraints)
+const modalImage = isImportedImage 
+  ? await getImage({ src: src as ImageMetadata, format: 'webp' })
+  : null;
+const modalImageSrc = modalImage?.src || (src as string);
+
+// Auto-generate srcset widths for imported images
+const defaultWidths = [400, 800, 1200, 1600];
+const sizes = "100vw"; // Conservative default that works in any container
 ---
 
 {enableClickToEnlarge ? (
@@ -49,8 +56,9 @@ const modalImageSrc = isImportedImage ? (src as ImageMetadata).src : (src as str
       <Image
         src={src as ImageMetadata}
         alt={alt}
-        width={numericWidth}
-        height={height}
+        {...(!isPercentageWidth && { width: numericWidth, height })}
+        widths={defaultWidths}
+        sizes={sizes}
         class={`${clickableClasses} w-full h-full`}
         loading={autoLoading}
         decoding="async"
@@ -60,8 +68,7 @@ const modalImageSrc = isImportedImage ? (src as ImageMetadata).src : (src as str
       <img
         src={src as string}
         alt={alt}
-        width={numericWidth}
-        height={height}
+        {...(!isPercentageWidth && { width: numericWidth, height })}
         class={`${clickableClasses} w-full h-full`}
         loading={autoLoading}
         @click="modalOpen = true"
@@ -107,8 +114,9 @@ const modalImageSrc = isImportedImage ? (src as ImageMetadata).src : (src as str
     <Image
       src={src as ImageMetadata}
       alt={alt}
-      width={numericWidth}
-      height={height}
+      {...(!isPercentageWidth && { width: numericWidth, height })}
+      widths={defaultWidths}
+      sizes={sizes}
       class={`${baseClasses} w-full h-full`}
       style={widthStyle}
       loading={autoLoading}
@@ -118,8 +126,7 @@ const modalImageSrc = isImportedImage ? (src as ImageMetadata).src : (src as str
     <img
       src={src as string}
       alt={alt}
-      width={numericWidth}
-      height={height}
+      {...(!isPercentageWidth && { width: numericWidth, height })}
       class={`${baseClasses} w-full h-full`}
       style={widthStyle}
       loading={autoLoading}

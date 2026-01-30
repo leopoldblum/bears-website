@@ -31,21 +31,24 @@ const {
       const content = this.$refs.content;
       const container = this.$el;
 
-      // Wait for images to load before measuring
+      // Wait for images to load before measuring (with 3s timeout fallback)
       const images = content.querySelectorAll('img');
       if (images.length > 0) {
-        await Promise.all(
-          Array.from(images).map(img => {
-            return new Promise((resolve) => {
-              if (img.complete) {
-                resolve();
-              } else {
-                img.addEventListener('load', resolve, { once: true });
-                img.addEventListener('error', resolve, { once: true });
-              }
-            });
-          })
-        );
+        await Promise.race([
+          Promise.all(
+            Array.from(images).map(img => {
+              return new Promise((resolve) => {
+                if (img.complete) {
+                  resolve();
+                } else {
+                  img.addEventListener('load', resolve, { once: true });
+                  img.addEventListener('error', resolve, { once: true });
+                }
+              });
+            })
+          ),
+          new Promise(resolve => setTimeout(resolve, 3000))
+        ]);
       }
 
       // Store original children and measure original width

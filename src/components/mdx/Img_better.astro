@@ -1,0 +1,119 @@
+---
+import { getImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import ImgBetterComponent from './ImgBetter.tsx';
+
+type WidthValue =
+  | `${number}%`  // Percentage strings (e.g., "50%", "100%")
+  | number;       // Pixel values
+
+interface Props {
+  src: string | ImageMetadata;
+  alt: string;
+  class?: string;
+  width?: WidthValue;
+  height?: number;
+  loading?: 'eager' | 'lazy';
+  enableClickToEnlarge?: boolean;
+  sizes?: string;
+}
+
+const {
+  src,
+  alt,
+  class: className,
+  width,
+  height,
+  loading = 'lazy',
+  enableClickToEnlarge = true,
+  sizes = '100vw'
+} = Astro.props;
+
+// Determine if src is an imported image or URL string
+const isImportedImage = typeof src === 'object' && 'src' in src;
+
+// Handle width values
+const isPercentageWidth = typeof width === 'string' && width.endsWith('%');
+const numericWidth = typeof width === 'number' ? width : undefined;
+const widthValue = isPercentageWidth ? width : numericWidth;
+
+// Generate optimized images for imported images
+let mainImageSrc: string;
+let blurSrc: string | undefined;
+let modalSrc: string | undefined;
+let srcSetString: string | undefined;
+
+if (isImportedImage) {
+  const imgMeta = src as ImageMetadata;
+
+  // Generate blur placeholder (20px wide, low quality)
+  const blurPlaceholder = await getImage({
+    src: imgMeta,
+    width: 20,
+    format: 'webp',
+    quality: 50,
+  });
+  blurSrc = blurPlaceholder.src;
+
+  // Generate full-res modal image
+  const modalImage = await getImage({
+    src: imgMeta,
+    format: 'webp',
+  });
+  modalSrc = modalImage.src;
+
+  // Generate srcset with multiple widths
+  const defaultWidths = [400, 800, 1200, 1600];
+  const srcSetParts: string[] = [];
+
+  for (const w of defaultWidths) {
+    // Only generate sizes smaller than the original
+    if (w <= imgMeta.width) {
+      const optimized = await getImage({
+        src: imgMeta,
+        width: w,
+        format: 'webp',
+      });
+      srcSetParts.push(`${optimized.src} ${w}w`);
+    }
+  }
+
+  // Add original size if not already included
+  if (!defaultWidths.includes(imgMeta.width)) {
+    const original = await getImage({
+      src: imgMeta,
+      format: 'webp',
+    });
+    srcSetParts.push(`${original.src} ${imgMeta.width}w`);
+  }
+
+  srcSetString = srcSetParts.join(', ');
+
+  // Use the largest srcset image as main src (fallback)
+  const mainImage = await getImage({
+    src: imgMeta,
+    width: Math.min(1200, imgMeta.width),
+    format: 'webp',
+  });
+  mainImageSrc = mainImage.src;
+} else {
+  // For URL strings, use as-is
+  mainImageSrc = src as string;
+  modalSrc = src as string;
+}
+---
+
+<ImgBetterComponent
+  client:visible
+  src={mainImageSrc}
+  blurSrc={blurSrc}
+  modalSrc={enableClickToEnlarge ? modalSrc : undefined}
+  alt={alt}
+  srcSet={srcSetString}
+  sizes={sizes}
+  className={className}
+  width={widthValue}
+  height={height}
+  loading={loading}
+  enableClickToEnlarge={enableClickToEnlarge}
+/>
