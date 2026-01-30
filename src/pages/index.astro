@@ -6,10 +6,29 @@ import MeetTheTeam from "@components/MeetTheTeam.astro";
 import BecomeSponsor from "@components/BecomeSponsor.astro";
 import LatestNews from "@components/LatestNews.astro";
 import Testimonials from "@components/Testimonials.astro"
+
+// HeroCTA data - displayed at the bottom of the hero section
+const heroCTAs = [
+  {
+    title: "How to Join",
+    description: "Becoming a member of Bears e.V.",
+    href: "/about-us",
+  },
+  {
+    title: "Our Projects",
+    description: "Explore what we are working on",
+    href: "/projects",
+  },
+  {
+    title: "Events",
+    description: "Upcoming workshops and meetups",
+    href: "/events",
+  },
+];
 ---
 
 <BaseLayout title="Home">
-  <LandingHero />
+  <LandingHero ctas={heroCTAs} />
   <WhatIsBears />
   <MeetTheTeam />
   <BecomeSponsor />

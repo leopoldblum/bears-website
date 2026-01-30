@@ -1,0 +1,35 @@
+---
+// HeroCTA Component - Call-to-action item for the hero section
+// Displays a title with a divider line and description, acts as a link
+// Used in the LandingHero component at the bottom of the hero section
+
+interface Props {
+  /** The title text displayed at the top */
+  title: string;
+  /** The description text displayed below the divider */
+  description: string;
+  /** URL to link to */
+  href: string;
+  /** Additional Tailwind classes for styling flexibility */
+  class?: string;
+}
+
+const { title, description, href, class: className } = Astro.props;
+---
+
+<a
+  href={href}
+  class={`group block cursor-pointer transition-all duration-300 ${className || ''}`}
+>
+  <h3
+    class="text-xl sm:text-2xl lg:text-3xl font-bold text-bears-accent group-hover:text-white transition-colors duration-300"
+  >
+    {title}
+  </h3>
+  <div
+    class="h-0.5 lg:h-1 bg-gradient-to-r from-white/50 via-white/30 to-transparent my-2 sm:my-3 lg:my-4 group-hover:from-white/70 group-hover:via-white/50 transition-all duration-300"
+  ></div>
+  <p class="text-sm sm:text-base lg:text-lg text-bears-text-onDark leading-relaxed group-hover:text-white transition-colors duration-300">
+    {description}
+  </p>
+</a>
