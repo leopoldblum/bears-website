@@ -13,11 +13,11 @@ isProjectCompleted: true
 
 import Button from '@mdx/Button.astro';
 import Center from '@mdx/Center.astro';
-import Carousel from '@mdx/Carousel.astro';
+import Carousel_better from '@mdx/Carousel_better.astro';
 import Accordion from '@mdx/Accordion.astro';
-import Marquee from '@mdx/Marquee.astro';
+import Marquee_better from '@mdx/Marquee_better.astro';
 import { SideBySide, Left, Right } from "@mdx/SideBySide"
-import Img from '@mdx/Img.astro';
+import Img_better from '@mdx/Img_better.astro';
 import project1 from '../../assets/projects/project-1.jpg';
 import project2 from '../../assets/projects/project-2.jpg';
 import project3 from '../../assets/projects/project-3.jpg';
@@ -114,14 +114,14 @@ We partner with:
 </Center>
   </Left>
     <Right>
-<Marquee speed={100} gap="1.5rem" height="12rem" pauseOnHover={true}>
-  <Img src={project1} alt="Microgravity experiment setup" class="rounded-lg" />
-  <Img src={project2} alt="Drop tower facility exterior" class="rounded-lg" />
-  <Img src={project3} alt="Crystal growth samples under analysis" class="rounded-lg" />
-  <Img src={project4} alt="Fluid dynamics experiment in progress" class="rounded-lg" />
-  <Img src={project5} alt="Team preparing payload for drop test" class="rounded-lg" />
-  <Img src={project6} alt="High-speed camera capturing microgravity phenomena" class="rounded-lg" />
-</Marquee>
+<Marquee_better speed={100} gap="1.5rem" height="sm" pauseOnHover={true}>
+  <Img_better src={project1} alt="Microgravity experiment setup" class="rounded-lg" />
+  <Img_better src={project2} alt="Drop tower facility exterior" class="rounded-lg" />
+  <Img_better src={project3} alt="Crystal growth samples under analysis" class="rounded-lg" />
+  <Img_better src={project4} alt="Fluid dynamics experiment in progress" class="rounded-lg" />
+  <Img_better src={project5} alt="Team preparing payload for drop test" class="rounded-lg" />
+  <Img_better src={project6} alt="High-speed camera capturing microgravity phenomena" class="rounded-lg" />
+</Marquee_better>
 </Right>
 </SideBySide>
 
@@ -130,18 +130,18 @@ We partner with:
 Here's how easy the new Img component is to use:
 
 <Center>
-  <Img src={project1} alt="Microgravity experiment setup" width="30%" loading="eager" />
+  <Img_better src={project1} alt="Microgravity experiment setup" width="30%" loading="eager" />
 </Center>
 ### Research Highlights Gallery
 
-<Marquee speed={60} gap="1.5rem" height="14rem" pauseOnHover={false}>
-  <Img src={project1} alt="Microgravity experiment setup" class="rounded-lg" enableClickToEnlarge={false} />
-  <Img src={project2} alt="Drop tower facility exterior" class="rounded-lg" enableClickToEnlarge={false}/>
-  <Img src={project3} alt="Crystal growth samples under analysis" class="rounded-lg" enableClickToEnlarge={false}/>
-  <Img src={project4} alt="Fluid dynamics experiment in progress" class="rounded-lg" enableClickToEnlarge={false}/>
-  <Img src={project5} alt="Team preparing payload for drop test" class="rounded-lg" />
-  <Img src={project6} alt="High-speed camera capturing microgravity phenomena" class="rounded-lg" />
-</Marquee>
+<Marquee_better speed={60} gap="1.5rem" height="md" pauseOnHover={false}>
+  <Img_better src={project1} alt="Microgravity experiment setup" class="rounded-lg" enableClickToEnlarge={false} />
+  <Img_better src={project2} alt="Drop tower facility exterior" class="rounded-lg" enableClickToEnlarge={false}/>
+  <Img_better src={project3} alt="Crystal growth samples under analysis" class="rounded-lg" enableClickToEnlarge={false}/>
+  <Img_better src={project4} alt="Fluid dynamics experiment in progress" class="rounded-lg" enableClickToEnlarge={false}/>
+  <Img_better src={project5} alt="Team preparing payload for drop test" class="rounded-lg" />
+  <Img_better src={project6} alt="High-speed camera capturing microgravity phenomena" class="rounded-lg" />
+</Marquee_better>
 
 ### Research Outcomes
 
@@ -154,7 +154,7 @@ To date, our platform has supported:
 
 ### Notable Experiments
 
-<Carousel showArrows={true} showDots={true} minHeight="min-h-64">
+<Carousel_better showArrows={true} showDots={true} height="sm">
   <div class="bg-neutral-800 rounded-lg p-8 border border-neutral-700">
     <h4 class="text-xl font-bold text-white mb-4">Crystal Growth Study</h4>
     <p class="text-neutral-300">
@@ -176,7 +176,7 @@ To date, our platform has supported:
       with applications to chemical processing.
     </p>
   </div>
-</Carousel>
+</Carousel_better>
 
 ### Future Development
 

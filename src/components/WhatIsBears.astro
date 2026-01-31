@@ -1,14 +1,14 @@
 ---
 // WhatIsBears component - Explains what BEARS e.V. is
 import { Image } from 'astro:assets';
-import Marquee from '@mdx/Marquee.astro';
+import Marquee_better from '@mdx/Marquee_better.astro';
 import Button from '@mdx/Button.astro';
 import { whatIsBearsImages } from '@utils/imageGlobs';
 import { loadAllImagesFromDirectory } from '@utils/imageLoader';
 
 const carouselImages = await loadAllImagesFromDirectory(whatIsBearsImages);
 
-import Img from '@mdx/Img.astro';
+import Img_better from '@mdx/Img_better.astro';
 import project1 from '@assets/projects/project-1.jpg';
 import project2 from '@assets/projects/project-2.jpg';
 import project3 from '@assets/projects/project-3.jpg';
@@ -36,7 +36,7 @@ import project6 from '@assets/projects/project-6.jpg';
   </div>
 
   <div class="mt-12 sm:mt-16">
-    <Marquee speed={160} gap="1.5rem" height="16rem">
+    <Marquee_better speed={160} gap="1.5rem" height="md">
       <!-- {carouselImages.map((img, index) => (
         <Image
           src={img}
@@ -47,12 +47,12 @@ import project6 from '@assets/projects/project-6.jpg';
         />
       ))} -->
 
-  <Img src={project1} alt="Project 1 showcase" class="rounded-lg" />
-  <Img src={project2} alt="Project 2 showcase" class="rounded-lg" />
-  <Img src={project3} alt="Project 3 showcase" class="rounded-lg" />
-  <Img src={project1} alt="Project 1 showcase" class="rounded-lg" />
-  <Img src={project2} alt="Project 2 showcase" class="rounded-lg" />
-  <Img src={project3} alt="Project 3 showcase" class="rounded-lg" />
-    </Marquee>
+  <Img_better src={project1} alt="Project 1 showcase" class="rounded-lg" />
+  <Img_better src={project2} alt="Project 2 showcase" class="rounded-lg" />
+  <Img_better src={project3} alt="Project 3 showcase" class="rounded-lg" />
+  <Img_better src={project1} alt="Project 1 showcase" class="rounded-lg" />
+  <Img_better src={project2} alt="Project 2 showcase" class="rounded-lg" />
+  <Img_better src={project3} alt="Project 3 showcase" class="rounded-lg" />
+    </Marquee_better>
   </div>
 </section>

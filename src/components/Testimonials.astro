@@ -1,6 +1,6 @@
 ---
 // Testimonials - Testimonial Carousel Component
-import Carousel from "@mdx/Carousel.astro";
+import Carousel_better from "@mdx/Carousel_better.astro";
 import TestimonialCard from "./TestimonialCard.astro";
 import type { ImageMetadata } from 'astro';
 import { loadCollectionImages } from '@utils/imageLoader';
@@ -30,7 +30,7 @@ const testimonials = testimonialsWithLoadedImages.map((testimonial) => ({
   </h2>
 
   <!-- Testimonial Carousel -->
-  <Carousel autoScroll={true} autoScrollInterval={5000}>
+  <Carousel_better autoScroll={true} autoScrollInterval={5000}>
     {testimonials.map((testimonial) => (
       <TestimonialCard
         quote={testimonial.quote}
@@ -39,5 +39,5 @@ const testimonials = testimonialsWithLoadedImages.map((testimonial) => ({
         image={testimonial.image}
       />
     ))}
-  </Carousel>
+  </Carousel_better>
 </section>

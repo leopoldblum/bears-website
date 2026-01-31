@@ -5,7 +5,7 @@
 
 import type { ImageMetadata } from 'astro';
 import CarouselArrow from '../CarouselArrow.astro';
-import Img from '../mdx/Img.astro';
+import Img_better from '../mdx/Img_better.astro';
 
 interface Props {
   /** Category title displayed at the top */
@@ -98,7 +98,7 @@ const accordionId = `media-accordion-${Math.random().toString(36).substring(2, 9
     >
       {images.map((image, index) => (
         <div class="relative aspect-square overflow-hidden rounded-lg group/image">
-          <Img
+          <Img_better
             src={image}
             alt={`${title} image ${index + 1}`}
             class="w-full h-full object-cover transition-transform duration-300 group-hover/image:scale-105"
