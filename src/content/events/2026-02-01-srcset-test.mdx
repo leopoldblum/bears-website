@@ -19,25 +19,25 @@ import testImage6 from '@assets/projects/project-6.jpg';
 
 ## Img_better Component - Different Width Values
 
-This section tests the Img_better component's srcset feature and blur loading. Each image below uses the same source but different width props. Click any image to enlarge it in a modal (close button only).
+This section tests the Img_better component's responsive image generation. Each image below uses the same source but different width props. Click any image to enlarge it in a modal.
 
 ### Small Width (400px)
-<Img_better src={testImage} alt="Test at 400px width with blur loading" width={400} />
+<Img_better src={testImage} alt="Test at 400px width" width="400px" />
 
 ### Medium Width (800px)
-<Img_better src={testImage} alt="Test at 800px width with blur loading" width={800} />
+<Img_better src={testImage} alt="Test at 800px width" width="800px" />
 
 ### Percentage Width (50%)
-<Img_better src={testImage} alt="Test at 50% width with blur loading" width="50%" />
+<Img_better src={testImage} alt="Test at 50% width" width="50%" />
 
 ### Default (No width specified)
-<Img_better src={testImage} alt="Test with default width and blur loading" />
+<Img_better src={testImage} alt="Test with default full width" />
 
 ---
 
 ## Marquee_better Test
 
-This marquee uses Img_better with `enableClickToEnlarge={false}` for smooth scrolling. Notice the blur preview while images load.
+This marquee demonstrates Img_better in a continuous scrolling carousel. The first image has click-to-enlarge enabled, while others disable it for smooth scrolling interaction.
 
 <Marquee_better speed={100} gap="1rem" height="xl" direction="left">
   <Img_better src={testImage} alt="Marquee image 1" enableClickToEnlarge={true} />
@@ -81,50 +81,48 @@ This carousel showcases Img_better in a slideshow format with native aspect rati
 
 ### Srcset Verification
 1. Open browser DevTools (F12)
-2. Inspect any image above
-3. Check the `srcset` attribute - it should contain: `400w, 800w, 1200w, 1600w`
-4. The browser loads different sizes based on viewport and DPR
+2. Go to Network tab
+3. Reload the page
+4. Filter for image requests
+5. Click any image to see which srcset variant was downloaded based on viewport size
+6. Astro auto-generates appropriate widths based on the `sizes` attribute
 
-### Blur Loading Verification
-1. Throttle network to "Slow 3G" in DevTools
-2. Reload the page
-3. You should see a blurred preview image while the full image loads
-4. The blur fades out as the main image fades in
+### Responsive Image Test
+1. Resize your browser window
+2. Each image should adapt to its specified width (400px, 800px, 50%, etc.)
+3. Network requests should change as viewport changes
+4. Images should load appropriate sizes for the viewport
 
 ### Click-to-Enlarge Verification
 1. Click any image in the "Different Width Values" or "Carousel" sections
-2. A modal opens with the full-resolution image
+2. A modal opens with the full-resolution WebP image
 3. **Close via close button OR clicking the backdrop**
 4. Press Escape key to close modal
-5. The modal image is generated via `getImage()` without width constraints
+5. The modal is rendered by the ImageModal.astro component
 
 ### Marquee Verification
-1. The marquee above should auto-scroll smoothly
-2. Images have blur preview while loading
-3. Hover to pause the animation
-4. Click-to-enlarge is disabled in marquee for smooth scrolling
+1. The marquee should auto-scroll smoothly
+2. Hover to pause the animation
+3. Click-to-enlarge is disabled in most carousel items for smooth scrolling
+4. First image has click-to-enlarge enabled
 
 ---
 
 ## Technical Details
 
-**All components use React** for coherent state management with Astro wrappers for image processing.
-
-**Img_better Features:**
+**Img_better Component**:
 - **Required props**: `src` and `alt` (TypeScript enforced)
-- **Blur loading**: 20px wide preview with CSS blur while main image loads
-- **Srcset**: Auto-generated `[400, 800, 1200, 1600]` for imported images
-- **Percentage widths**: CSS override prevents Astro's inferred dimensions
-- **Modal**: Full-size image via `getImage()`, close via button, backdrop click, or Escape key
+- **Width prop**: Accepts CSS width values ("50%", "800px", etc.)
+- **Auto-derived sizes**: Sizes attribute is calculated from width prop
+- **Responsive images**: Astro Image component handles srcset generation automatically
+- **Modal**: Full-resolution image via ImageModal component, close via button, backdrop click, or Escape key
 
-**Marquee_better Features:**
-- React-based with CSS keyframes animation
-- Pause on hover support
-- Use `enableClickToEnlarge={false}` for smooth scrolling
-- Blur loading and srcset still work
+**ImageModal Component**:
+- Extracted modal component for click-to-enlarge functionality
+- Uses Alpine.js for modal state management
+- Displays full WebP image in responsive modal
 
-**Carousel_better Features:**
-- React hooks for state (currentSlide, isPaused)
-- Works seamlessly with click-to-enlarge
-- Each slide can have independent modal
-- Auto-scroll pauses on hover
+**Auto-derivation Examples**:
+- `width="50%"` → `sizes="50vw"`
+- `width="800px"` → `sizes="800px"`
+- Users can override sizes for advanced responsive scenarios

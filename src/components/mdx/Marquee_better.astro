@@ -99,7 +99,6 @@ const isReverse = direction === "right";
       { "marquee-pause-on-hover": pauseOnHover },
     ]}
     x-ref="track"
-    style={`gap: ${gap};`}
   >
     <div
       x-ref="content"
@@ -161,6 +160,7 @@ const isReverse = direction === "right";
   /* Handle Img_better wrapper divs */
   .marquee-better-content > :global(.img-better) {
     height: 100%;
+    width: auto !important;
   }
 
   .marquee-better-content > :global(.img-better img) {

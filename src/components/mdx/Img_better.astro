@@ -1,212 +1,62 @@
 ---
-import { getImage } from 'astro:assets';
+import { Image, getImage } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
-
-type WidthValue =
-  | `${number}%`  // Percentage strings (e.g., "50%", "100%")
-  | number;       // Pixel values
+import ImageModal from './ImageModal.astro';
 
 interface Props {
-  src: string | ImageMetadata;
+  src: ImageMetadata;  // Only ImageMetadata, no string URLs
   alt: string;
-  class?: string;
-  width?: WidthValue;
-  height?: number;
-  loading?: 'eager' | 'lazy';
-  enableClickToEnlarge?: boolean;
-  sizes?: string;
+  width?: string;      // CSS width: "50%", "800px", "100%", etc. (default: "100%")
+  sizes?: string;      // Optional override for srcset sizes (auto-derived from width if not provided)
+  class?: string;      // Additional styling classes (rounded, shadow, etc.)
+  enableClickToEnlarge?: boolean;  // Default: true
+  loading?: "eager" | "lazy";      // Default: "lazy"
 }
 
 const {
   src,
   alt,
+  width = "100%",
+  sizes: customSizes,
   class: className,
-  width,
-  height,
-  loading = 'lazy',
   enableClickToEnlarge = true,
-  sizes = '100vw'
+  loading = "lazy"
 } = Astro.props;
 
-// Determine if src is an imported image or URL string
-const isImportedImage = typeof src === 'object' && 'src' in src;
-
-// Generate optimized images for imported images
-let mainImageSrc: string;
-let blurSrc: string | undefined;
-let modalSrc: string | undefined;
-let srcSetString: string | undefined;
-
-if (isImportedImage) {
-  const imgMeta = src as ImageMetadata;
-
-  // Generate blur placeholder (20px wide, low quality)
-  const blurPlaceholder = await getImage({
-    src: imgMeta,
-    width: 20,
-    format: 'webp',
-    quality: 50,
-  });
-  blurSrc = blurPlaceholder.src;
-
-  // Generate full-res modal image
-  const modalImage = await getImage({
-    src: imgMeta,
-    format: 'webp',
-  });
-  modalSrc = modalImage.src;
-
-  // Generate srcset with multiple widths
-  const defaultWidths = [400, 800, 1200, 1600];
-  const srcSetParts: string[] = [];
-
-  for (const w of defaultWidths) {
-    // Only generate sizes smaller than the original
-    if (w <= imgMeta.width) {
-      const optimized = await getImage({
-        src: imgMeta,
-        width: w,
-        format: 'webp',
-      });
-      srcSetParts.push(`${optimized.src} ${w}w`);
-    }
+// Auto-derive sizes from width if not provided
+function deriveSizes(width: string): string {
+  // Match percentage values (e.g., "50%", "33.333%")
+  const percentMatch = width.match(/^(\d+(?:\.\d+)?)%$/);
+  if (percentMatch) {
+    return `${Math.round(parseFloat(percentMatch[1]))}vw`;
   }
 
-  // Add original size if not already included
-  if (!defaultWidths.includes(imgMeta.width)) {
-    const original = await getImage({
-      src: imgMeta,
-      format: 'webp',
-    });
-    srcSetParts.push(`${original.src} ${imgMeta.width}w`);
-  }
-
-  srcSetString = srcSetParts.join(', ');
-
-  // Use the largest srcset image as main src (fallback)
-  const mainImage = await getImage({
-    src: imgMeta,
-    width: Math.min(1200, imgMeta.width),
-    format: 'webp',
-  });
-  mainImageSrc = mainImage.src;
-} else {
-  // For URL strings, use as-is
-  mainImageSrc = src as string;
-  modalSrc = src as string;
+  // For pixel values or other units, use as-is
+  return width;
 }
 
-// Width handling
-const widthStyle = typeof width === 'number' ? `${width}px` : width;
-const showModal = enableClickToEnlarge && modalSrc;
+const sizes = customSizes || deriveSizes(width);
+
+// Generate full-res modal image only if click-to-enlarge enabled
+const modalSrc = enableClickToEnlarge
+  ? (await getImage({ src, format: 'webp' })).src
+  : undefined;
 ---
 
 <div
-  class:list={["img-better relative overflow-hidden", { "cursor-pointer": showModal }]}
-  style={widthStyle ? `width: ${widthStyle}` : undefined}
-  x-data={showModal ? "{ modalOpen: false }" : undefined}
+  class="img-better"
+  x-data={modalSrc ? "{ modalOpen: false }" : undefined}
+  style={`width: ${width}`}
 >
-  {/* Blur placeholder */}
-  {blurSrc && (
-    <img
-      src={blurSrc}
-      alt=""
-      aria-hidden="true"
-      class="img-better-blur absolute inset-0 w-full h-full object-cover blur-xl scale-110 pointer-events-none"
-    />
-  )}
-
-  {/* Main image */}
-  <img
-    src={mainImageSrc}
-    srcset={srcSetString}
-    sizes={sizes}
+  <Image
+    src={src}
     alt={alt}
-    width={typeof width === 'number' ? width : undefined}
-    height={height}
+    sizes={sizes}
+    class={modalSrc ? `${className || ''} hover:cursor-pointer`.trim() : className}
     loading={loading}
-    class:list={["img-better-main w-full h-auto", className]}
-    x-on:click={showModal ? "modalOpen = true" : undefined}
+    format="webp"
+    x-on:click={modalSrc ? "modalOpen = true" : undefined}
   />
 
-  {/* Modal (Alpine.js) */}
-  {showModal && (
-    <template x-teleport="body">
-      <div
-        x-show="modalOpen"
-        x-transition:enter="transition ease-out duration-200"
-        x-transition:enter-start="opacity-0"
-        x-transition:enter-end="opacity-100"
-        x-transition:leave="transition ease-in duration-150"
-        x-transition:leave-start="opacity-100"
-        x-transition:leave-end="opacity-0"
-        x-on:click.self="modalOpen = false"
-        x-on:keydown.escape.window="modalOpen = false"
-        class="fixed inset-0 z-[9999] flex items-center justify-center bg-black/90 p-4"
-        x-cloak
-        role="dialog"
-        aria-modal="true"
-        aria-label={`Enlarged view: ${alt}`}
-      >
-        <button
-          x-on:click="modalOpen = false"
-          class="absolute top-4 right-4 z-[10000] p-2 text-white bg-black/50 rounded-full hover:bg-black/70 transition-colors cursor-pointer"
-          aria-label="Close enlarged image"
-        >
-          <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-        <img src={modalSrc} alt={alt} class="max-w-full max-h-full object-contain" />
-      </div>
-    </template>
-  )}
+  {modalSrc && <ImageModal src={modalSrc} alt={alt} />}
 </div>
-
-<style>
-  /* Blur loading effect */
-  .img-better-blur {
-    transition: opacity 0.5s ease-out;
-  }
-
-  .img-better-main {
-    opacity: 0;
-    transition: opacity 0.5s ease-out;
-  }
-
-  .img-better-main.loaded {
-    opacity: 1;
-  }
-
-  /* Hide blur when main image is loaded */
-  .img-better:has(.img-better-main.loaded) .img-better-blur {
-    opacity: 0;
-  }
-
-  /* Hide x-cloak elements until Alpine initializes */
-  [x-cloak] {
-    display: none !important;
-  }
-</style>
-
-<script>
-  // Add 'loaded' class when image loads
-  function initImgBetter() {
-    document.querySelectorAll('.img-better-main:not(.initialized)').forEach((img) => {
-      const imgEl = img as HTMLImageElement;
-      imgEl.classList.add('initialized');
-
-      if (imgEl.complete && imgEl.naturalWidth > 0) {
-        imgEl.classList.add('loaded');
-      } else {
-        imgEl.addEventListener('load', () => imgEl.classList.add('loaded'), { once: true });
-      }
-    });
-  }
-
-  // Run on initial load
-  initImgBetter();
-
-  // Re-run after Astro page transitions (View Transitions)
-  document.addEventListener('astro:page-load', initImgBetter);
-</script>
