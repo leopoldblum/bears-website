@@ -94,9 +94,13 @@ const accordionId = `media-accordion-${Math.random().toString(36).substring(2, 9
     x-bind:aria-expanded="isOpen ? 'true' : 'false'"
     aria-controls={accordionId}
   >
-    <div class="flex flex-col pl-4">
-      <span class="text-sm sm:text-base text-bears-accent mb-4">This is</span>
-      <h3 class="text-2xl sm:text-5xl font-bold text-bears-text-onDark pl-2">
+    <div class="flex items-baseline gap-2 sm:gap-3">
+      <span class="text-sm sm:text-lg text-bears-accent/80 font-medium"
+        >This is</span
+      >
+      <h3
+        class="text-2xl sm:text-4xl lg:text-5xl font-bold text-bears-text-onDark"
+      >
         {title}
       </h3>
     </div>
@@ -129,10 +133,13 @@ const accordionId = `media-accordion-${Math.random().toString(36).substring(2, 9
       x-bind:style="`max-height: ${isOpen ? contentHeight + 'px' : 'var(--preview-height, 300px)'}`"
     >
       {/* Image Grid Container */}
-      <div x-ref="content" class={`grid ${gridCols} ${gridGap} px-4 sm:px-6`}>
+      <div
+        x-ref="content"
+        class={`grid ${gridCols} ${gridGap} px-4 sm:px-6 pt-2`}
+      >
         {
           images.map((image, index) => (
-            <div class="relative aspect-square overflow-hidden rounded-lg group/image">
+            <div class="relative aspect-square overflow-hidden rounded-lg group/image ring-0 ring-bears-accent transition-all duration-300 hover:ring-2">
               <div class="w-full h-full">
                 <Img_better
                   src={image}
@@ -151,9 +158,9 @@ const accordionId = `media-accordion-${Math.random().toString(36).substring(2, 9
 
     {/* Gradient Overlay (shown when closed) */}
     <div
-      class="absolute bottom-0 left-0 right-0 h-32 sm:h-40 flex items-end justify-center pb-4 pointer-events-none transition-opacity duration-300"
-      x-bind:class="isOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'"
-      style="background: linear-gradient(to bottom, transparent 0%, rgba(26, 26, 26, 0.7) 40%, rgba(26, 26, 26, 0.95) 100%);"
+      class="absolute bottom-0 left-0 right-0 h-40 sm:h-48 flex items-end justify-center pb-4 pointer-events-none transition-all duration-500 ease-out"
+      x-bind:class="isOpen ? 'opacity-0 translate-y-full pointer-events-none' : 'opacity-100 translate-y-0'"
+      style="background: linear-gradient(to bottom, transparent 0%, rgba(26, 26, 26, 0.3) 20%, rgba(26, 26, 26, 0.7) 40%, rgba(26, 26, 26, 1) 60%, rgba(26, 26, 26, 1) 100%);"
     >
       {/* Arrow Down Icon using CarouselArrow component */}
       <div class="pointer-events-auto" x-on:click="toggle()">
@@ -201,19 +208,19 @@ const accordionId = `media-accordion-${Math.random().toString(36).substring(2, 9
   /* Preview height calculation for different screen sizes */
   @media (max-width: 640px) {
     .media-accordion {
-      --preview-height: calc((50vw - 1.5rem) * 1.5 + 0.75rem);
+      --preview-height: calc((50vw - 1.5rem) * 1);
     }
   }
 
   @media (min-width: 641px) and (max-width: 1024px) {
     .media-accordion {
-      --preview-height: calc((33.333vw - 2rem) * 1.5 + 0.75rem);
+      --preview-height: calc((33.333vw - 2rem) * 1);
     }
   }
 
   @media (min-width: 1025px) {
     .media-accordion {
-      --preview-height: calc((16.666vw - 2.5rem) * 1.5 + 1rem);
+      --preview-height: calc((16.666vw - 2.5rem) * 1);
     }
   }
 </style>

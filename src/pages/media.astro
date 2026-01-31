@@ -56,6 +56,9 @@ const categoryImages = await Promise.all(
 const categoriesWithImages = categoryImages.filter(
   (category) => category.images.length > 0,
 );
+
+// Combine all images for the "All" category
+const allImages = categoriesWithImages.flatMap((category) => category.images);
 ---
 
 <BaseLayout title="Media">
@@ -68,12 +71,18 @@ const categoriesWithImages = categoryImages.filter(
   <div class="container mx-auto px-4 py-6 sm:py-8 lg:py-12 sm:px-6 lg:px-8">
     {/* Media Categories Accordion */}
     <div class="flex flex-col gap-6 sm:gap-20">
+      {/* DEBUG: All Images Accordion */}
+      {
+        allImages.length > 0 && (
+          <MediaAccordion title="All" images={allImages} cols={5} gap="md" />
+        )
+      }
       {
         categoriesWithImages.map((category) => (
           <MediaAccordion
             title={category.title}
             images={category.images}
-            cols={3}
+            cols={6}
             gap="md"
           />
         ))
