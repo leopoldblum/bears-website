@@ -11,16 +11,16 @@ import heroImage from "../assets/events/event-1.jpg";
 
 // Import all image globs statically
 const eventImagesGlob = import.meta.glob<{ default: ImageMetadata }>(
-  "/src/assets/events/*.{jpg,jpeg,png,webp}"
+  "/src/assets/events/*.{jpg,jpeg,png,webp}",
 );
 const projectImagesGlob = import.meta.glob<{ default: ImageMetadata }>(
-  "/src/assets/projects/*.{jpg,jpeg,png,webp}"
+  "/src/assets/projects/*.{jpg,jpeg,png,webp}",
 );
 const whatIsBearsImagesGlob = import.meta.glob<{ default: ImageMetadata }>(
-  "/src/assets/whatIsBears/*.{jpg,jpeg,png,webp}"
+  "/src/assets/whatIsBears/*.{jpg,jpeg,png,webp}",
 );
 const testimonialImagesGlob = import.meta.glob<{ default: ImageMetadata }>(
-  "/src/assets/testimonials/*.{jpg,jpeg,png,webp}"
+  "/src/assets/testimonials/*.{jpg,jpeg,png,webp}",
 );
 // Define media categories with their pre-loaded image globs
 interface MediaCategory {
@@ -33,7 +33,11 @@ const mediaCategories: MediaCategory[] = [
   { id: "events", title: "Events", glob: eventImagesGlob },
   { id: "projects", title: "Projects", glob: projectImagesGlob },
   { id: "what-is-bears", title: "What is BEARS", glob: whatIsBearsImagesGlob },
-  { id: "testimonials", title: "Team & Testimonials", glob: testimonialImagesGlob },
+  {
+    id: "testimonials",
+    title: "Team & Testimonials",
+    glob: testimonialImagesGlob,
+  },
 ];
 
 // Load all images from each category directory
@@ -45,12 +49,12 @@ const categoryImages = await Promise.all(
       title: category.title,
       images,
     };
-  })
+  }),
 );
 
 // Filter out categories with no images
 const categoriesWithImages = categoryImages.filter(
-  (category) => category.images.length > 0
+  (category) => category.images.length > 0,
 );
 ---
 
@@ -62,40 +66,42 @@ const categoriesWithImages = categoryImages.filter(
     subtitle="lorem ipsum"
   />
   <div class="container mx-auto px-4 py-6 sm:py-8 lg:py-12 sm:px-6 lg:px-8">
-
     {/* Media Categories Accordion */}
     <div class="flex flex-col gap-6 sm:gap-20">
-      {categoriesWithImages.map((category) => (
-        <MediaAccordion
-          title={category.title}
-          images={category.images}
-          cols={4}
-          gap="md"
-        />
-      ))}
+      {
+        categoriesWithImages.map((category) => (
+          <MediaAccordion
+            title={category.title}
+            images={category.images}
+            cols={6}
+            gap="md"
+          />
+        ))
+      }
     </div>
 
     {/* Empty State */}
-    {categoriesWithImages.length === 0 && (
-      <div class="text-center py-16 sm:py-20">
-        <svg
-          class="w-16 h-16 mx-auto mb-4 text-bears-text-onDark/30"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          stroke-width="1.5"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-          />
-        </svg>
-        <p class="text-lg text-bears-text-onDark/60">
-          No media available at the moment.
-        </p>
-      </div>
-    )}
+    {
+      categoriesWithImages.length === 0 && (
+        <div class="text-center py-16 sm:py-20">
+          <svg
+            class="w-16 h-16 mx-auto mb-4 text-bears-text-onDark/30"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            stroke-width="1.5"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+            />
+          </svg>
+          <p class="text-lg text-bears-text-onDark/60">
+            No media available at the moment.
+          </p>
+        </div>
+      )
+    }
   </div>
 </BaseLayout>
-
