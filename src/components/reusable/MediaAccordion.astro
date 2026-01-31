@@ -98,13 +98,16 @@ const accordionId = `media-accordion-${Math.random().toString(36).substring(2, 9
     >
       {images.map((image, index) => (
         <div class="relative aspect-square overflow-hidden rounded-lg group/image">
-          <Img_better
-            src={image}
-            alt={`${title} image ${index + 1}`}
-            class="w-full h-full object-cover transition-transform duration-300 group-hover/image:scale-105"
-            loading={index < 8 ? "eager" : "lazy"}
-            enableClickToEnlarge={true}
-          />
+          <div class="w-full h-full">
+            <Img_better
+              src={image}
+              alt={`${title} image ${index + 1}`}
+              class="w-full h-full object-cover object-center transition-transform duration-300 group-hover/image:scale-105"
+              width="100%"
+              loading={index < 8 ? "eager" : "lazy"}
+              enableClickToEnlarge={true}
+            />
+          </div>
         </div>
       ))}
     </div>
