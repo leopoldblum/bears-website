@@ -6,7 +6,7 @@ interface Props {
   /**
    * Direction of the arrow
    */
-  direction: 'prev' | 'next' | 'down';
+  direction: "prev" | "next" | "down";
 
   /**
    * Click handler for the arrow button
@@ -27,14 +27,14 @@ interface Props {
    * Position variant - 'flex' for inline flex layout, 'absolute' for positioned overlay
    * @default 'flex'
    */
-  variant?: 'flex' | 'absolute';
+  variant?: "flex" | "absolute";
 
   /**
    * Position for absolute variant ('left' or 'right')
    * Only applies when variant is 'absolute'
    * @default 'left'
    */
-  position?: 'left' | 'right';
+  position?: "left" | "right";
 
   /**
    * Additional CSS classes for customization
@@ -53,41 +53,52 @@ const {
   onClick,
   onMouseEnter,
   onMouseLeave,
-  variant = 'flex',
-  position = 'left',
+  variant = "flex",
+  position = "left",
   class: className,
   inverted = false,
 } = Astro.props;
 
 // Arrow path data
-const arrowPath = direction === 'prev'
-  ? 'M15 19l-7-7 7-7'
-  : direction === 'next'
-  ? 'M9 5l7 7-7 7'
-  : 'M19 14l-7 7-7-7';
+const arrowPath =
+  direction === "prev"
+    ? "M15 19l-7-7 7-7"
+    : direction === "next"
+      ? "M9 5l7 7-7 7"
+      : "M19 14l-7 7-7-7";
 
 // Base styles shared between both variants
 const baseStyles = inverted
-  ? 'w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-transparent border-2 border-white mix-blend-difference text-bears-text-onDark hover:border-white hover:bg-white/10 hover:shadow-[0_0_20px_rgba(255,255,255,0.25)] hover:scale-105 active:bg-white/5 active:scale-100 transition-all duration-200 flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-bears-bg cursor-pointer'
-  : 'w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-transparent border-2 border-bears-accent/40 text-bears-text-onDark hover:border-bears-accent hover:bg-bears-accent/10 hover:shadow-[0_0_20px_rgba(197,14,31,0.25)] hover:scale-105 active:bg-bears-accent/5 active:scale-100 transition-all duration-200 flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bears-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bears-bg cursor-pointer';
+  ? "w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-transparent border-2 border-white mix-blend-difference text-bears-text-onDark hover:border-white hover:bg-white/10 hover:shadow-[0_0_20px_rgba(255,255,255,0.25)] hover:scale-105 active:bg-white/5 active:scale-100 transition-all duration-200 flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-bears-bg cursor-pointer"
+  : "w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-transparent border-2 border-bears-accent/40 text-bears-text-onDark hover:border-bears-accent hover:bg-bears-accent/10 hover:shadow-[0_0_20px_rgba(197,14,31,0.25)] hover:scale-105 active:bg-bears-accent/5 active:scale-100 transition-all duration-200 flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-bears-accent focus-visible:ring-offset-2 focus-visible:ring-offset-bears-bg cursor-pointer";
 
 // Variant-specific styles
 const variantStyles = {
-  flex: 'shrink-0',
+  flex: "shrink-0",
   absolute: `absolute ${position}-4 sm:${position}-6 lg:${position}-8 top-1/2 -translate-y-1/2 z-20`,
 };
 
-const combinedClasses = `${baseStyles} ${variantStyles[variant]} ${className || ''}`.trim();
+const combinedClasses =
+  `${baseStyles} ${variantStyles[variant]} ${className || ""}`.trim();
 ---
 
 <button
   @click={onClick}
-  {...(onMouseEnter && { '@mouseenter': onMouseEnter })}
-  {...(onMouseLeave && { '@mouseleave': onMouseLeave })}
+  {...onMouseEnter && { "@mouseenter": onMouseEnter }}
+  {...onMouseLeave && { "@mouseleave": onMouseLeave }}
   class={combinedClasses}
-  aria-label={direction === 'prev' ? 'Previous slide' : direction === 'next' ? 'Next slide' : 'Show more'}
+  aria-label={direction === "prev"
+    ? "Previous slide"
+    : direction === "next"
+      ? "Next slide"
+      : "Show more"}
+  type="button"
 >
   <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d={arrowPath} />
+    <path
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="2"
+      d={arrowPath}></path>
   </svg>
 </button>

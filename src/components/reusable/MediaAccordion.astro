@@ -46,28 +46,42 @@ const accordionId = `media-accordion-${Math.random().toString(36).substring(2, 9
 ---
 
 <div
-  class={`media-accordion rounded-lg overflow-hidden  ${className || ""}`}
+  class={`media-accordion rounded-lg overflow-hidden ${className || ""}`}
   x-data={`{
     isOpen: false,
-    previewHeight: '0px',
-    calculatePreviewHeight() {
-      const grid = this.$refs.imageGrid;
-      const firstImage = grid?.querySelector('.aspect-square');
-      if (firstImage) {
-        const imageHeight = firstImage.offsetHeight;
-        const gap = parseFloat(getComputedStyle(grid).gap) || 0;
-        const height = imageHeight * 1.5 + gap;
-        this.$refs.wrapper.style.setProperty('--preview-height', height + 'px');
+    contentHeight: 0,
+    isAnimating: false,
+    calculateHeight() {
+      const content = this.$refs.content;
+      if (content) {
+        this.contentHeight = content.scrollHeight;
       }
+    },
+    toggle() {
+      if (this.isAnimating) return;
+      this.isAnimating = true;
+      this.isOpen = !this.isOpen;
+      setTimeout(() => {
+        this.isAnimating = false;
+      }, 500);
     }
   }`}
   x-init="
     $nextTick(() => {
-      calculatePreviewHeight();
+      calculateHeight();
       let resizeTimer;
-      window.addEventListener('resize', () => {
+      const handleResize = () => {
         clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(() => calculatePreviewHeight(), 150);
+        resizeTimer = setTimeout(() => calculateHeight(), 100);
+      };
+      window.addEventListener('resize', handleResize);
+      
+      // Recalculate when images load
+      const images = $refs.content?.querySelectorAll('img');
+      images?.forEach(img => {
+        if (!img.complete) {
+          img.addEventListener('load', () => calculateHeight());
+        }
       });
     });
   "
@@ -76,7 +90,7 @@ const accordionId = `media-accordion-${Math.random().toString(36).substring(2, 9
   <button
     type="button"
     class="w-full flex items-center justify-between px-4 sm:px-6 py-4 sm:py-5 text-left hover:bg-white/5 transition-colors duration-200 cursor-pointer group"
-    x-on:click="isOpen = !isOpen"
+    x-on:click="toggle()"
     x-bind:aria-expanded="isOpen ? 'true' : 'false'"
     aria-controls={accordionId}
   >
@@ -108,54 +122,61 @@ const accordionId = `media-accordion-${Math.random().toString(36).substring(2, 9
     class="relative"
     x-bind:class="isOpen ? 'pb-6' : 'pb-0'"
   >
-    {/* Grid Animation Wrapper */}
+    {/* Content Wrapper with smooth height animation */}
     <div
       x-ref="wrapper"
-      class="grid transition-[grid-template-rows] duration-300 ease-in-out"
-      x-bind:class="isOpen ? 'grid-rows-[1fr]' : 'grid-rows-[var(--preview-height,0fr)]'"
-      style="--preview-height: 0fr;"
+      class="overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]"
+      x-bind:style="`max-height: ${isOpen ? contentHeight + 'px' : 'var(--preview-height, 300px)'}`"
     >
-      <div class="overflow-hidden">
-        {/* Image Grid Container */}
-        <div
-          x-ref="imageGrid"
-          class={`grid ${gridCols} ${gridGap} px-4 sm:px-6`}
-        >
-          {
-            images.map((image, index) => (
-              <div class="relative aspect-square overflow-hidden rounded-lg group/image">
-                <div class="w-full h-full">
-                  <Img_better
-                    src={image}
-                    alt={`${title} image ${index + 1}`}
-                    class="w-full h-full object-cover object-center transition-transform duration-300 group-hover/image:scale-105"
-                    width="100%"
-                    loading={index < 8 ? "eager" : "lazy"}
-                    enableClickToEnlarge={true}
-                  />
-                </div>
+      {/* Image Grid Container */}
+      <div x-ref="content" class={`grid ${gridCols} ${gridGap} px-4 sm:px-6`}>
+        {
+          images.map((image, index) => (
+            <div class="relative aspect-square overflow-hidden rounded-lg group/image">
+              <div class="w-full h-full">
+                <Img_better
+                  src={image}
+                  alt={`${title} image ${index + 1}`}
+                  class="w-full h-full object-cover object-center transition-transform duration-300 group-hover/image:scale-105"
+                  width="100%"
+                  loading={index < 8 ? "eager" : "lazy"}
+                  enableClickToEnlarge={true}
+                />
               </div>
-            ))
-          }
-        </div>
+            </div>
+          ))
+        }
       </div>
     </div>
 
     {/* Gradient Overlay (shown when closed) */}
     <div
-      class="absolute bottom-0 left-0 right-0 h-32 sm:h-40 flex items-end justify-center pb-4 pointer-events-none transition-opacity duration-250"
-      x-bind:class="isOpen ? 'opacity-0' : 'opacity-100'"
+      class="absolute bottom-0 left-0 right-0 h-32 sm:h-40 flex items-end justify-center pb-4 pointer-events-none transition-opacity duration-300"
+      x-bind:class="isOpen ? 'opacity-0 pointer-events-none' : 'opacity-100'"
       style="background: linear-gradient(to bottom, transparent 0%, rgba(26, 26, 26, 0.7) 40%, rgba(26, 26, 26, 0.95) 100%);"
     >
       {/* Arrow Down Icon using CarouselArrow component */}
-      <div class="pointer-events-auto" x-on:click="isOpen = true">
+      <div class="pointer-events-auto" x-on:click="toggle()">
         <CarouselArrow
           direction="down"
-          onClick="isOpen = true"
+          onClick="toggle()"
           variant="flex"
           class="[&_svg]:-mt-1"
         />
       </div>
+    </div>
+
+    {/* Collapse Button (shown when open) */}
+    <div
+      class="flex justify-center pt-6 transition-all duration-300"
+      x-bind:class="isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'"
+    >
+      <CarouselArrow
+        direction="prev"
+        onClick="toggle()"
+        variant="flex"
+        class="rotate-90 [&_svg]:rotate-0"
+      />
     </div>
   </div>
 </div>
@@ -172,8 +193,27 @@ const accordionId = `media-accordion-${Math.random().toString(36).substring(2, 9
     );
   }
 
-  /* Ensure smooth grid-template-rows transition */
+  /* Smooth height transition */
   .media-accordion [x-ref="wrapper"] {
-    will-change: grid-template-rows;
+    will-change: max-height;
+  }
+
+  /* Preview height calculation for different screen sizes */
+  @media (max-width: 640px) {
+    .media-accordion {
+      --preview-height: calc((50vw - 1.5rem) * 1.5 + 0.75rem);
+    }
+  }
+
+  @media (min-width: 641px) and (max-width: 1024px) {
+    .media-accordion {
+      --preview-height: calc((33.333vw - 2rem) * 1.5 + 0.75rem);
+    }
+  }
+
+  @media (min-width: 1025px) {
+    .media-accordion {
+      --preview-height: calc((16.666vw - 2.5rem) * 1.5 + 1rem);
+    }
   }
 </style>
