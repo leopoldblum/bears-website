@@ -1,54 +1,186 @@
 ---
-import MarqueeBetterComponent from './MarqueeBetter.tsx';
+// Marquee_better - Seamless infinite horizontal scroll component
+// Uses CSS animation for smooth, performant scrolling
+// Works with any content including Img_better components
 
 interface Props {
-  /**
-   * Scroll speed in pixels per second
-   * @default 50
-   */
+  /** Scroll speed in pixels per second (default: 50) */
   speed?: number;
-
-  /**
-   * Gap between items (CSS value)
-   * @default "2rem"
-   */
+  /** Gap between items, any valid CSS length (default: "2rem") */
   gap?: string;
-
-  /**
-   * Pause animation on hover
-   * @default true
-   */
+  /** Pause animation on hover (default: true) */
   pauseOnHover?: boolean;
-
-  /**
-   * Item height (CSS value)
-   * @default "16rem"
-   */
-  height?: string;
-
-  /**
-   * Scroll direction
-   * @default "left"
-   */
-  direction?: 'left' | 'right';
+  /** Height preset - sm: 12rem, md: 16rem, lg: 20rem, xl: 24rem (default: "md") */
+  height?: "sm" | "md" | "lg" | "xl";
+  /** Scroll direction (default: "left") */
+  direction?: "left" | "right";
 }
 
 const {
   speed = 50,
-  gap = '2rem',
+  gap = "2rem",
   pauseOnHover = true,
-  height = '16rem',
-  direction = 'left',
+  height = "md",
+  direction = "left",
 } = Astro.props;
+
+const heightMap = { sm: "12rem", md: "16rem", lg: "20rem", xl: "24rem" };
+const heightValue = heightMap[height];
+const isReverse = direction === "right";
 ---
 
-<MarqueeBetterComponent
-  client:visible
-  speed={speed}
-  gap={gap}
-  pauseOnHover={pauseOnHover}
-  height={height}
-  direction={direction}
+<div
+  class="marquee-better-container overflow-hidden"
+  style={`--marquee-gap: ${gap}; --marquee-height: ${heightValue};`}
+  x-data={`{
+    ready: false,
+    originalChildren: [],
+    originalWidth: 0,
+
+    async init() {
+      const content = this.$refs.content;
+      const container = this.$el;
+
+      // Wait for images to load before measuring (with 3s timeout fallback)
+      const images = content.querySelectorAll('img');
+      if (images.length > 0) {
+        await Promise.race([
+          Promise.all(
+            Array.from(images).map(img => {
+              return new Promise((resolve) => {
+                if (img.complete) {
+                  resolve();
+                } else {
+                  img.addEventListener('load', resolve, { once: true });
+                  img.addEventListener('error', resolve, { once: true });
+                }
+              });
+            })
+          ),
+          new Promise(resolve => setTimeout(resolve, 3000))
+        ]);
+      }
+
+      // Store original children and measure original width
+      this.originalChildren = Array.from(content.children).map(child => child.cloneNode(true));
+      this.originalWidth = content.scrollWidth;
+
+      // Get gap in pixels for width calculation
+      const computedGap = parseFloat(getComputedStyle(content).gap) || 0;
+      const totalOriginalWidth = this.originalWidth + computedGap;
+
+      // Clone items until content overflows the container
+      let safetyCounter = 0;
+      while (content.scrollWidth <= container.clientWidth && safetyCounter < 100) {
+        this.originalChildren.forEach(child => {
+          content.appendChild(child.cloneNode(true));
+        });
+        safetyCounter++;
+      }
+
+      // Add one more complete set for seamless animation buffer
+      this.originalChildren.forEach(child => {
+        content.appendChild(child.cloneNode(true));
+      });
+
+      // Set CSS variables for animation
+      this.$el.style.setProperty('--marquee-width', totalOriginalWidth + 'px');
+      this.$el.style.setProperty('--marquee-duration', (totalOriginalWidth / ${speed}) + 's');
+
+      this.ready = true;
+    }
+  }`}
+  x-bind:class="{ 'marquee-ready': ready }"
 >
-  <slot />
-</MarqueeBetterComponent>
+  <div
+    class:list={[
+      "marquee-better-track",
+      { "marquee-reverse": isReverse },
+      { "marquee-pause-on-hover": pauseOnHover },
+    ]}
+    x-ref="track"
+    style={`gap: ${gap};`}
+  >
+    <div
+      x-ref="content"
+      class="marquee-better-content"
+      style={`gap: ${gap}; height: ${heightValue};`}
+    >
+      <slot />
+    </div>
+  </div>
+</div>
+
+<style>
+  .marquee-better-container {
+    width: 100%;
+  }
+
+  .marquee-better-track {
+    display: flex;
+    width: max-content;
+    will-change: transform;
+  }
+
+  /* Only animate when ready */
+  .marquee-ready .marquee-better-track {
+    animation: marquee-scroll var(--marquee-duration, 20s) linear infinite;
+  }
+
+  /* Reverse direction */
+  .marquee-ready .marquee-better-track.marquee-reverse {
+    animation-direction: reverse;
+  }
+
+  .marquee-better-track.marquee-pause-on-hover:hover {
+    animation-play-state: paused;
+  }
+
+  .marquee-better-content {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  /* Style for direct children of the content */
+  .marquee-better-content > :global(*) {
+    height: 100%;
+    width: auto;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+  }
+
+  /* Ensure images within marquee items fill height properly */
+  .marquee-better-content :global(img) {
+    height: 100%;
+    width: auto;
+    object-fit: cover;
+  }
+
+  /* Handle Img_better wrapper divs */
+  .marquee-better-content > :global(.img-better) {
+    height: 100%;
+  }
+
+  .marquee-better-content > :global(.img-better img) {
+    height: 100%;
+    width: auto;
+    object-fit: cover;
+  }
+
+  @keyframes marquee-scroll {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(calc(-1 * var(--marquee-width)));
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .marquee-ready .marquee-better-track {
+      animation: none;
+    }
+  }
+</style>

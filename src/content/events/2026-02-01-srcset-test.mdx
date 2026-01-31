@@ -39,7 +39,7 @@ This section tests the Img_better component's srcset feature and blur loading. E
 
 This marquee uses Img_better with `enableClickToEnlarge={false}` for smooth scrolling. Notice the blur preview while images load.
 
-<Marquee_better speed={100} gap="1rem" height="12rem">
+<Marquee_better speed={100} gap="1rem" height="lg" direction="left">
   <Img_better src={testImage} alt="Marquee image 1" enableClickToEnlarge={false} />
   <Img_better src={testImage2} alt="Marquee image 2" enableClickToEnlarge={false} />
   <Img_better src={testImage3} alt="Marquee image 3" enableClickToEnlarge={false} />
@@ -54,7 +54,7 @@ This marquee uses Img_better with `enableClickToEnlarge={false}` for smooth scro
 
 This carousel showcases Img_better in a slideshow format with native aspect ratio preservation. Each slide has click-to-enlarge enabled.
 
-<Carousel_better autoScroll={true} autoScrollInterval={4000} showArrows={true} showDots={true} minHeight="min-h-[500px]">
+<Carousel_better autoScroll={true} autoScrollInterval={4000} showArrows={true} showDots={true} height="lg">
   <div class="w-full h-full flex items-center justify-center p-4">
     <Img_better src={testImage} alt="Carousel slide 1" class="rounded-lg" />
   </div>

@@ -1,11 +1,20 @@
 import { useState, useEffect, useCallback, useRef, type ReactNode } from 'react';
 
+type HeightPreset = 'sm' | 'md' | 'lg' | 'xl';
+
+const heightPresets: Record<HeightPreset, string> = {
+  sm: 'h-[300px]',
+  md: 'h-[400px]',
+  lg: 'h-[500px]',
+  xl: 'h-[600px]',
+};
+
 interface CarouselBetterProps {
   autoScroll?: boolean;
   autoScrollInterval?: number;
   showArrows?: boolean;
   showDots?: boolean;
-  minHeight?: string;
+  height?: HeightPreset;
   children: ReactNode;
 }
 
@@ -14,9 +23,10 @@ export default function CarouselBetter({
   autoScrollInterval = 5000,
   showArrows = true,
   showDots = true,
-  minHeight = 'min-h-[400px]',
+  height = 'md',
   children,
 }: CarouselBetterProps) {
+  const heightClass = heightPresets[height];
   const [currentSlide, setCurrentSlide] = useState(0);
   const [totalSlides, setTotalSlides] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
@@ -32,17 +42,8 @@ export default function CarouselBetter({
     let rafId: number | undefined;
 
     const applySlideStyles = (slideElements: HTMLElement[], currentIndex: number) => {
+      // Only toggle visibility - layout is handled by Tailwind CSS classes
       slideElements.forEach((slide, index) => {
-        // Position slide to fill full width between arrows
-        slide.style.position = 'absolute';
-        slide.style.inset = '0';
-        slide.style.width = '100%';
-        slide.style.height = '100%';
-        slide.style.display = 'flex';
-        slide.style.alignItems = 'center';
-        slide.style.justifyContent = 'center';
-        slide.style.transition = 'opacity 300ms';
-
         if (index === currentIndex) {
           slide.style.opacity = '1';
           slide.style.pointerEvents = 'auto';
@@ -50,26 +51,6 @@ export default function CarouselBetter({
           slide.style.opacity = '0';
           slide.style.pointerEvents = 'none';
         }
-
-        // Fix intermediate containers to propagate flex centering
-        const containers = slide.querySelectorAll('div');
-        containers.forEach((cont) => {
-          const el = cont as HTMLElement;
-          el.style.display = 'flex';
-          el.style.alignItems = 'center';
-          el.style.justifyContent = 'center';
-          el.style.width = '100%';
-          el.style.height = '100%';
-        });
-
-        // Fix images to preserve aspect ratio while allowing full width
-        const images = slide.querySelectorAll('img');
-        images.forEach((img) => {
-          const imgEl = img as HTMLImageElement;
-          imgEl.style.objectFit = 'contain';
-          imgEl.style.maxHeight = '100%';
-          imgEl.style.maxWidth = '100%';
-        });
       });
     };
 
@@ -214,13 +195,32 @@ export default function CarouselBetter({
   return (
     <div className="w-full">
       {/* Carousel Container with Navigation */}
-      <div className={`relative flex items-center justify-between gap-4 sm:gap-6 lg:gap-8 ${minHeight}`}>
+      <div className={`relative flex items-center justify-between gap-4 sm:gap-6 lg:gap-8 ${heightClass}`}>
         {showArrows && <ArrowButton direction="prev" onClick={prevSlide} />}
 
         {/* Slides Container */}
         <div
           ref={containerRef}
-          className={`relative flex-1 overflow-hidden w-full ${minHeight}`}
+          className={`relative flex-1 overflow-hidden w-full ${heightClass}
+            [&>*]:absolute [&>*]:inset-0 [&>*]:w-full [&>*]:h-full
+            [&>*]:flex [&>*]:items-center [&>*]:justify-center
+            [&>*]:transition-opacity [&>*]:duration-300
+            [&>astro-slot>*]:absolute [&>astro-slot>*]:inset-0
+            [&>astro-slot>*]:w-full [&>astro-slot>*]:h-full
+            [&>astro-slot>*]:flex [&>astro-slot>*]:items-center
+            [&>astro-slot>*]:justify-center
+            [&>astro-slot>*]:transition-opacity [&>astro-slot>*]:duration-300
+            [&>*>div]:flex [&>*>div]:items-center [&>*>div]:justify-center
+            [&>*>div]:w-full [&>*>div]:h-full
+            [&>astro-slot>*>div]:flex [&>astro-slot>*>div]:items-center
+            [&>astro-slot>*>div]:justify-center
+            [&>astro-slot>*>div]:w-full [&>astro-slot>*>div]:h-full
+            [&_img]:object-contain [&_img]:max-h-full [&_img]:max-w-full
+            [&>*:first-child]:opacity-100 [&>*:first-child]:pointer-events-auto
+            [&>*:not(:first-child)]:opacity-0 [&>*:not(:first-child)]:pointer-events-none
+            [&>astro-slot>*:first-child]:opacity-100 [&>astro-slot>*:first-child]:pointer-events-auto
+            [&>astro-slot>*:not(:first-child)]:opacity-0 [&>astro-slot>*:not(:first-child)]:pointer-events-none
+          `}
           onMouseEnter={() => setIsPaused(true)}
           onMouseLeave={() => setIsPaused(false)}
         >
