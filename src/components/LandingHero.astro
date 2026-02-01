@@ -99,7 +99,7 @@ const mediaJson = JSON.stringify(media.map((item, index) => ({
 ---
 
 <section
-  class="relative h-[75vh] w-full overflow-hidden bg-linear-to-br from-[#1F1F1F] to-bears-bg"
+  class="relative h-[75vh] w-full max-w-960 mx-auto overflow-hidden bg-linear-to-br from-[#1F1F1F] to-bears-bg"
   x-data={`{
     currentSlide: 0,
     totalSlides: ${media.length || 1},

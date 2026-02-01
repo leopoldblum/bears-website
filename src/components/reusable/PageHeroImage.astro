@@ -2,8 +2,8 @@
 // PageHeroImage Component - Full viewport height hero with background image
 // Displays a title in the bottom left quadrant with gradient overlay
 
-import { Image } from 'astro:assets';
-import type { ImageMetadata } from 'astro';
+import { Image } from "astro:assets";
+import type { ImageMetadata } from "astro";
 
 interface Props {
   /** Background image to display */
@@ -17,7 +17,7 @@ interface Props {
   /** Additional CSS classes */
   class?: string;
   /** Loading strategy for the image - 'eager' for above-fold, 'lazy' for below-fold */
-  loading?: 'eager' | 'lazy';
+  loading?: "eager" | "lazy";
 }
 
 const {
@@ -26,12 +26,12 @@ const {
   title,
   subtitle,
   class: className,
-  loading = 'eager'
+  loading = "eager",
 } = Astro.props;
 ---
 
 <section
-  class={`relative h-[50vh] lg:h-[75vh] w-full overflow-hidden ${className || ''}`}
+  class={`relative h-[50vh] lg:h-[60vh] w-full max-w-960 mx-auto overflow-hidden ${className || ""}`}
 >
   {/* Background Image Layer */}
   <div class="absolute inset-0 z-0">
@@ -45,29 +45,42 @@ const {
   </div>
 
   {/* Gradient overlay for text readability - similar to LandingHero */}
-  <div class="absolute inset-0 bg-gradient-to-r from-bears-bg/80 via-bears-bg/40 to-transparent z-10"></div>
+  <div
+    class="absolute inset-0 bg-gradient-to-r from-bears-bg/80 via-bears-bg/40 to-transparent z-10"
+  >
+  </div>
 
   {/* Bottom gradient for better text contrast */}
-  <div class="absolute bottom-0 left-0 right-0 h-64 bg-gradient-to-t from-bears-bg via-bears-bg/60 to-transparent pointer-events-none z-10"></div>
+  <div
+    class="absolute bottom-0 left-0 right-0 h-64 bg-gradient-to-t from-bears-bg via-bears-bg/60 to-transparent pointer-events-none z-10"
+  >
+  </div>
 
   {/* Content Container - Title in bottom left quadrant */}
   <div class="relative z-20 h-full">
     <div class="container mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-end">
       <div class="w-full lg:w-1/2 pb-16 sm:pb-20 lg:pb-24">
         {/* Title */}
-        <h1 class="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold text-bears-text-onDark leading-tight">
+        <h1
+          class="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold text-bears-text-onDark leading-tight"
+        >
           {title}
         </h1>
 
         {/* Divider between title and subtitle */}
-        <div class="h-[3px] bg-gradient-to-r from-white/25 via-white/10 to-transparent my-4 sm:my-6"></div>
+        <div
+          class="h-[3px] bg-gradient-to-r from-white/25 via-white/10 to-transparent my-4 sm:my-6"
+        >
+        </div>
 
         {/* Optional Subtitle */}
-        {subtitle && (
-          <p class="text-lg sm:text-xl lg:text-2xl text-bears-text-onDark/80 max-w-xl">
-            {subtitle}
-          </p>
-        )}
+        {
+          subtitle && (
+            <p class="text-lg sm:text-xl lg:text-2xl text-bears-text-onDark/80 max-w-xl">
+              {subtitle}
+            </p>
+          )
+        }
       </div>
     </div>
   </div>
