@@ -191,7 +191,42 @@ export default function HeroCTAIsland({ ctas }: HeroCTAIslandProps) {
       ref={containerRef}
       className="relative mt-auto pb-8 sm:pb-12 lg:pb-16"
     >
-      {/* Shape with one smooth continuous curve */}
+      {/* Glow layer - larger, more blurred version for ethereal effect */}
+      <svg
+        className="absolute bottom-0 pointer-events-none overflow-visible"
+        style={{
+          left: `${rectLeft - bottomWidth - 40}px`,
+          width: `${expandedWidth + bottomWidth * 2}px`,
+          height: `${rectHeight + curveHeight}px`,
+          opacity: activeIndex >= 0 ? 0.5 : 0,
+          filter: 'blur(20px)',
+          transform: 'scale(1.1)',
+          transformOrigin: 'center bottom',
+          clipPath: activeIndex >= 0 ? 'inset(0 0 0 0)' : 'inset(100% 0 0 0)',
+          transition: hasAnimated
+            ? 'left 500ms ease-out, width 500ms ease-out, opacity 500ms ease-out, clip-path 500ms ease-out'
+            : 'opacity 500ms ease-out, clip-path 500ms ease-out',
+        }}
+        viewBox={`${-bottomWidth} ${-curveHeight} ${expandedWidth + bottomWidth * 2} ${rectHeight + curveHeight}`}
+        preserveAspectRatio="none"
+      >
+        <defs>
+          <radialGradient id="ctaGlowGradient" cx="50%" cy="100%" r="70%" fx="50%" fy="100%">
+            <stop offset="0%" stopColor="#C50E1F" stopOpacity="0.3" />
+            <stop offset="40%" stopColor="var(--color-bears-bg)" stopOpacity="0.5" />
+            <stop offset="100%" stopColor="var(--color-bears-bg)" stopOpacity="0" />
+          </radialGradient>
+        </defs>
+        <path
+          d={svgPath}
+          fill="url(#ctaGlowGradient)"
+          style={{
+            transition: 'all 500ms ease-out',
+          }}
+        />
+      </svg>
+
+      {/* Main shape with one smooth continuous curve */}
       <svg
         className="absolute bottom-0 pointer-events-none overflow-visible"
         style={{
@@ -199,6 +234,7 @@ export default function HeroCTAIsland({ ctas }: HeroCTAIslandProps) {
           width: `${expandedWidth + bottomWidth * 2}px`,
           height: `${rectHeight + curveHeight}px`,
           opacity: activeIndex >= 0 ? 1 : 0,
+          filter: 'blur(2px)',
           clipPath: activeIndex >= 0 ? 'inset(0 0 0 0)' : 'inset(100% 0 0 0)',
           transition: hasAnimated
             ? 'left 500ms ease-out, width 500ms ease-out, opacity 500ms ease-out, clip-path 500ms ease-out'
@@ -209,9 +245,9 @@ export default function HeroCTAIsland({ ctas }: HeroCTAIslandProps) {
       >
         <defs>
           <radialGradient id="ctaGradient" cx="50%" cy="100%" r="70%" fx="50%" fy="100%">
-            <stop offset="0%" stopColor="#1A1A1A" stopOpacity="1" />
-            <stop offset="50%" stopColor="#1A1A1A" stopOpacity="0.85" />
-            <stop offset="100%" stopColor="#1A1A1A" stopOpacity="0" />
+            <stop offset="0%" stopColor="var(--color-bears-bg)" stopOpacity="1" />
+            <stop offset="50%" stopColor="var(--color-bears-bg)" stopOpacity="0.85" />
+            <stop offset="100%" stopColor="var(--color-bears-bg)" stopOpacity="0" />
           </radialGradient>
         </defs>
         <path
@@ -234,7 +270,8 @@ export default function HeroCTAIsland({ ctas }: HeroCTAIslandProps) {
             key={index}
             ref={(el) => { ctaRefs.current[index] = el; }}
             onMouseEnter={() => isLargeScreen && updateGradient(index)}
-            className="relative z-10"
+            className={`relative z-10 transition-transform duration-300 ease-out ${activeIndex === index ? 'lg:scale-105' : 'lg:scale-100'
+              }`}
           >
             <a
               href={cta.href}
