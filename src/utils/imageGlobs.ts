@@ -46,9 +46,10 @@ export const testimonialImages: ImageGlob = import.meta.glob<{ default: ImageMet
  * Sponsor logo images
  * Used by: BecomeSponsor.astro
  * Pattern: Generated from IMAGE_GLOB_PATTERN constant
+ * Note: Includes subdirectories for tier-based organization
  */
 export const sponsorLogos: ImageGlob = import.meta.glob<{ default: ImageMetadata }>(
-  "/src/assets/sponsors/*.{jpg,jpeg,png,webp}"
+  "/src/assets/sponsors/**/*.{jpg,jpeg,png,webp}"
 );
 
 /**

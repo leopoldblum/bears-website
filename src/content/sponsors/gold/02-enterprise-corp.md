@@ -1,5 +1,5 @@
 ---
 name: "Enterprise Corporation"
-logo: "gold-placeholder-2.png"
+logo: "gold-02-enterprise-corp.png"
 url: "https://example.com"
 ---

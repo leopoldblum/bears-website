@@ -3,9 +3,9 @@
 import { getCollection } from "astro:content";
 import SponsorTier from "./SponsorTier.astro";
 import Button from "@mdx/Button.astro";
-import type { SponsorEntry } from '@types';
-import { sponsorLogos } from '@utils/imageGlobs';
-import { loadImage, defaultSponsorImage } from '@utils/imageLoader';
+import type { SponsorEntry } from "@types";
+import { sponsorLogos } from "@utils/imageGlobs";
+import { loadImage, defaultSponsorImage } from "@utils/imageLoader";
 
 // Fetch all sponsors
 const allSponsors = await getCollection("sponsors");
@@ -13,18 +13,24 @@ const allSponsors = await getCollection("sponsors");
 // Process sponsors with images and derive tier from folder
 const sponsorsWithImages = await Promise.all(
   allSponsors.map(async (sponsor: SponsorEntry) => {
-    const logoData = await loadImage({
-      glob: sponsorLogos,
-      imagePath: `/src/assets/sponsors/${sponsor.data.logo}`,
-      fallbackImage: defaultSponsorImage,
-      context: {
-        itemTitle: sponsor.data.name,
-        itemSlug: sponsor.slug
-      }
-    }) || defaultSponsorImage;
-
     // Derive tier from folder structure (e.g., "gold/sponsor-name" -> "gold")
-    const tier = sponsor.id.split('/')[0] as 'bronze' | 'silver' | 'gold' | 'platinum' | 'diamond';
+    const tier = sponsor.id.split("/")[0] as
+      | "bronze"
+      | "silver"
+      | "gold"
+      | "platinum"
+      | "diamond";
+
+    const logoData =
+      (await loadImage({
+        glob: sponsorLogos,
+        imagePath: `/src/assets/sponsors/${tier}/${sponsor.data.logo}`,
+        fallbackImage: defaultSponsorImage,
+        context: {
+          itemTitle: sponsor.data.name,
+          itemSlug: sponsor.slug,
+        },
+      })) || defaultSponsorImage;
 
     return {
       ...sponsor.data,
@@ -32,24 +38,36 @@ const sponsorsWithImages = await Promise.all(
       slug: sponsor.slug,
       tier,
     };
-  })
+  }),
 );
 
 // Import sortBySlug utility
-import { sortBySlug } from '@utils/contentQueries';
+import { sortBySlug } from "@utils/contentQueries";
 
 // Group sponsors by tier and sort alphabetically within each tier
-const diamondSponsors = sortBySlug(sponsorsWithImages.filter(s => s.tier === 'diamond'));
-const platinumSponsors = sortBySlug(sponsorsWithImages.filter(s => s.tier === 'platinum'));
-const goldSponsors = sortBySlug(sponsorsWithImages.filter(s => s.tier === 'gold'));
-const silverSponsors = sortBySlug(sponsorsWithImages.filter(s => s.tier === 'silver'));
-const bronzeSponsors = sortBySlug(sponsorsWithImages.filter(s => s.tier === 'bronze'));
+const diamondSponsors = sortBySlug(
+  sponsorsWithImages.filter((s) => s.tier === "diamond"),
+);
+const platinumSponsors = sortBySlug(
+  sponsorsWithImages.filter((s) => s.tier === "platinum"),
+);
+const goldSponsors = sortBySlug(
+  sponsorsWithImages.filter((s) => s.tier === "gold"),
+);
+const silverSponsors = sortBySlug(
+  sponsorsWithImages.filter((s) => s.tier === "silver"),
+);
+const bronzeSponsors = sortBySlug(
+  sponsorsWithImages.filter((s) => s.tier === "bronze"),
+);
 ---
 
 <section class="bg-bears-bg-light py-16 sm:py-20 lg:py-24">
   <div class="container mx-auto px-4 sm:px-8 lg:px-16">
     <!-- Headline -->
-    <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-center text-bears-text-onLight mb-12 sm:mb-16 lg:mb-20">
+    <h2
+      class="text-3xl sm:text-4xl lg:text-5xl font-bold text-center text-bears-text-onLight mb-12 sm:mb-16 lg:mb-20"
+    >
       Become a Sponsor
     </h2>
 
@@ -57,40 +75,33 @@ const bronzeSponsors = sortBySlug(sponsorsWithImages.filter(s => s.tier === 'bro
     <SponsorTier sponsors={diamondSponsors} tier="diamond" />
 
     <!-- Divider: Diamond to other tiers -->
-    {diamondSponsors.length > 0 && (platinumSponsors.length > 0 || goldSponsors.length > 0 || silverSponsors.length > 0 || bronzeSponsors.length > 0) && (
-      <hr class="w-full max-w-3xl mx-auto border-t border-bears-text-onLight opacity-20 my-8 sm:my-10 lg:my-12" />
-    )}
+    {
+      diamondSponsors.length > 0 &&
+        (platinumSponsors.length > 0 || goldSponsors.length > 0) && (
+          <hr class="w-full max-w-3xl mx-auto border-t border-bears-text-onLight opacity-20 my-8 sm:my-10 lg:my-12" />
+        )
+    }
 
     <!-- Platinum Sponsors Tier -->
     <SponsorTier sponsors={platinumSponsors} tier="platinum" />
 
     <!-- Divider: Platinum to other tiers -->
-    {platinumSponsors.length > 0 && (goldSponsors.length > 0 || silverSponsors.length > 0 || bronzeSponsors.length > 0) && (
-      <hr class="w-full max-w-3xl mx-auto border-t border-bears-text-onLight opacity-20 my-8 sm:my-10 lg:my-12" />
-    )}
+    {
+      platinumSponsors.length > 0 && goldSponsors.length > 0 && (
+        <hr class="w-full max-w-3xl mx-auto border-t border-bears-text-onLight opacity-20 my-8 sm:my-10 lg:my-12" />
+      )
+    }
 
     <!-- Gold Sponsors Tier -->
     <SponsorTier sponsors={goldSponsors} tier="gold" />
 
-    <!-- Divider: Gold to other tiers -->
-    {goldSponsors.length > 0 && (silverSponsors.length > 0 || bronzeSponsors.length > 0) && (
-      <hr class="w-full max-w-3xl mx-auto border-t border-bears-text-onLight opacity-20 my-8 sm:my-10 lg:my-12" />
-    )}
-
-    <!-- Silver Sponsors Tier -->
-    <SponsorTier sponsors={silverSponsors} tier="silver" />
-
-    <!-- Divider 2: Only show if silver sponsors exist AND bronze exist -->
-    {silverSponsors.length > 0 && bronzeSponsors.length > 0 && (
-      <hr class="w-full max-w-3xl mx-auto border-t border-bears-text-onLight opacity-20 my-8 sm:my-10 lg:my-12" />
-    )}
-
-    <!-- Bronze Sponsors Tier -->
-    <SponsorTier sponsors={bronzeSponsors} tier="bronze" />
-
     <!-- Placeholder text below logos -->
-    <p class="text-sm sm:text-base text-bears-text-onLight text-center opacity-70 max-w-2xl mx-auto mb-6 sm:mb-8">
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Interested in becoming a sponsor? Contact us to learn more about partnership opportunities.
+    <p
+      class="text-sm sm:text-base text-bears-text-onLight text-center opacity-70 max-w-2xl mx-auto mt-12 sm:mt-16 lg:mt-20 mb-6 sm:mb-8"
+    >
+      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Interested in
+      becoming a sponsor? Contact us to learn more about partnership
+      opportunities.
     </p>
 
     <!-- Learn more button -->

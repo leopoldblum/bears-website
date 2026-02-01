@@ -2,6 +2,9 @@
 @plugin "@tailwindcss/typography";
 @plugin 'tailwind-scrollbar';
 
+@utility scrollbar-bears-thin {
+  @apply scrollbar-thin scrollbar-thumb-gray-200/10 scrollbar-track-transparent;
+}
 
 @theme {
   --color-bears-bg: #1A1A1A;

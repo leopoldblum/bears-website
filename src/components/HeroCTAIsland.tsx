@@ -163,7 +163,7 @@ export default function HeroCTAIsland({ ctas }: HeroCTAIslandProps) {
               <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-[#C50E1F] group-hover:text-white transition-colors duration-300">
                 {cta.title}
               </h3>
-              <div className="h-0.5 lg:h-1 bg-gradient-to-r from-white/50 via-white/20 to-transparent my-2 sm:my-3 lg:my-4 mr-10 group-hover:from-white/70 group-hover:via-white/20 transition-all duration-300" />
+              <div className="h-0.5 lg:h-1 bg-gradient-to-r from-white/50 via-white/20 to-transparent my-2 sm:my-3 lg:my-4 mr-10 rounded-full group-hover:from-white/70 group-hover:via-white/20 transition-all duration-300" />
               <p className="text-sm sm:text-base lg:text-lg text-[#E1E1E1] leading-relaxed group-hover:text-white transition-colors duration-300">
                 {cta.description}
               </p>
