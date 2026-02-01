@@ -1,5 +1,7 @@
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
+@plugin 'tailwind-scrollbar';
+
 
 @theme {
   --color-bears-bg: #1A1A1A;
@@ -33,6 +35,7 @@ body {
     opacity: 0;
     transform: translateY(4px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -44,6 +47,7 @@ body {
     opacity: 0;
     transform: translateX(-8px);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
@@ -60,6 +64,7 @@ body {
     opacity: 0;
     transform: translateX(-6px);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
@@ -76,6 +81,7 @@ body {
     opacity: 0;
     transform: translateY(8px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -92,6 +98,7 @@ body {
     opacity: 0;
     transform: translateY(12px) scale(0.98);
   }
+
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -99,18 +106,35 @@ body {
 }
 
 /* Staggered animation delays for grid items */
-.projects-grid > div:nth-child(1) .showcase-card,
-.events-grid > div:nth-child(1) .showcase-card { animation-delay: 0ms; }
-.projects-grid > div:nth-child(2) .showcase-card,
-.events-grid > div:nth-child(2) .showcase-card { animation-delay: 60ms; }
-.projects-grid > div:nth-child(3) .showcase-card,
-.events-grid > div:nth-child(3) .showcase-card { animation-delay: 80ms; }
-.projects-grid > div:nth-child(4) .showcase-card,
-.events-grid > div:nth-child(4) .showcase-card { animation-delay: 120ms; }
-.projects-grid > div:nth-child(5) .showcase-card,
-.events-grid > div:nth-child(5) .showcase-card { animation-delay: 160ms; }
-.projects-grid > div:nth-child(6) .showcase-card,
-.events-grid > div:nth-child(6) .showcase-card { animation-delay: 200ms; }
+.projects-grid>div:nth-child(1) .showcase-card,
+.events-grid>div:nth-child(1) .showcase-card {
+  animation-delay: 0ms;
+}
+
+.projects-grid>div:nth-child(2) .showcase-card,
+.events-grid>div:nth-child(2) .showcase-card {
+  animation-delay: 60ms;
+}
+
+.projects-grid>div:nth-child(3) .showcase-card,
+.events-grid>div:nth-child(3) .showcase-card {
+  animation-delay: 80ms;
+}
+
+.projects-grid>div:nth-child(4) .showcase-card,
+.events-grid>div:nth-child(4) .showcase-card {
+  animation-delay: 120ms;
+}
+
+.projects-grid>div:nth-child(5) .showcase-card,
+.events-grid>div:nth-child(5) .showcase-card {
+  animation-delay: 160ms;
+}
+
+.projects-grid>div:nth-child(6) .showcase-card,
+.events-grid>div:nth-child(6) .showcase-card {
+  animation-delay: 200ms;
+}
 
 /* Post content entrance animation */
 .post-container {
@@ -122,6 +146,7 @@ body {
     opacity: 0;
     transform: translateY(12px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -138,6 +163,7 @@ body {
     opacity: 0;
     transform: translateY(8px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -146,6 +172,7 @@ body {
 
 /* Respect user preference for reduced motion */
 @media (prefers-reduced-motion: reduce) {
+
   .showcase-card,
   .accordion-item,
   .post-container,

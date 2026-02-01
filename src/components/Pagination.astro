@@ -11,10 +11,9 @@ interface Props {
 const { onPageChange = 'goToPage' } = Astro.props;
 ---
 
-<!-- Only show pagination when there are multiple pages -->
+<!-- Pagination controls - always visible, grayed out when single page -->
 <nav
-  x-show="totalPages > 1"
-  x-transition
+  :class="totalPages <= 1 ? 'opacity-40 pointer-events-none' : ''"
   class="w-full mt-8 sm:mt-10 lg:mt-12 flex justify-center"
   aria-label="Pagination"
   role="navigation"

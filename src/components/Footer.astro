@@ -3,122 +3,218 @@
 ---
 
 <footer class="bg-bears-bg-light py-16 sm:py-20 lg:py-24">
-  <div class="container mx-auto px-4 sm:px-8 lg:px-12 ">
+  <div class="container mx-auto px-4 sm:px-8 lg:px-12">
     <!-- Main footer grid: stacks on mobile, horizontal on desktop -->
-    <div class="flex flex-col lg:grid lg:grid-cols-[auto_1fr_auto] gap-8 lg:gap-12 lg:items-start">
-
+    <div
+      class="flex flex-col lg:grid lg:grid-cols-[auto_1fr_auto] gap-8 lg:gap-12 lg:items-start"
+    >
       <!-- Logo + Address (First on mobile, Left on desktop) -->
       <div class="flex flex-col gap-4 items-center lg:items-start">
-        <div class="text-bears-accent text-2xl lg:text-3xl font-bold">BEARS</div>
-        <address class="not-italic text-sm text-bears-text-onLight leading-relaxed text-center lg:text-left">
-          Berlin Experimental Astronautics<br/>
-          Research Student team e.V.<br/>
-          c/o TU Berlin - Institut für Luft-<br/>
-          und Raumfahrt<br/>
-          Marchstraße 12-14<br/>
+        <div class="text-bears-accent text-2xl lg:text-3xl font-bold">
+          BEARS
+        </div>
+        <address
+          class="not-italic text-sm text-bears-text-onLight leading-relaxed text-center lg:text-left"
+        >
+          Berlin Experimental Astronautics<br />
+          Research Student team e.V.<br />
+          c/o TU Berlin - Institut für Luft-<br />
+          und Raumfahrt<br />
+          Marchstraße 12-14<br />
           10587 Berlin
         </address>
       </div>
 
       <!-- Navigation (Second on mobile, Center on desktop) -->
-      <nav class="grid grid-cols-2 gap-8 lg:flex lg:flex-wrap lg:gap-12 lg:justify-center justify-items-center lg:justify-items-start">
-
+      <nav
+        class="grid grid-cols-2 gap-8 lg:flex lg:flex-wrap lg:gap-12 lg:justify-center justify-items-center lg:justify-items-start"
+      >
         <!-- Projects Column -->
         <div class="flex flex-col gap-2 text-center lg:text-left">
-          <a href="/projects" class="text-bears-text-onLight hover:text-bears-accent transition-colors text-sm lg:text-base font-bold mb-2">
+          <a
+            href="/projects"
+            class="text-bears-text-onLight hover:text-bears-accent transition-colors text-sm lg:text-base font-bold mb-2"
+          >
             Projects
           </a>
-          <a href="#" class="text-bears-text-onLight hover:text-bears-accent transition-colors text-xs lg:text-sm">
+          <a
+            href="/projects?status=ongoing"
+            class="text-bears-text-onLight hover:text-bears-accent transition-colors text-xs lg:text-sm"
+          >
             Current Projects
           </a>
-          <a href="#" class="text-bears-text-onLight hover:text-bears-accent transition-colors text-xs lg:text-sm">
+          <a
+            href="/projects?status=completed"
+            class="text-bears-text-onLight hover:text-bears-accent transition-colors text-xs lg:text-sm"
+          >
             Past Projects
           </a>
-          <a href="#" class="text-bears-text-onLight hover:text-bears-accent transition-colors text-xs lg:text-sm">
+          <a
+            href="#"
+            class="text-bears-text-onLight hover:text-bears-accent transition-colors text-xs lg:text-sm"
+          >
             Research Areas
           </a>
         </div>
 
         <!-- Sponsors Column -->
         <div class="flex flex-col gap-2 text-center lg:text-left">
-          <a href="/sponsors" class="text-bears-text-onLight hover:text-bears-accent transition-colors text-sm lg:text-base font-bold mb-2">
+          <a
+            href="/sponsors"
+            class="text-bears-text-onLight hover:text-bears-accent transition-colors text-sm lg:text-base font-bold mb-2"
+          >
             Sponsors
           </a>
-          <a href="#" class="text-bears-text-onLight hover:text-bears-accent transition-colors text-xs lg:text-sm">
+          <a
+            href="/sponsors"
+            class="text-bears-text-onLight hover:text-bears-accent transition-colors text-xs lg:text-sm"
+          >
             Become a Sponsor
           </a>
-          <a href="#" class="text-bears-text-onLight hover:text-bears-accent transition-colors text-xs lg:text-sm">
+          <a
+            href="/sponsors"
+            class="text-bears-text-onLight hover:text-bears-accent transition-colors text-xs lg:text-sm"
+          >
             Sponsorship Tiers
           </a>
-          <a href="#" class="text-bears-text-onLight hover:text-bears-accent transition-colors text-xs lg:text-sm">
+          <a
+            href="/sponsors"
+            class="text-bears-text-onLight hover:text-bears-accent transition-colors text-xs lg:text-sm"
+          >
             Our Partners
           </a>
-          <a href="#" class="text-bears-text-onLight hover:text-bears-accent transition-colors text-xs lg:text-sm">
+          <a
+            href="/sponsors"
+            class="text-bears-text-onLight hover:text-bears-accent transition-colors text-xs lg:text-sm"
+          >
             Benefits
           </a>
         </div>
 
         <!-- Events Column -->
         <div class="flex flex-col gap-2 text-center lg:text-left">
-          <a href="/events" class="text-bears-text-onLight hover:text-bears-accent transition-colors text-sm lg:text-base font-bold mb-2">
+          <a
+            href="/events"
+            class="text-bears-text-onLight hover:text-bears-accent transition-colors text-sm lg:text-base font-bold mb-2"
+          >
             Events
           </a>
-          <a href="#" class="text-bears-text-onLight hover:text-bears-accent transition-colors text-xs lg:text-sm">
+          <a
+            href="/events?date=upcoming"
+            class="text-bears-text-onLight hover:text-bears-accent transition-colors text-xs lg:text-sm"
+          >
             Upcoming Events
           </a>
-          <a href="#" class="text-bears-text-onLight hover:text-bears-accent transition-colors text-xs lg:text-sm">
+          <a
+            href="/events?date=past"
+            class="text-bears-text-onLight hover:text-bears-accent transition-colors text-xs lg:text-sm"
+          >
             Past Events
           </a>
-          <a href="#" class="text-bears-text-onLight hover:text-bears-accent transition-colors text-xs lg:text-sm">
-            Workshops
+          <a
+            href="/events?category=competitions-and-workshops"
+            class="text-bears-text-onLight hover:text-bears-accent transition-colors text-xs lg:text-sm"
+          >
+            Competitions & Workshops
           </a>
-          <a href="#" class="text-bears-text-onLight hover:text-bears-accent transition-colors text-xs lg:text-sm">
-            Competitions
+          <a
+            href="/events?category=competitions-and-workshops"
+            class="text-bears-text-onLight hover:text-bears-accent transition-colors text-xs lg:text-sm"
+          >
+            Conventions
           </a>
         </div>
 
         <!-- About Us Column -->
         <div class="flex flex-col gap-2 text-center lg:text-left">
-          <a href="/about" class="text-bears-text-onLight hover:text-bears-accent transition-colors text-sm lg:text-base font-bold mb-2">
+          <a
+            href="/about-us"
+            class="text-bears-text-onLight hover:text-bears-accent transition-colors text-sm lg:text-base font-bold mb-2"
+          >
             About Us
           </a>
-          <a href="#" class="text-bears-text-onLight hover:text-bears-accent transition-colors text-xs lg:text-sm">
+          <a
+            href="#"
+            class="text-bears-text-onLight hover:text-bears-accent transition-colors text-xs lg:text-sm"
+          >
             Our Team
           </a>
-          <a href="/media" class="text-bears-text-onLight hover:text-bears-accent transition-colors text-xs lg:text-sm">
+          <a
+            href="/media"
+            class="text-bears-text-onLight hover:text-bears-accent transition-colors text-xs lg:text-sm"
+          >
             Media
           </a>
-          <a href="#" class="text-bears-text-onLight hover:text-bears-accent transition-colors text-xs lg:text-sm">
+          <a
+            href="#"
+            class="text-bears-text-onLight hover:text-bears-accent transition-colors text-xs lg:text-sm"
+          >
             Contact
           </a>
         </div>
       </nav>
 
       <!-- Social Media Icons (Third/Last on mobile, Right on desktop) -->
-      <div class="flex gap-4 items-center justify-center lg:justify-end lg:self-center">
-        <a href="#" class="hover:opacity-70 transition-opacity" aria-label="Social media 1">
-          <svg width="32" height="32" viewBox="0 0 32 32" class="fill-bears-text-onLight">
-            <circle cx="16" cy="16" r="14"/>
+      <div
+        class="flex gap-4 items-center justify-center lg:justify-end lg:self-center"
+      >
+        <a
+          href="#"
+          class="hover:opacity-70 transition-opacity"
+          aria-label="Social media 1"
+        >
+          <svg
+            width="32"
+            height="32"
+            viewBox="0 0 32 32"
+            class="fill-bears-text-onLight"
+          >
+            <circle cx="16" cy="16" r="14"></circle>
           </svg>
         </a>
-        <a href="#" class="hover:opacity-70 transition-opacity" aria-label="Social media 2">
-          <svg width="32" height="32" viewBox="0 0 32 32" class="fill-bears-text-onLight">
-            <circle cx="16" cy="16" r="14"/>
+        <a
+          href="#"
+          class="hover:opacity-70 transition-opacity"
+          aria-label="Social media 2"
+        >
+          <svg
+            width="32"
+            height="32"
+            viewBox="0 0 32 32"
+            class="fill-bears-text-onLight"
+          >
+            <circle cx="16" cy="16" r="14"></circle>
           </svg>
         </a>
-        <a href="#" class="hover:opacity-70 transition-opacity" aria-label="Social media 3">
-          <svg width="32" height="32" viewBox="0 0 32 32" class="fill-bears-text-onLight">
-            <circle cx="16" cy="16" r="14"/>
+        <a
+          href="#"
+          class="hover:opacity-70 transition-opacity"
+          aria-label="Social media 3"
+        >
+          <svg
+            width="32"
+            height="32"
+            viewBox="0 0 32 32"
+            class="fill-bears-text-onLight"
+          >
+            <circle cx="16" cy="16" r="14"></circle>
           </svg>
         </a>
-        <a href="#" class="hover:opacity-70 transition-opacity" aria-label="Social media 4">
-          <svg width="32" height="32" viewBox="0 0 32 32" class="fill-bears-text-onLight">
-            <circle cx="16" cy="16" r="14"/>
+        <a
+          href="#"
+          class="hover:opacity-70 transition-opacity"
+          aria-label="Social media 4"
+        >
+          <svg
+            width="32"
+            height="32"
+            viewBox="0 0 32 32"
+            class="fill-bears-text-onLight"
+          >
+            <circle cx="16" cy="16" r="14"></circle>
           </svg>
         </a>
       </div>
-
-    </div>
     </div>
   </div>
 </footer>

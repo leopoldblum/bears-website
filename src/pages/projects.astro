@@ -57,8 +57,50 @@ const projectsData = JSON.stringify(projectsWithImages.map((p, i) => ({
       completionStatus: [],
       sortOrder: 'newest',
       currentPage: 1,
-      itemsPerPage: 6,
+      itemsPerPage: window.innerWidth >= 1024 ? 6 : 4,
       projectsData: ${projectsData},
+
+      init() {
+        const params = new URLSearchParams(window.location.search);
+
+        // Parse and apply category filter
+        const urlCategory = params.get('category');
+        if (urlCategory) {
+          const categories = urlCategory.split(',').filter(Boolean);
+          this.activeCategory.push(...categories);
+        }
+
+        // Parse and apply status filter (completed/ongoing)
+        const urlStatus = params.get('status');
+        if (urlStatus) {
+          const statuses = urlStatus.split(',').filter(Boolean);
+          this.completionStatus.push(...statuses);
+        }
+
+        // Parse sort order
+        if (params.get('sort') === 'oldest') {
+          this.sortOrder = 'oldest';
+        }
+
+        // Parse page number (after filters so totalPages is correct)
+        const urlPage = parseInt(params.get('page'), 10);
+        if (urlPage && urlPage > 0) {
+          this.currentPage = Math.min(urlPage, this.totalPages || 1);
+        }
+
+        // Update itemsPerPage on window resize
+        window.addEventListener('resize', () => {
+          const newItemsPerPage = window.innerWidth >= 1024 ? 6 : 4;
+          if (newItemsPerPage !== this.itemsPerPage) {
+            this.itemsPerPage = newItemsPerPage;
+            // Adjust current page if needed
+            if (this.currentPage > this.totalPages) {
+              this.currentPage = this.totalPages || 1;
+            }
+          }
+        });
+      },
+
       get hasActiveFilters() {
         return this.activeCategory.length > 0 || this.completionStatus.length > 0;
       },
@@ -134,7 +176,7 @@ const projectsData = JSON.stringify(projectsWithImages.map((p, i) => ({
     </div>
 
     <!-- Projects Grid -->
-    <div class="projects-grid grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+    <div class="projects-grid grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 min-h-338 lg:min-h-256 content-start">
       {projectsWithImages.map((project, index) => (
         <div
           :class={`{ 'hidden': !paginatedIndices.includes(${index}) }`}
