@@ -17,9 +17,48 @@ export default function HeroCTAIsland({ ctas }: HeroCTAIslandProps) {
   const [activeIndex, setActiveIndex] = useState<number>(-1);
   const [gradientPos, setGradientPos] = useState({ left: 0, width: 0, height: 0 });
   const [isLargeScreen, setIsLargeScreen] = useState(true);
+  const [hasAnimated, setHasAnimated] = useState(false);
+  const justPositionedRef = useRef(false);
+  const prevCtasRef = useRef<HeroCTAItem[]>(ctas);
   const containerRef = useRef<HTMLDivElement>(null);
   const ctaRefs = useRef<(HTMLDivElement | null)[]>([]);
   const gridRef = useRef<HTMLDivElement>(null);
+
+  // Reset animation state when CTAs change
+  useEffect(() => {
+    const prevCtas = prevCtasRef.current;
+    const ctasChanged = prevCtas.length !== ctas.length ||
+      prevCtas.some((cta, i) =>
+        cta.href !== ctas[i]?.href ||
+        cta.title !== ctas[i]?.title
+      );
+
+    if (ctasChanged) {
+      setHasAnimated(false);
+      setActiveIndex(-1);
+      // Reset position to center of new CTAs
+      if (gridRef.current && containerRef.current) {
+        const timer = setTimeout(() => {
+          if (gridRef.current && containerRef.current && ctaRefs.current[0]) {
+            const gridRect = gridRef.current.getBoundingClientRect();
+            const containerRect = containerRef.current.getBoundingClientRect();
+            const centerIndex = Math.floor(ctas.length / 2);
+            const referenceCta = ctaRefs.current[centerIndex] || ctaRefs.current[0];
+            if (referenceCta) {
+              const ctaRect = referenceCta.getBoundingClientRect();
+              setGradientPos({
+                left: ctaRect.left - containerRect.left,
+                width: 0,
+                height: gridRect.height + 32
+              });
+            }
+          }
+        }, 0);
+        return () => clearTimeout(timer);
+      }
+    }
+    prevCtasRef.current = ctas;
+  }, [ctas]);
 
   // Check screen size on mount and resize
   useEffect(() => {
@@ -50,6 +89,7 @@ export default function HeroCTAIsland({ ctas }: HeroCTAIslandProps) {
 
       setGradientPos({ left, width, height });
       setActiveIndex(index);
+      justPositionedRef.current = true;
     }
   }, []);
 
@@ -57,7 +97,45 @@ export default function HeroCTAIsland({ ctas }: HeroCTAIslandProps) {
     setActiveIndex(-1);
   }, []);
 
-  // Initialize gradient height on mount and resize
+  // Enable transitions after first positioning is complete
+  useEffect(() => {
+    if (justPositionedRef.current) {
+      // Small delay to ensure the position has been rendered without transition
+      const timer = setTimeout(() => {
+        setHasAnimated(true);
+        justPositionedRef.current = false;
+      }, 50);
+      return () => clearTimeout(timer);
+    }
+  }, [gradientPos]);
+
+  // Initialize gradient position after refs are populated
+  useEffect(() => {
+    const initializePosition = () => {
+      if (gridRef.current && containerRef.current && ctaRefs.current[0]) {
+        const gridRect = gridRef.current.getBoundingClientRect();
+        const containerRect = containerRef.current.getBoundingClientRect();
+        // Find the center CTA or use the first one as fallback
+        const centerIndex = Math.floor(ctas.length / 2);
+        const referenceCta = ctaRefs.current[centerIndex] || ctaRefs.current[0];
+        if (referenceCta) {
+          const ctaRect = referenceCta.getBoundingClientRect();
+          // Set initial position but keep invisible (width=0)
+          setGradientPos({
+            left: ctaRect.left - containerRect.left,
+            width: 0,
+            height: gridRect.height + 32
+          });
+        }
+      }
+    };
+
+    // Try immediately
+    initializePosition();
+    // And also after a short delay to ensure DOM is ready
+    const timer = setTimeout(initializePosition, 100);
+    return () => clearTimeout(timer);
+  }, [ctas.length]);
   useEffect(() => {
     const updateHeight = () => {
       const gridEl = gridRef.current;
@@ -122,7 +200,9 @@ export default function HeroCTAIsland({ ctas }: HeroCTAIslandProps) {
           height: `${rectHeight + curveHeight}px`,
           opacity: activeIndex >= 0 ? 1 : 0,
           clipPath: activeIndex >= 0 ? 'inset(0 0 0 0)' : 'inset(100% 0 0 0)',
-          transition: 'left 500ms ease-out, width 500ms ease-out, opacity 500ms ease-out, clip-path 500ms ease-out',
+          transition: hasAnimated
+            ? 'left 500ms ease-out, width 500ms ease-out, opacity 500ms ease-out, clip-path 500ms ease-out'
+            : 'opacity 500ms ease-out, clip-path 500ms ease-out',
         }}
         viewBox={`${-bottomWidth} ${-curveHeight} ${expandedWidth + bottomWidth * 2} ${rectHeight + curveHeight}`}
         preserveAspectRatio="none"
