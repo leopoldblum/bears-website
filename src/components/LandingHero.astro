@@ -99,7 +99,7 @@ const mediaJson = JSON.stringify(media.map((item, index) => ({
 ---
 
 <section
-  class="relative h-[75vh] w-full max-w-960 mx-auto overflow-hidden bg-linear-to-br from-[#1F1F1F] to-bears-bg"
+  class="relative h-[75vh] w-full max-w-[2560px] mx-auto overflow-hidden bg-linear-to-br from-[#1F1F1F] to-bears-bg"
   x-data={`{
     currentSlide: 0,
     totalSlides: ${media.length || 1},
@@ -210,6 +210,10 @@ const mediaJson = JSON.stringify(media.map((item, index) => ({
 
     <!-- Bottom gradient for CTA area (always visible base layer) -->
     <div class="absolute bottom-0 left-0 right-0 h-64 bg-gradient-to-t from-bears-bg via-bears-bg/80 to-transparent pointer-events-none"></div>
+
+    <!-- Side gradients for wide viewports - fade into background (show only when >2560px) -->
+    <div class="hidden min-[2561px]:block absolute top-0 bottom-0 left-0 w-32 bg-gradient-to-r from-bears-bg to-transparent z-10 pointer-events-none"></div>
+    <div class="hidden min-[2561px]:block absolute top-0 bottom-0 right-0 w-32 bg-gradient-to-l from-bears-bg to-transparent z-10 pointer-events-none"></div>
 
     <!-- Dot Indicators -->
     {hasMultipleSlides && showDots && (
