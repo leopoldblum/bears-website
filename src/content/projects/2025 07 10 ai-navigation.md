@@ -4,7 +4,7 @@ description: "Machine learning-based autonomous navigation for mobile robotics p
 date: 2025-07-10
 categoryProject: "science-and-experiments"
 tags: ["ai", "robotics", "navigation", "machine-learning", "computer-vision"]
-coverImage: "project-2.jpg"
+coverImage: "project-7.jpg"
 displayMeetTheTeam: true
 headOfProject: "Sophie Taylor"
 isProjectCompleted: true

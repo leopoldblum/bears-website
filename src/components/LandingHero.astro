@@ -3,8 +3,8 @@
 // Media is loaded from the landingHero content collection
 // HeroCTAs are rendered via a React island for better interactivity
 
-import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
+import Img_better from './mdx/Img_better.astro';
 import HeroCTAIsland from './HeroCTAIsland';
 import CarouselArrow from './CarouselArrow.astro';
 import { getLandingHeroSlides } from '@utils/contentQueries';
@@ -183,11 +183,14 @@ const mediaJson = JSON.stringify(media.map((item, index) => ({
             />
           ) : (
             typeof item.src === 'object' ? (
-              <Image
+              <Img_better
                 src={item.src as ImageMetadata}
                 alt={item.alt || ''}
                 class="absolute inset-0 w-full h-full object-cover"
-                loading={index === 0 ? 'eager' : 'lazy'}
+                loading="eager"
+                sizes="(min-width: 2560px) 2560px, 100vw"
+                enableClickToEnlarge={false}
+                fetchpriority={index === 0 ? 'high' : undefined}
               />
             ) : (
               <img

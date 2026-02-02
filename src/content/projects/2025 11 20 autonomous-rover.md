@@ -4,7 +4,7 @@ description: "Development of an AI-powered autonomous navigation system for our 
 date: 2025-11-20
 categoryProject: "robotics"
 tags: ["ai", "rover", "autonomous", "computer-vision", "machine-learning"]
-coverImage: "project-2.jpg"
+coverImage: "project-10.jpg"
 isDraft: false
 displayMeetTheTeam: true
 headOfProject: "Emma Watson"

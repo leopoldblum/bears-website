@@ -4,7 +4,7 @@ description: "Testing and analysis of small-scale rocket propulsion systems for 
 date: 2025-08-20
 categoryProject: "experimental-rocketry"
 tags: ["aerospace", "propulsion", "testing", "rocketry", "engineering"]
-coverImage: "project-1.jpg"
+coverImage: "project-8.jpg"
 displayMeetTheTeam: true
 headOfProject: "David Martinez"
 isProjectCompleted: true

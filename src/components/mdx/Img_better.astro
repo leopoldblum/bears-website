@@ -8,9 +8,11 @@ interface Props {
   alt: string;
   width?: string;      // CSS width: "50%", "800px", "100%", etc. (default: "100%")
   sizes?: string;      // Optional override for srcset sizes (auto-derived from width if not provided)
+  widths?: number[];   // Array of widths for srcset generation (default covers common cases)
   class?: string;      // Additional styling classes (rounded, shadow, etc.)
-  enableClickToEnlarge?: boolean;  // Default: true
+  enableClickToEnlarge?: boolean;  // Default: true. When false, renders without wrapper div.
   loading?: "eager" | "lazy";      // Default: "lazy"
+  fetchpriority?: "high" | "low" | "auto";  // Default: undefined (browser default)
 }
 
 const {
@@ -18,9 +20,11 @@ const {
   alt,
   width = "100%",
   sizes: customSizes,
+  widths = [240, 480, 720, 960, 1280, 1920, 2560],
   class: className,
   enableClickToEnlarge = true,
-  loading = "lazy"
+  loading = "lazy",
+  fetchpriority
 } = Astro.props;
 
 // Auto-derive sizes from width if not provided
@@ -43,20 +47,37 @@ const modalSrc = enableClickToEnlarge
   : undefined;
 ---
 
-<div
-  class="img-better h-full"
-  x-data={modalSrc ? "{ modalOpen: false }" : undefined}
-  style={`width: ${width}`}
->
+{enableClickToEnlarge ? (
+  <!-- With wrapper: enables click-to-enlarge modal -->
+  <div
+    class="img-better h-full"
+    x-data="{ modalOpen: false }"
+    style={`width: ${width}`}
+  >
+    <Image
+      src={src}
+      alt={alt}
+      widths={widths}
+      sizes={sizes}
+      class={`${className || ''} hover:cursor-pointer`.trim()}
+      loading={loading}
+      format="webp"
+      fetchpriority={fetchpriority}
+      x-on:click="modalOpen = true"
+    />
+
+    <ImageModal src={modalSrc!} alt={alt} />
+  </div>
+) : (
+  <!-- Without wrapper: just the optimized image -->
   <Image
     src={src}
     alt={alt}
+    widths={widths}
     sizes={sizes}
-    class={modalSrc ? `${className || ''} hover:cursor-pointer`.trim() : className}
+    class={className}
     loading={loading}
     format="webp"
-    x-on:click={modalSrc ? "modalOpen = true" : undefined}
+    fetchpriority={fetchpriority}
   />
-
-  {modalSrc && <ImageModal src={modalSrc} alt={alt} />}
-</div>
+)}

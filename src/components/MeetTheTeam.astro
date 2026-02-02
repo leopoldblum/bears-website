@@ -1,6 +1,6 @@
 ---
 // MeetTheTeam component
-import { Image } from "astro:assets";
+import Img_better from "./mdx/Img_better.astro";
 import { loadCollectionImages } from "@utils/imageLoader";
 import { getMeetTheTeamProjects } from "@utils/contentQueries";
 
@@ -75,12 +75,13 @@ const projects = await loadCollectionImages(sortedProjects, "project");
             x-on:click={`activeIndex = ${index}`}
             aria-label={`View ${project.data.title} project`}
           >
-            <Image
+            <Img_better
               src={project.loadedImage}
               alt={project.data.title}
               class="w-full h-full object-cover"
               loading="eager"
-              format="webp"
+              sizes="96px"
+              enableClickToEnlarge={false}
             />
           </button>
         ))
@@ -107,12 +108,13 @@ const projects = await loadCollectionImages(sortedProjects, "project");
                 x-on:click={`activeIndex = ${index}`}
                 aria-label={`View ${project.data.title} project`}
               >
-                <Image
+                <Img_better
                   src={project.loadedImage}
                   alt={project.data.title}
                   class="w-full h-full object-cover"
                   loading="eager"
-                  format="webp"
+                  sizes="96px"
+                  enableClickToEnlarge={false}
                 />
               </button>
             ))
@@ -133,12 +135,13 @@ const projects = await loadCollectionImages(sortedProjects, "project");
                 x-on:click={`activeIndex = ${index}`}
                 aria-label={`View ${project.data.title} project details`}
               >
-                <Image
+                <Img_better
                   src={project.loadedImage}
                   alt={project.data.title}
                   class="w-full h-full object-cover"
                   loading="eager"
-                  format="webp"
+                  sizes="(min-width: 1280px) 50vw, (min-width: 1024px) 66vw, 100vw"
+                  enableClickToEnlarge={false}
                 />
               </button>
             ))

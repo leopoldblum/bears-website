@@ -38,9 +38,18 @@ const gapClasses: Record<string, string> = {
   lg: "gap-4 lg:gap-6",
 };
 
+// Responsive image sizes matching grid columns
+const sizeClasses: Record<number, string> = {
+  2: "50vw",
+  3: "(min-width: 640px) 33vw, 50vw",
+  4: "(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw",
+  5: "(min-width: 1024px) 20vw, (min-width: 640px) 33vw, 50vw",
+  6: "(min-width: 1024px) 17vw, (min-width: 640px) 33vw, 50vw",
+};
+
 const gridCols = colClasses[cols] ?? colClasses[4];
 const gridGap = gapClasses[gap] ?? gapClasses["md"];
-
+const imageSizes = sizeClasses[cols] ?? sizeClasses[4];
 // Generate unique ID for this accordion instance
 const accordionId = `media-accordion-${Math.random().toString(36).substring(2, 9)}`;
 ---
@@ -146,7 +155,8 @@ const accordionId = `media-accordion-${Math.random().toString(36).substring(2, 9
                   alt={`${title} image ${index + 1}`}
                   class="w-full h-full object-cover object-center transition-transform duration-300 group-hover/image:scale-105"
                   width="100%"
-                  loading={index < 8 ? "eager" : "lazy"}
+                  sizes={imageSizes}
+                  loading={index <= cols * 2 ? "eager" : "lazy"}
                   enableClickToEnlarge={true}
                 />
               </div>

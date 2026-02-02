@@ -4,7 +4,7 @@ description: "A special guest lecture featuring Dr. Sarah Chen from NASA's Jet P
 date: 2026-02-10
 categoryEvent: "trade-fairs-and-conventions"
 tags: ["lecture", "mars", "robotics", "nasa"]
-coverImage: "event-2.jpg"
+coverImage: "event-9.jpg"
 isDraft: false
 ---
 

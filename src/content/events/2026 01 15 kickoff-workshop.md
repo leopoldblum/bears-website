@@ -4,7 +4,7 @@ description: "Join us for our semester kickoff workshop where we'll introduce ne
 date: 2026-01-15
 categoryEvent: "kick-off-events"
 tags: ["workshop", "networking", "onboarding"]
-# coverImage: "event-1.jpg"
+coverImage: "event-8.jpg"
 isDraft: false
 ---
 

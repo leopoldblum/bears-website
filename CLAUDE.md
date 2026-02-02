@@ -115,6 +115,17 @@ import placeholderImage from '../assets/events/event-1.jpg';
 - Use `loading="eager"` for above-the-fold images (e.g., cover images on detail pages)
 - Use `loading="lazy"` for below-the-fold images (e.g., cards, carousels, logos)
 
+**Img_better and Responsive Sizing:**
+
+When using `Img_better`, provide a `sizes` prop when the display size can be calculated. This helps the browser load appropriately sized images from the srcset.
+
+Examples:
+- For marquees/carousels with known image count: `sizes={`calc(100vh / ${images.length})`}`
+- For grid layouts: `sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"`
+- For fixed-width containers: `sizes="300px"`
+
+The `sizes` prop tells the browser the expected display width, allowing it to select the optimal image from the generated srcset without downloading unnecessarily large files.
+
 ### MDX Components
 
 When creating reusable components intended for use in `.mdx` files, consider supporting Markdown input for string content properties. This allows content creators to format text with rich styling (bold, lists, links, code blocks, etc.) without writing HTML.

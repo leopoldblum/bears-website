@@ -4,7 +4,7 @@ description: "Connect with aerospace and engineering professionals from leading 
 date: 2026-04-20
 categoryEvent: "trade-fairs-and-conventions"
 tags: ["networking", "careers", "industry", "professional-development"]
-coverImage: "event-4.jpg"
+coverImage: "event-11.jpg"
 isDraft: false
 ---
 

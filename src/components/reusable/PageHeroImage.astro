@@ -2,7 +2,7 @@
 // PageHeroImage Component - Full viewport height hero with background image
 // Displays a title in the bottom left quadrant with gradient overlay
 
-import { Image } from "astro:assets";
+import Img_better from "../mdx/Img_better.astro";
 import type { ImageMetadata } from "astro";
 
 interface Props {
@@ -35,12 +35,14 @@ const {
 >
   {/* Background Image Layer */}
   <div class="absolute inset-0 z-0">
-    <Image
+    <Img_better
       src={image}
       alt={alt}
       class="w-full h-full object-cover"
       loading={loading}
-      format="webp"
+      sizes="(min-width: 2560px) 2560px, 100vw"
+      enableClickToEnlarge={false}
+      fetchpriority="high"
     />
   </div>
 
