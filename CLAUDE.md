@@ -115,9 +115,9 @@ import placeholderImage from '../assets/events/event-1.jpg';
 - Use `loading="eager"` for above-the-fold images (e.g., cover images on detail pages)
 - Use `loading="lazy"` for below-the-fold images (e.g., cards, carousels, logos)
 
-**Img_better and Responsive Sizing:**
+**Img and Responsive Sizing:**
 
-When using `Img_better`, provide a `sizes` prop when the display size can be calculated. This helps the browser load appropriately sized images from the srcset.
+When using `Img`, provide a `sizes` prop when the display size can be calculated. This helps the browser load appropriately sized images from the srcset.
 
 Examples:
 - For marquees/carousels with known image count: `sizes={`calc(100vh / ${images.length})`}`

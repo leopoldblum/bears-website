@@ -6,7 +6,7 @@
 import type { ImageMetadata } from "astro";
 import type { ImageWithAlt } from "@types";
 import CarouselArrow from "../CarouselArrow.astro";
-import SquareImageGrid from "./SquareImageGrid.astro";
+import ImageGrid from "./ImageGrid.astro";
 
 interface Props {
   /** Category title displayed at the top */
@@ -26,7 +26,7 @@ const { title, images, class: className, cols = 4, gap = "md" } = Astro.props;
 // Transform images to include alt text
 const imagesWithAlt: ImageWithAlt[] = images.map((image, index) => ({
   image,
-  alt: `${title} image ${index + 1}`
+  alt: `${title} image ${index + 1}`,
 }));
 
 // Generate unique ID for this accordion instance
@@ -122,7 +122,7 @@ const accordionId = `media-accordion-${Math.random().toString(36).substring(2, 9
     >
       {/* Image Grid Container */}
       <div x-ref="content">
-        <SquareImageGrid
+        <ImageGrid
           images={imagesWithAlt}
           cols={cols}
           gap={gap}

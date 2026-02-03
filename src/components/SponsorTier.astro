@@ -1,8 +1,8 @@
 ---
 // SponsorTier component - Renders a tier of sponsors with tier-specific styling
-import Img_better from './mdx/Img_better.astro';
-import type { ImageMetadata } from 'astro';
-import type { SponsorTier } from '@types';
+import Img from "./mdx/Img.astro";
+import type { ImageMetadata } from "astro";
+import type { SponsorTier } from "@types";
 
 interface Props {
   sponsors: Array<{
@@ -20,68 +20,70 @@ const { sponsors, tier } = Astro.props;
 // Define tier-specific styling configuration
 const tierConfig = {
   diamond: {
-    sizeClasses: 'h-32 w-32 sm:h-40 sm:w-40 lg:h-48 lg:w-48',
-    gapClasses: 'gap-10 sm:gap-14 lg:gap-20',
-    marginClasses: 'mb-6 sm:mb-8',
-    sizes: '(min-width: 1024px) 192px, (min-width: 640px) 160px, 128px',
+    sizeClasses: "h-32 w-32 sm:h-40 sm:w-40 lg:h-48 lg:w-48",
+    gapClasses: "gap-10 sm:gap-14 lg:gap-20",
+    marginClasses: "mb-6 sm:mb-8",
+    sizes: "(min-width: 1024px) 192px, (min-width: 640px) 160px, 128px",
   },
   platinum: {
-    sizeClasses: 'h-28 w-28 sm:h-36 sm:w-36 lg:h-44 lg:w-44',
-    gapClasses: 'gap-9 sm:gap-12 lg:gap-18',
-    marginClasses: 'mb-6 sm:mb-8',
-    sizes: '(min-width: 1024px) 176px, (min-width: 640px) 144px, 112px',
+    sizeClasses: "h-28 w-28 sm:h-36 sm:w-36 lg:h-44 lg:w-44",
+    gapClasses: "gap-9 sm:gap-12 lg:gap-18",
+    marginClasses: "mb-6 sm:mb-8",
+    sizes: "(min-width: 1024px) 176px, (min-width: 640px) 144px, 112px",
   },
   gold: {
-    sizeClasses: 'h-24 w-24 sm:h-32 sm:w-32 lg:h-40 lg:w-40',
-    gapClasses: 'gap-8 sm:gap-10 lg:gap-12',
-    marginClasses: 'mb-6 sm:mb-8',
-    sizes: '(min-width: 1024px) 160px, (min-width: 640px) 128px, 96px',
+    sizeClasses: "h-24 w-24 sm:h-32 sm:w-32 lg:h-40 lg:w-40",
+    gapClasses: "gap-8 sm:gap-10 lg:gap-12",
+    marginClasses: "mb-6 sm:mb-8",
+    sizes: "(min-width: 1024px) 160px, (min-width: 640px) 128px, 96px",
   },
   silver: {
-    sizeClasses: 'h-20 w-20 sm:h-24 sm:w-24 lg:h-28 lg:w-28',
-    gapClasses: 'gap-6 sm:gap-8 lg:gap-10',
-    marginClasses: 'mb-6 sm:mb-8',
-    sizes: '(min-width: 1024px) 112px, (min-width: 640px) 96px, 80px',
+    sizeClasses: "h-20 w-20 sm:h-24 sm:w-24 lg:h-28 lg:w-28",
+    gapClasses: "gap-6 sm:gap-8 lg:gap-10",
+    marginClasses: "mb-6 sm:mb-8",
+    sizes: "(min-width: 1024px) 112px, (min-width: 640px) 96px, 80px",
   },
   bronze: {
-    sizeClasses: 'h-16 w-16 sm:h-20 sm:w-20 lg:h-24 lg:w-24',
-    gapClasses: 'gap-4 sm:gap-6 lg:gap-8',
-    marginClasses: 'mb-10 sm:mb-12 lg:mb-16',
-    sizes: '(min-width: 1024px) 96px, (min-width: 640px) 80px, 64px',
+    sizeClasses: "h-16 w-16 sm:h-20 sm:w-20 lg:h-24 lg:w-24",
+    gapClasses: "gap-4 sm:gap-6 lg:gap-8",
+    marginClasses: "mb-10 sm:mb-12 lg:mb-16",
+    sizes: "(min-width: 1024px) 96px, (min-width: 640px) 80px, 64px",
   },
 };
 
 const config = tierConfig[tier] || tierConfig.bronze;
 ---
 
-{sponsors.length > 0 && (
-  <div class={`flex flex-wrap justify-center items-center ${config.gapClasses} ${config.marginClasses}`}>
-    {sponsors.map((sponsor) => {
-      const content = (
-        <Img_better
-          src={sponsor.logo}
-          alt={sponsor.name}
-          class={config.sizeClasses}
-          loading="lazy"
-          sizes={config.sizes}
-          enableClickToEnlarge={false}
-        />
-      );
+{
+  sponsors.length > 0 && (
+    <div
+      class={`flex flex-wrap justify-center items-center ${config.gapClasses} ${config.marginClasses}`}
+    >
+      {sponsors.map((sponsor) => {
+        const content = (
+          <Img
+            src={sponsor.logo}
+            alt={sponsor.name}
+            class={config.sizeClasses}
+            loading="lazy"
+            sizes={config.sizes}
+            enableClickToEnlarge={false}
+          />
+        );
 
-      return sponsor.url ? (
-        <a
-          href={sponsor.url}
-          class="inline-block hover:scale-110 hover:opacity-80 transition-all duration-300"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          {content}
-        </a>
-      ) : (
-        <div class="inline-block">
-          {content}
-        </div>
-      );
-    })}
-  </div>
-)}
+        return sponsor.url ? (
+          <a
+            href={sponsor.url}
+            class="inline-block hover:scale-110 hover:opacity-80 transition-all duration-300"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {content}
+          </a>
+        ) : (
+          <div class="inline-block">{content}</div>
+        );
+      })}
+    </div>
+  )
+}

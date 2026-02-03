@@ -9,7 +9,7 @@ const heightPresets: Record<HeightPreset, string> = {
   xl: 'h-[600px]',
 };
 
-interface CarouselBetterProps {
+interface Carousel {
   autoScroll?: boolean;
   autoScrollInterval?: number;
   showArrows?: boolean;
@@ -18,14 +18,14 @@ interface CarouselBetterProps {
   children: ReactNode;
 }
 
-export default function CarouselBetter({
+export default function Carousel({
   autoScroll = false,
   autoScrollInterval = 5000,
   showArrows = true,
   showDots = true,
   height = 'md',
   children,
-}: CarouselBetterProps) {
+}: Carousel) {
   const heightClass = heightPresets[height];
   const [currentSlide, setCurrentSlide] = useState(0);
   const [totalSlides, setTotalSlides] = useState(0);
@@ -237,11 +237,10 @@ export default function CarouselBetter({
             <button
               key={index}
               onClick={() => goToSlide(index)}
-              className={`w-3 h-3 sm:w-3.5 sm:h-3.5 lg:w-4 lg:h-4 rounded-full border transition-[background,border-color,box-shadow,transform] duration-200 cursor-pointer ${
-                currentSlide === index
-                  ? 'bg-gradient-to-b from-bears-accent to-bears-accent-muted border-bears-accent/30 shadow-[0_0_16px_rgba(197,14,31,0.5),0_2px_8px_rgba(0,0,0,0.4)] scale-110 hover:shadow-[0_0_20px_rgba(197,14,31,0.6),0_2px_8px_rgba(0,0,0,0.4)]'
-                  : 'bg-white/10 backdrop-blur-sm border-white/20 shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:scale-105 hover:border-white/30'
-              }`}
+              className={`w-3 h-3 sm:w-3.5 sm:h-3.5 lg:w-4 lg:h-4 rounded-full border transition-[background,border-color,box-shadow,transform] duration-200 cursor-pointer ${currentSlide === index
+                ? 'bg-gradient-to-b from-bears-accent to-bears-accent-muted border-bears-accent/30 shadow-[0_0_16px_rgba(197,14,31,0.5),0_2px_8px_rgba(0,0,0,0.4)] scale-110 hover:shadow-[0_0_20px_rgba(197,14,31,0.6),0_2px_8px_rgba(0,0,0,0.4)]'
+                : 'bg-white/10 backdrop-blur-sm border-white/20 shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:scale-105 hover:border-white/30'
+                }`}
               aria-label={`Go to slide ${index + 1}`}
               aria-current={currentSlide === index ? 'true' : undefined}
             />

@@ -1,8 +1,8 @@
 ---
 // WhatIsBears component - Explains what BEARS e.V. is
-import Marquee_better from "@mdx/Marquee_better.astro";
+import Marquee from "@mdx/Marquee.astro";
 import Button from "@mdx/Button.astro";
-import Img_better from "@mdx/Img_better.astro";
+import Img from "@mdx/Img.astro";
 import { whatIsBearsImages } from "@utils/imageGlobs";
 import { loadAllImagesFromDirectory } from "@utils/imageLoader";
 
@@ -36,10 +36,10 @@ const carouselImages = await loadAllImagesFromDirectory(whatIsBearsImages);
   </div>
 
   <div class="mt-12 sm:mt-16">
-    <Marquee_better speed={160} gap="1.5rem" height="md">
+    <Marquee speed={160} gap="1.5rem" height="md">
       {
         carouselImages.map((img, index) => (
-          <Img_better
+          <Img
             src={img}
             alt={`BEARS Gallery ${index + 1}`}
             class="rounded-lg"
@@ -47,6 +47,6 @@ const carouselImages = await loadAllImagesFromDirectory(whatIsBearsImages);
           />
         ))
       }
-    </Marquee_better>
+    </Marquee>
   </div>
 </section>

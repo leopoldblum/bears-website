@@ -1,6 +1,6 @@
 ---
 // MeetTheTeam component
-import Img_better from "./mdx/Img_better.astro";
+import Img from "./mdx/Img.astro";
 import { loadCollectionImages } from "@utils/imageLoader";
 import { getMeetTheTeamProjects } from "@utils/contentQueries";
 
@@ -75,7 +75,7 @@ const projects = await loadCollectionImages(sortedProjects, "project");
             x-on:click={`activeIndex = ${index}`}
             aria-label={`View ${project.data.title} project`}
           >
-            <Img_better
+            <Img
               src={project.loadedImage}
               alt={project.data.title}
               class="w-full h-full object-cover"
@@ -108,7 +108,7 @@ const projects = await loadCollectionImages(sortedProjects, "project");
                 x-on:click={`activeIndex = ${index}`}
                 aria-label={`View ${project.data.title} project`}
               >
-                <Img_better
+                <Img
                   src={project.loadedImage}
                   alt={project.data.title}
                   class="w-full h-full object-cover"
@@ -135,7 +135,7 @@ const projects = await loadCollectionImages(sortedProjects, "project");
                 x-on:click={`activeIndex = ${index}`}
                 aria-label={`View ${project.data.title} project details`}
               >
-                <Img_better
+                <Img
                   src={project.loadedImage}
                   alt={project.data.title}
                   class="w-full h-full object-cover"

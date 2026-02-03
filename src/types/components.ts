@@ -24,7 +24,7 @@ export type PostEntry = CollectionEntry<'events'> | CollectionEntry<'projects'>;
 
 /**
  * Image with required alt text for accessibility.
- * Used by SquareImageGrid and other image display components.
+ * Used by ImageGrid and other image display components.
  */
 export interface ImageWithAlt {
   /** Image file to display */

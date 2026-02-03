@@ -4,7 +4,7 @@
 // Features: configurable columns, square or native aspect ratios, responsive sizing, hover effects, smart lazy loading, required alt text
 
 import type { ImageWithAlt } from "@types";
-import Img_better from "../mdx/Img_better.astro";
+import Img from "../mdx/Img.astro";
 
 interface Props {
   /** Array of images with alt text to display in the grid */
@@ -18,7 +18,7 @@ interface Props {
   /** Whether to enable click-to-enlarge functionality (default: true) */
   enableClickToEnlarge?: boolean;
   /** Aspect ratio mode: 'square' crops to 1:1, 'native' preserves original proportions (default: 'square') */
-  aspectRatio?: 'square' | 'native';
+  aspectRatio?: "square" | "native";
 }
 
 const {
@@ -27,7 +27,7 @@ const {
   gap = "md",
   class: className,
   enableClickToEnlarge = true,
-  aspectRatio = 'square',
+  aspectRatio = "square",
 } = Astro.props;
 
 // Grid column classes - responsive breakpoints
@@ -61,14 +61,16 @@ const gridGap = gapClasses[gap] ?? gapClasses["md"];
 const imageSizes = sizeClasses[cols] ?? sizeClasses[4];
 ---
 
-<div class={`not-prose grid ${gridCols} ${gridGap} px-4 sm:px-6 py-3 ${className || ""}`}>
+<div
+  class={`not-prose grid ${gridCols} ${gridGap} px-4 sm:px-6 py-3 ${className || ""}`}
+>
   {
-    images.map(({ image, alt }, index) => (
-      aspectRatio === 'square' ? (
+    images.map(({ image, alt }, index) =>
+      aspectRatio === "square" ? (
         // SQUARE MODE: Square aspect ratio with wrapper div for proper sizing
         <div class="square-grid-item overflow-hidden rounded-lg group/image ring-0 ring-bears-accent transition-all duration-300 hover:ring-2">
           <div class="w-full h-full">
-            <Img_better
+            <Img
               src={image}
               alt={alt}
               class="w-full h-full object-cover object-center transition-transform duration-300 group-hover/image:scale-105"
@@ -82,7 +84,7 @@ const imageSizes = sizeClasses[cols] ?? sizeClasses[4];
       ) : (
         // NATIVE MODE: Natural aspect ratios, click-to-enlarge enabled
         <div class="overflow-hidden rounded-lg group/image ring-0 ring-bears-accent transition-all duration-300 hover:ring-2">
-          <Img_better
+          <Img
             src={image}
             alt={alt}
             class="w-full h-auto transition-transform duration-300 group-hover/image:scale-105"
@@ -92,8 +94,8 @@ const imageSizes = sizeClasses[cols] ?? sizeClasses[4];
             enableClickToEnlarge={enableClickToEnlarge}
           />
         </div>
-      )
-    ))
+      ),
+    )
   }
 </div>
 

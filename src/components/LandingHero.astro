@@ -4,7 +4,7 @@
 // HeroCTAs are rendered via a React island for better interactivity
 
 import type { ImageMetadata } from 'astro';
-import Img_better from './mdx/Img_better.astro';
+import Img from './mdx/Img.astro';
 import HeroCTAIsland from './HeroCTAIsland';
 import CarouselArrow from './CarouselArrow.astro';
 import { getLandingHeroSlides } from '@utils/contentQueries';
@@ -183,7 +183,7 @@ const mediaJson = JSON.stringify(media.map((item, index) => ({
             />
           ) : (
             typeof item.src === 'object' ? (
-              <Img_better
+              <Img
                 src={item.src as ImageMetadata}
                 alt={item.alt || ''}
                 class="absolute inset-0 w-full h-full object-cover"

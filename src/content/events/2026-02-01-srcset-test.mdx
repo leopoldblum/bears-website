@@ -1,15 +1,15 @@
 ---
-title: "Img_better Component Test"
-description: "Testing the new Img_better component with srcset, blur loading, click-to-enlarge, marquee, and carousel"
+title: "Img Component Test"
+description: "Testing the new Img component with srcset, blur loading, click-to-enlarge, marquee, and carousel"
 date: 2026-02-01
 categoryEvent: "other"
-tags: ["test", "srcset", "responsive-images", "Img_better"]
+tags: ["test", "srcset", "responsive-images", "Img"]
 isDraft: false
 ---
 
-import Img_better from '@mdx/Img_better.astro';
-import Marquee_better from '@mdx/Marquee_better.astro';
-import Carousel_better from '@mdx/Carousel_better.astro';
+import Img from '@mdx/Img.astro';
+import Marquee from '@mdx/Marquee.astro';
+import Carousel from '@mdx/Carousel.astro';
 import testImage from '@assets/projects/project-1.jpg';
 import testImage2 from '@assets/projects/project-2.jpg';
 import testImage3 from '@assets/projects/project-3.jpg';
@@ -17,63 +17,63 @@ import testImage4 from '@assets/projects/project-4.jpg';
 import testImage5 from '@assets/projects/project-5.jpg';
 import testImage6 from '@assets/projects/project-6.jpg';
 
-## Img_better Component - Different Width Values
+## Img Component - Different Width Values
 
-This section tests the Img_better component's responsive image generation. Each image below uses the same source but different width props. Click any image to enlarge it in a modal.
+This section tests the Img component's responsive image generation. Each image below uses the same source but different width props. Click any image to enlarge it in a modal.
 
 ### Small Width (400px)
-<Img_better src={testImage} alt="Test at 400px width" width="400px" />
+<Img src={testImage} alt="Test at 400px width" width="400px" />
 
 ### Medium Width (800px)
-<Img_better src={testImage} alt="Test at 800px width" width="800px" />
+<Img src={testImage} alt="Test at 800px width" width="800px" />
 
 ### Percentage Width (50%)
-<Img_better src={testImage} alt="Test at 50% width" width="50%" />
+<Img src={testImage} alt="Test at 50% width" width="50%" />
 
 ### Default (No width specified)
-<Img_better src={testImage} alt="Test with default full width" />
+<Img src={testImage} alt="Test with default full width" />
 
 ---
 
-## Marquee_better Test
+## Marquee Test
 
-This marquee demonstrates Img_better in a continuous scrolling carousel. The first image has click-to-enlarge enabled, while others disable it for smooth scrolling interaction.
+This marquee demonstrates Img in a continuous scrolling carousel. The first image has click-to-enlarge enabled, while others disable it for smooth scrolling interaction.
 
-<Marquee_better speed={100} gap="1rem" height="xl" direction="left">
-  <Img_better src={testImage} alt="Marquee image 1" enableClickToEnlarge={true} />
-  <Img_better src={testImage2} alt="Marquee image 2" enableClickToEnlarge={false} />
-  <Img_better src={testImage3} alt="Marquee image 3" enableClickToEnlarge={false} />
-  <Img_better src={testImage4} alt="Marquee image 4" enableClickToEnlarge={false} />
-  <Img_better src={testImage5} alt="Marquee image 5" enableClickToEnlarge={false} />
-  <Img_better src={testImage6} alt="Marquee image 6" enableClickToEnlarge={false} />
-</Marquee_better>
+<Marquee speed={100} gap="1rem" height="xl" direction="left">
+  <Img src={testImage} alt="Marquee image 1" enableClickToEnlarge={true} />
+  <Img src={testImage2} alt="Marquee image 2" enableClickToEnlarge={false} />
+  <Img src={testImage3} alt="Marquee image 3" enableClickToEnlarge={false} />
+  <Img src={testImage4} alt="Marquee image 4" enableClickToEnlarge={false} />
+  <Img src={testImage5} alt="Marquee image 5" enableClickToEnlarge={false} />
+  <Img src={testImage6} alt="Marquee image 6" enableClickToEnlarge={false} />
+</Marquee>
 
 ---
 
-## Carousel_better Test
+## Carousel Test
 
-This carousel showcases Img_better in a slideshow format with native aspect ratio preservation. Each slide has click-to-enlarge enabled.
+This carousel showcases Img in a slideshow format with native aspect ratio preservation. Each slide has click-to-enlarge enabled.
 
-<Carousel_better autoScroll={true} autoScrollInterval={4000} showArrows={true} showDots={true} height="lg">
+<Carousel autoScroll={true} autoScrollInterval={4000} showArrows={true} showDots={true} height="lg">
   <div class="w-full h-full flex items-center justify-center p-4">
-    <Img_better src={testImage} alt="Carousel slide 1" class="rounded-lg" />
+    <Img src={testImage} alt="Carousel slide 1" class="rounded-lg" />
   </div>
   <div class="w-full h-full flex items-center justify-center p-4">
-    <Img_better src={testImage2} alt="Carousel slide 2" class="rounded-lg" />
+    <Img src={testImage2} alt="Carousel slide 2" class="rounded-lg" />
   </div>
   <div class="w-full h-full flex items-center justify-center p-4">
-    <Img_better src={testImage3} alt="Carousel slide 3" class="rounded-lg" />
+    <Img src={testImage3} alt="Carousel slide 3" class="rounded-lg" />
   </div>
   <div class="w-full h-full flex items-center justify-center p-4">
-    <Img_better src={testImage4} alt="Carousel slide 4" class="rounded-lg" />
+    <Img src={testImage4} alt="Carousel slide 4" class="rounded-lg" />
   </div>
   <div class="w-full h-full flex items-center justify-center p-4">
-    <Img_better src={testImage5} alt="Carousel slide 5" class="rounded-lg" />
+    <Img src={testImage5} alt="Carousel slide 5" class="rounded-lg" />
   </div>
   <div class="w-full h-full flex items-center justify-center p-4">
-    <Img_better src={testImage6} alt="Carousel slide 6" class="rounded-lg" />
+    <Img src={testImage6} alt="Carousel slide 6" class="rounded-lg" />
   </div>
-</Carousel_better>
+</Carousel>
 
 ---
 
@@ -110,7 +110,7 @@ This carousel showcases Img_better in a slideshow format with native aspect rati
 
 ## Technical Details
 
-**Img_better Component**:
+**Img Component**:
 - **Required props**: `src` and `alt` (TypeScript enforced)
 - **Width prop**: Accepts CSS width values ("50%", "800px", etc.)
 - **Auto-derived sizes**: Sizes attribute is calculated from width prop
