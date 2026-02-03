@@ -35,7 +35,19 @@
         "src/styles/*"
       ],
       "@reusable/*": [
-        "src/components/reusable"
+        "src/components/reusable/*"
+      ],
+      "@layout/*": [
+        "src/components/layout/*"
+      ],
+      "@landing/*": [
+        "src/components/landing/*"
+      ],
+      "@posts-catalog/*": [
+        "src/components/posts-catalog/*"
+      ],
+      "@post/*": [
+        "src/components/post/*"
       ]
     },
     "jsx": "react-jsx",

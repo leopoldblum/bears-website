@@ -1,10 +1,10 @@
 ---
 import BaseLayout from "@layouts/BaseLayout.astro";
-import PostShowcase from "@components/PostShowcase.astro";
-import FilterMenu from "@components/FilterMenu.astro";
-import SortMenu from "@components/SortMenu.astro";
-import Pagination from "@components/Pagination.astro";
-import PageHeroImage from "@components/reusable/PageHeroImage.astro";
+import PostShowcase from "@posts-catalog/PostShowcase.astro";
+import FilterMenu from "@posts-catalog/FilterMenu.astro";
+import SortMenu from "@posts-catalog/SortMenu.astro";
+import Pagination from "@posts-catalog/Pagination.astro";
+import PageHeroImage from "@reusable/PageHeroImage.astro";
 import { loadCollectionImages } from "@utils/imageLoader";
 import { getPublishedProjects } from "@utils/contentQueries";
 import { CategoryProjectEnum } from "@types";

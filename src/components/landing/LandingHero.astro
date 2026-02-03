@@ -4,9 +4,9 @@
 // HeroCTAs are rendered via a React island for better interactivity
 
 import type { ImageMetadata } from 'astro';
-import Img from './mdx/Img.astro';
+import Img from '@mdx/Img.astro';
 import HeroCTAIsland from './HeroCTAIsland';
-import CarouselArrow from './CarouselArrow.astro';
+import CarouselArrow from '@reusable/CarouselArrow.astro';
 import { getLandingHeroSlides } from '@utils/contentQueries';
 import { heroImages, heroMedia } from '@utils/imageGlobs';
 
