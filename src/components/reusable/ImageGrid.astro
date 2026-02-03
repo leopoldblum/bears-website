@@ -62,7 +62,7 @@ const imageSizes = sizeClasses[cols] ?? sizeClasses[4];
 ---
 
 <div
-  class={`not-prose grid ${gridCols} ${gridGap} px-4 sm:px-6 py-3 ${className || ""}`}
+  class={`not-prose grid ${gridCols} ${gridGap} items-center px-4 sm:px-6 py-3 ${className || ""}`}
 >
   {
     images.map(({ image, alt }, index) =>
@@ -83,11 +83,11 @@ const imageSizes = sizeClasses[cols] ?? sizeClasses[4];
         </div>
       ) : (
         // NATIVE MODE: Natural aspect ratios, click-to-enlarge enabled
-        <div class="overflow-hidden rounded-lg group/image ring-0 ring-bears-accent transition-all duration-300 hover:ring-2">
+        <div class="p-1">
           <Img
             src={image}
             alt={alt}
-            class="w-full h-auto transition-transform duration-300 group-hover/image:scale-105"
+            class="w-full h-auto rounded-lg overflow-hidden ring-0 ring-bears-accent transition-all duration-300 hover:ring-2 hover:scale-105"
             width="100%"
             sizes={imageSizes}
             loading={index <= cols * 2 ? "eager" : "lazy"}
