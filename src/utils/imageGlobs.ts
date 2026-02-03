@@ -66,7 +66,7 @@ export const whatIsBearsImages: ImageGlob = import.meta.glob<{ default: ImageMet
  * Used by: LandingHero.astro
  */
 export const heroImages: ImageGlob = import.meta.glob<{ default: ImageMetadata }>(
-  "/src/assets/hero/*.{jpg,jpeg,png,webp}"
+  "/src/assets/hero/landingpage/*.{jpg,jpeg,png,webp}"
 );
 
 /**
@@ -80,6 +80,6 @@ export type MediaGlob = Record<string, () => Promise<{ default: string }>>;
  * Includes: jpg, jpeg, png, webp, mp4, webm, ogg
  */
 export const heroMedia: MediaGlob = import.meta.glob<{ default: string }>(
-  "/src/assets/hero/*.{jpg,jpeg,png,webp,mp4,webm,ogg}",
+  "/src/assets/hero/landingpage/*.{jpg,jpeg,png,webp,mp4,webm,ogg}",
   { eager: false }
 );

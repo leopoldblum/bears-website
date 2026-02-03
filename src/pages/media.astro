@@ -7,7 +7,7 @@ import MediaAccordion from "../components/reusable/MediaAccordion.astro";
 import PageHeroImage from "../components/reusable/PageHeroImage.astro";
 import { loadAllImagesFromDirectory } from "@utils/imageLoader";
 import type { ImageMetadata } from "astro";
-import heroImage from "../assets/events/event-1.jpg";
+import heroImage from "@assets/hero/media/event-1.jpg";
 
 // Import all image globs statically
 const eventImagesGlob = import.meta.glob<{ default: ImageMetadata }>(
