@@ -15,10 +15,10 @@ import eventHeroImage from "@assets/events/event-1.jpg";
 const sortedEvents = await getPublishedEvents();
 
 // Load images for events
-const eventsWithLoadedImages = await loadCollectionImages(sortedEvents as any, 'event');
+const eventsWithLoadedImages = await loadCollectionImages(sortedEvents, 'event');
 
 // Map to format expected by PostShowcase
-const eventsWithImages = eventsWithLoadedImages.map((event: any) => ({
+const eventsWithImages = eventsWithLoadedImages.map((event) => ({
   ...event.data,
   slug: event.slug,
   coverImage: event.loadedImage,

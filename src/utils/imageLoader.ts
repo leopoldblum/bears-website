@@ -6,6 +6,7 @@
  */
 
 import type { ImageMetadata } from 'astro';
+import type { CollectionEntry } from 'astro:content';
 import defaultEventImage from '@assets/default-images/default-event.jpg';
 import defaultProjectImage from '@assets/default-images/default-project.jpg';
 import defaultTestimonialImage from '@assets/default-images/default-testimonial.jpg';
@@ -273,19 +274,22 @@ export async function loadAllImagesFromDirectory(
  * const testimonialsWithImages = await loadCollectionImages(sortedTestimonials, 'testimonial');
  * ```
  */
-export async function loadCollectionImages<
-  T extends {
-    data: {
-      coverImage?: string;
-      coverImageType?: string;
-      title?: string;
-    };
-    slug?: string;
-  }
->(
-  collection: T[],
+export async function loadCollectionImages(
+  collection: CollectionEntry<'events'>[],
+  type: 'event'
+): Promise<Array<CollectionEntry<'events'> & { loadedImage: ImageMetadata }>>;
+export async function loadCollectionImages(
+  collection: CollectionEntry<'projects'>[],
+  type: 'project'
+): Promise<Array<CollectionEntry<'projects'> & { loadedImage: ImageMetadata }>>;
+export async function loadCollectionImages(
+  collection: CollectionEntry<'testimonials'>[],
+  type: 'testimonial'
+): Promise<Array<CollectionEntry<'testimonials'> & { loadedImage: ImageMetadata }>>;
+export async function loadCollectionImages(
+  collection: CollectionEntry<'events'>[] | CollectionEntry<'projects'>[] | CollectionEntry<'testimonials'>[],
   type: 'event' | 'project' | 'testimonial'
-): Promise<Array<T & { loadedImage: ImageMetadata }>> {
+): Promise<Array<(CollectionEntry<'events'> | CollectionEntry<'projects'> | CollectionEntry<'testimonials'>) & { loadedImage: ImageMetadata }>> {
   // Configuration mapping for each collection type
   const config = {
     event: {
@@ -311,9 +315,12 @@ export async function loadCollectionImages<
   const typeConfig = config[type];
   const glob = await typeConfig.glob();
 
+  // Type assertion needed: CollectionEntry types from Zod transforms don't
+  // structurally match the generic constraint, but the overload signatures
+  // above guarantee callers always pass the correct collection type.
   return loadImagesForCollection({
     glob,
-    collection,
+    collection: collection as Parameters<typeof loadImagesForCollection>[0]['collection'],
     baseDir: typeConfig.baseDir,
     imageField: 'coverImage',
     fallbackImage: typeConfig.fallbackImage,

@@ -15,10 +15,10 @@ import projectHeroImage from "@assets/projects/project-1.jpg";
 const sortedProjects = await getPublishedProjects();
 
 // Load images for projects
-const projectsWithLoadedImages = await loadCollectionImages(sortedProjects as any, 'project');
+const projectsWithLoadedImages = await loadCollectionImages(sortedProjects, 'project');
 
 // Map to format expected by PostShowcase
-const projectsWithImages = projectsWithLoadedImages.map((project: any) => ({
+const projectsWithImages = projectsWithLoadedImages.map((project) => ({
   ...project.data,
   slug: project.slug,
   coverImage: project.loadedImage,
