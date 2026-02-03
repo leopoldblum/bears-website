@@ -93,7 +93,7 @@ const accordionId = `media-accordion-${Math.random().toString(36).substring(2, 9
       </h3>
     </div>
     <svg
-      class="w-5 h-5 flex-shrink-0 ml-3 transition-transform duration-300 text-bears-text-onDark/60 group-hover:text-bears-accent"
+      class="w-5 h-5 shrink-0 ml-3 transition-transform duration-300 text-bears-text-onDark/60 group-hover:text-bears-accent"
       x-bind:class="isOpen ? 'rotate-180 text-bears-accent' : 'rotate-0'"
       fill="none"
       stroke="currentColor"
@@ -117,7 +117,7 @@ const accordionId = `media-accordion-${Math.random().toString(36).substring(2, 9
     {/* Content Wrapper with smooth height animation */}
     <div
       x-ref="wrapper"
-      class="overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.4,0,0.2,1)]"
+      class="overflow-hidden transition-all duration-500 ease-in-out"
       x-bind:style="`max-height: ${isOpen ? contentHeight + 'px' : 'var(--preview-height, 300px)'}`"
     >
       {/* Image Grid Container */}

@@ -202,9 +202,9 @@ export default function Carousel({
         <div
           ref={containerRef}
           className={`relative flex-1 overflow-hidden w-full ${heightClass}
-            [&>*]:absolute [&>*]:inset-0 [&>*]:w-full [&>*]:h-full
-            [&>*]:flex [&>*]:items-center [&>*]:justify-center
-            [&>*]:transition-opacity [&>*]:duration-300
+            *:absolute *:inset-0 *:w-full *:h-full
+            *:flex *:items-center *:justify-center
+            *:transition-opacity *:duration-300
             [&>astro-slot>*]:absolute [&>astro-slot>*]:inset-0
             [&>astro-slot>*]:w-full [&>astro-slot>*]:h-full
             [&>astro-slot>*]:flex [&>astro-slot>*]:items-center
@@ -238,7 +238,7 @@ export default function Carousel({
               key={index}
               onClick={() => goToSlide(index)}
               className={`w-3 h-3 sm:w-3.5 sm:h-3.5 lg:w-4 lg:h-4 rounded-full border transition-[background,border-color,box-shadow,transform] duration-200 cursor-pointer ${currentSlide === index
-                ? 'bg-gradient-to-b from-bears-accent to-bears-accent-muted border-bears-accent/30 shadow-[0_0_16px_rgba(197,14,31,0.5),0_2px_8px_rgba(0,0,0,0.4)] scale-110 hover:shadow-[0_0_20px_rgba(197,14,31,0.6),0_2px_8px_rgba(0,0,0,0.4)]'
+                ? 'bg-linear-to-b from-bears-accent to-bears-accent-muted border-bears-accent/30 shadow-[0_0_16px_rgba(197,14,31,0.5),0_2px_8px_rgba(0,0,0,0.4)] scale-110 hover:shadow-[0_0_20px_rgba(197,14,31,0.6),0_2px_8px_rgba(0,0,0,0.4)]'
                 : 'bg-white/10 backdrop-blur-sm border-white/20 shadow-[0_2px_8px_rgba(0,0,0,0.3)] hover:scale-105 hover:border-white/30'
                 }`}
               aria-label={`Go to slide ${index + 1}`}
