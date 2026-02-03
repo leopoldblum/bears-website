@@ -33,6 +33,9 @@
       ],
       "@styles/*": [
         "src/styles/*"
+      ],
+      "@reusable/*": [
+        "src/components/reusable"
       ]
     },
     "jsx": "react-jsx",

@@ -18,6 +18,7 @@ import Marquee_better from '@mdx/Marquee_better.astro';
 import { SideBySide, Left, Right } from "@mdx/SideBySide"
 import Img_better from '@mdx/Img_better.astro';
 import ImageGrid from '@mdx/ImageGrid.astro';
+import SquareImageGrid from '@components/reusable/SquareImageGrid.astro'
 
 import project1 from '../../assets/projects/project-1.jpg';
 import project2 from '../../assets/projects/project-2.jpg';
@@ -154,14 +155,35 @@ The `Img` component provides optimized, responsive image display with flexible s
 
 ### Image Grid
 
-<ImageGrid cols={2}>
-  <Img_better src={project1} alt="Project 1 grid example" class="rounded-lg" />
-  <Img_better src={project2} alt="Project 2 grid example" class="rounded-lg" />
-  <Img_better src={project3} alt="Project 3 grid example" class="rounded-lg" />
-  <Img_better src={project4} alt="Project 4 grid example" class="rounded-lg" />
-  <Img_better src={project5} alt="Project 5 grid example" class="rounded-lg" />
-  <Img_better src={project6} alt="Project 6 grid example" class="rounded-lg" />
-</ImageGrid>
+#### Square
+
+<SquareImageGrid
+  cols={2}
+  aspectRatio='square'
+  images={[
+    { image: project1, alt: "Project 1 grid example" },
+    { image: project2, alt: "Project 2 grid example" },
+    { image: project3, alt: "Project 3 grid example" },
+    { image: project4, alt: "Project 4 grid example" },
+    { image: project5, alt: "Project 5 grid example" },
+    { image: project6, alt: "Project 6 grid example" }
+  ]}
+/>
+
+#### Native 
+
+<SquareImageGrid
+  cols={2}
+  aspectRatio="native"
+  images={[
+    { image: project1, alt: "Project 1 grid example" },
+    { image: project2, alt: "Project 2 grid example" },
+    { image: project3, alt: "Project 3 grid example" },
+    { image: project4, alt: "Project 4 grid example" },
+    { image: project5, alt: "Project 5 grid example" },
+    { image: project6, alt: "Project 6 grid example" }
+  ]}
+/>
 
 ### Image Carousel
 

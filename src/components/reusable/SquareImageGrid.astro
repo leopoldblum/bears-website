@@ -1,0 +1,115 @@
+---
+// SquareImageGrid - Reusable component for displaying images in a responsive grid
+// Extracted from MediaAccordion for general-purpose use
+// Features: configurable columns, square or native aspect ratios, responsive sizing, hover effects, smart lazy loading, required alt text
+
+import type { ImageWithAlt } from "@types";
+import Img_better from "../mdx/Img_better.astro";
+
+interface Props {
+  /** Array of images with alt text to display in the grid */
+  images: ImageWithAlt[];
+  /** Number of columns in the grid (default: 4) */
+  cols?: 2 | 3 | 4 | 5 | 6;
+  /** Gap between images (default: 'md') */
+  gap?: "sm" | "md" | "lg";
+  /** Additional CSS classes for the grid container */
+  class?: string;
+  /** Whether to enable click-to-enlarge functionality (default: true) */
+  enableClickToEnlarge?: boolean;
+  /** Aspect ratio mode: 'square' crops to 1:1, 'native' preserves original proportions (default: 'square') */
+  aspectRatio?: 'square' | 'native';
+}
+
+const {
+  images,
+  cols = 4,
+  gap = "md",
+  class: className,
+  enableClickToEnlarge = true,
+  aspectRatio = 'square',
+} = Astro.props;
+
+// Grid column classes - responsive breakpoints
+const colClasses: Record<number, string> = {
+  2: "grid-cols-2",
+  3: "grid-cols-2 sm:grid-cols-3",
+  4: "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4",
+  5: "grid-cols-2 sm:grid-cols-3 lg:grid-cols-5",
+  6: "grid-cols-2 sm:grid-cols-3 lg:grid-cols-6",
+};
+
+// Gap classes - responsive spacing
+const gapClasses: Record<string, string> = {
+  sm: "gap-2",
+  md: "gap-3 lg:gap-4",
+  lg: "gap-4 lg:gap-6",
+};
+
+// Responsive image sizes matching grid columns
+// Helps browser select optimal image from srcset
+const sizeClasses: Record<number, string> = {
+  2: "50vw",
+  3: "(min-width: 640px) 33vw, 50vw",
+  4: "(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw",
+  5: "(min-width: 1024px) 20vw, (min-width: 640px) 33vw, 50vw",
+  6: "(min-width: 1024px) 17vw, (min-width: 640px) 33vw, 50vw",
+};
+
+const gridCols = colClasses[cols] ?? colClasses[4];
+const gridGap = gapClasses[gap] ?? gapClasses["md"];
+const imageSizes = sizeClasses[cols] ?? sizeClasses[4];
+---
+
+<div class={`not-prose grid ${gridCols} ${gridGap} px-4 sm:px-6 py-3 ${className || ""}`}>
+  {
+    images.map(({ image, alt }, index) => (
+      aspectRatio === 'square' ? (
+        // SQUARE MODE: Square aspect ratio with wrapper div for proper sizing
+        <div class="square-grid-item overflow-hidden rounded-lg group/image ring-0 ring-bears-accent transition-all duration-300 hover:ring-2">
+          <div class="w-full h-full">
+            <Img_better
+              src={image}
+              alt={alt}
+              class="w-full h-full object-cover object-center transition-transform duration-300 group-hover/image:scale-105"
+              width="100%"
+              sizes={imageSizes}
+              loading={index <= cols * 2 ? "eager" : "lazy"}
+              enableClickToEnlarge={enableClickToEnlarge}
+            />
+          </div>
+        </div>
+      ) : (
+        // NATIVE MODE: Natural aspect ratios, click-to-enlarge enabled
+        <div class="overflow-hidden rounded-lg group/image ring-0 ring-bears-accent transition-all duration-300 hover:ring-2">
+          <Img_better
+            src={image}
+            alt={alt}
+            class="w-full h-auto transition-transform duration-300 group-hover/image:scale-105"
+            width="100%"
+            sizes={imageSizes}
+            loading={index <= cols * 2 ? "eager" : "lazy"}
+            enableClickToEnlarge={enableClickToEnlarge}
+          />
+        </div>
+      )
+    ))
+  }
+</div>
+
+<style>
+  /* SQUARE MODE ONLY */
+  .square-grid-item {
+    position: relative;
+    aspect-ratio: 1 / 1;
+  }
+
+  .square-grid-item picture,
+  .square-grid-item img {
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    object-position: center !important;
+  }
+</style>

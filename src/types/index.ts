@@ -24,4 +24,5 @@ export type {
   TestimonialEntry,
   SponsorEntry,
   PostEntry,
+  ImageWithAlt,
 } from './components';

@@ -1,4 +1,5 @@
 import type { CollectionEntry } from 'astro:content';
+import type { ImageMetadata } from 'astro';
 
 /**
  * Type alias for testimonial collection entries.
@@ -20,3 +21,14 @@ export type SponsorEntry = CollectionEntry<'sponsors'>;
  * Type alias for content entries that represent events or projects.
  */
 export type PostEntry = CollectionEntry<'events'> | CollectionEntry<'projects'>;
+
+/**
+ * Image with required alt text for accessibility.
+ * Used by SquareImageGrid and other image display components.
+ */
+export interface ImageWithAlt {
+  /** Image file to display */
+  image: ImageMetadata;
+  /** Descriptive alt text for accessibility (required) */
+  alt: string;
+}

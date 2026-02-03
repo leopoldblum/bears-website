@@ -7,8 +7,6 @@ Welcome! This folder contains step-by-step guides for creating and managing cont
 - **[Using Buttons](using-buttons.md)** - Add buttons to your content pages
 - **[Using Center](using-center.md)** - Horizontally center content on your pages
 - **[Using Accordions](using-accordion.md)** - Add collapsible accordion sections to your content
-- **[Using Carousels](using-carousel.md)** - Add interactive slide shows with user-controlled navigation
-- **[Using Marquees](using-marquee.md)** - Add infinite scrolling content showcases
 - [Managing Events and Projects](managing-events-and-projects.md) - Add and update events/projects
 - [Managing Sponsors](managing-sponsors.md) - Add and update sponsors
 - [Managing Testimonials](managing-testimonials.md) - Add and update testimonials
@@ -20,10 +18,7 @@ Welcome! This folder contains step-by-step guides for creating and managing cont
 - **Button Component** - See `/src/components/mdx/Button.md`
 - **Center Component** - See `/src/components/mdx/Center.md`
 - **Accordion Component** - See `/src/components/mdx/Accordion.md`
-- **Carousel Component** - See `/src/components/mdx/Carousel.md`
-- **Marquee Component** - See `/src/components/mdx/Marquee.md`
 - **ImageGrid Component** - See `/src/components/mdx/ImageGrid.md`
-- **Img Component** - See `/src/components/mdx/Img.md`
 - **SideBySide Component** - See `/src/components/mdx/SideBySide/SideBySide.md`
 - **MediaAccordion Component** - See `/src/components/mdx/MediaAccordion.astro`
 - **Type Definitions** - See `/src/types/types-documentation.md`

@@ -50,9 +50,9 @@ const modalSrc = enableClickToEnlarge
 {enableClickToEnlarge ? (
   <!-- With wrapper: enables click-to-enlarge modal -->
   <div
-    class="img-better h-full"
+    class={`img-better ${width === '100%' ? 'w-full h-full' : 'h-full'}`}
     x-data="{ modalOpen: false }"
-    style={`width: ${width}`}
+    style={width !== '100%' ? `width: ${width}` : undefined}
   >
     <Image
       src={src}
