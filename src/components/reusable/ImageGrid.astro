@@ -1,7 +1,6 @@
 ---
-// SquareImageGrid - Reusable component for displaying images in a responsive grid
-// Extracted from MediaAccordion for general-purpose use
-// Features: configurable columns, square or native aspect ratios, responsive sizing, hover effects, smart lazy loading, required alt text
+// ImageGrid - Reusable component for displaying images in a responsive grid
+// Features: configurable columns, square (grid) or native (masonry) aspect ratios, responsive sizing, hover effects, smart lazy loading, required alt text
 
 import type { ImageWithAlt } from "@types";
 import Img from "@mdx/Img.astro";
@@ -17,7 +16,7 @@ interface Props {
   class?: string;
   /** Whether to enable click-to-enlarge functionality (default: true) */
   enableClickToEnlarge?: boolean;
-  /** Aspect ratio mode: 'square' crops to 1:1, 'native' preserves original proportions (default: 'square') */
+  /** Aspect ratio mode: 'square' crops to 1:1, 'native' uses masonry column layout (default: 'square') */
   aspectRatio?: "square" | "native";
 }
 
@@ -30,7 +29,7 @@ const {
   aspectRatio = "square",
 } = Astro.props;
 
-// Grid column classes - responsive breakpoints
+// Grid column classes - responsive breakpoints (square mode)
 const colClasses: Record<number, string> = {
   2: "grid-cols-2",
   3: "grid-cols-2 sm:grid-cols-3",
@@ -59,45 +58,99 @@ const sizeClasses: Record<number, string> = {
 const gridCols = colClasses[cols] ?? colClasses[4];
 const gridGap = gapClasses[gap] ?? gapClasses["md"];
 const imageSizes = sizeClasses[cols] ?? sizeClasses[4];
+
+// --- Masonry layout (native mode) ---
+
+// Responsive column widths: [mobile%, sm%, lg%]
+const masonryWidths: Record<number, [string, string, string]> = {
+  2: ["50%", "50%", "50%"],
+  3: ["50%", "33.333%", "33.333%"],
+  4: ["50%", "33.333%", "25%"],
+  5: ["50%", "33.333%", "20%"],
+  6: ["50%", "33.333%", "16.666%"],
+};
+
+// Masonry gap: horizontal padding on columns + vertical gap within columns
+const masonryColPadding: Record<string, string> = {
+  sm: "px-1",
+  md: "px-1.5 lg:px-2",
+  lg: "px-2 lg:px-3",
+};
+
+const masonryColGap: Record<string, string> = {
+  sm: "gap-2",
+  md: "gap-3 lg:gap-4",
+  lg: "gap-4 lg:gap-6",
+};
+
+// Distribute images into columns (round-robin) preserving original index
+interface ImageWithOriginalIndex extends ImageWithAlt {
+  originalIndex: number;
+}
+
+const [mobileWidth, smWidth, lgWidth] = masonryWidths[cols] ?? masonryWidths[4];
+const colPadding = masonryColPadding[gap] ?? masonryColPadding["md"];
+const colGap = masonryColGap[gap] ?? masonryColGap["md"];
+
+const masonryColumns: ImageWithOriginalIndex[][] = (() => {
+  if (aspectRatio !== "native") return [];
+  const columns: ImageWithOriginalIndex[][] = Array.from({ length: cols }, () => []);
+  images.forEach((img, i) => {
+    columns[i % cols].push({ ...img, originalIndex: i });
+  });
+  return columns;
+})();
 ---
 
-<div
-  class={`not-prose grid ${gridCols} ${gridGap} items-center px-4 sm:px-6 py-3 ${className || ""}`}
->
-  {
-    images.map(({ image, alt }, index) =>
-      aspectRatio === "square" ? (
-        // SQUARE MODE: Square aspect ratio with wrapper div for proper sizing
-        <div class="square-grid-item overflow-hidden rounded-lg group/image ring-0 ring-bears-accent transition-all duration-300 hover:ring-2">
-          <div class="w-full h-full">
+{aspectRatio === "native" ? (
+  <!-- MASONRY MODE: Column-based flex layout for true image wall -->
+  <div
+    class={`not-prose masonry-row flex flex-wrap px-4 sm:px-6 py-3 ${className || ""}`}
+    style={`--masonry-sm-width: ${smWidth}; --masonry-lg-width: ${lgWidth};`}
+  >
+    {masonryColumns.map((column) => (
+      <div
+        class={`masonry-column flex flex-col ${colPadding} ${colGap}`}
+        style={`flex: 0 0 ${mobileWidth}; max-width: ${mobileWidth};`}
+      >
+        {column.map((item) => (
+          <div class="overflow-hidden rounded-lg group/image ring-0 ring-bears-accent transition-all duration-300 hover:ring-2">
             <Img
-              src={image}
-              alt={alt}
-              class="w-full h-full object-cover object-center transition-transform duration-300 group-hover/image:scale-105"
+              src={item.image}
+              alt={item.alt}
+              class="w-full h-auto object-cover transition-transform duration-300 group-hover/image:scale-105"
               width="100%"
               sizes={imageSizes}
-              loading={index <= cols * 2 ? "eager" : "lazy"}
+              loading={item.originalIndex <= cols * 2 ? "eager" : "lazy"}
               enableClickToEnlarge={enableClickToEnlarge}
             />
           </div>
-        </div>
-      ) : (
-        // NATIVE MODE: Natural aspect ratios, click-to-enlarge enabled
-        <div class="p-1">
+        ))}
+      </div>
+    ))}
+  </div>
+) : (
+  <!-- SQUARE MODE: CSS Grid with 1:1 aspect ratio -->
+  <div
+    class={`not-prose grid ${gridCols} ${gridGap} items-center px-4 sm:px-6 py-3 ${className || ""}`}
+  >
+    {images.map(({ image, alt }, index) => (
+      <div class="square-grid-item overflow-hidden rounded-lg group/image ring-0 ring-bears-accent transition-all duration-300 hover:ring-2">
+        <div class="w-full h-full">
           <Img
             src={image}
             alt={alt}
-            class="w-full h-auto rounded-lg overflow-hidden ring-0 ring-bears-accent transition-all duration-300 hover:ring-2 hover:scale-105"
+            class="w-full h-full object-cover object-center transition-transform duration-300 group-hover/image:scale-105"
             width="100%"
             sizes={imageSizes}
             loading={index <= cols * 2 ? "eager" : "lazy"}
             enableClickToEnlarge={enableClickToEnlarge}
           />
         </div>
-      ),
-    )
-  }
-</div>
+      </div>
+    ))}
+  </div>
+)}
 
 <style>
   /* SQUARE MODE ONLY */
@@ -113,5 +166,33 @@ const imageSizes = sizeClasses[cols] ?? sizeClasses[4];
     height: 100% !important;
     object-fit: cover !important;
     object-position: center !important;
+  }
+
+  /* MASONRY MODE: Responsive column widths via CSS custom properties */
+  @media (min-width: 640px) {
+    .masonry-column {
+      flex-basis: var(--masonry-sm-width) !important;
+      max-width: var(--masonry-sm-width) !important;
+    }
+  }
+
+  @media (min-width: 1024px) {
+    .masonry-column {
+      flex-basis: var(--masonry-lg-width) !important;
+      max-width: var(--masonry-lg-width) !important;
+    }
+  }
+
+  /* Ensure Img component internals fill column width */
+  .masonry-column :global(.img-better) {
+    width: 100%;
+    height: auto;
+  }
+
+  .masonry-column :global(picture),
+  .masonry-column :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
   }
 </style>
