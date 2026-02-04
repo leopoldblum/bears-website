@@ -95,8 +95,19 @@ const colGap = masonryColGap[gap] ?? masonryColGap["md"];
 const masonryColumns: ImageWithOriginalIndex[][] = (() => {
   if (aspectRatio !== "native") return [];
   const columns: ImageWithOriginalIndex[][] = Array.from({ length: cols }, () => []);
+  // Track cumulative height of each column (relative, since all images display at equal width)
+  const columnHeights = new Array(cols).fill(0);
+
   images.forEach((img, i) => {
-    columns[i % cols].push({ ...img, originalIndex: i });
+    // Place each image in the shortest column for balanced heights
+    let shortestCol = 0;
+    for (let c = 1; c < cols; c++) {
+      if (columnHeights[c] < columnHeights[shortestCol]) {
+        shortestCol = c;
+      }
+    }
+    columns[shortestCol].push({ ...img, originalIndex: i });
+    columnHeights[shortestCol] += img.image.height / img.image.width;
   });
   return columns;
 })();

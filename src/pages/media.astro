@@ -74,7 +74,7 @@ const allImages = categoriesWithImages.flatMap((category) => category.images);
       {/* DEBUG: All Images Accordion */}
       {
         allImages.length > 0 && (
-          <MediaAccordion title="All" images={allImages} cols={5} gap="md" />
+          <MediaAccordion title="All" images={allImages} cols={4} gap="md" />
         )
       }
       {
@@ -82,7 +82,7 @@ const allImages = categoriesWithImages.flatMap((category) => category.images);
           <MediaAccordion
             title={category.title}
             images={category.images}
-            cols={6}
+            cols={4}
             gap="md"
           />
         ))
