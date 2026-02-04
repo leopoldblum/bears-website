@@ -125,7 +125,7 @@ const masonryColumns: ImageWithOriginalIndex[][] = (() => {
         style={`flex: 0 0 ${mobileWidth}; max-width: ${mobileWidth};`}
       >
         {column.map((item) => (
-          <div class="overflow-hidden rounded-lg group/image ring-0 ring-bears-accent transition-all duration-300 hover:ring-2">
+          <div class={enableClickToEnlarge ? '' : 'overflow-hidden rounded-lg'}>
             <Img
               src={item.image}
               alt={item.alt}
@@ -146,7 +146,7 @@ const masonryColumns: ImageWithOriginalIndex[][] = (() => {
     class={`not-prose grid ${gridCols} ${gridGap} items-center px-4 sm:px-6 py-3 ${className || ""}`}
   >
     {images.map(({ image, alt }, index) => (
-      <div class="square-grid-item overflow-hidden rounded-lg group/image ring-0 ring-bears-accent transition-all duration-300 hover:ring-2">
+      <div class={`square-grid-item ${enableClickToEnlarge ? '' : 'overflow-hidden rounded-lg'}`}>
         <div class="w-full h-full">
           <Img
             src={image}

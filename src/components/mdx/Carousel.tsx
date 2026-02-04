@@ -34,6 +34,68 @@ export default function Carousel({
   const containerRef = useRef<HTMLDivElement>(null);
   const observerRef = useRef<MutationObserver | null>(null);
 
+  // Apply positioning and visibility styles to all slides via JS
+  const applySlideStyles = useCallback((slideElements: HTMLElement[], currentIndex: number) => {
+    slideElements.forEach((slide, index) => {
+      // Visibility
+      slide.style.opacity = index === currentIndex ? '1' : '0';
+      slide.style.pointerEvents = index === currentIndex ? 'auto' : 'none';
+
+      // Every slide: absolute, fill container, center content
+      slide.style.position = 'absolute';
+      slide.style.inset = '0';
+      slide.style.display = 'flex';
+      slide.style.alignItems = 'center';
+      slide.style.justifyContent = 'center';
+      slide.style.transition = 'opacity 300ms';
+      slide.style.overflow = 'hidden';
+
+      if (slide.classList.contains('img-better')) {
+        // Direct <Img> as slide: center naturally, don't fill container
+        // Clear inset so it doesn't stretch to fill
+        slide.style.inset = '';
+        slide.style.top = '50%';
+        slide.style.left = '50%';
+        slide.style.transform = 'translate(-50%, -50%)';
+        slide.style.width = 'auto';
+        slide.style.height = 'auto';
+        slide.style.maxWidth = '100%';
+        slide.style.maxHeight = '100%';
+        slide.style.aspectRatio = 'unset';
+        // Don't need flex centering since the div wraps the image tightly
+        slide.style.display = '';
+        slide.style.alignItems = '';
+        slide.style.justifyContent = '';
+        slide.style.overflow = '';
+        slide.style.transition = '';
+        const img = slide.querySelector('img');
+        if (img) {
+          const container = containerRef.current;
+          const cw = container?.clientWidth || 0;
+          const ch = container?.clientHeight || 0;
+          img.style.maxWidth = `${cw}px`;
+          img.style.maxHeight = `${ch - 16}px`;
+          img.style.width = 'auto';
+          img.style.height = 'auto';
+          img.style.objectFit = 'contain';
+        }
+      } else {
+        // HTML content or wrapped images: center naturally
+        slide.querySelectorAll<HTMLElement>('.img-better').forEach((el) => {
+          el.style.width = 'auto';
+          el.style.height = 'auto';
+          el.style.maxWidth = '100%';
+          el.style.maxHeight = '100%';
+        });
+        slide.querySelectorAll<HTMLElement>('img').forEach((img) => {
+          img.style.maxWidth = '100%';
+          img.style.maxHeight = '100%';
+          img.style.objectFit = 'contain';
+        });
+      }
+    });
+  }, []);
+
   // Initialize: detect slides from DOM and apply positioning
   useEffect(() => {
     const container = containerRef.current;
@@ -41,23 +103,18 @@ export default function Carousel({
 
     let rafId: number | undefined;
 
-    const applySlideStyles = (slideElements: HTMLElement[], currentIndex: number) => {
-      // Only toggle visibility - layout is handled by Tailwind CSS classes
-      slideElements.forEach((slide, index) => {
-        if (index === currentIndex) {
-          slide.style.opacity = '1';
-          slide.style.pointerEvents = 'auto';
-        } else {
-          slide.style.opacity = '0';
-          slide.style.pointerEvents = 'none';
-        }
-      });
-    };
-
     const initializeSlides = (): boolean => {
       // Astro wraps slot content in <astro-slot>, so check for that first
       const astroSlot = container.querySelector(':scope > astro-slot');
       const slideContainer = astroSlot || container;
+
+      // Style astro-slot as a positioning context for absolute slides
+      if (astroSlot) {
+        const slot = astroSlot as HTMLElement;
+        slot.style.position = 'relative';
+        slot.style.width = '100%';
+        slot.style.height = '100%';
+      }
 
       // Get direct children of the slot container
       const slideElements = Array.from(
@@ -113,14 +170,13 @@ export default function Carousel({
         observerRef.current = null;
       }
     };
-  }, []);
+  }, [applySlideStyles]);
 
-  // Update slide visibility when currentSlide changes
+  // Update slide styles when currentSlide changes
   useEffect(() => {
     const container = containerRef.current;
     if (!container || !isInitialized) return;
 
-    // Astro wraps slot content in <astro-slot>
     const astroSlot = container.querySelector(':scope > astro-slot');
     const slideContainer = astroSlot || container;
 
@@ -128,16 +184,8 @@ export default function Carousel({
       slideContainer.querySelectorAll(':scope > *')
     ) as HTMLElement[];
 
-    slideElements.forEach((slide, index) => {
-      if (index === currentSlide) {
-        slide.style.opacity = '1';
-        slide.style.pointerEvents = 'auto';
-      } else {
-        slide.style.opacity = '0';
-        slide.style.pointerEvents = 'none';
-      }
-    });
-  }, [currentSlide, isInitialized]);
+    applySlideStyles(slideElements, currentSlide);
+  }, [currentSlide, isInitialized, applySlideStyles]);
 
   // Navigation functions
   const nextSlide = useCallback(() => {
@@ -202,24 +250,8 @@ export default function Carousel({
         <div
           ref={containerRef}
           className={`relative flex-1 overflow-hidden w-full ${heightClass}
-            *:absolute *:inset-0 *:w-full *:h-full
-            *:flex *:items-center *:justify-center
-            *:transition-opacity *:duration-300
-            [&>astro-slot>*]:absolute [&>astro-slot>*]:inset-0
-            [&>astro-slot>*]:w-full [&>astro-slot>*]:h-full
-            [&>astro-slot>*]:flex [&>astro-slot>*]:items-center
-            [&>astro-slot>*]:justify-center
-            [&>astro-slot>*]:transition-opacity [&>astro-slot>*]:duration-300
-            [&>*>div]:flex [&>*>div]:items-center [&>*>div]:justify-center
-            [&>*>div]:w-full [&>*>div]:h-full
-            [&>astro-slot>*>div]:flex [&>astro-slot>*>div]:items-center
-            [&>astro-slot>*>div]:justify-center
-            [&>astro-slot>*>div]:w-full [&>astro-slot>*>div]:h-full
-            [&_img]:object-contain [&_img]:max-h-full [&_img]:max-w-full
-            [&>*:first-child]:opacity-100 [&>*:first-child]:pointer-events-auto
-            [&>*:not(:first-child)]:opacity-0 [&>*:not(:first-child)]:pointer-events-none
-            [&>astro-slot>*:first-child]:opacity-100 [&>astro-slot>*:first-child]:pointer-events-auto
-            [&>astro-slot>*:not(:first-child)]:opacity-0 [&>astro-slot>*:not(:first-child)]:pointer-events-none
+            [&>*:not(:first-child)]:opacity-0
+            [&>astro-slot>*:not(:first-child)]:opacity-0
           `}
           onMouseEnter={() => setIsPaused(true)}
           onMouseLeave={() => setIsPaused(false)}

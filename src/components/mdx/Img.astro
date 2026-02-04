@@ -50,9 +50,9 @@ const modalSrc = enableClickToEnlarge
 {enableClickToEnlarge ? (
   <!-- With wrapper: enables click-to-enlarge modal -->
   <div
-    class={`img-better ${width === '100%' ? 'w-full h-full' : 'h-full'}`}
+    class={`img-better group/image rounded-lg overflow-hidden ring-0 ring-bears-accent transition-all duration-300 hover:ring-2 ${width === '100%' ? 'w-full h-full' : 'h-full'}`}
     x-data="{ modalOpen: false }"
-    style={width !== '100%' ? `width: ${width}` : undefined}
+    style={`aspect-ratio: ${src.width} / ${src.height}${width !== '100%' ? `; width: ${width}` : ''}`}
   >
     <Image
       src={src}
