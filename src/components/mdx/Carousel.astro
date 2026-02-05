@@ -1,7 +1,7 @@
 ---
 import CarouselBetterComponent from "./Carousel.tsx";
 
-type HeightPreset = "sm" | "md" | "lg" | "xl";
+type HeightPreset = "sm" | "md" | "lg" | "xl" | "auto";
 
 interface Props {
   /**
@@ -30,11 +30,12 @@ interface Props {
   showDots?: boolean;
 
   /**
-   * Fixed height preset for the carousel
+   * Height preset for the carousel
    * - 'sm': 300px
    * - 'md': 400px (default)
    * - 'lg': 500px
    * - 'xl': 600px
+   * - 'auto': Content determines height (no fixed height)
    * @default "md"
    */
   height?: HeightPreset;

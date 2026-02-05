@@ -1,12 +1,13 @@
 import { useState, useEffect, useCallback, useRef, type ReactNode } from 'react';
 
-type HeightPreset = 'sm' | 'md' | 'lg' | 'xl';
+type HeightPreset = 'sm' | 'md' | 'lg' | 'xl' | 'auto';
 
 const heightPresets: Record<HeightPreset, string> = {
   sm: 'h-[300px]',
   md: 'h-[400px]',
   lg: 'h-[500px]',
   xl: 'h-[600px]',
+  auto: '',
 };
 
 interface Carousel {
@@ -35,32 +36,55 @@ export default function Carousel({
   const observerRef = useRef<MutationObserver | null>(null);
 
   // Apply positioning and visibility styles to all slides via JS
-  const applySlideStyles = useCallback((slideElements: HTMLElement[], currentIndex: number) => {
+  const applySlideStyles = useCallback((slideElements: HTMLElement[], currentIndex: number, isAutoHeight: boolean) => {
     slideElements.forEach((slide, index) => {
-      // Visibility
-      slide.style.opacity = index === currentIndex ? '1' : '0';
-      slide.style.pointerEvents = index === currentIndex ? 'auto' : 'none';
+      const isActive = index === currentIndex;
 
-      // Every slide: absolute, fill container, center content
-      slide.style.position = 'absolute';
-      slide.style.inset = '0';
-      slide.style.display = 'flex';
-      slide.style.alignItems = 'center';
-      slide.style.justifyContent = 'center';
-      slide.style.transition = 'opacity 300ms';
-      slide.style.overflow = 'hidden';
+      // Visibility
+      slide.style.opacity = isActive ? '1' : '0';
+      slide.style.pointerEvents = isActive ? 'auto' : 'none';
+
+      if (isAutoHeight) {
+        // Auto height mode: use grid stacking so active slide determines height
+        // Active slide is visible and in flow, others are hidden but overlay
+        slide.style.gridArea = '1 / 1';
+        slide.style.position = '';
+        slide.style.inset = '';
+        slide.style.display = 'flex';
+        slide.style.alignItems = 'center';
+        slide.style.justifyContent = 'center';
+        slide.style.transition = 'opacity 300ms';
+        slide.style.overflow = '';
+        // Non-active slides don't contribute to height
+        slide.style.visibility = isActive ? 'visible' : 'hidden';
+        slide.style.height = isActive ? 'auto' : '0';
+      } else {
+        // Fixed height mode: absolute positioning
+        slide.style.gridArea = '';
+        slide.style.visibility = '';
+        slide.style.height = '';
+        slide.style.position = 'absolute';
+        slide.style.inset = '0';
+        slide.style.display = 'flex';
+        slide.style.alignItems = 'center';
+        slide.style.justifyContent = 'center';
+        slide.style.transition = 'opacity 300ms';
+        slide.style.overflow = 'hidden';
+      }
 
       if (slide.classList.contains('img-better')) {
         // Direct <Img> as slide: center naturally, don't fill container
-        // Clear inset so it doesn't stretch to fill
-        slide.style.inset = '';
-        slide.style.top = '50%';
-        slide.style.left = '50%';
-        slide.style.transform = 'translate(-50%, -50%)';
+        if (!isAutoHeight) {
+          // Clear inset so it doesn't stretch to fill
+          slide.style.inset = '';
+          slide.style.top = '50%';
+          slide.style.left = '50%';
+          slide.style.transform = 'translate(-50%, -50%)';
+        }
         slide.style.width = 'auto';
-        slide.style.height = 'auto';
+        slide.style.height = isAutoHeight && !isActive ? '0' : 'auto';
         slide.style.maxWidth = '100%';
-        slide.style.maxHeight = '100%';
+        slide.style.maxHeight = isAutoHeight ? '' : '100%';
         slide.style.aspectRatio = 'unset';
         // Don't need flex centering since the div wraps the image tightly
         slide.style.display = '';
@@ -70,14 +94,22 @@ export default function Carousel({
         slide.style.transition = '';
         const img = slide.querySelector('img');
         if (img) {
-          const container = containerRef.current;
-          const cw = container?.clientWidth || 0;
-          const ch = container?.clientHeight || 0;
-          img.style.maxWidth = `${cw}px`;
-          img.style.maxHeight = `${ch - 16}px`;
-          img.style.width = 'auto';
-          img.style.height = 'auto';
-          img.style.objectFit = 'contain';
+          if (isAutoHeight) {
+            img.style.maxWidth = '100%';
+            img.style.maxHeight = '';
+            img.style.width = '';
+            img.style.height = '';
+            img.style.objectFit = '';
+          } else {
+            const container = containerRef.current;
+            const cw = container?.clientWidth || 0;
+            const ch = container?.clientHeight || 0;
+            img.style.maxWidth = `${cw}px`;
+            img.style.maxHeight = `${ch - 16}px`;
+            img.style.width = 'auto';
+            img.style.height = 'auto';
+            img.style.objectFit = 'contain';
+          }
         }
       } else {
         // HTML content or wrapped images: center naturally
@@ -85,12 +117,12 @@ export default function Carousel({
           el.style.width = 'auto';
           el.style.height = 'auto';
           el.style.maxWidth = '100%';
-          el.style.maxHeight = '100%';
+          el.style.maxHeight = isAutoHeight ? '' : '100%';
         });
         slide.querySelectorAll<HTMLElement>('img').forEach((img) => {
           img.style.maxWidth = '100%';
-          img.style.maxHeight = '100%';
-          img.style.objectFit = 'contain';
+          img.style.maxHeight = isAutoHeight ? '' : '100%';
+          img.style.objectFit = isAutoHeight ? '' : 'contain';
         });
       }
     });
@@ -108,12 +140,18 @@ export default function Carousel({
       const astroSlot = container.querySelector(':scope > astro-slot');
       const slideContainer = astroSlot || container;
 
-      // Style astro-slot as a positioning context for absolute slides
+      // Style astro-slot as a positioning context for slides
       if (astroSlot) {
         const slot = astroSlot as HTMLElement;
-        slot.style.position = 'relative';
+        if (height === 'auto') {
+          slot.style.display = 'grid';
+          slot.style.position = '';
+        } else {
+          slot.style.display = '';
+          slot.style.position = 'relative';
+        }
         slot.style.width = '100%';
-        slot.style.height = '100%';
+        slot.style.height = height === 'auto' ? '' : '100%';
       }
 
       // Get direct children of the slot container
@@ -128,7 +166,7 @@ export default function Carousel({
       }
 
       setTotalSlides(count);
-      applySlideStyles(slideElements, 0);
+      applySlideStyles(slideElements, 0, height === 'auto');
       setIsInitialized(true);
       return true;
     };
@@ -170,7 +208,7 @@ export default function Carousel({
         observerRef.current = null;
       }
     };
-  }, [applySlideStyles]);
+  }, [applySlideStyles, height]);
 
   // Update slide styles when currentSlide changes
   useEffect(() => {
@@ -184,8 +222,8 @@ export default function Carousel({
       slideContainer.querySelectorAll(':scope > *')
     ) as HTMLElement[];
 
-    applySlideStyles(slideElements, currentSlide);
-  }, [currentSlide, isInitialized, applySlideStyles]);
+    applySlideStyles(slideElements, currentSlide, height === 'auto');
+  }, [currentSlide, isInitialized, applySlideStyles, height]);
 
   // Navigation functions
   const nextSlide = useCallback(() => {
@@ -249,7 +287,7 @@ export default function Carousel({
         {/* Slides Container */}
         <div
           ref={containerRef}
-          className={`relative flex-1 overflow-hidden w-full ${heightClass}
+          className={`flex-1 overflow-hidden w-full ${heightClass} ${height === 'auto' ? 'grid' : 'relative'}
             [&>*:not(:first-child)]:opacity-0
             [&>astro-slot>*:not(:first-child)]:opacity-0
           `}
