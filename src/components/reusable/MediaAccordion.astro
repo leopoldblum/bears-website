@@ -23,6 +23,9 @@ interface Props {
 
 const { title, images, class: className, cols = 4, gap = "md" } = Astro.props;
 
+// Clamp cols to image count so images fill the width, but never below 3 on wide screens
+const effectiveCols = Math.min(cols, Math.max(3, images.length)) as typeof cols;
+
 // Transform images to include alt text
 const imagesWithAlt: ImageWithAlt[] = images.map((image, index) => ({
   image,
@@ -30,7 +33,7 @@ const imagesWithAlt: ImageWithAlt[] = images.map((image, index) => ({
 }));
 
 // If all images fit in one row, skip accordion functionality
-const fitsInOneRow = images.length <= cols;
+const fitsInOneRow = images.length <= effectiveCols;
 
 // Generate unique ID for this accordion instance
 const accordionId = `media-accordion-${Math.random().toString(36).substring(2, 9)}`;
@@ -55,7 +58,7 @@ const accordionId = `media-accordion-${Math.random().toString(36).substring(2, 9
     <div class="pb-6">
       <ImageGrid
         images={imagesWithAlt}
-        cols={cols}
+        cols={effectiveCols}
         gap={gap}
         enableClickToEnlarge={true}
         aspectRatio="native"
@@ -154,7 +157,7 @@ const accordionId = `media-accordion-${Math.random().toString(36).substring(2, 9
         <div x-ref="content">
           <ImageGrid
             images={imagesWithAlt}
-            cols={cols}
+            cols={effectiveCols}
             gap={gap}
             enableClickToEnlarge={true}
             aspectRatio="native"
