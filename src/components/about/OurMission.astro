@@ -1,0 +1,96 @@
+---
+import Img from "@mdx/Img.astro";
+import Button from "@mdx/Button.astro";
+import { getPageContent } from "@utils/contentQueries";
+import missionImage from "@assets/whatIsBears/carousel-7.jpg";
+
+const content = await getPageContent("about/our-mission");
+const listContent = await getPageContent("about/whats-in-it");
+---
+
+<section
+  class="container mx-auto px-4 sm:px-8 lg:px-16 py-16 sm:py-20 lg:py-24"
+>
+  <div
+    class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-stretch min-h-[500px] lg:min-h-[60vh]"
+  >
+    <!-- Image -->
+    <div
+      class="relative w-full h-80 sm:h-96 lg:h-full rounded-2xl overflow-hidden"
+    >
+      <Img
+        src={missionImage}
+        alt="BEARS team working on aerospace projects"
+        class="rounded-2xl"
+        enableClickToEnlarge={false}
+        fill={true}
+        loading="eager"
+        sizes="(min-width: 1024px) 50vw, 100vw"
+      />
+    </div>
+
+    <!-- Text: side-by-side on mobile, stacked column on desktop -->
+    <div
+      class="grid grid-cols-2 lg:grid-cols-1 lg:flex lg:flex-col lg:min-h-[60vh] gap-2 sm:gap-6 lg:gap-0"
+    >
+      <!-- Title + subtitle -->
+      <div
+        class="pr-2 sm:pr-0 lg:w-fit lg:ml-auto col-span-1 order-2 lg:order-1"
+      >
+        <h2
+          class="text-2xl sm:text-3xl lg:text-5xl font-bold text-bears-text-onDark text-right pl-12 sm:pl-12 lg:pl-24"
+        >
+          {content?.data.title}
+        </h2>
+        <div
+          class="h-[2px] bg-gradient-to-l from-white/30 from-30% via-white/15 via-70% to-transparent my-3 sm:my-4 lg:my-6 rounded-full"
+        >
+        </div>
+        {
+          content?.data.subtitle && (
+            <p class="[contain:inline-size] text-sm sm:text-sm lg:text-base text-bears-text-onDark/60 text-right">
+              {content.data.subtitle}
+            </p>
+          )
+        }
+      </div>
+
+      <!-- Numbered list -->
+      {
+        listContent?.data.items && (
+          <div class="col-span-1 order-1 lg:order-2 pt-10 sm:pt-10 lg:pt-0 lg:mt-auto">
+            <div class="w-fit">
+              <h3 class="text-base sm:text-base lg:text-lg font-medium text-bears-text-onDark mb-3 sm:mb-5 lg:mb-7">
+                {listContent.data.title}
+              </h3>
+              <ul class="space-y-2 sm:space-y-3 lg:space-y-4 lg:mt-10 lg:mb-14">
+                {listContent.data.items.map((item, i) => (
+                  <li class="text-base sm:text-base lg:text-xl text-bears-text-onDark/80">
+                    <span class="text-bears-accent font-medium mr-1 sm:mr-2 lg:mr-3">
+                      /{String(i + 1).padStart(2, "0")}
+                    </span>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+              <div class="mt-8 sm:mt-10 lg:mt-14 hidden lg:flex justify-center">
+                <Button variant="primary" size="large" href="/contact">
+                  Join us!
+                </Button>
+              </div>
+            </div>
+          </div>
+        )
+      }
+
+      <!-- Button: full-width centered on mobile only -->
+      <div
+        class="col-span-2 order-3 mt-10 sm:mt-14 flex justify-center lg:hidden"
+      >
+        <Button variant="primary" size="large" href="/contact">
+          Join us!
+        </Button>
+      </div>
+    </div>
+  </div>
+</section>

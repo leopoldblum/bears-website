@@ -147,6 +147,7 @@ const pageContentCollection = defineCollection({
       description: z.string(),
       href: z.string(),
     })).max(4).optional(),
+    items: z.array(z.string()).optional(),
   }),
 });
 
