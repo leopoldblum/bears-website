@@ -13,6 +13,7 @@ interface Props {
   enableClickToEnlarge?: boolean;  // Default: true. When false, renders without wrapper div.
   loading?: "eager" | "lazy";      // Default: "lazy"
   fetchpriority?: "high" | "low" | "auto";  // Default: undefined (browser default)
+  fill?: boolean;      // When true, image fills parent container (ignores native aspect ratio). Default: false
 }
 
 const {
@@ -24,7 +25,8 @@ const {
   class: className,
   enableClickToEnlarge = true,
   loading = "lazy",
-  fetchpriority
+  fetchpriority,
+  fill = false
 } = Astro.props;
 
 // Auto-derive sizes from width if not provided
@@ -52,14 +54,14 @@ const modalSrc = enableClickToEnlarge
   <div
     class={`img-better group/image rounded-lg overflow-hidden ring-0 ring-bears-accent transition-all duration-300 hover:ring-2 ${width === '100%' ? 'w-full h-full' : 'h-full'}`}
     x-data="{ modalOpen: false }"
-    style={`aspect-ratio: ${src.width} / ${src.height}${width !== '100%' ? `; width: ${width}` : ''}`}
+    style={fill ? (width !== '100%' ? `width: ${width}` : undefined) : `aspect-ratio: ${src.width} / ${src.height}${width !== '100%' ? `; width: ${width}` : ''}`}
   >
     <Image
       src={src}
       alt={alt}
       widths={widths}
       sizes={sizes}
-      class={`${className || ''} hover:cursor-pointer`.trim()}
+      class={`${fill ? 'w-full h-full object-cover object-center' : ''} ${className || ''} hover:cursor-pointer`.trim()}
       loading={loading}
       format="webp"
       fetchpriority={fetchpriority}
@@ -67,6 +69,20 @@ const modalSrc = enableClickToEnlarge
     />
 
     <ImageModal src={modalSrc!} alt={alt} />
+  </div>
+) : fill ? (
+  <!-- With wrapper for fill mode: ensures image fills container -->
+  <div class="w-full h-full">
+    <Image
+      src={src}
+      alt={alt}
+      widths={widths}
+      sizes={sizes}
+      class={`!w-full !h-full object-cover object-center ${className || ''}`.trim()}
+      loading={loading}
+      format="webp"
+      fetchpriority={fetchpriority}
+    />
   </div>
 ) : (
   <!-- Without wrapper: just the optimized image -->
