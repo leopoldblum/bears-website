@@ -34,6 +34,7 @@ export default function Carousel({
   const [isInitialized, setIsInitialized] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const observerRef = useRef<MutationObserver | null>(null);
+  const transitionRafRef = useRef<number | undefined>(undefined);
 
   // Apply positioning and visibility styles to all slides via JS
   const applySlideStyles = useCallback((slideElements: HTMLElement[], currentIndex: number, isAutoHeight: boolean) => {
@@ -167,6 +168,27 @@ export default function Carousel({
 
       setTotalSlides(count);
       applySlideStyles(slideElements, 0, height === 'auto');
+
+      // Suppress transitions during initial positioning to prevent
+      // CSS transition-all (on img-better) from animating position changes
+      slideElements.forEach((slide) => {
+        slide.style.transition = 'none';
+      });
+      void container.offsetHeight; // Force reflow to commit positions instantly
+
+      // Re-enable transitions after the browser has painted the positioned state
+      transitionRafRef.current = requestAnimationFrame(() => {
+        transitionRafRef.current = requestAnimationFrame(() => {
+          slideElements.forEach((slide) => {
+            if (slide.classList.contains('img-better')) {
+              slide.style.transition = ''; // Let CSS handle hover effects
+            } else {
+              slide.style.transition = 'opacity 300ms';
+            }
+          });
+        });
+      });
+
       setIsInitialized(true);
       return true;
     };
@@ -203,6 +225,7 @@ export default function Carousel({
     // Always return cleanup function
     return () => {
       if (rafId) cancelAnimationFrame(rafId);
+      if (transitionRafRef.current) cancelAnimationFrame(transitionRafRef.current);
       if (observerRef.current) {
         observerRef.current.disconnect();
         observerRef.current = null;
