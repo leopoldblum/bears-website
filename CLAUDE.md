@@ -178,6 +178,7 @@ Static text in components and pages — such as headings, descriptions, and butt
 **Subfolder conventions:**
 - `landing-page/` — content for homepage sections (e.g., `landing-page/what-is-bears`)
 - `sub-pages/` — content for listing and standalone pages (e.g., `sub-pages/events`)
+- If a subpage has many content entries, create a dedicated subfolder for it (e.g., `about/`) to group them, following the same pattern as `landing-page/`
 
 **Querying content:**
 Use `getPageContent(id)` from `src/utils/contentQueries.ts` to fetch a page content entry by its ID:
