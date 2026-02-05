@@ -27,8 +27,8 @@ const { class: className, showDivider = true } = Astro.props;
     height: 1px;
     background: linear-gradient(
       90deg,
-      rgba(255, 255, 255, 0.15),
-      rgba(255, 255, 255, 0.05),
+      rgba(255, 255, 255, 0.15) 30%,
+      rgba(255, 255, 255, 0.05) 70%,
       transparent
     );
   }
@@ -45,8 +45,8 @@ const { class: className, showDivider = true } = Astro.props;
       height: auto;
       background: linear-gradient(
         180deg,
-        rgba(255, 255, 255, 0.15),
-        rgba(255, 255, 255, 0.05),
+        rgba(255, 255, 255, 0.15) 30%,
+        rgba(255, 255, 255, 0.05) 70%,
         transparent
       );
     }
