@@ -6,11 +6,10 @@ interface Props {
    */
   url: string;
 
-  /** CSS max-width: "100%", "540px", etc.
-   *  Instagram embeds have a natural max-width of 540px.
-   *  @default "540px"
+  /** Preset size for the embed container
+   *  @default "medium"
    */
-  maxWidth?: string;
+  size?: 'small' | 'medium' | 'large' | 'full';
 
   /** Additional CSS classes for the outer container */
   class?: string;
@@ -25,24 +24,32 @@ function extractPermalink(input: string): string {
   return input.endsWith('/') ? input : `${input}/`;
 }
 
+const sizeMap = {
+  small: '380px',
+  medium: '460px',
+  large: '540px',
+  full: '100%',
+} as const;
+
 const {
   url,
-  maxWidth = '460px',
+  size = 'medium',
   class: className,
 } = Astro.props;
 
+const maxWidth = sizeMap[size];
 const permalink = extractPermalink(url);
 ---
 
 <div
-  class:list={['not-prose instagram-embed-container rounded-xl border border-white/10 bg-white/[0.03] backdrop-blur-sm shadow-[0_4px_12px_rgba(0,0,0,0.4)] overflow-hidden p-5 sm:p-6 transition-all duration-300 lg:hover:border-bears-accent/30 lg:hover:shadow-[0_8px_24px_rgba(0,0,0,0.5),0_0_20px_rgba(197,14,31,0.15)] lg:hover:scale-[1.02]', className]}
+  class:list={['not-prose instagram-embed-container rounded-xl border border-white/10 bg-white/[0.03] backdrop-blur-sm shadow-[0_4px_12px_rgba(0,0,0,0.4)] overflow-hidden px-5 pt-5 pb-2 sm:px-6 sm:pt-6 sm:pb-3 transition-all duration-300 lg:hover:border-bears-accent/30 lg:hover:shadow-[0_8px_24px_rgba(0,0,0,0.5),0_0_20px_rgba(197,14,31,0.15)] lg:hover:scale-[1.02]', className]}
   style={`max-width: ${maxWidth}; width: 100%;`}
 >
   <blockquote
     class="instagram-media"
     data-instgrm-permalink={permalink}
     data-instgrm-version="14"
-    style="margin: 0; padding: 0; width: 100%;"
+    style="margin: 0; padding: 0; width: 100%; min-width: 0;"
   >
     <div style="padding: 16px;">
       <a
@@ -56,6 +63,13 @@ const permalink = extractPermalink(url);
     </div>
   </blockquote>
 </div>
+
+<style>
+  .instagram-embed-container iframe {
+    margin: 0 !important;
+    display: block;
+  }
+</style>
 
 <script>
   if (!document.querySelector('script[src*="instagram.com/embed.js"]')) {

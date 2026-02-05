@@ -15,7 +15,7 @@ import Instagram from '@mdx/Instagram.astro';
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
 | `url` | `string` | **required** | Instagram post URL or shortcode |
-| `maxWidth` | `string` | `"540px"` | CSS max-width for the embed |
+| `size` | `"small" \| "medium" \| "large" \| "full"` | `"medium"` | Embed size: small (380px), medium (460px), large (540px), full (100%) |
 | `class` | `string` | — | Additional CSS classes |
 
 ## Supported URL Formats
@@ -36,9 +36,14 @@ https://www.instagram.com/tv/ABC123/
 <Instagram url="https://www.instagram.com/p/ABC123/" />
 ```
 
+**Large:**
+```mdx
+<Instagram url="ABC123" size="large" />
+```
+
 **Full width:**
 ```mdx
-<Instagram url="ABC123" maxWidth="100%" />
+<Instagram url="ABC123" size="full" />
 ```
 
 **Inside a SideBySide layout:**
