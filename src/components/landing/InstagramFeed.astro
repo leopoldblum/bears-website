@@ -21,14 +21,14 @@ const instagramPosts = await getLatestInstagramPosts(3);
   )}
 
   {instagramPosts.length > 0 && (
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 max-w-[85%] mx-auto">
       {instagramPosts.map((post) => (
-        <div class="flex justify-center">
+        <div class="rounded-xl border border-white/10 bg-white/[0.03] backdrop-blur-sm shadow-[0_4px_12px_rgba(0,0,0,0.4)] overflow-hidden p-5 sm:p-6 transition-all duration-300 lg:hover:border-bears-accent/30 lg:hover:shadow-[0_8px_24px_rgba(0,0,0,0.5),0_0_20px_rgba(197,14,31,0.15)] lg:hover:scale-[1.02]">
           <blockquote
             class="instagram-media"
             data-instgrm-permalink={post.data.url.endsWith('/') ? post.data.url : `${post.data.url}/`}
             data-instgrm-version="14"
-            style="background: #FFF; border: 0; border-radius: 3px; box-shadow: 0 0 1px 0 rgba(0,0,0,0.5), 0 1px 10px 0 rgba(0,0,0,0.15); margin: 0; padding: 0; width: 100%; max-width: 540px;"
+            style="margin: 0; padding: 0; width: 100%;"
           >
             <div style="padding: 16px;">
               <a
