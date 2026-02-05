@@ -57,7 +57,7 @@ export default function Carousel({
         slide.style.overflow = '';
         // Non-active slides don't contribute to height
         slide.style.visibility = isActive ? 'visible' : 'hidden';
-        slide.style.height = isActive ? 'auto' : '0';
+        slide.style.height = 'auto';
       } else {
         // Fixed height mode: absolute positioning
         slide.style.gridArea = '';
@@ -82,7 +82,7 @@ export default function Carousel({
           slide.style.transform = 'translate(-50%, -50%)';
         }
         slide.style.width = 'auto';
-        slide.style.height = isAutoHeight && !isActive ? '0' : 'auto';
+        slide.style.height = 'auto';
         slide.style.maxWidth = '100%';
         slide.style.maxHeight = isAutoHeight ? '' : '100%';
         slide.style.aspectRatio = 'unset';
