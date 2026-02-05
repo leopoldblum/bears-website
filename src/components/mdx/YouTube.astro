@@ -1,0 +1,81 @@
+---
+interface Props {
+  /** YouTube video ID or full YouTube URL
+   *  Accepts: video ID (e.g., "dQw4w9WgXcQ"),
+   *  youtube.com/watch?v=..., youtu.be/...,
+   *  youtube.com/embed/..., youtube.com/shorts/...
+   */
+  id: string;
+
+  /** Custom title for the iframe (accessibility)
+   *  @default "YouTube video"
+   */
+  title?: string;
+
+  /** CSS width: "50%", "800px", "100%", etc.
+   *  @default "100%"
+   */
+  width?: string;
+
+  /** Start time in seconds */
+  start?: number;
+
+  /** Additional CSS classes for the outer container */
+  class?: string;
+}
+
+function extractVideoId(input: string): string {
+  if (/^[\w-]{11}$/.test(input)) {
+    return input;
+  }
+
+  try {
+    const urlString = input.startsWith('http') ? input : `https://${input}`;
+    const url = new URL(urlString);
+
+    if (url.searchParams.has('v')) {
+      return url.searchParams.get('v')!;
+    }
+
+    if (url.hostname === 'youtu.be' || url.hostname === 'www.youtu.be') {
+      return url.pathname.slice(1).split('/')[0];
+    }
+
+    const match = url.pathname.match(/\/(embed|shorts)\/([\w-]+)/);
+    if (match) {
+      return match[2];
+    }
+  } catch {
+    // Fall through
+  }
+
+  return input;
+}
+
+const { id, title = 'YouTube video', width = '100%', start, class: className } = Astro.props;
+
+const videoId = extractVideoId(id);
+
+const embedParams = new URLSearchParams();
+if (start !== undefined && start > 0) {
+  embedParams.set('start', String(start));
+}
+const paramString = embedParams.toString();
+const embedUrl = `https://www.youtube-nocookie.com/embed/${videoId}${paramString ? `?${paramString}` : ''}`;
+---
+
+<div
+  class:list={['not-prose', className]}
+  style={width !== '100%' ? `width: ${width}` : undefined}
+>
+  <div class="relative aspect-video w-full overflow-hidden rounded-lg">
+    <iframe
+      src={embedUrl}
+      title={title}
+      loading="lazy"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+      allowfullscreen
+      class="absolute inset-0 h-full w-full border-0"
+    ></iframe>
+  </div>
+</div>

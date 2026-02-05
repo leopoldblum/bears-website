@@ -18,6 +18,7 @@ import Marquee from '@mdx/Marquee.astro';
 import { SideBySide, Left, Right } from "@mdx/SideBySide"
 import Img from '@mdx/Img.astro';
 import ImageGrid from '@reusable/ImageGrid.astro'
+import YouTube from '@mdx/YouTube.astro';
 
 import project1 from '../../assets/projects/project-1.jpg';
 import project2 from '../../assets/projects/project-2.jpg';
@@ -326,6 +327,20 @@ The marquee also supports scrolling in the opposite direction:
   <Img src={project4} alt="Project 4 showcase" class="rounded-lg" />
   <Img src={project5} alt="Project 5 showcase" class="rounded-lg" />
 </Marquee>
+
+---
+
+## YouTube Embed
+
+The `YouTube` component makes it easy to embed videos. Just pass a video ID or full URL:
+
+### Basic Embed
+
+<YouTube id="dQw4w9WgXcQ" />
+
+### With Start Time
+
+<YouTube id="dQw4w9WgXcQ" title="Rick Astley - Never Gonna Give You Up" start={30} />
 
 ---
 
