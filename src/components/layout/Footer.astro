@@ -1,20 +1,29 @@
 ---
-// Footer component - Navigation, branding, and social links
+const currentYear = new Date().getFullYear();
 ---
 
-<footer class="bg-bears-bg-light pt-16 pb-8 sm:pt-20 sm:pb-10 lg:pt-24 lg:pb-12">
-  <div class="container mx-auto px-4 sm:px-8 lg:px-12">
+<footer class="bg-bears-bg-light">
+  <!-- Accent top separator -->
+  <div
+    class="h-px bg-gradient-to-r from-transparent via-bears-accent/40 to-transparent"
+  >
+  </div>
+
+  <div class="container mx-auto px-4 sm:px-8 lg:px-12 pt-12 sm:pt-16 lg:pt-20">
     <!-- Main footer grid: stacks on mobile, horizontal on desktop -->
     <div
-      class="flex flex-col lg:grid lg:grid-cols-[auto_1fr_auto] gap-8 lg:gap-12 lg:items-start"
+      class="flex flex-col lg:grid lg:grid-cols-[auto_1fr_auto] gap-12 lg:gap-16 lg:items-start"
     >
-      <!-- Logo + Address (First on mobile, Left on desktop) -->
+      <!-- Logo + Address -->
       <div class="flex flex-col gap-4 items-center lg:items-start">
-        <div class="text-bears-accent text-2xl lg:text-3xl font-bold">
+        <a
+          href="/"
+          class="text-bears-accent text-2xl lg:text-3xl font-bold hover:text-bears-accent-muted transition-colors"
+        >
           BEARS
-        </div>
+        </a>
         <address
-          class="not-italic text-sm text-bears-text-onLight leading-relaxed text-center lg:text-left"
+          class="not-italic text-sm text-bears-text-onLight/60 leading-relaxed text-center lg:text-left"
         >
           Berlin Experimental Astronautics<br />
           Research Student team e.V.<br />
@@ -25,33 +34,37 @@
         </address>
       </div>
 
-      <!-- Navigation (Second on mobile, Center on desktop) -->
+      <!-- Navigation -->
       <nav
-        class="grid grid-cols-2 gap-8 lg:flex lg:flex-wrap lg:gap-12 lg:justify-center justify-items-center lg:justify-items-start"
+        class="grid grid-cols-2 gap-x-8 gap-y-10 lg:grid-cols-4 lg:gap-x-12 lg:gap-y-8 justify-items-center lg:justify-items-start"
       >
         <!-- Projects Column -->
         <div class="flex flex-col gap-2 text-center lg:text-left">
-          <a
-            href="/projects"
-            class="text-bears-text-onLight hover:text-bears-accent transition-colors text-sm lg:text-base font-bold mb-2"
+          <h3
+            class="text-sm lg:text-base font-semibold uppercase tracking-wider text-bears-text-onLight mb-3"
           >
-            Projects
-          </a>
+            <a
+              href="/projects"
+              class="hover:text-bears-accent transition-colors"
+            >
+              Projects
+            </a>
+          </h3>
           <a
             href="/projects?status=ongoing"
-            class="text-bears-text-onLight hover:text-bears-accent transition-colors text-xs lg:text-sm"
+            class="text-sm text-bears-text-onLight/50 hover:text-bears-accent transition-colors"
           >
             Current Projects
           </a>
           <a
             href="/projects?status=completed"
-            class="text-bears-text-onLight hover:text-bears-accent transition-colors text-xs lg:text-sm"
+            class="text-sm text-bears-text-onLight/50 hover:text-bears-accent transition-colors"
           >
             Past Projects
           </a>
           <a
             href="#"
-            class="text-bears-text-onLight hover:text-bears-accent transition-colors text-xs lg:text-sm"
+            class="text-sm text-bears-text-onLight/50 hover:text-bears-accent transition-colors"
           >
             Research Areas
           </a>
@@ -59,33 +72,37 @@
 
         <!-- Sponsors Column -->
         <div class="flex flex-col gap-2 text-center lg:text-left">
-          <a
-            href="/sponsors"
-            class="text-bears-text-onLight hover:text-bears-accent transition-colors text-sm lg:text-base font-bold mb-2"
+          <h3
+            class="text-sm lg:text-base font-semibold uppercase tracking-wider text-bears-text-onLight mb-3"
           >
-            Sponsors
-          </a>
+            <a
+              href="/sponsors"
+              class="hover:text-bears-accent transition-colors"
+            >
+              Sponsors
+            </a>
+          </h3>
           <a
             href="/sponsors"
-            class="text-bears-text-onLight hover:text-bears-accent transition-colors text-xs lg:text-sm"
+            class="text-sm text-bears-text-onLight/50 hover:text-bears-accent transition-colors"
           >
             Become a Sponsor
           </a>
           <a
             href="/sponsors"
-            class="text-bears-text-onLight hover:text-bears-accent transition-colors text-xs lg:text-sm"
+            class="text-sm text-bears-text-onLight/50 hover:text-bears-accent transition-colors"
           >
             Sponsorship Tiers
           </a>
           <a
             href="/sponsors"
-            class="text-bears-text-onLight hover:text-bears-accent transition-colors text-xs lg:text-sm"
+            class="text-sm text-bears-text-onLight/50 hover:text-bears-accent transition-colors"
           >
             Our Partners
           </a>
           <a
             href="/sponsors"
-            class="text-bears-text-onLight hover:text-bears-accent transition-colors text-xs lg:text-sm"
+            class="text-sm text-bears-text-onLight/50 hover:text-bears-accent transition-colors"
           >
             Benefits
           </a>
@@ -93,33 +110,37 @@
 
         <!-- Events Column -->
         <div class="flex flex-col gap-2 text-center lg:text-left">
-          <a
-            href="/events"
-            class="text-bears-text-onLight hover:text-bears-accent transition-colors text-sm lg:text-base font-bold mb-2"
+          <h3
+            class="text-sm lg:text-base font-semibold uppercase tracking-wider text-bears-text-onLight mb-3"
           >
-            Events
-          </a>
+            <a
+              href="/events"
+              class="hover:text-bears-accent transition-colors"
+            >
+              Events
+            </a>
+          </h3>
           <a
             href="/events?date=upcoming"
-            class="text-bears-text-onLight hover:text-bears-accent transition-colors text-xs lg:text-sm"
+            class="text-sm text-bears-text-onLight/50 hover:text-bears-accent transition-colors"
           >
             Upcoming Events
           </a>
           <a
             href="/events?category=competitions-and-workshops"
-            class="text-bears-text-onLight hover:text-bears-accent transition-colors text-xs lg:text-sm"
+            class="text-sm text-bears-text-onLight/50 hover:text-bears-accent transition-colors"
           >
             Competitions & Workshops
           </a>
           <a
             href="/events?category=competitions-and-workshops"
-            class="text-bears-text-onLight hover:text-bears-accent transition-colors text-xs lg:text-sm"
+            class="text-sm text-bears-text-onLight/50 hover:text-bears-accent transition-colors"
           >
             Conventions
           </a>
           <a
             href="/events?date=past"
-            class="text-bears-text-onLight hover:text-bears-accent transition-colors text-xs lg:text-sm"
+            class="text-sm text-bears-text-onLight/50 hover:text-bears-accent transition-colors"
           >
             Past Events
           </a>
@@ -127,92 +148,125 @@
 
         <!-- About Us Column -->
         <div class="flex flex-col gap-2 text-center lg:text-left">
-          <a
-            href="/about-us"
-            class="text-bears-text-onLight hover:text-bears-accent transition-colors text-sm lg:text-base font-bold mb-2"
+          <h3
+            class="text-sm lg:text-base font-semibold uppercase tracking-wider text-bears-text-onLight mb-3"
           >
-            About Us
-          </a>
+            <a
+              href="/about-us"
+              class="hover:text-bears-accent transition-colors"
+            >
+              About Us
+            </a>
+          </h3>
           <a
             href="#"
-            class="text-bears-text-onLight hover:text-bears-accent transition-colors text-xs lg:text-sm"
+            class="text-sm text-bears-text-onLight/50 hover:text-bears-accent transition-colors"
           >
             Our Team
           </a>
           <a
             href="/media"
-            class="text-bears-text-onLight hover:text-bears-accent transition-colors text-xs lg:text-sm"
+            class="text-sm text-bears-text-onLight/50 hover:text-bears-accent transition-colors"
           >
             Media
           </a>
           <a
             href="#"
-            class="text-bears-text-onLight hover:text-bears-accent transition-colors text-xs lg:text-sm"
+            class="text-sm text-bears-text-onLight/50 hover:text-bears-accent transition-colors"
           >
             Contact
           </a>
         </div>
       </nav>
 
-      <!-- Social Media Icons (Third/Last on mobile, Right on desktop) -->
+      <!-- Social Media Icons -->
       <div
-        class="flex gap-4 items-center justify-center lg:justify-end lg:self-center"
+        class="flex gap-3 items-center justify-center lg:justify-end lg:self-center"
       >
         <a
           href="#"
-          class="hover:opacity-70 transition-opacity"
+          class="group w-10 h-10 rounded-full bg-bears-text-onLight/10 flex items-center justify-center hover:bg-bears-accent hover:scale-110 transition-all duration-200"
           aria-label="Social media 1"
         >
           <svg
-            width="32"
-            height="32"
+            width="18"
+            height="18"
             viewBox="0 0 32 32"
-            class="fill-bears-text-onLight"
+            class="fill-bears-text-onLight group-hover:fill-white transition-colors duration-200"
           >
             <circle cx="16" cy="16" r="14"></circle>
           </svg>
         </a>
         <a
           href="#"
-          class="hover:opacity-70 transition-opacity"
+          class="group w-10 h-10 rounded-full bg-bears-text-onLight/10 flex items-center justify-center hover:bg-bears-accent hover:scale-110 transition-all duration-200"
           aria-label="Social media 2"
         >
           <svg
-            width="32"
-            height="32"
+            width="18"
+            height="18"
             viewBox="0 0 32 32"
-            class="fill-bears-text-onLight"
+            class="fill-bears-text-onLight group-hover:fill-white transition-colors duration-200"
           >
             <circle cx="16" cy="16" r="14"></circle>
           </svg>
         </a>
         <a
           href="#"
-          class="hover:opacity-70 transition-opacity"
+          class="group w-10 h-10 rounded-full bg-bears-text-onLight/10 flex items-center justify-center hover:bg-bears-accent hover:scale-110 transition-all duration-200"
           aria-label="Social media 3"
         >
           <svg
-            width="32"
-            height="32"
+            width="18"
+            height="18"
             viewBox="0 0 32 32"
-            class="fill-bears-text-onLight"
+            class="fill-bears-text-onLight group-hover:fill-white transition-colors duration-200"
           >
             <circle cx="16" cy="16" r="14"></circle>
           </svg>
         </a>
         <a
           href="#"
-          class="hover:opacity-70 transition-opacity"
+          class="group w-10 h-10 rounded-full bg-bears-text-onLight/10 flex items-center justify-center hover:bg-bears-accent hover:scale-110 transition-all duration-200"
           aria-label="Social media 4"
         >
           <svg
-            width="32"
-            height="32"
+            width="18"
+            height="18"
             viewBox="0 0 32 32"
-            class="fill-bears-text-onLight"
+            class="fill-bears-text-onLight group-hover:fill-white transition-colors duration-200"
           >
             <circle cx="16" cy="16" r="14"></circle>
           </svg>
+        </a>
+      </div>
+    </div>
+
+    <!-- Separator -->
+    <div class="h-px bg-bears-text-onLight/10 mt-12 sm:mt-16 lg:mt-20"></div>
+
+    <!-- Bottom bar -->
+    <div
+      class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 sm:pt-8 pb-8 sm:pb-10 lg:pb-12"
+    >
+      <p class="text-xs text-bears-text-onLight/40">
+        &copy; {currentYear} BEARS e.V. All rights reserved.
+      </p>
+      <div
+        class="flex items-center gap-4 text-xs text-bears-text-onLight/40"
+      >
+        <a
+          href="#"
+          class="hover:text-bears-accent transition-colors"
+        >
+          Impressum
+        </a>
+        <span class="text-bears-text-onLight/20">|</span>
+        <a
+          href="#"
+          class="hover:text-bears-accent transition-colors"
+        >
+          Datenschutz
         </a>
       </div>
     </div>
