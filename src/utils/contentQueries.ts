@@ -159,6 +159,41 @@ export async function getLatestPosts(limit: number = 4) {
 }
 
 // ============================================================================
+// PRE-COMPOSED QUERY FUNCTIONS FOR INSTAGRAM
+// ============================================================================
+
+/**
+ * Gets all published Instagram posts, sorted by date (newest first).
+ * Filters out drafts in production mode.
+ *
+ * @returns Array of Instagram posts sorted by date descending
+ *
+ * @example
+ * const posts = await getPublishedInstagramPosts();
+ */
+export async function getPublishedInstagramPosts() {
+  const allPosts = await getCollection('instagram', ({ data }) => {
+    return import.meta.env.DEV || !data.isDraft;
+  });
+  return sortByDateDesc(allPosts);
+}
+
+/**
+ * Gets the latest N published Instagram posts, sorted by date.
+ * Useful for the landing page Instagram section.
+ *
+ * @param limit - Maximum number of posts to return (default: 3)
+ * @returns Array of latest Instagram posts sorted by date descending
+ *
+ * @example
+ * const latestPosts = await getLatestInstagramPosts(3);
+ */
+export async function getLatestInstagramPosts(limit: number = 3) {
+  const allPosts = await getPublishedInstagramPosts();
+  return allPosts.slice(0, limit);
+}
+
+// ============================================================================
 // PRE-COMPOSED QUERY FUNCTIONS FOR OTHER COLLECTIONS
 // ============================================================================
 

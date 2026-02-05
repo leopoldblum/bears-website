@@ -1,0 +1,69 @@
+---
+interface Props {
+  /** Instagram post URL or shortcode
+   *  Accepts: full URL (e.g., "https://www.instagram.com/p/ABC123/"),
+   *  or just the shortcode (e.g., "ABC123")
+   */
+  url: string;
+
+  /** CSS max-width: "100%", "540px", etc.
+   *  Instagram embeds have a natural max-width of 540px.
+   *  @default "540px"
+   */
+  maxWidth?: string;
+
+  /** Additional CSS classes for the outer container */
+  class?: string;
+}
+
+function extractPermalink(input: string): string {
+  // If it looks like a shortcode (alphanumeric, hyphens, underscores only)
+  if (/^[\w-]+$/.test(input)) {
+    return `https://www.instagram.com/p/${input}/`;
+  }
+  // Ensure trailing slash for Instagram embed compatibility
+  return input.endsWith('/') ? input : `${input}/`;
+}
+
+const {
+  url,
+  maxWidth = '540px',
+  class: className,
+} = Astro.props;
+
+const permalink = extractPermalink(url);
+---
+
+<div
+  class:list={['not-prose instagram-embed-container', className]}
+  style={`max-width: ${maxWidth}; width: 100%;`}
+>
+  <blockquote
+    class="instagram-media"
+    data-instgrm-permalink={permalink}
+    data-instgrm-version="14"
+    style="background: #FFF; border: 0; border-radius: 3px; box-shadow: 0 0 1px 0 rgba(0,0,0,0.5), 0 1px 10px 0 rgba(0,0,0,0.15); margin: 0; padding: 0; width: 100%;"
+  >
+    <div style="padding: 16px;">
+      <a
+        href={permalink}
+        target="_blank"
+        rel="noopener noreferrer"
+        style="color: #3897f0; text-decoration: none;"
+      >
+        View on Instagram
+      </a>
+    </div>
+  </blockquote>
+</div>
+
+<script>
+  if (!document.querySelector('script[src*="instagram.com/embed.js"]')) {
+    const script = document.createElement('script');
+    script.src = 'https://www.instagram.com/embed.js';
+    script.async = true;
+    document.body.appendChild(script);
+  } else if (window.instgrm) {
+    window.instgrm.Embeds.process();
+  }
+</script>

@@ -5,6 +5,7 @@ import WhatIsBears from "@landing/WhatIsBears.astro";
 import MeetTheTeam from "@landing/MeetTheTeam.astro";
 import BecomeSponsor from "@landing/BecomeSponsor.astro";
 import LatestNews from "@landing/LatestNews.astro";
+import InstagramFeed from "@landing/InstagramFeed.astro";
 import Testimonials from "@landing/Testimonials.astro"
 import { getPageContent } from "@utils/contentQueries";
 
@@ -19,5 +20,6 @@ const heroCTAs = heroCTAsContent?.data.ctas ?? [];
   <MeetTheTeam />
   <BecomeSponsor />
   <LatestNews />
+  <InstagramFeed />
   <Testimonials />
 </BaseLayout>

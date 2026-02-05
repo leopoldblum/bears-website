@@ -10,6 +10,7 @@ Welcome! This folder contains step-by-step guides for creating and managing cont
 - [Managing Events and Projects](managing-events-and-projects.md) - Add and update events/projects
 - [Managing Sponsors](managing-sponsors.md) - Add and update sponsors
 - [Managing Testimonials](managing-testimonials.md) - Add and update testimonials
+- [Managing Instagram Posts](managing-instagram-posts.md) - Add and display Instagram embeds
 - [Managing Page Content](managing-page-content.md) - Edit homepage sections and page headers
 
 ## 🔧 For Developers
@@ -22,6 +23,7 @@ Welcome! This folder contains step-by-step guides for creating and managing cont
 - **ImageGrid Component** - See `/src/components/mdx/ImageGrid.md`
 - **SideBySide Component** - See `/src/components/mdx/SideBySide/SideBySide.md`
 - **MediaAccordion Component** - See `/src/components/mdx/MediaAccordion.astro`
+- **Instagram Component** - See `/src/components/mdx/Instagram.md`
 - **Type Definitions** - See `/src/types/types-documentation.md`
 - **Project Architecture** - See `CLAUDE.md` in project root
 

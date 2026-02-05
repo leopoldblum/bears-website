@@ -1,0 +1,67 @@
+---
+import Button from "@mdx/Button.astro";
+import { getLatestInstagramPosts, getPageContent } from "@utils/contentQueries";
+
+const content = await getPageContent('landing-page/instagram-feed');
+const instagramPosts = await getLatestInstagramPosts(3);
+---
+
+<section
+  id="instagram-feed-section"
+  class="container mx-auto px-4 sm:px-8 lg:px-16 py-16 sm:py-20 lg:py-24"
+>
+  <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-bears-text-onDark mb-6 sm:mb-8 lg:mb-12">
+    {content?.data.title}
+  </h2>
+
+  {content?.data.description && (
+    <p class="text-base sm:text-lg text-bears-text-onDark leading-relaxed max-w-3xl mb-8 sm:mb-12">
+      {content.data.description}
+    </p>
+  )}
+
+  {instagramPosts.length > 0 && (
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8">
+      {instagramPosts.map((post) => (
+        <div class="flex justify-center">
+          <blockquote
+            class="instagram-media"
+            data-instgrm-permalink={post.data.url.endsWith('/') ? post.data.url : `${post.data.url}/`}
+            data-instgrm-version="14"
+            style="background: #FFF; border: 0; border-radius: 3px; box-shadow: 0 0 1px 0 rgba(0,0,0,0.5), 0 1px 10px 0 rgba(0,0,0,0.15); margin: 0; padding: 0; width: 100%; max-width: 540px;"
+          >
+            <div style="padding: 16px;">
+              <a
+                href={post.data.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                style="color: #3897f0; text-decoration: none;"
+              >
+                View on Instagram
+              </a>
+            </div>
+          </blockquote>
+        </div>
+      ))}
+    </div>
+  )}
+
+  {content?.data.buttonText && content?.data.buttonHref && (
+    <div class="flex justify-center mt-8 sm:mt-12">
+      <Button variant="primary" size="large" href={content.data.buttonHref}>
+        {content.data.buttonText}
+      </Button>
+    </div>
+  )}
+</section>
+
+<script>
+  if (!document.querySelector('script[src*="instagram.com/embed.js"]')) {
+    const script = document.createElement('script');
+    script.src = 'https://www.instagram.com/embed.js';
+    script.async = true;
+    document.body.appendChild(script);
+  } else if (window.instgrm) {
+    window.instgrm.Embeds.process();
+  }
+</script>

@@ -125,6 +125,15 @@ const landingHeroCollection = defineCollection({
   }),
 });
 
+const instagramCollection = defineCollection({
+  type: 'content',
+  schema: z.object({
+    url: z.string().url(),
+    date: z.date(),
+    isDraft: z.boolean().default(false).optional(),
+  }),
+});
+
 const pageContentCollection = defineCollection({
   type: 'content',
   schema: z.object({
@@ -148,4 +157,5 @@ export const collections = {
   projects: projectsCollection,
   landingHero: landingHeroCollection,
   pageContent: pageContentCollection,
+  instagram: instagramCollection,
 };

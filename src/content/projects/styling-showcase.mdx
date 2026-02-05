@@ -19,6 +19,7 @@ import { SideBySide, Left, Right } from "@mdx/SideBySide"
 import Img from '@mdx/Img.astro';
 import ImageGrid from '@reusable/ImageGrid.astro'
 import YouTube from '@mdx/YouTube.astro';
+import Instagram from '@mdx/Instagram.astro';
 
 import project1 from '../../assets/projects/project-1.jpg';
 import project2 from '../../assets/projects/project-2.jpg';
@@ -341,6 +342,14 @@ The `YouTube` component makes it easy to embed videos. Just pass a video ID or f
 ### With Start Time
 
 <YouTube id="dQw4w9WgXcQ" title="Rick Astley - Never Gonna Give You Up" start={30} />
+
+---
+
+## Instagram Embed
+
+The `Instagram` component embeds Instagram posts. Just pass a post URL or shortcode:
+
+<Instagram url="https://www.instagram.com/p/DTtCU_xCO2f/" />
 
 ---
 
