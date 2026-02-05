@@ -171,6 +171,30 @@ const processedItems = await Promise.all(
 **Reference Implementation:**
 See [Accordion.astro](src/components/reusable/Accordion.astro) for a complete example of Markdown support in a reusable component. It accepts content in Markdown format and processes it server-side for optimal performance.
 
+### Editable Page Content
+
+Static text in components and pages — such as headings, descriptions, and button labels — should be sourced from `.md` files in the `pageContent` content collection (`src/content/pageContent/`) rather than hardcoded, when useful and practical. This allows content creators to update copy without touching component code.
+
+**Subfolder conventions:**
+- `landing-page/` — content for homepage sections (e.g., `landing-page/what-is-bears`)
+- `sub-pages/` — content for listing and standalone pages (e.g., `sub-pages/events`)
+
+**Querying content:**
+Use `getPageContent(id)` from `src/utils/contentQueries.ts` to fetch a page content entry by its ID:
+
+```astro
+---
+import { getPageContent } from '../utils/contentQueries';
+
+const content = await getPageContent('sub-pages/events');
+---
+
+<h2>{content.data.title}</h2>
+<p>{content.data.description}</p>
+```
+
+**When to extract content:** Not every string needs to be pulled into a content file. Use this pattern for user-facing text that content creators are likely to want to edit (section headings, intro paragraphs, CTA labels). Internal labels, aria attributes, and structural text can stay hardcoded.
+
 ## Documentation
 
 The `/guides/` directory contains user-facing guides for content creators and maintainers. These documents explain how to add and manage content on the website.
