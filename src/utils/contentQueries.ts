@@ -211,6 +211,23 @@ export async function getSponsorsByTier() {
 }
 
 /**
+ * Gets a single page content entry by its id.
+ * Used for configurable page text (headings, descriptions, buttons).
+ *
+ * @param id - The entry id including subfolder (e.g., 'landing-page/what-is-bears')
+ * @returns Single page content entry or undefined
+ *
+ * @example
+ * const content = await getPageContent('landing-page/what-is-bears');
+ * const title = content?.data.title;
+ */
+export async function getPageContent(id: string) {
+  const allContent = await getCollection('pageContent');
+  const idWithExtension = id.endsWith('.md') ? id : `${id}.md`;
+  return allContent.find(entry => entry.id === idWithExtension);
+}
+
+/**
  * Gets all landing hero slides sorted by filename (id).
  * Files should be prefixed with numbers for ordering (e.g., 01-slide.md, 02-slide.md).
  *

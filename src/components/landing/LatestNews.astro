@@ -4,7 +4,9 @@ import PostShowcase from "@posts-catalog/PostShowcase.astro";
 import Button from "@mdx/Button.astro";
 import type { PostType } from '@types';
 import { loadCollectionImages } from '@utils/imageLoader';
-import { getLatestPosts, sortByDateDesc } from '@utils/contentQueries';
+import { getLatestPosts, sortByDateDesc, getPageContent } from '@utils/contentQueries';
+
+const content = await getPageContent('landing-page/latest-news');
 
 // Get latest 4 posts (filtered and sorted)
 const latestPosts = await getLatestPosts(4);
@@ -53,18 +55,22 @@ const newsItems = allPostsWithImages.map((post) => {
 >
   <!-- Header - left aligned -->
   <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-bears-text-onDark mb-6 sm:mb-8 lg:mb-12">
-    Latest News from BEARS
+    {content?.data.title}
   </h2>
 
-  <!-- Placeholder text -->
-  <p class="text-base sm:text-lg text-bears-text-onDark leading-relaxed max-w-3xl mb-8 sm:mb-12">
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation.
-  </p>
+  <!-- Description text -->
+  {content?.data.description && (
+    <p class="text-base sm:text-lg text-bears-text-onDark leading-relaxed max-w-3xl mb-8 sm:mb-12">
+      {content.data.description}
+    </p>
+  )}
 
   <!-- Learn More Button -->
-  <div>
-    <Button variant="primary">Learn More</Button>
-  </div>
+  {content?.data.buttonText && content?.data.buttonHref && (
+    <div>
+      <Button variant="primary" href={content.data.buttonHref}>{content.data.buttonText}</Button>
+    </div>
+  )}
 
   <!-- News Preview Grid -->
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 my-8 sm:my-12 px-4 sm:px-0">

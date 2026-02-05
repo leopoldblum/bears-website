@@ -2,13 +2,15 @@
 // MeetTheTeam component
 import Img from "@mdx/Img.astro";
 import { loadCollectionImages } from "@utils/imageLoader";
-import { getMeetTheTeamProjects } from "@utils/contentQueries";
+import { getMeetTheTeamProjects, getPageContent } from "@utils/contentQueries";
 
 // Get projects for MeetTheTeam section (filtered and sorted)
 const sortedProjects = await getMeetTheTeamProjects();
 
 // Load images for all projects
 const projects = await loadCollectionImages(sortedProjects, "project");
+
+const content = await getPageContent('landing-page/meet-the-team');
 ---
 
 <section
@@ -18,7 +20,7 @@ const projects = await loadCollectionImages(sortedProjects, "project");
   <h2
     class="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6 sm:mb-8 lg:mb-12 text-bears-text-onDark"
   >
-    Meet the Team
+    {content?.data.title}
   </h2>
 
   <!-- Responsive layout: flex-col for lg, grid for xl -->

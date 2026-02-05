@@ -6,10 +6,12 @@ import SortMenu from "@posts-catalog/SortMenu.astro";
 import Pagination from "@posts-catalog/Pagination.astro";
 import PageHeroImage from "@reusable/PageHeroImage.astro";
 import { loadCollectionImages } from "@utils/imageLoader";
-import { getPublishedEvents } from "@utils/contentQueries";
+import { getPublishedEvents, getPageContent } from "@utils/contentQueries";
 import { CategoryEventEnum } from "@types";
 import { getCategoryLabel } from "@utils/categoryLabels";
 import eventHeroImage from "@assets/hero/events/event-1.jpg";
+
+const pageContent = await getPageContent('sub-pages/events');
 
 // Get all published events (filtered and sorted)
 const sortedEvents = await getPublishedEvents();
@@ -38,12 +40,12 @@ const eventsData = JSON.stringify(eventsWithImages.map((e, i) => ({
 })));
 ---
 
-<BaseLayout title="Events">
+<BaseLayout title={pageContent?.data.title ?? "Events"}>
   <PageHeroImage
     image={eventHeroImage}
     alt="BEARS members collaborating at a workshop event"
-    title="Events"
-    subtitle="Join us for workshops, hackathons, and networking opportunities"
+    title={pageContent?.data.title ?? "Events"}
+    subtitle={pageContent?.data.subtitle ?? ""}
   />
 
   <div

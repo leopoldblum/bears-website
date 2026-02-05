@@ -4,7 +4,7 @@ import Carousel from "@mdx/Carousel.astro";
 import TestimonialCard from "./TestimonialCard.astro";
 import type { ImageMetadata } from "astro";
 import { loadCollectionImages } from "@utils/imageLoader";
-import { getTestimonialsSorted } from "@utils/contentQueries";
+import { getTestimonialsSorted, getPageContent } from "@utils/contentQueries";
 
 // Get testimonials sorted alphabetically by slug
 const sortedTestimonials = await getTestimonialsSorted();
@@ -20,6 +20,8 @@ const testimonials = testimonialsWithLoadedImages.map((testimonial) => ({
   ...testimonial.data,
   image: testimonial.loadedImage, // Guaranteed non-null by loader (schema field: coverImage, component prop: image)
 }));
+
+const content = await getPageContent('landing-page/testimonials');
 ---
 
 <section
@@ -29,7 +31,7 @@ const testimonials = testimonialsWithLoadedImages.map((testimonial) => ({
   <h2
     class="text-3xl sm:text-4xl lg:text-5xl font-bold text-bears-text-onDark mb-6 sm:mb-8 lg:mb-12"
   >
-    What Members Think
+    {content?.data.title}
   </h2>
 
   <!-- Testimonial Carousel -->

@@ -125,10 +125,27 @@ const landingHeroCollection = defineCollection({
   }),
 });
 
+const pageContentCollection = defineCollection({
+  type: 'content',
+  schema: z.object({
+    title: z.string(),
+    subtitle: z.string().optional(),
+    description: z.string().optional(),
+    buttonText: z.string().optional(),
+    buttonHref: z.string().optional(),
+    ctas: z.array(z.object({
+      title: z.string(),
+      description: z.string(),
+      href: z.string(),
+    })).max(4).optional(),
+  }),
+});
+
 export const collections = {
   testimonials: testimonialsCollection,
   sponsors: sponsorsCollection,
   events: eventsCollection,
   projects: projectsCollection,
   landingHero: landingHeroCollection,
+  pageContent: pageContentCollection,
 };

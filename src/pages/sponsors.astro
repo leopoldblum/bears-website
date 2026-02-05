@@ -2,19 +2,25 @@
 import BaseLayout from "@layouts/BaseLayout.astro";
 import PageHeroImage from "@reusable/PageHeroImage.astro";
 import sponsorHeroImage from "@assets/hero/sponsors/project-5.jpg";
+import { getPageContent } from "@utils/contentQueries";
+
+const pageContent = await getPageContent('sub-pages/sponsors');
+const { Content } = pageContent ? await pageContent.render() : { Content: null };
 ---
 
-<BaseLayout title="Sponsors">
+<BaseLayout title={pageContent?.data.title ?? "Sponsors"}>
   <PageHeroImage
     image={sponsorHeroImage}
     alt="Partnership and collaboration opportunities with BEARS"
-    title="Sponsors"
-    subtitle="Thank you to our partners who make our aerospace projects possible"
+    title={pageContent?.data.title ?? "Sponsors"}
+    subtitle={pageContent?.data.subtitle ?? ""}
   />
 
-  <div class="container mx-auto px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
-    <p class="text-sm sm:text-base text-bears-text-onDark">
-      Sponsors page content - To be defined
-    </p>
-  </div>
+  {Content && (
+    <div class="container mx-auto px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+      <article class="prose prose-lg max-w-4xl mx-auto text-bears-text-onDark">
+        <Content />
+      </article>
+    </div>
+  )}
 </BaseLayout>

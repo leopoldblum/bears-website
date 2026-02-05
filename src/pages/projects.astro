@@ -6,11 +6,13 @@ import SortMenu from "@posts-catalog/SortMenu.astro";
 import Pagination from "@posts-catalog/Pagination.astro";
 import PageHeroImage from "@reusable/PageHeroImage.astro";
 import { loadCollectionImages } from "@utils/imageLoader";
-import { getPublishedProjects } from "@utils/contentQueries";
+import { getPublishedProjects, getPageContent } from "@utils/contentQueries";
 import { CategoryProjectEnum } from "@types";
 import { getCategoryLabel } from "@utils/categoryLabels";
 
 import projectHeroImage from "@assets/hero/projects/project-1.jpg";
+
+const pageContent = await getPageContent('sub-pages/projects');
 
 // Get all published projects (filtered and sorted)
 const sortedProjects = await getPublishedProjects();
@@ -41,12 +43,12 @@ const projectsData = JSON.stringify(projectsWithImages.map((p, i) => ({
 })));
 ---
 
-<BaseLayout title="Projects">
+<BaseLayout title={pageContent?.data.title ?? "Projects"}>
   <PageHeroImage
     image={projectHeroImage}
     alt="BEARS student working on satellite project"
-    title="Projects"
-    subtitle="Explore the innovative aerospace and technology projects built by BEARS students"
+    title={pageContent?.data.title ?? "Projects"}
+    subtitle={pageContent?.data.subtitle ?? ""}
   />
 
   <div

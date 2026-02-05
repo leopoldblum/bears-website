@@ -6,25 +6,11 @@ import MeetTheTeam from "@landing/MeetTheTeam.astro";
 import BecomeSponsor from "@landing/BecomeSponsor.astro";
 import LatestNews from "@landing/LatestNews.astro";
 import Testimonials from "@landing/Testimonials.astro"
+import { getPageContent } from "@utils/contentQueries";
 
-// HeroCTA data - displayed at the bottom of the hero section
-const heroCTAs = [
-  {
-    title: "How to Join",
-    description: "Becoming a member of Bears e.V.",
-    href: "/about-us",
-  },
-  {
-    title: "Our Projects",
-    description: "Explore what we are working on",
-    href: "/projects",
-  },
-  {
-    title: "Events",
-    description: "Upcoming workshops and meetups",
-    href: "/events",
-  },
-];
+// Fetch hero CTAs from content collection
+const heroCTAsContent = await getPageContent('landing-page/hero-ctas');
+const heroCTAs = heroCTAsContent?.data.ctas ?? [];
 ---
 
 <BaseLayout title="Home">

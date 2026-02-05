@@ -2,19 +2,25 @@
 import BaseLayout from "@layouts/BaseLayout.astro";
 import PageHeroImage from "@reusable/PageHeroImage.astro";
 import aboutHeroImage from "@assets/hero/about-us/carousel-7.jpg";
+import { getPageContent } from "@utils/contentQueries";
+
+const pageContent = await getPageContent('sub-pages/about-us');
+const { Content } = pageContent ? await pageContent.render() : { Content: null };
 ---
 
-<BaseLayout title="About Us">
+<BaseLayout title={pageContent?.data.title ?? "About Us"}>
   <PageHeroImage
     image={aboutHeroImage}
     alt="BEARS team working together on aerospace projects"
-    title="Who are we?"
-    subtitle="Learn about our mission, values, and the passionate students behind BEARS"
+    title={pageContent?.data.title ?? "Who are we?"}
+    subtitle={pageContent?.data.subtitle ?? ""}
   />
 
-  <div class="container mx-auto px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
-    <p class="text-sm sm:text-base text-bears-text-onDark">
-      About Us page content - To be defined
-    </p>
-  </div>
+  {Content && (
+    <div class="container mx-auto px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+      <article class="prose prose-lg max-w-4xl mx-auto text-bears-text-onDark">
+        <Content />
+      </article>
+    </div>
+  )}
 </BaseLayout>

@@ -162,6 +162,15 @@ export default function HeroCTAIsland({ ctas }: HeroCTAIslandProps) {
 
   if (ctas.length === 0) return null;
 
+  // Dynamic grid columns based on CTA count
+  const gridColsClass: Record<number, string> = {
+    1: 'lg:grid-cols-1',
+    2: 'lg:grid-cols-2',
+    3: 'lg:grid-cols-3',
+    4: 'lg:grid-cols-4',
+  };
+  const gridCols = gridColsClass[ctas.length] || 'lg:grid-cols-3';
+
   // Rectangle positioned under the hovered CTA, slightly wider with curved-in foot
   const widthExpansion = 1.02; // 2% wider than CTA
   const expandedWidth = gradientPos.width * widthExpansion;
@@ -262,7 +271,7 @@ export default function HeroCTAIsland({ ctas }: HeroCTAIslandProps) {
       {/* CTA Grid */}
       <div
         ref={gridRef}
-        className="relative z-10 grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 max-w-6xl"
+        className={`relative z-10 grid grid-cols-1 ${gridCols} gap-6 lg:gap-8 max-w-6xl`}
         onMouseLeave={() => isLargeScreen && resetGradient()}
       >
         {ctas.map((cta, index) => (

@@ -5,8 +5,10 @@ import Button from "@mdx/Button.astro";
 import Img from "@mdx/Img.astro";
 import { whatIsBearsImages } from "@utils/imageGlobs";
 import { loadAllImagesFromDirectory } from "@utils/imageLoader";
+import { getPageContent } from "@utils/contentQueries";
 
 const carouselImages = await loadAllImagesFromDirectory(whatIsBearsImages);
+const content = await getPageContent('landing-page/what-is-bears');
 ---
 
 <section
@@ -17,22 +19,22 @@ const carouselImages = await loadAllImagesFromDirectory(whatIsBearsImages);
     <h2
       class="text-3xl sm:text-4xl lg:text-5xl font-bold text-bears-text-onDark mb-6 sm:mb-8 lg:mb-12"
     >
-      What is BEARS e.V.?
+      {content?.data.title}
     </h2>
 
     <!-- Explanation text -->
-    <p class="text-base sm:text-lg text-bears-text-onDark leading-relaxed">
-      Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod
-      tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-      veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-      commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-      velit esse cillum dolore eu fugiat nulla pariatur.
-    </p>
+    {content?.data.description && (
+      <p class="text-base sm:text-lg text-bears-text-onDark leading-relaxed">
+        {content.data.description}
+      </p>
+    )}
 
     <!-- Button -->
-    <div class="mt-4 sm:mt-6">
-      <Button variant="primary">Learn More</Button>
-    </div>
+    {content?.data.buttonText && content?.data.buttonHref && (
+      <div class="mt-4 sm:mt-6">
+        <Button variant="primary" href={content.data.buttonHref}>{content.data.buttonText}</Button>
+      </div>
+    )}
   </div>
 
   <div class="mt-12 sm:mt-16">

@@ -10,6 +10,7 @@ Welcome! This folder contains step-by-step guides for creating and managing cont
 - [Managing Events and Projects](managing-events-and-projects.md) - Add and update events/projects
 - [Managing Sponsors](managing-sponsors.md) - Add and update sponsors
 - [Managing Testimonials](managing-testimonials.md) - Add and update testimonials
+- [Managing Page Content](managing-page-content.md) - Edit homepage sections and page headers
 
 ## 🔧 For Developers
 
