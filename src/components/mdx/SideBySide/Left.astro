@@ -5,11 +5,13 @@
 
 interface Props {
   class?: string;
+  centerVertical?: boolean;
 }
 
-const { class: className } = Astro.props;
+const { class: className, centerVertical = false } = Astro.props;
+const centerClasses = centerVertical ? 'flex flex-col justify-center' : '';
 ---
 
-<div class={`flex-1 min-w-0 py-2 lg:pl-0 lg:pr-10 ${className || ''}`}>
+<div class={`flex-1 min-w-0 py-2 lg:pl-0 lg:pr-10 ${centerClasses} ${className || ''}`}>
   <slot />
 </div>

@@ -18,7 +18,8 @@ Wraps content for the left column with automatic 50% width distribution.
 
 ```typescript
 interface Props {
-  class?: string;  // Additional Tailwind classes
+  class?: string;           // Additional Tailwind classes
+  centerVertical?: boolean; // Vertically center content (default: false)
 }
 ```
 
@@ -27,7 +28,8 @@ Wraps content for the right column with automatic 50% width distribution.
 
 ```typescript
 interface Props {
-  class?: string;  // Additional Tailwind classes
+  class?: string;           // Additional Tailwind classes
+  centerVertical?: boolean; // Vertically center content (default: false)
 }
 ```
 
@@ -141,7 +143,27 @@ import { SideBySide, Left, Right } from '../../components/reusable/SideBySide';
 </SideBySide>
 ```
 
-### Vertically Centered
+### Vertically Centered (Per-Column)
+
+Use `centerVertical` on individual columns to vertically center their content independently:
+
+```mdx
+import { SideBySide, Left, Right } from '../../components/reusable/SideBySide';
+
+<SideBySide>
+  <Left centerVertical>
+    Short text that should be vertically centered
+    next to a tall image.
+  </Left>
+  <Right>
+    <img src="/images/tall-image.jpg" alt="Tall image" />
+  </Right>
+</SideBySide>
+```
+
+### Vertically Centered (Both Columns)
+
+Use `class="items-center"` on SideBySide to center both columns at the container level:
 
 ```mdx
 import { SideBySide, Left, Right } from '../../components/reusable/SideBySide';
@@ -285,7 +307,7 @@ import teamImage from '../../assets/team.jpg';
 
 ## Design Decisions
 
-- **Minimal props**: Only `class` escape hatch keeps the component simple
+- **Minimal props**: `class` escape hatch plus `centerVertical` for per-column vertical centering
 - **Component composition**: Left and Right components provide clear structure
 - **Simple divider**: Tailwind's divide utilities handle responsive divider placement automatically
 - **Content-first**: Columns have no default styling - content defines appearance
