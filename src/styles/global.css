@@ -74,6 +74,23 @@ body {
   }
 }
 
+/* Mobile nav link stagger animation */
+.nav-link {
+  animation: navLinkIn 0.25s ease-out both;
+}
+
+@keyframes navLinkIn {
+  from {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
 /* Accordion item stagger animation */
 .accordion-item {
   animation: accordionItemIn 0.3s ease-out both;
@@ -179,7 +196,8 @@ body {
   .showcase-card,
   .accordion-item,
   .post-container,
-  .metadata-card {
+  .metadata-card,
+  .nav-link {
     animation: none;
   }
 
