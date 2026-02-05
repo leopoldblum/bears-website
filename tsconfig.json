@@ -50,6 +50,7 @@
         "src/components/post/*"
       ]
     },
+    "types": ["vitest/globals"],
     "jsx": "react-jsx",
     "jsxImportSource": "react"
   }
