@@ -32,10 +32,10 @@ const {
 // Grid column classes - responsive breakpoints (square mode)
 const colClasses: Record<number, string> = {
   2: "grid-cols-2",
-  3: "grid-cols-2 sm:grid-cols-3",
-  4: "grid-cols-2 sm:grid-cols-3 lg:grid-cols-4",
-  5: "grid-cols-2 sm:grid-cols-3 lg:grid-cols-5",
-  6: "grid-cols-2 sm:grid-cols-3 lg:grid-cols-6",
+  3: "grid-cols-2 lg:grid-cols-3",
+  4: "grid-cols-2 lg:grid-cols-4",
+  5: "grid-cols-2 lg:grid-cols-5",
+  6: "grid-cols-2 lg:grid-cols-6",
 };
 
 // Gap classes - responsive spacing
@@ -49,10 +49,10 @@ const gapClasses: Record<string, string> = {
 // Helps browser select optimal image from srcset
 const sizeClasses: Record<number, string> = {
   2: "50vw",
-  3: "(min-width: 640px) 33vw, 50vw",
-  4: "(min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw",
-  5: "(min-width: 1024px) 20vw, (min-width: 640px) 33vw, 50vw",
-  6: "(min-width: 1024px) 17vw, (min-width: 640px) 33vw, 50vw",
+  3: "(min-width: 1024px) 33vw, 50vw",
+  4: "(min-width: 1024px) 25vw, 50vw",
+  5: "(min-width: 1024px) 20vw, 50vw",
+  6: "(min-width: 1024px) 17vw, 50vw",
 };
 
 const gridCols = colClasses[cols] ?? colClasses[4];
@@ -61,82 +61,39 @@ const imageSizes = sizeClasses[cols] ?? sizeClasses[4];
 
 // --- Masonry layout (native mode) ---
 
-// Responsive column widths: [mobile%, sm%, lg%]
-const masonryWidths: Record<number, [string, string, string]> = {
-  2: ["50%", "50%", "50%"],
-  3: ["50%", "33.333%", "33.333%"],
-  4: ["50%", "33.333%", "25%"],
-  5: ["50%", "33.333%", "20%"],
-  6: ["50%", "33.333%", "16.666%"],
+// Column-count classes for masonry mode (CSS columns)
+const masonryColCount: Record<number, string> = {
+  2: "columns-2",
+  3: "columns-2 lg:columns-3",
+  4: "columns-2 lg:columns-4",
+  5: "columns-2 lg:columns-5",
+  6: "columns-2 lg:columns-6",
 };
 
-// Masonry gap: horizontal padding on columns + vertical gap within columns
-const masonryColPadding: Record<string, string> = {
-  sm: "px-1",
-  md: "px-1.5 lg:px-2",
-  lg: "px-2 lg:px-3",
+// Vertical spacing between masonry items (margin-bottom)
+const masonryItemGap: Record<string, string> = {
+  sm: "mb-2",
+  md: "mb-3 lg:mb-4",
+  lg: "mb-4 lg:mb-6",
 };
-
-const masonryColGap: Record<string, string> = {
-  sm: "gap-2",
-  md: "gap-3 lg:gap-4",
-  lg: "gap-4 lg:gap-6",
-};
-
-// Distribute images into columns (round-robin) preserving original index
-interface ImageWithOriginalIndex extends ImageWithAlt {
-  originalIndex: number;
-}
-
-const [mobileWidth, smWidth, lgWidth] = masonryWidths[cols] ?? masonryWidths[4];
-const colPadding = masonryColPadding[gap] ?? masonryColPadding["md"];
-const colGap = masonryColGap[gap] ?? masonryColGap["md"];
-
-const masonryColumns: ImageWithOriginalIndex[][] = (() => {
-  if (aspectRatio !== "native") return [];
-  const columns: ImageWithOriginalIndex[][] = Array.from({ length: cols }, () => []);
-  // Track cumulative height of each column (relative, since all images display at equal width)
-  const columnHeights = new Array(cols).fill(0);
-
-  images.forEach((img, i) => {
-    // Place each image in the shortest column for balanced heights
-    let shortestCol = 0;
-    for (let c = 1; c < cols; c++) {
-      if (columnHeights[c] < columnHeights[shortestCol]) {
-        shortestCol = c;
-      }
-    }
-    columns[shortestCol].push({ ...img, originalIndex: i });
-    columnHeights[shortestCol] += img.image.height / img.image.width;
-  });
-  return columns;
-})();
 ---
 
 {aspectRatio === "native" ? (
-  <!-- MASONRY MODE: Column-based flex layout for true image wall -->
+  <!-- MASONRY MODE: CSS columns for true masonry layout -->
   <div
-    class={`not-prose masonry-row flex flex-wrap px-4 sm:px-6 py-3 ${className || ""}`}
-    style={`--masonry-sm-width: ${smWidth}; --masonry-lg-width: ${lgWidth};`}
+    class={`not-prose ${masonryColCount[cols] ?? masonryColCount[4]} ${gridGap} px-4 sm:px-6 py-3 ${className || ""}`}
   >
-    {masonryColumns.map((column) => (
-      <div
-        class={`masonry-column flex flex-col ${colPadding} ${colGap}`}
-        style={`flex: 0 0 ${mobileWidth}; max-width: ${mobileWidth};`}
-      >
-        {column.map((item) => (
-          <div class={enableClickToEnlarge ? '' : 'overflow-hidden rounded-lg'}>
-            <Img
-              src={item.image}
-              alt={item.alt}
-              class="w-full h-auto object-cover transition-transform duration-300 group-hover/image:scale-105"
-              width="100%"
-              sizes={imageSizes}
-              loading={item.originalIndex <= cols * 2 ? "eager" : "lazy"}
-              enableClickToEnlarge={enableClickToEnlarge}
-            />
-          </div>
-        ))}
+    {images.map(({ image, alt }, index) => (
+      <div class={`break-inside-avoid ${masonryItemGap[gap] ?? masonryItemGap["md"]} ${enableClickToEnlarge ? '' : 'overflow-hidden rounded-lg'}`}>
+        <Img
+          src={image}
+          alt={alt}
+          class="w-full h-auto object-cover transition-transform duration-300 group-hover/image:scale-105"
+          width="100%"
+          sizes={imageSizes}
+          loading={index <= cols * 2 ? "eager" : "lazy"}
+          enableClickToEnlarge={enableClickToEnlarge}
+        />
       </div>
     ))}
   </div>
@@ -179,31 +136,4 @@ const masonryColumns: ImageWithOriginalIndex[][] = (() => {
     object-position: center !important;
   }
 
-  /* MASONRY MODE: Responsive column widths via CSS custom properties */
-  @media (min-width: 640px) {
-    .masonry-column {
-      flex-basis: var(--masonry-sm-width) !important;
-      max-width: var(--masonry-sm-width) !important;
-    }
-  }
-
-  @media (min-width: 1024px) {
-    .masonry-column {
-      flex-basis: var(--masonry-lg-width) !important;
-      max-width: var(--masonry-lg-width) !important;
-    }
-  }
-
-  /* Ensure Img component internals fill column width */
-  .masonry-column :global(.img-better) {
-    width: 100%;
-    height: auto;
-  }
-
-  .masonry-column :global(picture),
-  .masonry-column :global(img) {
-    display: block;
-    width: 100%;
-    height: auto;
-  }
 </style>
