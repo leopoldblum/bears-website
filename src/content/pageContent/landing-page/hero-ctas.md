@@ -10,4 +10,7 @@ ctas:
   - title: "Events"
     description: "Upcoming workshops and meetups"
     href: "/events"
+  - title: "Contact Us"
+    description: "Get in touch with the team"
+    href: "/contact"
 ---
