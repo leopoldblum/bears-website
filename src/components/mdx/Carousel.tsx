@@ -54,7 +54,9 @@ export default function Carousel({
         slide.style.display = 'flex';
         slide.style.alignItems = 'center';
         slide.style.justifyContent = 'center';
-        slide.style.transition = 'opacity 300ms';
+        slide.style.transition = isActive
+          ? 'opacity 300ms, visibility 0s 0s'
+          : 'opacity 300ms, visibility 0s 300ms';
         slide.style.overflow = '';
         // Non-active slides don't contribute to height
         slide.style.visibility = isActive ? 'visible' : 'hidden';
@@ -69,7 +71,9 @@ export default function Carousel({
         slide.style.display = 'flex';
         slide.style.alignItems = 'center';
         slide.style.justifyContent = 'center';
-        slide.style.transition = 'opacity 300ms';
+        slide.style.transition = isActive
+          ? 'opacity 300ms, visibility 0s 0s'
+          : 'opacity 300ms, visibility 0s 300ms';
         slide.style.overflow = 'hidden';
       }
 
@@ -179,11 +183,13 @@ export default function Carousel({
       // Re-enable transitions after the browser has painted the positioned state
       transitionRafRef.current = requestAnimationFrame(() => {
         transitionRafRef.current = requestAnimationFrame(() => {
-          slideElements.forEach((slide) => {
+          slideElements.forEach((slide, index) => {
             if (slide.classList.contains('img-better')) {
               slide.style.transition = ''; // Let CSS handle hover effects
             } else {
-              slide.style.transition = 'opacity 300ms';
+              slide.style.transition = index === 0
+                ? 'opacity 300ms, visibility 0s 0s'
+                : 'opacity 300ms, visibility 0s 300ms';
             }
           });
         });
