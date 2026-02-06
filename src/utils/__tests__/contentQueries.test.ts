@@ -9,6 +9,11 @@ import {
   getLatestPosts,
   getPageContent,
   getLandingHeroSlides,
+  getMeetTheTeamProjects,
+  getSponsorsByTier,
+  getTestimonialsSorted,
+  getPublishedInstagramPosts,
+  getLatestInstagramPosts,
 } from '../contentQueries';
 
 const mockedGetCollection = vi.mocked(getCollection);
@@ -394,5 +399,200 @@ describe('getLandingHeroSlides', () => {
     ]);
     const result = await getLandingHeroSlides();
     expect(result.map(s => s.id)).toEqual(['01-slide.md', '02-slide.md', '03-slide.md']);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// getMeetTheTeamProjects
+// ---------------------------------------------------------------------------
+
+describe('getMeetTheTeamProjects', () => {
+  beforeEach(() => {
+    mockedGetCollection.mockReset();
+    import.meta.env.DEV = false;
+  });
+
+  it('calls getCollection with "projects" and a filter function', async () => {
+    mockedGetCollection.mockResolvedValue([]);
+    await getMeetTheTeamProjects();
+    expect(mockedGetCollection).toHaveBeenCalledWith('projects', expect.any(Function));
+  });
+
+  it('returns projects sorted by date descending', async () => {
+    mockedGetCollection.mockResolvedValue([
+      makeEntry({ date: new Date('2023-01-01'), slug: 'old-project' }),
+      makeEntry({ date: new Date('2024-06-01'), slug: 'new-project' }),
+    ]);
+    const result = await getMeetTheTeamProjects();
+    expect(result[0].slug).toBe('new-project');
+    expect(result[1].slug).toBe('old-project');
+  });
+
+  it('returns empty array when no projects match', async () => {
+    mockedGetCollection.mockResolvedValue([]);
+    const result = await getMeetTheTeamProjects();
+    expect(result).toEqual([]);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// getSponsorsByTier
+// ---------------------------------------------------------------------------
+
+function makeSponsor(overrides: { id: string; slug: string }) {
+  return {
+    id: overrides.id,
+    slug: overrides.slug,
+    data: { name: overrides.slug },
+    collection: 'sponsors',
+  };
+}
+
+describe('getSponsorsByTier', () => {
+  beforeEach(() => {
+    mockedGetCollection.mockReset();
+  });
+
+  it('groups sponsors by tier derived from id', async () => {
+    mockedGetCollection.mockResolvedValue([
+      makeSponsor({ id: 'gold/acme', slug: 'acme' }),
+      makeSponsor({ id: 'silver/beta', slug: 'beta' }),
+      makeSponsor({ id: 'gold/zeta', slug: 'zeta' }),
+      makeSponsor({ id: 'bronze/gamma', slug: 'gamma' }),
+    ]);
+
+    const result = await getSponsorsByTier();
+    expect(result.gold).toHaveLength(2);
+    expect(result.silver).toHaveLength(1);
+    expect(result.bronze).toHaveLength(1);
+    expect(result.diamond).toHaveLength(0);
+    expect(result.platinum).toHaveLength(0);
+  });
+
+  it('sorts each tier alphabetically by slug', async () => {
+    mockedGetCollection.mockResolvedValue([
+      makeSponsor({ id: 'gold/zeta-corp', slug: 'zeta-corp' }),
+      makeSponsor({ id: 'gold/alpha-inc', slug: 'alpha-inc' }),
+      makeSponsor({ id: 'gold/mid-co', slug: 'mid-co' }),
+    ]);
+
+    const result = await getSponsorsByTier();
+    expect(result.gold.map(s => s.slug)).toEqual(['alpha-inc', 'mid-co', 'zeta-corp']);
+  });
+
+  it('returns all five tier keys', async () => {
+    mockedGetCollection.mockResolvedValue([]);
+    const result = await getSponsorsByTier();
+    expect(Object.keys(result)).toEqual(['diamond', 'platinum', 'gold', 'silver', 'bronze']);
+  });
+
+  it('returns empty arrays for tiers with no sponsors', async () => {
+    mockedGetCollection.mockResolvedValue([
+      makeSponsor({ id: 'gold/only', slug: 'only' }),
+    ]);
+    const result = await getSponsorsByTier();
+    expect(result.diamond).toEqual([]);
+    expect(result.platinum).toEqual([]);
+    expect(result.silver).toEqual([]);
+    expect(result.bronze).toEqual([]);
+  });
+
+  it('calls getCollection with "sponsors"', async () => {
+    mockedGetCollection.mockResolvedValue([]);
+    await getSponsorsByTier();
+    expect(mockedGetCollection).toHaveBeenCalledWith('sponsors');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// getTestimonialsSorted
+// ---------------------------------------------------------------------------
+
+describe('getTestimonialsSorted', () => {
+  beforeEach(() => {
+    mockedGetCollection.mockReset();
+  });
+
+  it('returns testimonials sorted by slug', async () => {
+    mockedGetCollection.mockResolvedValue([
+      makeEntry({ slug: 'charlie' }),
+      makeEntry({ slug: 'alpha' }),
+      makeEntry({ slug: 'bravo' }),
+    ]);
+    const result = await getTestimonialsSorted();
+    expect(result.map(t => t.slug)).toEqual(['alpha', 'bravo', 'charlie']);
+  });
+
+  it('calls getCollection with "testimonials"', async () => {
+    mockedGetCollection.mockResolvedValue([]);
+    await getTestimonialsSorted();
+    expect(mockedGetCollection).toHaveBeenCalledWith('testimonials');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// getPublishedInstagramPosts
+// ---------------------------------------------------------------------------
+
+describe('getPublishedInstagramPosts', () => {
+  beforeEach(() => {
+    mockedGetCollection.mockReset();
+    import.meta.env.DEV = false;
+  });
+
+  it('returns instagram posts sorted by date descending', async () => {
+    mockedGetCollection.mockResolvedValue([
+      makeEntry({ date: new Date('2024-01-01'), slug: 'old-post' }),
+      makeEntry({ date: new Date('2024-06-01'), slug: 'new-post' }),
+    ]);
+    const result = await getPublishedInstagramPosts();
+    expect(result[0].slug).toBe('new-post');
+    expect(result[1].slug).toBe('old-post');
+  });
+
+  it('calls getCollection with "instagram"', async () => {
+    mockedGetCollection.mockResolvedValue([]);
+    await getPublishedInstagramPosts();
+    expect(mockedGetCollection).toHaveBeenCalledWith('instagram', expect.any(Function));
+  });
+});
+
+// ---------------------------------------------------------------------------
+// getLatestInstagramPosts
+// ---------------------------------------------------------------------------
+
+describe('getLatestInstagramPosts', () => {
+  beforeEach(() => {
+    mockedGetCollection.mockReset();
+    import.meta.env.DEV = false;
+  });
+
+  it('defaults to 3 posts', async () => {
+    const entries = Array.from({ length: 10 }, (_, i) =>
+      makeEntry({ date: new Date(`2024-${String(i + 1).padStart(2, '0')}-01`), slug: `ig-${i}` })
+    );
+    mockedGetCollection.mockResolvedValue(entries);
+
+    const result = await getLatestInstagramPosts();
+    expect(result).toHaveLength(3);
+  });
+
+  it('respects custom limit', async () => {
+    const entries = Array.from({ length: 10 }, (_, i) =>
+      makeEntry({ date: new Date(`2024-${String(i + 1).padStart(2, '0')}-01`), slug: `ig-${i}` })
+    );
+    mockedGetCollection.mockResolvedValue(entries);
+
+    const result = await getLatestInstagramPosts(5);
+    expect(result).toHaveLength(5);
+  });
+
+  it('returns all posts when fewer than limit', async () => {
+    mockedGetCollection.mockResolvedValue([
+      makeEntry({ date: new Date('2024-01-01'), slug: 'only' }),
+    ]);
+
+    const result = await getLatestInstagramPosts(3);
+    expect(result).toHaveLength(1);
   });
 });

@@ -6,6 +6,7 @@ export default defineConfig({
     alias: {
       '@utils': resolve(__dirname, 'src/utils'),
       '@types': resolve(__dirname, 'src/types/index.ts'),
+      '@assets': resolve(__dirname, 'src/assets'),
       'astro:content': resolve(__dirname, 'src/utils/__tests__/__mocks__/astro-content.ts'),
     },
   },
