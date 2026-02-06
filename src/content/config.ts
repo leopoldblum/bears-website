@@ -148,6 +148,10 @@ const pageContentCollection = defineCollection({
       href: z.string(),
     })).max(4).optional(),
     items: z.array(z.string()).optional(),
+    socialLinks: z.array(z.object({
+      platform: z.string(),
+      url: z.string().url(),
+    })).optional(),
   }),
 });
 
