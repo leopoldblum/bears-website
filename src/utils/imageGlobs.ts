@@ -79,7 +79,7 @@ export const facesOfBearsImages: ImageGlob = import.meta.glob<{ default: ImageMe
 
 /**
  * Sub-page hero images
- * Used by: about-us.astro, events.astro, projects.astro, media.astro, sponsors.astro
+ * Used by: about-us.astro, events.astro, projects.astro, media.astro, sponsors.astro, contact.astro
  */
 export const aboutHeroImages: ImageGlob = import.meta.glob<{ default: ImageMetadata }>(
   "/src/assets/hero/about-us/*.{jpg,jpeg,png,webp}"
@@ -95,6 +95,9 @@ export const mediaHeroImages: ImageGlob = import.meta.glob<{ default: ImageMetad
 );
 export const sponsorsHeroImages: ImageGlob = import.meta.glob<{ default: ImageMetadata }>(
   "/src/assets/hero/sponsors/*.{jpg,jpeg,png,webp}"
+);
+export const contactHeroImages: ImageGlob = import.meta.glob<{ default: ImageMetadata }>(
+  "/src/assets/hero/contact/*.{jpg,jpeg,png,webp}"
 );
 
 /**

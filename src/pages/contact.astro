@@ -1,0 +1,20 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import PageHeroImage from "@reusable/PageHeroImage.astro";
+import { contactHeroImages } from "@utils/imageGlobs";
+import { loadAllImagesFromDirectory } from "@utils/imageLoader";
+import { getPageContent } from "@utils/contentQueries";
+
+const pageContent = await getPageContent('contact/contact-title');
+const loadedHeroImages = await loadAllImagesFromDirectory(contactHeroImages);
+const contactHeroImage = loadedHeroImages[0];
+---
+
+<BaseLayout title={pageContent?.data.title ?? "Contact"}>
+  <PageHeroImage
+    image={contactHeroImage}
+    alt="Contact BEARS"
+    title={pageContent?.data.title ?? "Contact"}
+    subtitle={pageContent?.data.subtitle ?? ""}
+  />
+</BaseLayout>
