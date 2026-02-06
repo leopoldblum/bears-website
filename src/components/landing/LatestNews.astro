@@ -4,9 +4,10 @@ import PostShowcase from "@posts-catalog/PostShowcase.astro";
 import Button from "@mdx/Button.astro";
 import type { PostType } from '@types';
 import { loadCollectionImages } from '@utils/imageLoader';
-import { getLatestPosts, sortByDateDesc, getPageContent } from '@utils/contentQueries';
+import { getLatestPosts, sortByDateDesc, getPageContent, getLatestInstagramPosts } from '@utils/contentQueries';
 
 const content = await getPageContent('landing/latest-news');
+const instagramPosts = await getLatestInstagramPosts(3);
 
 // Get latest 4 posts (filtered and sorted)
 const latestPosts = await getLatestPosts(4);
@@ -99,6 +100,33 @@ const newsItems = allPostsWithImages.map((post) => {
     ))}
   </div>
 
+  <!-- Instagram Posts - Only visible on lg+ screens -->
+  {instagramPosts.length > 0 && (
+    <div class="hidden lg:grid lg:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8 mt-8 lg:mt-10">
+      {instagramPosts.map((post, index) => (
+        <div class:list={["instagram-feed-card rounded-xl border border-white/10 bg-white/[0.03] backdrop-blur-sm shadow-[0_4px_12px_rgba(0,0,0,0.4)] overflow-hidden px-6 pt-6 pb-3 transition-all duration-300 lg:hover:border-bears-accent/30 lg:hover:shadow-[0_8px_24px_rgba(0,0,0,0.5),0_0_20px_rgba(197,14,31,0.15)] lg:hover:scale-[1.02]", { "hidden xl:block": index === 2 }]}>
+          <blockquote
+            class="instagram-media"
+            data-instgrm-permalink={post.data.url.endsWith('/') ? post.data.url : `${post.data.url}/`}
+            data-instgrm-version="14"
+            style="margin: 0; padding: 0; width: 100%;"
+          >
+            <div style="padding: 16px;">
+              <a
+                href={post.data.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                style="color: #3897f0; text-decoration: none;"
+              >
+                View on Instagram
+              </a>
+            </div>
+          </blockquote>
+        </div>
+      ))}
+    </div>
+  )}
+
   <!-- Show All Button - Only visible on mobile when not all posts are shown -->
   <div x-show="!showAll" class="flex justify-center mt-8 lg:hidden">
     <Button variant="primary" size="large" onClick="showAll = true">
@@ -113,3 +141,23 @@ const newsItems = allPostsWithImages.map((post) => {
     </Button>
   </div>
 </section>
+
+<style>
+  .instagram-feed-card iframe {
+    margin: 0 !important;
+    display: block;
+    min-width: 0 !important;
+    max-width: 100% !important;
+  }
+</style>
+
+<script>
+  if (!document.querySelector('script[src*="instagram.com/embed.js"]')) {
+    const script = document.createElement('script');
+    script.src = 'https://www.instagram.com/embed.js';
+    script.async = true;
+    document.body.appendChild(script);
+  } else if (window.instgrm) {
+    window.instgrm.Embeds.process();
+  }
+</script>
