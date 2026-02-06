@@ -5,10 +5,12 @@ import { sponsorsHeroImages } from "@utils/imageGlobs";
 import { loadAllImagesFromDirectory } from "@utils/imageLoader";
 import { getPageContent } from "@utils/contentQueries";
 
-const pageContent = await getPageContent('sponsors/sponsors-title');
+const pageContent = await getPageContent("sponsors/sponsors-title");
 const loadedHeroImages = await loadAllImagesFromDirectory(sponsorsHeroImages);
 const sponsorHeroImage = loadedHeroImages[0];
-const { Content } = pageContent ? await pageContent.render() : { Content: null };
+const { Content } = pageContent
+  ? await pageContent.render()
+  : { Content: null };
 ---
 
 <BaseLayout title={pageContent?.data.title ?? "Sponsors"}>
@@ -19,11 +21,13 @@ const { Content } = pageContent ? await pageContent.render() : { Content: null }
     subtitle={pageContent?.data.subtitle ?? ""}
   />
 
-  {Content && (
-    <div class="container mx-auto px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
-      <article class="prose prose-lg max-w-4xl mx-auto text-bears-text-onDark">
-        <Content />
-      </article>
-    </div>
-  )}
+  {
+    Content && (
+      <div class="container mx-auto px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
+        <article class="prose prose-lg max-w-4xl mx-auto text-bears-text-onDark">
+          <Content />
+        </article>
+      </div>
+    )
+  }
 </BaseLayout>
