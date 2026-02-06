@@ -1,10 +1,13 @@
 ---
 import BaseLayout from "@layouts/BaseLayout.astro";
 import PageHeroImage from "@reusable/PageHeroImage.astro";
-import sponsorHeroImage from "@assets/hero/sponsors/project-5.jpg";
+import { sponsorsHeroImages } from "@utils/imageGlobs";
+import { loadAllImagesFromDirectory } from "@utils/imageLoader";
 import { getPageContent } from "@utils/contentQueries";
 
 const pageContent = await getPageContent('sub-pages/sponsors');
+const loadedHeroImages = await loadAllImagesFromDirectory(sponsorsHeroImages);
+const sponsorHeroImage = loadedHeroImages[0];
 const { Content } = pageContent ? await pageContent.render() : { Content: null };
 ---
 

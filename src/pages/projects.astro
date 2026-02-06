@@ -10,9 +10,12 @@ import { getPublishedProjects, getPageContent } from "@utils/contentQueries";
 import { CategoryProjectEnum } from "@types";
 import { getCategoryLabel } from "@utils/categoryLabels";
 
-import projectHeroImage from "@assets/hero/projects/project-1.jpg";
+import { projectsHeroImages } from "@utils/imageGlobs";
+import { loadAllImagesFromDirectory } from "@utils/imageLoader";
 
 const pageContent = await getPageContent('sub-pages/projects');
+const loadedHeroImages = await loadAllImagesFromDirectory(projectsHeroImages);
+const projectHeroImage = loadedHeroImages[0];
 
 // Get all published projects (filtered and sorted)
 const sortedProjects = await getPublishedProjects();

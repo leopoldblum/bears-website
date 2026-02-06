@@ -78,6 +78,26 @@ export const facesOfBearsImages: ImageGlob = import.meta.glob<{ default: ImageMe
 );
 
 /**
+ * Sub-page hero images
+ * Used by: about-us.astro, events.astro, projects.astro, media.astro, sponsors.astro
+ */
+export const aboutHeroImages: ImageGlob = import.meta.glob<{ default: ImageMetadata }>(
+  "/src/assets/hero/about-us/*.{jpg,jpeg,png,webp}"
+);
+export const eventsHeroImages: ImageGlob = import.meta.glob<{ default: ImageMetadata }>(
+  "/src/assets/hero/events/*.{jpg,jpeg,png,webp}"
+);
+export const projectsHeroImages: ImageGlob = import.meta.glob<{ default: ImageMetadata }>(
+  "/src/assets/hero/projects/*.{jpg,jpeg,png,webp}"
+);
+export const mediaHeroImages: ImageGlob = import.meta.glob<{ default: ImageMetadata }>(
+  "/src/assets/hero/media/*.{jpg,jpeg,png,webp}"
+);
+export const sponsorsHeroImages: ImageGlob = import.meta.glob<{ default: ImageMetadata }>(
+  "/src/assets/hero/sponsors/*.{jpg,jpeg,png,webp}"
+);
+
+/**
  * Landing Hero background images
  * Used by: LandingHero.astro
  */

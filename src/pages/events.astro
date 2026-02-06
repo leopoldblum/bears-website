@@ -9,9 +9,12 @@ import { loadCollectionImages } from "@utils/imageLoader";
 import { getPublishedEvents, getPageContent } from "@utils/contentQueries";
 import { CategoryEventEnum } from "@types";
 import { getCategoryLabel } from "@utils/categoryLabels";
-import eventHeroImage from "@assets/hero/events/event-1.jpg";
+import { eventsHeroImages } from "@utils/imageGlobs";
+import { loadAllImagesFromDirectory } from "@utils/imageLoader";
 
 const pageContent = await getPageContent('sub-pages/events');
+const loadedHeroImages = await loadAllImagesFromDirectory(eventsHeroImages);
+const eventHeroImage = loadedHeroImages[0];
 
 // Get all published events (filtered and sorted)
 const sortedEvents = await getPublishedEvents();

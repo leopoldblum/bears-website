@@ -4,10 +4,13 @@ import PageHeroImage from "@reusable/PageHeroImage.astro";
 import OurMission from "@components/about/OurMission.astro";
 import FacesOfBears from "@components/about/FacesOfBears.astro";
 import FindUs from "@components/about/FindUs.astro";
-import aboutHeroImage from "@assets/hero/about-us/carousel-7.jpg";
+import { aboutHeroImages } from "@utils/imageGlobs";
+import { loadAllImagesFromDirectory } from "@utils/imageLoader";
 import { getPageContent } from "@utils/contentQueries";
 
 const pageContent = await getPageContent('sub-pages/about-us');
+const loadedHeroImages = await loadAllImagesFromDirectory(aboutHeroImages);
+const aboutHeroImage = loadedHeroImages[0];
 ---
 
 <BaseLayout title={pageContent?.data.title ?? "About Us"}>

@@ -7,10 +7,12 @@ import MediaAccordion from "../components/reusable/MediaAccordion.astro";
 import PageHeroImage from "../components/reusable/PageHeroImage.astro";
 import { loadAllImagesFromDirectory } from "@utils/imageLoader";
 import type { ImageMetadata } from "astro";
-import heroImage from "@assets/hero/media/event-1.jpg";
+import { mediaHeroImages } from "@utils/imageGlobs";
 import { getPageContent } from "@utils/contentQueries";
 
 const pageContent = await getPageContent('sub-pages/media');
+const loadedHeroImages = await loadAllImagesFromDirectory(mediaHeroImages);
+const heroImage = loadedHeroImages[0];
 
 // Import all image globs statically
 const eventImagesGlob = import.meta.glob<{ default: ImageMetadata }>(
