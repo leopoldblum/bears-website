@@ -1,0 +1,47 @@
+---
+import CollapsibleImageGrid from "@reusable/CollapsibleImageGrid.astro";
+import type { ImageWithAlt } from "@types";
+import { getPageContent } from "@utils/contentQueries";
+import { facesOfBearsImages } from "@utils/imageGlobs";
+import { loadAllImagesFromDirectory } from "@utils/imageLoader";
+
+const content = await getPageContent("about/faces-of-bears");
+
+const loadedImages = await loadAllImagesFromDirectory(facesOfBearsImages);
+const images: ImageWithAlt[] = loadedImages.map((image, index) => ({
+  image,
+  alt: `BEARS members photo ${index + 1}`,
+}));
+---
+
+{images.length > 0 && (
+  <section class="container mx-auto px-4 sm:px-8 lg:px-16 py-16 sm:py-20 lg:py-24">
+    <!-- Header: subtitle + title left, description right -->
+    <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 lg:gap-16 mb-6 sm:mb-8 lg:mb-12">
+      <div class="lg:max-w-[55%]">
+        {content?.data.subtitle && (
+          <p class="text-sm sm:text-base font-semibold tracking-widest uppercase text-bears-accent mb-2 sm:mb-3">
+            {content.data.subtitle}
+          </p>
+        )}
+        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-bears-text-onDark">
+          {content?.data.title}
+        </h2>
+        <div class="h-[2px] bg-gradient-to-r from-white/30 from-30% via-white/15 via-70% to-transparent mt-4 sm:mt-6 rounded-full"></div>
+      </div>
+      {content?.data.description && (
+        <p class="text-sm sm:text-base text-bears-text-onDark/60 lg:text-right lg:max-w-[35%]">
+          {content.data.description}
+        </p>
+      )}
+    </div>
+
+    <CollapsibleImageGrid
+      images={images}
+      cols={3}
+      gap="md"
+      previewRows={1.5}
+      class="!px-1 !py-1"
+    />
+  </section>
+)}

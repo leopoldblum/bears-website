@@ -62,6 +62,22 @@ export const whatIsBearsImages: ImageGlob = import.meta.glob<{ default: ImageMet
 );
 
 /**
+ * Our Mission hero image
+ * Used by: OurMission.astro
+ */
+export const ourMissionImages: ImageGlob = import.meta.glob<{ default: ImageMetadata }>(
+  "/src/assets/about-us/our-mission/*.{jpg,jpeg,png,webp}"
+);
+
+/**
+ * Faces of BEARS gallery images
+ * Used by: FacesOfBears.astro
+ */
+export const facesOfBearsImages: ImageGlob = import.meta.glob<{ default: ImageMetadata }>(
+  "/src/assets/about-us/faces-of-bears/*.{jpg,jpeg,png,webp}"
+);
+
+/**
  * Landing Hero background images
  * Used by: LandingHero.astro
  */
