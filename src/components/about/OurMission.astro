@@ -2,10 +2,14 @@
 import Img from "@mdx/Img.astro";
 import Button from "@mdx/Button.astro";
 import { getPageContent } from "@utils/contentQueries";
-import missionImage from "@assets/whatIsBears/carousel-7.jpg";
+import { ourMissionImages } from "@utils/imageGlobs";
+import { loadAllImagesFromDirectory } from "@utils/imageLoader";
 
 const content = await getPageContent("about/our-mission");
 const listContent = await getPageContent("about/whats-in-it");
+
+const loadedImages = await loadAllImagesFromDirectory(ourMissionImages);
+const missionImage = loadedImages[0];
 ---
 
 <section
@@ -37,6 +41,13 @@ const listContent = await getPageContent("about/whats-in-it");
       <div
         class="pr-2 sm:pr-0 lg:w-fit lg:ml-auto col-span-1 order-2 lg:order-1"
       >
+        {
+          content?.data.subtitle && (
+            <p class="text-xs sm:text-sm font-semibold text-bears-accent uppercase tracking-widest text-right mb-1 sm:mb-2">
+              {content.data.subtitle}
+            </p>
+          )
+        }
         <h2
           class="text-2xl sm:text-3xl lg:text-5xl font-bold text-bears-text-onDark text-right pl-12 sm:pl-12 lg:pl-24"
         >
@@ -47,9 +58,9 @@ const listContent = await getPageContent("about/whats-in-it");
         >
         </div>
         {
-          content?.data.subtitle && (
+          content?.data.description && (
             <p class="[contain:inline-size] text-sm sm:text-sm lg:text-base text-bears-text-onDark/60 text-right">
-              {content.data.subtitle}
+              {content.data.description}
             </p>
           )
         }
@@ -66,14 +77,14 @@ const listContent = await getPageContent("about/whats-in-it");
               <ul class="space-y-2 sm:space-y-3 lg:space-y-4 lg:mt-10 lg:mb-14">
                 {listContent.data.items.map((item, i) => (
                   <li class="text-base sm:text-base lg:text-xl text-bears-text-onDark/80">
-                    <span class="text-bears-accent font-medium mr-1 sm:mr-2 lg:mr-3">
+                    <span class="text-bears-accent font-bold mr-1 sm:mr-2 lg:mr-3">
                       /{String(i + 1).padStart(2, "0")}
                     </span>
                     {item}
                   </li>
                 ))}
               </ul>
-              <div class="mt-8 sm:mt-10 lg:mt-14 hidden lg:flex justify-center">
+              <div class="mt-8 sm:mt-10 lg:mt-14 lg:mb-6 hidden lg:flex justify-center">
                 <Button variant="primary" size="large" href="/contact">
                   Join us!
                 </Button>
