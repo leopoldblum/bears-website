@@ -1,0 +1,140 @@
+---
+import { getPageContent } from "@utils/contentQueries";
+
+const content = await getPageContent("about/find-us");
+
+// items[0] = room, items[1] = schedule
+const room = content?.data.items?.[0] ?? "H1001";
+const schedule = content?.data.items?.[1] ?? "every Tuesday 18 PM";
+
+const location = { lat: 52.5154722, lng: 13.3240833 };
+---
+
+<section
+  class="relative overflow-hidden py-10 sm:py-12 lg:py-16 lg:min-h-[75vh] flex flex-col justify-center"
+>
+  <div class="container mx-auto px-4 sm:px-6 lg:px-12">
+    <!-- Subtitle -->
+    {content?.data.subtitle && (
+      <p class="text-xs sm:text-sm font-bold uppercase tracking-[0.2em] text-bears-accent mb-3 sm:mb-4">
+        {content.data.subtitle}
+      </p>
+    )}
+
+    <!-- Heading -->
+    <h2
+      class="text-3xl sm:text-4xl lg:text-5xl font-bold text-bears-text-onDark mb-6 sm:mb-8 lg:mb-12"
+    >
+      {content?.data.title}
+    </h2>
+
+    <!-- Gradient divider -->
+    <div
+      class="h-[2px] bg-gradient-to-r from-white/30 from-30% via-white/15 via-70% to-transparent mb-6 sm:mb-8 lg:mb-10 rounded-full"
+    ></div>
+
+    <!-- Two-column: text/remember + map -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10 items-start">
+      <!-- Left column: text + remember -->
+      <div class="flex flex-col">
+        {content?.data.description && (
+          <div class="space-y-4 sm:space-y-5 text-sm sm:text-base lg:text-lg text-bears-text-onDark/60 leading-relaxed max-w-lg">
+            {content.data.description.split('\n\n').map((paragraph: string) => (
+              <p>{paragraph}</p>
+            ))}
+          </div>
+        )}
+
+        <!-- Gradient divider -->
+        <div class="h-[2px] bg-gradient-to-r from-white/30 from-30% via-white/15 via-70% to-transparent mt-8 sm:mt-10 rounded-full"></div>
+
+        <!-- Remember section -->
+        <div class="mt-6 sm:mt-8 pt-6 sm:pt-8">
+          <p class="text-xs sm:text-sm font-bold uppercase tracking-[0.2em] text-bears-accent mb-3 sm:mb-4">
+            remember:
+          </p>
+          <div class="border-l-[3px] border-bears-accent pl-4 sm:pl-6">
+            <p class="text-5xl sm:text-6xl lg:text-7xl font-black text-bears-text-onDark leading-tight">
+              {room}
+            </p>
+            <p class="text-3xl sm:text-4xl lg:text-5xl font-bold text-bears-text-onDark/80 leading-tight mt-1 sm:mt-2">
+              {schedule}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Map column -->
+      <div class="lg:self-stretch">
+        <div
+          id="find-us-map"
+          class="w-full h-[350px] sm:h-[400px] lg:h-full rounded-xl bg-white/5 border border-white/10 overflow-hidden"
+          data-lat={location.lat}
+          data-lng={location.lng}
+        >
+          <!-- Leaflet map will be initialized here -->
+          <div class="w-full h-full flex items-center justify-center text-bears-text-onDark/30 text-sm">
+            Loading map&hellip;
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<script>
+  import L from "leaflet";
+
+  function initMap() {
+    const container = document.getElementById("find-us-map");
+    if (!container) return;
+
+    const lat = parseFloat(container.dataset.lat || "52.5125");
+    const lng = parseFloat(container.dataset.lng || "13.3269");
+
+    // Clear the loading placeholder
+    container.innerHTML = "";
+
+    // Create a child div for Leaflet to mount into
+    const mapDiv = document.createElement("div");
+    mapDiv.style.width = "100%";
+    mapDiv.style.height = "100%";
+    mapDiv.style.minHeight = "400px";
+    container.appendChild(mapDiv);
+
+    const map = L.map(mapDiv, {
+      scrollWheelZoom: false,
+    }).setView([lat, lng], 16);
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      attribution:
+        '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      maxZoom: 19,
+    }).addTo(map);
+
+    // Custom red marker using a simple SVG
+    const redIcon = L.divIcon({
+      className: "",
+      html: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 36" width="28" height="42">
+        <path d="M12 0C5.4 0 0 5.4 0 12c0 9 12 24 12 24s12-15 12-24C24 5.4 18.6 0 12 0z" fill="#C50E1F"/>
+        <circle cx="12" cy="11" r="4.5" fill="white"/>
+      </svg>`,
+      iconSize: [28, 42],
+      iconAnchor: [14, 42],
+      popupAnchor: [0, -42],
+    });
+
+    L.marker([lat, lng], { icon: redIcon })
+      .addTo(map)
+      .bindPopup("<strong>BEARS e.V.</strong><br>TU Berlin")
+      .openPopup();
+  }
+
+  // Initialize when DOM is ready
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initMap);
+  } else {
+    initMap();
+  }
+</script>

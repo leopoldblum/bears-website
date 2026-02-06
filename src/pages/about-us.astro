@@ -2,6 +2,8 @@
 import BaseLayout from "@layouts/BaseLayout.astro";
 import PageHeroImage from "@reusable/PageHeroImage.astro";
 import OurMission from "@components/about/OurMission.astro";
+import FacesOfBears from "@components/about/FacesOfBears.astro";
+import FindUs from "@components/about/FindUs.astro";
 import aboutHeroImage from "@assets/hero/about-us/carousel-7.jpg";
 import { getPageContent } from "@utils/contentQueries";
 
@@ -17,4 +19,8 @@ const pageContent = await getPageContent('sub-pages/about-us');
   />
 
   <OurMission />
+
+  <FacesOfBears />
+
+  <FindUs />
 </BaseLayout>
