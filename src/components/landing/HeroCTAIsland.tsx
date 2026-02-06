@@ -16,7 +16,7 @@ const LG_BREAKPOINT = 1024;
 export default function HeroCTAIsland({ ctas }: HeroCTAIslandProps) {
   const [activeIndex, setActiveIndex] = useState<number>(-1);
   const [gradientPos, setGradientPos] = useState({ left: 0, width: 0, height: 0 });
-  const [isLargeScreen, setIsLargeScreen] = useState(true);
+  const [isLargeScreen, setIsLargeScreen] = useState(false);
   const [hasAnimated, setHasAnimated] = useState(false);
   const justPositionedRef = useRef(false);
   const prevCtasRef = useRef<HeroCTAItem[]>(ctas);
