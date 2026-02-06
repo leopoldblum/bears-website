@@ -4,11 +4,11 @@ This guide explains how to edit the text content displayed on the website's page
 
 ## Where to Find Content Files
 
-All page content files live in `src/content/pageContent/`, organized by page:
+All page content files live in `src/content/page-text/`, organized by page:
 
 ```
-src/content/pageContent/
-├── landing-page/              <- Sections on the main homepage
+src/content/page-text/
+├── landing/                   <- Sections on the main homepage
 │   ├── hero-ctas.md           <- Call-to-action cards on the hero
 │   ├── what-is-bears.md       <- "What is BEARS e.V.?" section
 │   ├── meet-the-team.md       <- "Meet the Team" heading
@@ -57,7 +57,7 @@ buttonHref: "/about-us"
 
 ## Editing the Hero Call-to-Action Cards
 
-The hero section at the top of the homepage can display 0 to 4 cards. Edit `landing-page/hero-ctas.md`:
+The hero section at the top of the homepage can display 0 to 4 cards. Edit `landing/hero-ctas.md`:
 
 ```yaml
 ---
@@ -133,7 +133,7 @@ Images are managed separately from text content. To change images:
 | Project cover images | Add/remove files in `src/assets/projects/` |
 | Sponsor logos | See [Managing Sponsors](managing-sponsors.md) |
 | Testimonial portraits | See [Managing Testimonials](managing-testimonials.md) |
-| Hero backgrounds | See the `landingHero` content collection |
+| Hero backgrounds | See the `hero-slides` content collection |
 
 ## Tips
 

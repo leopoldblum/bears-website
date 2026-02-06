@@ -2,7 +2,7 @@
 import Button from "@mdx/Button.astro";
 import { getLatestInstagramPosts, getPageContent } from "@utils/contentQueries";
 
-const content = await getPageContent('landing-page/instagram-feed');
+const content = await getPageContent('landing/instagram-feed');
 const instagramPosts = await getLatestInstagramPosts(3);
 ---
 

@@ -173,10 +173,10 @@ See [Accordion.astro](src/components/reusable/Accordion.astro) for a complete ex
 
 ### Editable Page Content
 
-Static text in components and pages — such as headings, descriptions, and button labels — should be sourced from `.md` files in the `pageContent` content collection (`src/content/pageContent/`) rather than hardcoded, when useful and practical. This allows content creators to update copy without touching component code.
+Static text in components and pages — such as headings, descriptions, and button labels — should be sourced from `.md` files in the `page-text` content collection (`src/content/page-text/`) rather than hardcoded, when useful and practical. This allows content creators to update copy without touching component code.
 
 **Subfolder conventions:**
-- `landing-page/` — content for homepage sections (e.g., `landing-page/what-is-bears`)
+- `landing/` — content for homepage sections (e.g., `landing/what-is-bears`)
 - Each page has its own subfolder (e.g., `about-us/`, `events/`, `sponsors/`)
 - Page hero title/subtitle files use a `-title` suffix (e.g., `events/events-title`)
 - Section-specific content goes alongside the title file (e.g., `about-us/our-mission`, `about-us/find-us`)

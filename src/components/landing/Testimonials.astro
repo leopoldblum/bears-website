@@ -21,7 +21,7 @@ const testimonials = testimonialsWithLoadedImages.map((testimonial) => ({
   image: testimonial.loadedImage, // Guaranteed non-null by loader (schema field: coverImage, component prop: image)
 }));
 
-const content = await getPageContent('landing-page/testimonials');
+const content = await getPageContent('landing/testimonials');
 ---
 
 <section

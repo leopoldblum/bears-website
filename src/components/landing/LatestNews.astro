@@ -6,7 +6,7 @@ import type { PostType } from '@types';
 import { loadCollectionImages } from '@utils/imageLoader';
 import { getLatestPosts, sortByDateDesc, getPageContent } from '@utils/contentQueries';
 
-const content = await getPageContent('landing-page/latest-news');
+const content = await getPageContent('landing/latest-news');
 
 // Get latest 4 posts (filtered and sorted)
 const latestPosts = await getLatestPosts(4);

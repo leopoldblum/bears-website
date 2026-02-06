@@ -125,8 +125,8 @@ describe('projects schema', () => {
 // Landing Hero schema (media extension validation)
 // ---------------------------------------------------------------------------
 
-describe('landingHero schema', () => {
-  const schema = collections.landingHero.schema;
+describe('hero-slides schema', () => {
+  const schema = collections['hero-slides'].schema;
 
   it('accepts image extensions', () => {
     for (const ext of ['jpg', 'jpeg', 'png', 'webp']) {

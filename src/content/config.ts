@@ -108,7 +108,7 @@ const validateMediaExtension = (value: string | undefined) => {
   return IMAGE_EXTENSION_REGEX.test(value) || /\.(mp4|webm|ogg)$/i.test(value);
 };
 
-const landingHeroCollection = defineCollection({
+const heroSlidesCollection = defineCollection({
   type: 'content',
   schema: z.object({
     type: z.enum(['image', 'video']),
@@ -134,7 +134,7 @@ const instagramCollection = defineCollection({
   }),
 });
 
-const pageContentCollection = defineCollection({
+const pageTextCollection = defineCollection({
   type: 'content',
   schema: z.object({
     title: z.string(),
@@ -160,7 +160,7 @@ export const collections = {
   sponsors: sponsorsCollection,
   events: eventsCollection,
   projects: projectsCollection,
-  landingHero: landingHeroCollection,
-  pageContent: pageContentCollection,
+  'hero-slides': heroSlidesCollection,
+  'page-text': pageTextCollection,
   instagram: instagramCollection,
 };

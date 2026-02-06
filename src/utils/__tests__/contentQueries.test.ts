@@ -354,35 +354,47 @@ describe('getPageContent', () => {
 
   it('finds entry by id', async () => {
     mockedGetCollection.mockResolvedValue([
-      { id: 'landing-page/hero.md', slug: 'hero', data: { title: 'Hero' } },
+      { id: 'landing/hero.md', slug: 'hero', data: { title: 'Hero' } },
       { id: 'sub-pages/about.md', slug: 'about', data: { title: 'About' } },
     ]);
-    const result = await getPageContent('landing-page/hero');
+    const result = await getPageContent('landing/hero');
     expect(result?.data.title).toBe('Hero');
   });
 
   it('appends .md extension if missing', async () => {
     mockedGetCollection.mockResolvedValue([
-      { id: 'landing-page/hero.md', slug: 'hero', data: { title: 'Hero' } },
+      { id: 'landing/hero.md', slug: 'hero', data: { title: 'Hero' } },
     ]);
-    const result = await getPageContent('landing-page/hero');
+    const result = await getPageContent('landing/hero');
     expect(result).toBeDefined();
   });
 
   it('does not double-append .md', async () => {
     mockedGetCollection.mockResolvedValue([
-      { id: 'landing-page/hero.md', slug: 'hero', data: { title: 'Hero' } },
+      { id: 'landing/hero.md', slug: 'hero', data: { title: 'Hero' } },
     ]);
-    const result = await getPageContent('landing-page/hero.md');
+    const result = await getPageContent('landing/hero.md');
     expect(result).toBeDefined();
   });
 
   it('returns undefined for non-existent id', async () => {
     mockedGetCollection.mockResolvedValue([
-      { id: 'landing-page/hero.md', slug: 'hero', data: { title: 'Hero' } },
+      { id: 'landing/hero.md', slug: 'hero', data: { title: 'Hero' } },
     ]);
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
     const result = await getPageContent('does-not-exist');
     expect(result).toBeUndefined();
+    warnSpy.mockRestore();
+  });
+
+  it('warns when id is not found', async () => {
+    mockedGetCollection.mockResolvedValue([]);
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    await getPageContent('nonexistent/page');
+    expect(warnSpy).toHaveBeenCalledWith(
+      expect.stringContaining('nonexistent/page')
+    );
+    warnSpy.mockRestore();
   });
 });
 
@@ -391,7 +403,7 @@ describe('getLandingHeroSlides', () => {
     mockedGetCollection.mockReset();
   });
 
-  it('sorts slides by id', async () => {
+  it('sorts slides by numeric prefix', async () => {
     mockedGetCollection.mockResolvedValue([
       { id: '03-slide.md', slug: 'slide-3', data: {} },
       { id: '01-slide.md', slug: 'slide-1', data: {} },
@@ -399,6 +411,16 @@ describe('getLandingHeroSlides', () => {
     ]);
     const result = await getLandingHeroSlides();
     expect(result.map(s => s.id)).toEqual(['01-slide.md', '02-slide.md', '03-slide.md']);
+  });
+
+  it('sorts numerically not lexicographically', async () => {
+    mockedGetCollection.mockResolvedValue([
+      { id: '10-slide.md', slug: 'slide-10', data: {} },
+      { id: '2-slide.md', slug: 'slide-2', data: {} },
+      { id: '1-slide.md', slug: 'slide-1', data: {} },
+    ]);
+    const result = await getLandingHeroSlides();
+    expect(result.map(s => s.id)).toEqual(['1-slide.md', '2-slide.md', '10-slide.md']);
   });
 });
 

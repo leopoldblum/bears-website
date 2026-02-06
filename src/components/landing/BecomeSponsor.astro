@@ -8,7 +8,7 @@ import { sponsorLogos } from "@utils/imageGlobs";
 import { loadImage, defaultSponsorImage } from "@utils/imageLoader";
 import { getPageContent } from "@utils/contentQueries";
 
-const content = await getPageContent('landing-page/become-sponsor');
+const content = await getPageContent('landing/become-sponsor');
 
 // Fetch all sponsors
 const allSponsors = await getCollection("sponsors");
