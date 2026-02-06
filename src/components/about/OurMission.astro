@@ -5,8 +5,8 @@ import { getPageContent } from "@utils/contentQueries";
 import { ourMissionImages } from "@utils/imageGlobs";
 import { loadAllImagesFromDirectory } from "@utils/imageLoader";
 
-const content = await getPageContent("about/our-mission");
-const listContent = await getPageContent("about/whats-in-it");
+const content = await getPageContent("about-us/our-mission");
+const listContent = await getPageContent("about-us/whats-in-it");
 
 const loadedImages = await loadAllImagesFromDirectory(ourMissionImages);
 const missionImage = loadedImages[0];

@@ -1,7 +1,7 @@
 ---
 import { getPageContent } from "@utils/contentQueries";
 
-const content = await getPageContent("about/find-us");
+const content = await getPageContent("about-us/find-us");
 
 // items[0] = room, items[1] = schedule
 const room = content?.data.items?.[0] ?? "H1001";

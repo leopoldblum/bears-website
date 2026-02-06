@@ -5,7 +5,7 @@ import { getPageContent } from "@utils/contentQueries";
 import { facesOfBearsImages } from "@utils/imageGlobs";
 import { loadAllImagesFromDirectory } from "@utils/imageLoader";
 
-const content = await getPageContent("about/faces-of-bears");
+const content = await getPageContent("about-us/faces-of-bears");
 
 const loadedImages = await loadAllImagesFromDirectory(facesOfBearsImages);
 const images: ImageWithAlt[] = loadedImages.map((image, index) => ({

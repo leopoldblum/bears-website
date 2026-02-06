@@ -8,7 +8,7 @@ import { aboutHeroImages } from "@utils/imageGlobs";
 import { loadAllImagesFromDirectory } from "@utils/imageLoader";
 import { getPageContent } from "@utils/contentQueries";
 
-const pageContent = await getPageContent('sub-pages/about-us');
+const pageContent = await getPageContent('about-us/about-us-title');
 const loadedHeroImages = await loadAllImagesFromDirectory(aboutHeroImages);
 const aboutHeroImage = loadedHeroImages[0];
 ---

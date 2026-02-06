@@ -12,7 +12,7 @@ import { getCategoryLabel } from "@utils/categoryLabels";
 import { eventsHeroImages } from "@utils/imageGlobs";
 import { loadAllImagesFromDirectory } from "@utils/imageLoader";
 
-const pageContent = await getPageContent('sub-pages/events');
+const pageContent = await getPageContent('events/events-title');
 const loadedHeroImages = await loadAllImagesFromDirectory(eventsHeroImages);
 const eventHeroImage = loadedHeroImages[0];
 

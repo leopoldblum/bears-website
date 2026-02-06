@@ -4,23 +4,31 @@ This guide explains how to edit the text content displayed on the website's page
 
 ## Where to Find Content Files
 
-All page content files live in `src/content/pageContent/` with two folders:
+All page content files live in `src/content/pageContent/`, organized by page:
 
 ```
 src/content/pageContent/
-├── landing-page/          <- Sections on the main homepage
-│   ├── hero-ctas.md       <- Call-to-action cards on the hero
-│   ├── what-is-bears.md   <- "What is BEARS e.V.?" section
-│   ├── meet-the-team.md   <- "Meet the Team" heading
-│   ├── become-sponsor.md  <- "Become a Sponsor" section
-│   ├── latest-news.md     <- "Latest News" section
-│   └── testimonials.md    <- "What Members Think" heading
-└── sub-pages/             <- Individual pages
-    ├── events.md          <- Events page title + subtitle
-    ├── projects.md        <- Projects page title + subtitle
-    ├── sponsors.md        <- Sponsors page title + subtitle + body
-    ├── about-us.md        <- About Us page title + subtitle + body
-    └── media.md           <- Media page title + subtitle
+├── landing-page/              <- Sections on the main homepage
+│   ├── hero-ctas.md           <- Call-to-action cards on the hero
+│   ├── what-is-bears.md       <- "What is BEARS e.V.?" section
+│   ├── meet-the-team.md       <- "Meet the Team" heading
+│   ├── become-sponsor.md      <- "Become a Sponsor" section
+│   ├── latest-news.md         <- "Latest News" section
+│   └── testimonials.md        <- "What Members Think" heading
+├── about-us/                  <- About Us page
+│   ├── about-us-title.md      <- Page title + subtitle
+│   ├── our-mission.md         <- "Our Mission" section
+│   ├── whats-in-it.md         <- "What's in it for you?" list
+│   ├── faces-of-bears.md      <- Photo gallery section
+│   └── find-us.md             <- Location + schedule section
+├── events/                    <- Events page
+│   └── events-title.md        <- Page title + subtitle
+├── media/                     <- Media page
+│   └── media-title.md         <- Page title + subtitle
+├── projects/                  <- Projects page
+│   └── projects-title.md      <- Page title + subtitle
+└── sponsors/                  <- Sponsors page
+    └── sponsors-title.md      <- Page title + subtitle + body
 ```
 
 ## Editing a Homepage Section
@@ -75,7 +83,7 @@ ctas:
 
 ## Editing a Page Header
 
-Pages like Events and Projects have a title and subtitle. Edit the file in `sub-pages/`:
+Pages like Events and Projects have a title and subtitle. Edit the `-title.md` file in the page's folder:
 
 ```yaml
 ---
