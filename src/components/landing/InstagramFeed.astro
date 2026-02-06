@@ -21,9 +21,9 @@ const instagramPosts = await getLatestInstagramPosts(3);
   )}
 
   {instagramPosts.length > 0 && (
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 lg:gap-8 max-w-[85%] mx-auto">
-      {instagramPosts.map((post) => (
-        <div class="instagram-feed-card rounded-xl border border-white/10 bg-white/[0.03] backdrop-blur-sm shadow-[0_4px_12px_rgba(0,0,0,0.4)] overflow-hidden px-5 pt-5 pb-2 sm:px-6 sm:pt-6 sm:pb-3 transition-all duration-300 lg:hover:border-bears-accent/30 lg:hover:shadow-[0_8px_24px_rgba(0,0,0,0.5),0_0_20px_rgba(197,14,31,0.15)] lg:hover:scale-[1.02]">
+    <div class="hidden lg:grid lg:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8 mx-auto">
+      {instagramPosts.map((post, index) => (
+        <div class:list={["instagram-feed-card rounded-xl border border-white/10 bg-white/[0.03] backdrop-blur-sm shadow-[0_4px_12px_rgba(0,0,0,0.4)] overflow-hidden px-6 pt-6 pb-3 transition-all duration-300 lg:hover:border-bears-accent/30 lg:hover:shadow-[0_8px_24px_rgba(0,0,0,0.5),0_0_20px_rgba(197,14,31,0.15)] lg:hover:scale-[1.02]", { "hidden xl:block": index === 2 }]}>
           <blockquote
             class="instagram-media"
             data-instgrm-permalink={post.data.url.endsWith('/') ? post.data.url : `${post.data.url}/`}
@@ -59,6 +59,8 @@ const instagramPosts = await getLatestInstagramPosts(3);
   .instagram-feed-card iframe {
     margin: 0 !important;
     display: block;
+    min-width: 0 !important;
+    max-width: 100% !important;
   }
 </style>
 
