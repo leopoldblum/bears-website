@@ -38,11 +38,6 @@ export const CategoryEventEnum = z.enum([
 ]);
 
 /**
- * Inferred TypeScript type from CategoryEventEnum Zod schema.
- */
-export type CategoryEvent = z.infer<typeof CategoryEventEnum>;
-
-/**
  * Zod enum for project categories used for filtering and organization.
  * Defines valid category values for projects.
  *
@@ -63,11 +58,6 @@ export const CategoryProjectEnum = z.enum([
 ]);
 
 /**
- * Inferred TypeScript type from CategoryProjectEnum Zod schema.
- */
-export type CategoryProject = z.infer<typeof CategoryProjectEnum>;
-
-/**
  * Zod enum for cover image type discrimination.
  * - DEFAULT: Post uses the default image for its type (event/project)
  * - CUSTOM: Post has a custom cover image specified in frontmatter
@@ -76,7 +66,3 @@ export type CategoryProject = z.infer<typeof CategoryProjectEnum>;
  */
 export const CoverImageType = z.enum(["DEFAULT", "CUSTOM"]);
 
-/**
- * Inferred TypeScript type from CoverImageType Zod enum.
- */
-export type CoverImageTypeValue = z.infer<typeof CoverImageType>;

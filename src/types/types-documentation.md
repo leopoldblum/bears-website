@@ -11,8 +11,8 @@ This directory contains shared type definitions used across the BEARS website co
 ```
 src/types/
 ├── index.ts               # Barrel export file - import types from here
-├── content.ts             # Content-related types (PostType, SponsorTier, CategoryEvent, CategoryProject, CoverImageType)
-├── components.ts          # Collection entry type aliases (TestimonialEntry, SponsorEntry, PostEntry)
+├── content.ts             # Content-related types (PostType, SponsorTier, CoverImageType, category enums)
+├── components.ts          # Collection entry type aliases (SponsorEntry, ImageWithAlt)
 └── types-documentation.md # This file
 ```
 
@@ -74,9 +74,9 @@ type SponsorTier = 'bronze' | 'silver' | 'gold';
 
 ---
 
-#### `CategoryEvent` and `CategoryEventEnum`
+#### `CategoryEventEnum`
 
-Event category types for filtering and organization.
+Zod enum for event categories used for filtering and organization.
 
 **Zod Schema (source of truth):**
 ```typescript
@@ -88,16 +88,9 @@ export const CategoryEventEnum = z.enum([
 ]);
 ```
 
-**TypeScript Type (inferred from schema):**
-```typescript
-export type CategoryEvent = z.infer<typeof CategoryEventEnum>;
-// Results in: 'trade-fairs-and-conventions' | 'competitions-and-workshops' | 'kick-off-events' | 'other'
-```
-
 **Usage:**
 - Used in events collection schema validation
 - Categorizes events by type (conventions, workshops, kickoffs)
-- Ensures consistency across event content
 
 **Accessing category options dynamically:**
 ```typescript
@@ -107,17 +100,11 @@ const allEventCategories = CategoryEventEnum.options;
 // ['trade-fairs-and-conventions', 'competitions-and-workshops', 'kick-off-events', 'other']
 ```
 
-**Example filtering:**
-```typescript
-const allEvents = await getCollection('events');
-const workshops = allEvents.filter(e => e.data.categoryEvent === 'competitions-and-workshops');
-```
-
 ---
 
-#### `CategoryProject` and `CategoryProjectEnum`
+#### `CategoryProjectEnum`
 
-Project category types for filtering and organization.
+Zod enum for project categories used for filtering and organization.
 
 **Zod Schema (source of truth):**
 ```typescript
@@ -129,16 +116,9 @@ export const CategoryProjectEnum = z.enum([
 ]);
 ```
 
-**TypeScript Type (inferred from schema):**
-```typescript
-export type CategoryProject = z.infer<typeof CategoryProjectEnum>;
-// Results in: 'experimental-rocketry' | 'science-and-experiments' | 'robotics' | 'other'
-```
-
 **Usage:**
 - Used in projects collection schema validation
 - Categorizes projects by technical domain
-- Ensures consistency across project content
 
 **Accessing category options dynamically:**
 ```typescript
@@ -147,14 +127,6 @@ import { CategoryProjectEnum } from '../types';
 const allProjectCategories = CategoryProjectEnum.options;
 // ['experimental-rocketry', 'science-and-experiments', 'robotics', 'other']
 ```
-
-**Example filtering:**
-```typescript
-const allProjects = await getCollection('projects');
-const rocketryProjects = allProjects.filter(p => p.data.categoryProject === 'experimental-rocketry');
-```
-
-**Design Pattern:** Follows the same pattern as `CoverImageType` - Zod enum as single source of truth with inferred TypeScript type. This ensures runtime validation and TypeScript type safety stay in sync.
 
 ---
 
@@ -194,7 +166,6 @@ Zod enum for discriminating between default and custom cover images.
 
 ```typescript
 const CoverImageType = z.enum(["DEFAULT", "CUSTOM"]);
-type CoverImageTypeValue = z.infer<typeof CoverImageType>;
 ```
 
 **Values:**
@@ -208,25 +179,6 @@ type CoverImageTypeValue = z.infer<typeof CoverImageType>;
 ### Collection Entry Types (`components.ts`)
 
 These type aliases provide proper typing for Astro content collection entries, replacing unsafe `any` usage.
-
-#### `TestimonialEntry`
-
-Type alias for testimonial collection entries.
-
-```typescript
-type TestimonialEntry = CollectionEntry<'testimonials'>;
-```
-
-**Usage:**
-```typescript
-const testimonials = await getCollection('testimonials');
-testimonials.map((testimonial: TestimonialEntry) => { ... })
-```
-
-**Replaces `any` in:**
-- [src/components/Testimonials.astro](../components/Testimonials.astro)
-
----
 
 #### `SponsorEntry`
 
@@ -242,27 +194,15 @@ type SponsorEntry = CollectionEntry<'sponsors'>;
 
 ---
 
-#### `PostEntry`
-
-Type alias for posts collection entries (both events and projects).
-
-```typescript
-type PostEntry = CollectionEntry<'posts'>;
-```
-
-**Note:** Use with `PostType` to determine if an entry is an event or project.
-
----
-
 ## Design Philosophy
 
 This project uses a **hybrid approach** to type organization:
 
 ### Centralized (in `/src/types/`)
-- Shared primitive types (`PostType`, `SponsorTier`, `CategoryEvent`, `CategoryProject`)
-- Collection entry type aliases (`TestimonialEntry`, `SponsorEntry`, `PostEntry`)
+- Shared primitive types (`PostType`, `SponsorTier`)
+- Collection entry type aliases (`SponsorEntry`, `ImageWithAlt`)
 - Types used across multiple unrelated files
-- Zod schemas used in content collections
+- Zod schemas used in content collections (`CoverImageType`, `CategoryEventEnum`, `CategoryProjectEnum`)
 
 ### Co-located (within component files)
 - Component-specific Props interfaces

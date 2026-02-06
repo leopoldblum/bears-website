@@ -2,16 +2,10 @@
 export * from './content';
 export * from './components';
 
-// Note: ImageMetadata should be imported directly from 'astro'
-// import type { ImageMetadata } from 'astro';
-
 // Named exports for clarity
 export type {
   PostType,
   SponsorTier,
-  CategoryEvent,
-  CategoryProject,
-  CoverImageTypeValue,
 } from './content';
 
 export {
@@ -21,8 +15,6 @@ export {
 } from './content';
 
 export type {
-  TestimonialEntry,
   SponsorEntry,
-  PostEntry,
   ImageWithAlt,
 } from './components';
