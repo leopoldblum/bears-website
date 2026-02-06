@@ -147,36 +147,7 @@ const publishedPosts = filterDrafts(allPosts);
 ```
 
 **Used in:**
-- Pre-composed query functions (internal usage)
-
----
-
-### `filterByIdPrefix()`
-
-Filters posts by ID prefix (e.g., `'events/'` or `'projects/'`). Used to separate events from projects in the unified posts collection.
-
-**Signature:**
-```typescript
-function filterByIdPrefix<T extends { id: string }>(
-  entries: T[],
-  prefix: string
-): T[]
-```
-
-**Parameters:**
-- `entries` - Array of collection entries with an `id` property
-- `prefix` - The prefix to filter by (e.g., `'events/'` or `'projects/'`)
-
-**Returns:**
-- Filtered array of entries matching the prefix
-
-**Example:**
-```typescript
-import { filterByIdPrefix } from '../utils/contentQueries';
-
-const events = filterByIdPrefix(allPosts, 'events/');
-const projects = filterByIdPrefix(allPosts, 'projects/');
-```
+- `getPublishedEvents()`, `getPublishedProjects()`, `getMeetTheTeamProjects()`, `getPublishedInstagramPosts()` (internal usage)
 
 ---
 
@@ -495,14 +466,6 @@ T extends { data: { isDraft?: boolean } }
 ```
 
 Works with any collection entry that has an optional `data.isDraft` property.
-
-### ID Filtering Constraint
-
-```typescript
-T extends { id: string }
-```
-
-Works with any collection entry that has an `id` property.
 
 ---
 

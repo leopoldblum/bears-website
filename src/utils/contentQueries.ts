@@ -80,10 +80,8 @@ export function filterDrafts<T extends { data: { isDraft?: boolean } }>(
  * const events = await getPublishedEvents();
  */
 export async function getPublishedEvents() {
-  const allEvents = await getCollection('events', ({ data }) => {
-    return import.meta.env.DEV || !data.isDraft;
-  });
-  return sortByDateDesc(allEvents);
+  const allEvents = await getCollection('events');
+  return sortByDateDesc(filterDrafts(allEvents));
 }
 
 /**
@@ -96,10 +94,8 @@ export async function getPublishedEvents() {
  * const projects = await getPublishedProjects();
  */
 export async function getPublishedProjects() {
-  const allProjects = await getCollection('projects', ({ data }) => {
-    return import.meta.env.DEV || !data.isDraft;
-  });
-  return sortByDateDesc(allProjects);
+  const allProjects = await getCollection('projects');
+  return sortByDateDesc(filterDrafts(allProjects));
 }
 
 /**
@@ -136,11 +132,11 @@ export async function getPublishedPosts() {
  * const teamProjects = await getMeetTheTeamProjects();
  */
 export async function getMeetTheTeamProjects() {
-  const allProjects = await getCollection('projects', ({ data }) => {
-    return data.displayMeetTheTeam === true &&
-           (import.meta.env.DEV || !data.isDraft);
-  });
-  return sortByDateDesc(allProjects);
+  const allProjects = await getCollection('projects');
+  const published = filterDrafts(allProjects).filter(
+    p => p.data.displayMeetTheTeam === true
+  );
+  return sortByDateDesc(published);
 }
 
 /**
@@ -172,10 +168,8 @@ export async function getLatestPosts(limit: number = 4) {
  * const posts = await getPublishedInstagramPosts();
  */
 export async function getPublishedInstagramPosts() {
-  const allPosts = await getCollection('instagram', ({ data }) => {
-    return import.meta.env.DEV || !data.isDraft;
-  });
-  return sortByDateDesc(allPosts);
+  const allPosts = await getCollection('instagram');
+  return sortByDateDesc(filterDrafts(allPosts));
 }
 
 /**

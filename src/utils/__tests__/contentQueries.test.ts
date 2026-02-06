@@ -22,13 +22,14 @@ const mockedGetCollection = vi.mocked(getCollection);
 // Helpers for creating mock entries
 // ---------------------------------------------------------------------------
 
-function makeEntry(overrides: { date?: Date; slug?: string; isDraft?: boolean; id?: string }) {
+function makeEntry(overrides: { date?: Date; slug?: string; isDraft?: boolean; id?: string; displayMeetTheTeam?: boolean }) {
   return {
     id: overrides.id ?? 'test.md',
     slug: overrides.slug ?? 'test',
     data: {
       date: overrides.date ?? new Date('2024-01-01'),
       isDraft: overrides.isDraft,
+      displayMeetTheTeam: overrides.displayMeetTheTeam,
     },
   };
 }
@@ -253,7 +254,7 @@ describe('getPublishedEvents', () => {
   it('calls getCollection with "events"', async () => {
     mockedGetCollection.mockResolvedValue([]);
     await getPublishedEvents();
-    expect(mockedGetCollection).toHaveBeenCalledWith('events', expect.any(Function));
+    expect(mockedGetCollection).toHaveBeenCalledWith('events');
   });
 });
 
@@ -275,7 +276,7 @@ describe('getPublishedProjects', () => {
   it('calls getCollection with "projects"', async () => {
     mockedGetCollection.mockResolvedValue([]);
     await getPublishedProjects();
-    expect(mockedGetCollection).toHaveBeenCalledWith('projects', expect.any(Function));
+    expect(mockedGetCollection).toHaveBeenCalledWith('projects');
   });
 });
 
@@ -434,20 +435,30 @@ describe('getMeetTheTeamProjects', () => {
     import.meta.env.DEV = false;
   });
 
-  it('calls getCollection with "projects" and a filter function', async () => {
+  it('calls getCollection with "projects"', async () => {
     mockedGetCollection.mockResolvedValue([]);
     await getMeetTheTeamProjects();
-    expect(mockedGetCollection).toHaveBeenCalledWith('projects', expect.any(Function));
+    expect(mockedGetCollection).toHaveBeenCalledWith('projects');
   });
 
   it('returns projects sorted by date descending', async () => {
     mockedGetCollection.mockResolvedValue([
-      makeEntry({ date: new Date('2023-01-01'), slug: 'old-project' }),
-      makeEntry({ date: new Date('2024-06-01'), slug: 'new-project' }),
+      makeEntry({ date: new Date('2023-01-01'), slug: 'old-project', displayMeetTheTeam: true }),
+      makeEntry({ date: new Date('2024-06-01'), slug: 'new-project', displayMeetTheTeam: true }),
     ]);
     const result = await getMeetTheTeamProjects();
     expect(result[0].slug).toBe('new-project');
     expect(result[1].slug).toBe('old-project');
+  });
+
+  it('filters out projects without displayMeetTheTeam', async () => {
+    mockedGetCollection.mockResolvedValue([
+      makeEntry({ slug: 'team-project', displayMeetTheTeam: true }),
+      makeEntry({ slug: 'regular-project' }),
+    ]);
+    const result = await getMeetTheTeamProjects();
+    expect(result).toHaveLength(1);
+    expect(result[0].slug).toBe('team-project');
   });
 
   it('returns empty array when no projects match', async () => {
@@ -575,7 +586,7 @@ describe('getPublishedInstagramPosts', () => {
   it('calls getCollection with "instagram"', async () => {
     mockedGetCollection.mockResolvedValue([]);
     await getPublishedInstagramPosts();
-    expect(mockedGetCollection).toHaveBeenCalledWith('instagram', expect.any(Function));
+    expect(mockedGetCollection).toHaveBeenCalledWith('instagram');
   });
 });
 
