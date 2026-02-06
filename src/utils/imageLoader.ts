@@ -115,6 +115,7 @@ interface LoadImagesForCollectionOptions<T> {
  * });
  * ```
  */
+// Overload: with fallback → guaranteed non-null loadedImage
 export async function loadImagesForCollection<
   T extends {
     data: {
@@ -126,7 +127,35 @@ export async function loadImagesForCollection<
     };
     slug?: string;
   }
->(options: LoadImagesForCollectionOptions<T>): Promise<Array<T & { loadedImage: ImageMetadata }>> {
+>(options: LoadImagesForCollectionOptions<T> & { fallbackImage: ImageMetadata }): Promise<Array<T & { loadedImage: ImageMetadata }>>;
+
+// Overload: without fallback → loadedImage may be null
+export async function loadImagesForCollection<
+  T extends {
+    data: {
+      coverImage?: string;
+      image?: string;
+      coverImageType?: string;
+      title?: string;
+      name?: string;
+    };
+    slug?: string;
+  }
+>(options: LoadImagesForCollectionOptions<T>): Promise<Array<T & { loadedImage: ImageMetadata | null }>>;
+
+// Implementation
+export async function loadImagesForCollection<
+  T extends {
+    data: {
+      coverImage?: string;
+      image?: string;
+      coverImageType?: string;
+      title?: string;
+      name?: string;
+    };
+    slug?: string;
+  }
+>(options: LoadImagesForCollectionOptions<T>): Promise<Array<T & { loadedImage: ImageMetadata | null }>> {
   const { glob, collection, baseDir, imageField, fallbackImage, postType } = options;
 
   return await Promise.all(
@@ -175,6 +204,15 @@ export async function loadImagesForCollection<
             );
           }
         }
+
+        // Warn if CUSTOM but no image filename was provided
+        if (item.data.coverImageType === "CUSTOM" && !imageFileName) {
+          const titleInfo = item.data.title ? `"${item.data.title}"` : '';
+          const slugInfo = item.slug ? `(${item.slug})` : '';
+          console.warn(
+            `⚠️ ${postType ? postType.charAt(0).toUpperCase() + postType.slice(1) : 'Item'} ${titleInfo} ${slugInfo} has coverImageType "CUSTOM" but no image filename provided, using default`
+          );
+        }
       }
       // For items without coverImageType field (testimonials)
       else if (imageFileName) {
@@ -196,7 +234,7 @@ export async function loadImagesForCollection<
           const nameInfo = item.data.name ? `"${item.data.name}"` : '';
           const slugInfo = item.slug ? `(${item.slug})` : '';
           console.warn(
-            `⚠️ Testimonial ${nameInfo} ${slugInfo} - image "${imageFileName}" failed to load, using default`
+            `⚠️ ${postType ? postType.charAt(0).toUpperCase() + postType.slice(1) : 'Item'} ${nameInfo} ${slugInfo} - image "${imageFileName}" failed to load, using default`
           );
         }
       }
@@ -208,17 +246,7 @@ export async function loadImagesForCollection<
 
       return { ...item, loadedImage };
     })
-  ).then(items => {
-    // For collections with fallbackImage, guarantee non-null loadedImage
-    if (fallbackImage) {
-      return items.map(item => ({
-        ...item,
-        loadedImage: item.loadedImage || fallbackImage
-      })) as Array<T & { loadedImage: ImageMetadata }>;
-    }
-
-    return items as Array<T & { loadedImage: ImageMetadata }>;
-  });
+  );
 }
 
 /**
