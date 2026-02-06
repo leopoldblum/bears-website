@@ -1,68 +1,50 @@
 ---
 // BecomeSponsor component - Displays sponsor showcase with tier-based system
-import { getCollection } from "astro:content";
 import SponsorTier from "./SponsorTier.astro";
 import Button from "@mdx/Button.astro";
-import type { SponsorEntry } from "@types";
 import { sponsorLogos } from "@utils/imageGlobs";
 import { loadImage, defaultSponsorImage } from "@utils/imageLoader";
-import { getPageContent } from "@utils/contentQueries";
+import { getPageContent, getSponsorsByTier } from "@utils/contentQueries";
 
 const content = await getPageContent('landing/become-sponsor');
 
-// Fetch all sponsors
-const allSponsors = await getCollection("sponsors");
+// Use the shared utility for grouping + sorting
+const { diamond, platinum, gold, silver, bronze } = await getSponsorsByTier();
 
-// Process sponsors with images and derive tier from folder
-const sponsorsWithImages = await Promise.all(
-  allSponsors.map(async (sponsor: SponsorEntry) => {
-    // Derive tier from folder structure (e.g., "gold/sponsor-name" -> "gold")
-    const tier = sponsor.id.split("/")[0] as
-      | "bronze"
-      | "silver"
-      | "gold"
-      | "platinum"
-      | "diamond";
+// Load images for a tier's sponsors
+async function loadTierImages(sponsors: typeof diamond) {
+  return Promise.all(
+    sponsors.map(async (sponsor) => {
+      const tier = sponsor.id.split("/")[0];
+      const logoData =
+        (await loadImage({
+          glob: sponsorLogos,
+          imagePath: `/src/assets/sponsors/${tier}/${sponsor.data.logo}`,
+          fallbackImage: defaultSponsorImage,
+          context: {
+            itemTitle: sponsor.data.name,
+            itemSlug: sponsor.slug,
+          },
+        })) || defaultSponsorImage;
 
-    const logoData =
-      (await loadImage({
-        glob: sponsorLogos,
-        imagePath: `/src/assets/sponsors/${tier}/${sponsor.data.logo}`,
-        fallbackImage: defaultSponsorImage,
-        context: {
-          itemTitle: sponsor.data.name,
-          itemSlug: sponsor.slug,
-        },
-      })) || defaultSponsorImage;
+      return {
+        ...sponsor.data,
+        logo: logoData,
+        slug: sponsor.slug,
+        tier: tier as "bronze" | "silver" | "gold" | "platinum" | "diamond",
+      };
+    }),
+  );
+}
 
-    return {
-      ...sponsor.data,
-      logo: logoData,
-      slug: sponsor.slug,
-      tier,
-    };
-  }),
-);
-
-// Import sortBySlug utility
-import { sortBySlug } from "@utils/contentQueries";
-
-// Group sponsors by tier and sort alphabetically within each tier
-const diamondSponsors = sortBySlug(
-  sponsorsWithImages.filter((s) => s.tier === "diamond"),
-);
-const platinumSponsors = sortBySlug(
-  sponsorsWithImages.filter((s) => s.tier === "platinum"),
-);
-const goldSponsors = sortBySlug(
-  sponsorsWithImages.filter((s) => s.tier === "gold"),
-);
-const silverSponsors = sortBySlug(
-  sponsorsWithImages.filter((s) => s.tier === "silver"),
-);
-const bronzeSponsors = sortBySlug(
-  sponsorsWithImages.filter((s) => s.tier === "bronze"),
-);
+const [diamondSponsors, platinumSponsors, goldSponsors, silverSponsors, bronzeSponsors] =
+  await Promise.all([
+    loadTierImages(diamond),
+    loadTierImages(platinum),
+    loadTierImages(gold),
+    loadTierImages(silver),
+    loadTierImages(bronze),
+  ]);
 ---
 
 <section class="bg-bears-bg-light py-16 sm:py-20 lg:py-24">
