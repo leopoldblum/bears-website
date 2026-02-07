@@ -1,14 +1,14 @@
 ---
-// MetadataCard.astro - Refined metadata display for sidebar
+// MetadataCard.astro - Metadata display for detail page sidebar
 interface Props {
   category: string;
-  tags?: string[];
   date: Date;
   isCompleted?: boolean;
+  headOfProject?: string;
   type: 'event' | 'project';
 }
 
-const { category, tags = [], date, isCompleted, type } = Astro.props;
+const { category, date, isCompleted, headOfProject, type } = Astro.props;
 
 // Format category for display
 const formatCategory = (cat: string) => {
@@ -24,9 +24,16 @@ const formattedDate = date.toLocaleDateString('en-US', {
   month: 'long',
   day: 'numeric'
 });
+
+const backHref = type === 'event' ? '/events' : '/projects';
+const backLabel = type === 'event' ? 'Back to Events' : 'Back to Projects';
 ---
 
 <aside class="metadata-card">
+  <a href={backHref} class="back-link">
+    <span aria-hidden="true">&larr;</span> {backLabel}
+  </a>
+
   <div class="metadata-section">
     <h3 class="metadata-label">Category</h3>
     <div class="category-badge">
@@ -34,14 +41,10 @@ const formattedDate = date.toLocaleDateString('en-US', {
     </div>
   </div>
 
-  {tags.length > 0 && (
+  {headOfProject && (
     <div class="metadata-section">
-      <h3 class="metadata-label">Tags</h3>
-      <div class="tags-container">
-        {tags.map((tag) => (
-          <span class="tag-badge">{tag}</span>
-        ))}
-      </div>
+      <h3 class="metadata-label">Project Lead</h3>
+      <p class="metadata-value">{headOfProject}</p>
     </div>
   )}
 
@@ -49,6 +52,16 @@ const formattedDate = date.toLocaleDateString('en-US', {
     <h3 class="metadata-label">Date</h3>
     <p class="metadata-value">{formattedDate}</p>
   </div>
+
+  {type === 'event' && (
+    <div class="metadata-section" x-data={`{ isUpcoming: new Date().setHours(0,0,0,0) <= ${date.getTime()} }`}>
+      <h3 class="metadata-label">Status</h3>
+      <div x-bind:class="isUpcoming ? 'status-indicator in-progress' : 'status-indicator past'">
+        <div class="status-dot"></div>
+        <span class="status-text" x-text="isUpcoming ? 'Upcoming' : 'Past'"></span>
+      </div>
+    </div>
+  )}
 
   {type === 'project' && isCompleted !== undefined && (
     <div class="metadata-section">
@@ -81,6 +94,22 @@ const formattedDate = date.toLocaleDateString('en-US', {
       position: sticky;
       top: 6.5rem;
     }
+  }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-bears-text-onDark);
+    opacity: 0.7;
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+  }
+
+  .back-link:hover {
+    opacity: 1;
   }
 
   .metadata-section {
@@ -125,30 +154,6 @@ const formattedDate = date.toLocaleDateString('en-US', {
     letter-spacing: 0.01em;
   }
 
-  .tags-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-
-  .tag-badge {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.375rem 0.75rem;
-    background-color: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
-    font-size: 0.8125rem;
-    color: var(--color-bears-text-onDark);
-    opacity: 0.85;
-    transition: all 0.2s ease;
-  }
-
-  .tag-badge:hover {
-    background-color: rgba(255, 255, 255, 0.08);
-    opacity: 1;
-  }
-
   .status-indicator {
     display: flex;
     align-items: center;
@@ -168,6 +173,11 @@ const formattedDate = date.toLocaleDateString('en-US', {
     border: 1px solid rgba(59, 130, 246, 0.3);
   }
 
+  .status-indicator.past {
+    background-color: rgba(160, 160, 160, 0.1);
+    border: 1px solid rgba(160, 160, 160, 0.25);
+  }
+
   .status-dot {
     width: 8px;
     height: 8px;
@@ -183,6 +193,10 @@ const formattedDate = date.toLocaleDateString('en-US', {
     background-color: rgb(59, 130, 246);
   }
 
+  .status-indicator.past .status-dot {
+    background-color: rgb(160, 160, 160);
+  }
+
   .status-text {
     font-size: 0.875rem;
     font-weight: 500;
@@ -196,12 +210,20 @@ const formattedDate = date.toLocaleDateString('en-US', {
     color: rgb(59, 130, 246);
   }
 
+  .status-indicator.past .status-text {
+    color: rgb(160, 160, 160);
+  }
+
   /* Mobile: Horizontal compact layout */
   @media (max-width: 1023px) {
     .metadata-card {
       flex-direction: row;
       flex-wrap: wrap;
       gap: 1rem 1.5rem;
+    }
+
+    .back-link {
+      flex-basis: 100%;
     }
 
     .metadata-section {
@@ -211,7 +233,7 @@ const formattedDate = date.toLocaleDateString('en-US', {
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .tag-badge {
+    .back-link {
       transition: none;
     }
   }

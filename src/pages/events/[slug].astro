@@ -29,7 +29,7 @@ const coverImageData = await loadCoverImage(
 );
 
 // Extract data for template use
-const { title, date, categoryEvent, tags } = entry.data;
+const { title, date, categoryEvent } = entry.data;
 ---
 
 <PostLayout
@@ -37,7 +37,6 @@ const { title, date, categoryEvent, tags } = entry.data;
   date={date}
   coverImage={coverImageData}
   category={categoryEvent}
-  tags={tags}
   type="event"
 >
   <Content />

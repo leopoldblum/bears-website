@@ -24,7 +24,6 @@ title: "Event Title"
 description: "Brief description of the event"
 date: 2026-01-15
 categoryEvent: "kick-off-events"
-tags: ["workshop", "networking"]
 # coverImage: "event-image.jpg"  # Optional: Custom cover image
 isDraft: false
 ---
@@ -44,7 +43,6 @@ title: "Project Title"
 description: "Brief description of the project"
 date: 2025-08-20
 categoryProject: "experimental-rocketry"
-tags: ["aerospace", "rocketry"]
 coverImage: "project-image.jpg"  # Optional: Custom cover image
 displayMeetTheTeam: false  # Optional: Show in Meet the Team section
 headOfProject: "Student Name"  # Required if displayMeetTheTeam is true
@@ -89,11 +87,6 @@ Write your full project description here using markdown.
   - Research projects, experiments, prototypes → `"science-and-experiments"`
   - Autonomous systems, rovers, drones → `"robotics"`
 
-**`tags`** (optional) - Array of tags for categorization
-- Format: `["tag1", "tag2", "tag3"]`
-- Use lowercase, hyphenated words for consistency
-- Example: `["lecture", "mars", "robotics", "nasa"]`
-
 **`coverImage`** (optional) - Just the filename (not the full path)
 - For events: Place image in `src/assets/events/`
 - For projects: Place image in `src/assets/projects/`
@@ -121,9 +114,9 @@ Write your full project description here using markdown.
 
 **`headOfProject`** (optional, but required when `displayMeetTheTeam` is `true`) - Project manager name
 - Name of the person managing/leading the project
-- Displayed above the description in the MeetTheTeam accordion
+- Displayed as "Project Lead" in the metadata sidebar on project detail pages
+- Also displayed above the description in the MeetTheTeam accordion
 - Example: `"Emma Watson"`, `"Alice Johnson"`
-- Only displayed when project appears in MeetTheTeam component
 
 **`isProjectCompleted`** (required for projects) - Project completion status
 - **Required field** - you must explicitly specify the completion status
@@ -146,7 +139,6 @@ title: "Guest Lecture: Mars Rover Engineering"
 description: "A special guest lecture featuring Dr. Sarah Chen from NASA's JPL discussing Mars rover technology."
 date: 2026-02-10
 categoryEvent: "trade-fairs-and-conventions"
-tags: ["lecture", "mars", "robotics", "nasa"]
 coverImage: "guest-lecture-mars.jpg"
 isDraft: false
 ---
@@ -174,7 +166,6 @@ title: "CubeSat Tracking System"
 description: "A real-time tracking system for monitoring CubeSat positions and telemetry data."
 date: 2025-12-10
 categoryProject: "experimental-rocketry"
-tags: ["cubesat", "tracking", "satellite"]
 coverImage: "cubesat-tracker.jpg"
 isDraft: false
 displayMeetTheTeam: true
@@ -204,7 +195,6 @@ title: "Workshop: Intro to Robotics"
 description: "Hands-on workshop covering basic robotics principles."
 date: 2026-03-15
 categoryEvent: "competitions-and-workshops"
-tags: ["workshop", "robotics", "beginner"]
 isDraft: true
 ---
 

@@ -10,8 +10,8 @@ interface Props {
   date: Date;
   coverImage?: ImageMetadata;
   category: string;
-  tags?: string[];
   isCompleted?: boolean;
+  headOfProject?: string;
   type: "event" | "project";
 }
 
@@ -20,8 +20,8 @@ const {
   date,
   coverImage,
   category,
-  tags = [],
   isCompleted,
+  headOfProject,
   type,
 } = Astro.props;
 ---
@@ -59,9 +59,9 @@ const {
         <aside class="metadata-sidebar">
           <MetadataCard
             category={category}
-            tags={tags}
             date={date}
             isCompleted={isCompleted}
+            headOfProject={headOfProject}
             type={type}
           />
         </aside>
