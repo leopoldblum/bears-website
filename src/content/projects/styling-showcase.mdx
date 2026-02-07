@@ -19,6 +19,7 @@ import Img from '@mdx/Img.astro';
 import ImageGrid from '@reusable/ImageGrid.astro'
 import YouTube from '@mdx/YouTube.astro';
 import Instagram from '@mdx/Instagram.astro';
+import Callout from '@mdx/Callout.astro';
 
 import project1 from '../../assets/projects/project-1.jpg';
 import project2 from '../../assets/projects/project-2.jpg';
@@ -265,6 +266,20 @@ Deadlines help keep projects on track and ensure quality deliverables.
   allowMultiple={true}
   width="100%"
 />
+
+---
+
+## Callout Component
+
+Callouts highlight important information with a glass-morphism card and accent gradient bar:
+
+<Callout title="Safety Notice">
+  All participants must wear **protective equipment** during the rocket launch. See the [safety guidelines](/contact) for details.
+</Callout>
+
+<Callout>
+  The next project kickoff meeting is scheduled for the start of the semester. Check the events page for the exact date.
+</Callout>
 
 ---
 

@@ -1,0 +1,28 @@
+---
+// Callout - Glass-morphism highlight card for MDX content
+// Usage: Wrap text content to visually highlight it with a subtle card and accent bar
+
+interface Props {
+  /** Optional bold title/label displayed above the content */
+  title?: string;
+  /** Additional CSS classes for the outer container */
+  class?: string;
+}
+
+const { title, class: className } = Astro.props;
+---
+
+<div class:list={[
+  'relative rounded-lg border border-white/10 bg-white/[0.03] overflow-hidden my-6',
+  className
+]}>
+  <div class="h-0.5 bg-gradient-to-r from-bears-accent via-bears-accent/80 to-transparent"></div>
+  <div class="p-5 sm:p-6">
+    {title && (
+      <p class="text-lg font-bold text-bears-text-onDark !mb-2">{title}</p>
+    )}
+    <div class="text-sm sm:text-base text-bears-text-onDark/70 leading-relaxed [&>:last-child]:!mb-0">
+      <slot />
+    </div>
+  </div>
+</div>
