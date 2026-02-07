@@ -12,6 +12,7 @@ interface Props {
   href?: string;
   isCompleted?: boolean;
   isUpcoming?: boolean;
+  category?: string;
 }
 
 const {
@@ -23,6 +24,7 @@ const {
   href,
   isCompleted,
   isUpcoming,
+  category,
 } = Astro.props;
 
 const Wrapper = href ? "a" : "div";
@@ -38,7 +40,7 @@ const Wrapper = href ? "a" : "div";
     alt={imageAlt}
     class="w-full h-full object-cover transition-transform duration-500 lg:group-hover:scale-105"
     loading="eager"
-    sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
+    sizes="(min-width: 1280px) 33vw, (min-width: 1024px) 50vw, 100vw"
     enableClickToEnlarge={false}
   />
 
@@ -123,6 +125,13 @@ const Wrapper = href ? "a" : "div";
 
     <!-- Content -->
     <div class="relative p-6">
+      <!-- Category kicker -->
+      {category && (
+        <p class="text-xs font-medium uppercase tracking-wider text-bears-accent mb-1.5">
+          {category}
+        </p>
+      )}
+
       <!-- Title with refined typography -->
       <h3
         class="text-xl sm:text-2xl font-bold text-bears-text-onDark mb-2 tracking-tight group-hover:text-bears-accent transition-colors duration-200"
