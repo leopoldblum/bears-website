@@ -16,11 +16,13 @@ const location = { lat: 52.5154722, lng: 13.3240833 };
 >
   <div class="container mx-auto px-4 sm:px-6 lg:px-12">
     <!-- Subtitle -->
-    {content?.data.subtitle && (
-      <p class="text-xs sm:text-sm font-bold uppercase tracking-[0.2em] text-bears-accent mb-3 sm:mb-4">
-        {content.data.subtitle}
-      </p>
-    )}
+    {
+      content?.data.subtitle && (
+        <p class="text-xs sm:text-sm font-bold uppercase tracking-[0.2em] text-bears-accent mb-3 sm:mb-4">
+          {content.data.subtitle}
+        </p>
+      )
+    }
 
     <!-- Heading -->
     <h2
@@ -32,38 +34,51 @@ const location = { lat: 52.5154722, lng: 13.3240833 };
     <!-- Gradient divider -->
     <div
       class="h-[2px] bg-gradient-to-r from-white/30 from-30% via-white/15 via-70% to-transparent mb-6 sm:mb-8 lg:mb-10 rounded-full"
-    ></div>
+    >
+    </div>
 
     <!-- Two-column: text/remember + map -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10 items-start">
       <!-- Left column: text + remember -->
       <div class="flex flex-col">
-        {content?.data.description && (
-          <div class="space-y-4 sm:space-y-5 text-sm sm:text-base lg:text-lg text-bears-text-onDark/60 leading-relaxed max-w-lg">
-            {content.data.description.split('\n\n').map((paragraph: string) => (
-              <p>{paragraph}</p>
-            ))}
-          </div>
-        )}
-
-        <!-- Gradient divider -->
-        <div class="h-[2px] bg-gradient-to-r from-white/30 from-30% via-white/15 via-70% to-transparent mt-8 sm:mt-10 rounded-full"></div>
+        {
+          content?.data.description && (
+            <div class="space-y-4 sm:space-y-5 text-sm sm:text-base lg:text-lg text-bears-text-onDark/60 leading-relaxed max-w-lg">
+              {content.data.description
+                .split("\n\n")
+                .map((paragraph: string) => (
+                  <p>{paragraph}</p>
+                ))}
+            </div>
+          )
+        }
 
         <!-- Remember section -->
         <div class="mt-6 sm:mt-8 pt-6 sm:pt-8">
-          <p class="text-xs sm:text-sm font-bold uppercase tracking-[0.2em] text-bears-accent mb-3 sm:mb-4">
+          <p
+            class="text-xs sm:text-sm font-bold uppercase tracking-[0.2em] text-bears-accent mb-3 sm:mb-4"
+          >
             remember:
           </p>
           <div class="border-l-[3px] border-bears-accent pl-4 sm:pl-6">
-            <p class="text-5xl sm:text-6xl lg:text-7xl font-black text-bears-text-onDark leading-tight">
+            <p
+              class="text-5xl sm:text-6xl lg:text-7xl font-black text-bears-text-onDark leading-tight"
+            >
               {room}
             </p>
-            <p class="text-3xl sm:text-4xl lg:text-5xl font-bold text-bears-text-onDark/80 leading-tight mt-1 sm:mt-2">
+            <p
+              class="text-3xl sm:text-4xl lg:text-5xl font-bold text-bears-text-onDark/80 leading-tight mt-1 sm:mt-2"
+            >
               {schedule}
             </p>
           </div>
-          <p class="mt-6 sm:mt-8 text-sm sm:text-base text-bears-text-onDark/60">
-            Questions? <a href="/contact" class="text-bears-accent hover:underline">Get in touch &rarr;</a>
+          <p
+            class="mt-6 sm:mt-8 text-sm sm:text-base text-bears-text-onDark/60"
+          >
+            Questions? <a
+              href="/contact"
+              class="text-bears-accent hover:underline">Get in touch &rarr;</a
+            >
           </p>
         </div>
       </div>
@@ -77,7 +92,9 @@ const location = { lat: 52.5154722, lng: 13.3240833 };
           data-lng={location.lng}
         >
           <!-- Leaflet map will be initialized here -->
-          <div class="w-full h-full flex items-center justify-center text-bears-text-onDark/30 text-sm">
+          <div
+            class="w-full h-full flex items-center justify-center text-bears-text-onDark/30 text-sm"
+          >
             Loading map&hellip;
           </div>
         </div>
@@ -86,7 +103,10 @@ const location = { lat: 52.5154722, lng: 13.3240833 };
   </div>
 </section>
 
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link
+  rel="stylesheet"
+  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+/>
 <script>
   import L from "leaflet";
 
