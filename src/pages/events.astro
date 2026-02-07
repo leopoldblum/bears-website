@@ -10,6 +10,7 @@ import { loadCollectionImages } from "@utils/imageLoader";
 import { getPublishedEvents, getPageContent } from "@utils/contentQueries";
 import { CategoryEventEnum } from "@types";
 import { getCategoryLabel } from "@utils/categoryLabels";
+import CrosslinkBanner from "@reusable/CrosslinkBanner.astro";
 import { eventsHeroImages } from "@utils/imageGlobs";
 import { loadAllImagesFromDirectory } from "@utils/imageLoader";
 
@@ -70,7 +71,7 @@ const eventsData = JSON.stringify(eventsWithImages.map((e, i) => ({
       sortOrder: 'newest',
       now: new Date().setHours(0,0,0,0),
       currentPage: 1,
-      itemsPerPage: window.innerWidth >= 1024 ? 4 : 3,
+      itemsPerPage: window.innerWidth >= 1280 ? 6 : window.innerWidth >= 1024 ? 4 : 3,
       eventsData: ${eventsData},
       visibleIndices: [],
       _transitioning: false,
@@ -106,7 +107,7 @@ const eventsData = JSON.stringify(eventsWithImages.map((e, i) => ({
 
         // Update itemsPerPage on window resize
         window.addEventListener('resize', () => {
-          const newItemsPerPage = window.innerWidth >= 1024 ? 4 : 3;
+          const newItemsPerPage = window.innerWidth >= 1280 ? 6 : window.innerWidth >= 1024 ? 4 : 3;
           if (newItemsPerPage !== this.itemsPerPage) {
             this.itemsPerPage = newItemsPerPage;
             // Adjust current page if needed
@@ -259,10 +260,39 @@ const eventsData = JSON.stringify(eventsWithImages.map((e, i) => ({
       />
     </EventsIntro>
 
+    <!-- Result count -->
+    <p
+      x-show="filteredIndices.length > 0"
+      class="text-sm text-bears-text-onDark/40 text-right mb-4"
+      x-text="`Showing ${(currentPage - 1) * itemsPerPage + 1}\u2013${Math.min(currentPage * itemsPerPage, filteredIndices.length)} of ${filteredIndices.length} events`"
+    ></p>
+
+    <!-- No results state -->
+    <div
+      x-show="filteredIndices.length === 0"
+      x-cloak
+      class="flex flex-col items-center justify-center py-24 text-center"
+    >
+      <svg class="w-12 h-12 text-bears-text-onDark/20 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+          d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+      </svg>
+      <p class="text-bears-text-onDark/50 text-lg mb-1">No events match your filters</p>
+      <p class="text-bears-text-onDark/30 text-sm mb-6">Try adjusting or clearing your filters</p>
+      <button
+        type="button"
+        @click="clearFilters()"
+        class="text-sm text-bears-accent hover:text-bears-accent/80 transition-colors cursor-pointer"
+      >
+        Clear all filters
+      </button>
+    </div>
+
     <!-- Events Grid -->
     <div
       x-ref="grid"
-      class="events-grid grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 min-h-252 lg:min-h-168 content-start"
+      x-show="filteredIndices.length > 0"
+      class="events-grid grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8 min-h-252 lg:min-h-168 content-start"
     >
       {eventsWithImages.map((event, index) => (
         <div
@@ -277,6 +307,7 @@ const eventsData = JSON.stringify(eventsWithImages.map((e, i) => ({
             description={event.description}
             href={`/events/${event.slug}`}
             isUpcoming={event.date.getTime() >= new Date().setHours(0, 0, 0, 0)}
+            category={getCategoryLabel(event.categoryEvent)}
           />
         </div>
       ))}
@@ -284,5 +315,11 @@ const eventsData = JSON.stringify(eventsWithImages.map((e, i) => ({
 
     <!-- Pagination Controls -->
     <Pagination />
+
+    <CrosslinkBanner
+      text="Curious what we're building?"
+      linkText="Explore our projects"
+      href="/projects"
+    />
   </div>
 </BaseLayout>

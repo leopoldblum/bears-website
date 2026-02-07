@@ -11,6 +11,7 @@ import { getPublishedProjects, getPageContent } from "@utils/contentQueries";
 import { CategoryProjectEnum } from "@types";
 import { getCategoryLabel } from "@utils/categoryLabels";
 
+import CrosslinkBanner from "@reusable/CrosslinkBanner.astro";
 import { projectsHeroImages } from "@utils/imageGlobs";
 import { loadAllImagesFromDirectory } from "@utils/imageLoader";
 
@@ -81,7 +82,7 @@ const projectsData = JSON.stringify(projectsWithImages.map((p, i) => ({
       completionStatus: [],
       sortOrder: 'newest',
       currentPage: 1,
-      itemsPerPage: window.innerWidth >= 1024 ? 4 : 3,
+      itemsPerPage: window.innerWidth >= 1280 ? 6 : window.innerWidth >= 1024 ? 4 : 3,
       projectsData: ${projectsData},
       visibleIndices: [],
       _transitioning: false,
@@ -117,7 +118,7 @@ const projectsData = JSON.stringify(projectsWithImages.map((p, i) => ({
 
         // Update itemsPerPage on window resize
         window.addEventListener('resize', () => {
-          const newItemsPerPage = window.innerWidth >= 1024 ? 4 : 3;
+          const newItemsPerPage = window.innerWidth >= 1280 ? 6 : window.innerWidth >= 1024 ? 4 : 3;
           if (newItemsPerPage !== this.itemsPerPage) {
             this.itemsPerPage = newItemsPerPage;
             // Adjust current page if needed
@@ -271,10 +272,39 @@ const projectsData = JSON.stringify(projectsWithImages.map((p, i) => ({
       />
     </ProjectCategories>
 
+    <!-- Result count -->
+    <p
+      x-show="filteredIndices.length > 0"
+      class="text-sm text-bears-text-onDark/40 text-right mb-4"
+      x-text="`Showing ${(currentPage - 1) * itemsPerPage + 1}\u2013${Math.min(currentPage * itemsPerPage, filteredIndices.length)} of ${filteredIndices.length} projects`"
+    ></p>
+
+    <!-- No results state -->
+    <div
+      x-show="filteredIndices.length === 0"
+      x-cloak
+      class="flex flex-col items-center justify-center py-24 text-center"
+    >
+      <svg class="w-12 h-12 text-bears-text-onDark/20 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+          d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+      </svg>
+      <p class="text-bears-text-onDark/50 text-lg mb-1">No projects match your filters</p>
+      <p class="text-bears-text-onDark/30 text-sm mb-6">Try adjusting or clearing your filters</p>
+      <button
+        type="button"
+        @click="clearFilters()"
+        class="text-sm text-bears-accent hover:text-bears-accent/80 transition-colors cursor-pointer"
+      >
+        Clear all filters
+      </button>
+    </div>
+
     <!-- Projects Grid -->
     <div
       x-ref="grid"
-      class="projects-grid grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 min-h-252 lg:min-h-168 content-start"
+      x-show="filteredIndices.length > 0"
+      class="projects-grid grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8 min-h-252 lg:min-h-168 content-start"
     >
       {projectsWithImages.map((project, index) => (
         <div
@@ -289,6 +319,7 @@ const projectsData = JSON.stringify(projectsWithImages.map((p, i) => ({
             description={project.description}
             href={`/projects/${project.slug}`}
             isCompleted={project.isProjectCompleted}
+            category={getCategoryLabel(project.categoryProject)}
           />
         </div>
       ))}
@@ -296,5 +327,11 @@ const projectsData = JSON.stringify(projectsWithImages.map((p, i) => ({
 
     <!-- Pagination Controls -->
     <Pagination />
+
+    <CrosslinkBanner
+      text="Want to see what's happening?"
+      linkText="Check out our events"
+      href="/events"
+    />
   </div>
 </BaseLayout>

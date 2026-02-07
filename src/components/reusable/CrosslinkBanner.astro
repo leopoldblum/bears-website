@@ -1,0 +1,42 @@
+---
+// CrosslinkBanner - Subtle crosslink nudge placed below pagination
+// Displays a faint separator line followed by a prompt and arrow link
+
+interface Props {
+  /** Short prompt text (e.g., "Curious what we're building?") */
+  text: string;
+  /** Link label (e.g., "Explore our projects") */
+  linkText: string;
+  /** Target URL */
+  href: string;
+}
+
+const { text, linkText, href } = Astro.props;
+---
+
+<div class="pt-8 sm:pt-10 lg:pt-12 pb-2">
+  <!-- Accent separator — mirrors footer top line -->
+  <div class="h-px bg-gradient-to-r from-transparent via-bears-text-onDark/15 to-transparent"></div>
+
+  <div class="flex flex-col sm:flex-row items-center justify-center gap-1.5 sm:gap-3 pt-6 sm:pt-8">
+    <span class="text-sm text-bears-text-onDark/40">{text}</span>
+    <a
+      href={href}
+      class="group inline-flex items-center gap-1.5 text-sm text-bears-accent/80 hover:text-bears-accent transition-colors duration-200"
+    >
+      {linkText}
+      <svg
+        class="w-3.5 h-3.5 transition-transform duration-200 group-hover:translate-x-0.5"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+      </svg>
+    </a>
+  </div>
+</div>
