@@ -227,6 +227,24 @@ To edit category descriptions, modify the files in `src/content/page-text/projec
 
 Each file has a `title` (category display name) and `description` (1-2 sentence explanation).
 
+## Events Page Intro Text
+
+The events page displays a short intro section above the event grid with a subtitle, description, and a "Next Up" callout that automatically highlights the nearest upcoming event when it falls within the next 2 weeks. If no event is coming up within that window, the callout is hidden.
+
+To edit the intro text, modify:
+
+- `src/content/page-text/events/events-intro.md` — `subtitle` and `description` fields
+
+The "Next Up" event is determined automatically — no configuration needed.
+
+## Events Cross-Reference Section
+
+Below the projects grid, there is a section that links visitors to the events page. To edit its heading, description, and button text, modify:
+
+- `src/content/page-text/projects/events-ref.md`
+
+This file has `title`, `description`, `buttonText`, and `buttonHref` fields.
+
 ## Important Notes
 
 - **Sorting**: Unlike sponsors and testimonials (which sort by filename), events and projects sort by the `date` field in descending order
