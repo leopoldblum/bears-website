@@ -3,7 +3,7 @@ import BaseLayout from "@layouts/BaseLayout.astro";
 import PostShowcase from "@posts-catalog/PostShowcase.astro";
 import FilterMenu from "@posts-catalog/FilterMenu.astro";
 import SortMenu from "@posts-catalog/SortMenu.astro";
-import Pagination from "@posts-catalog/Pagination.astro";
+
 import PageHeroImage from "@reusable/PageHeroImage.astro";
 import ProjectCategories from "@components/projects/ProjectCategories.astro";
 import { loadCollectionImages } from "@utils/imageLoader";
@@ -81,12 +81,13 @@ const projectsData = JSON.stringify(projectsWithImages.map((p, i) => ({
       activeCategory: [],
       completionStatus: [],
       sortOrder: 'newest',
-      currentPage: 1,
       itemsPerPage: window.innerWidth >= 1280 ? 6 : window.innerWidth >= 1024 ? 4 : 3,
+      visibleCount: window.innerWidth >= 1280 ? 6 : window.innerWidth >= 1024 ? 4 : 3,
       projectsData: ${projectsData},
       visibleIndices: [],
       _transitioning: false,
       _pendingIndices: null,
+      _lastFilteredKey: '',
 
       init() {
         const params = new URLSearchParams(window.location.search);
@@ -110,31 +111,30 @@ const projectsData = JSON.stringify(projectsWithImages.map((p, i) => ({
           this.sortOrder = 'oldest';
         }
 
-        // Parse page number (after filters so totalPages is correct)
-        const urlPage = parseInt(params.get('page'), 10);
-        if (urlPage && urlPage > 0) {
-          this.currentPage = Math.min(urlPage, this.totalPages || 1);
-        }
-
         // Update itemsPerPage on window resize
         window.addEventListener('resize', () => {
           const newItemsPerPage = window.innerWidth >= 1280 ? 6 : window.innerWidth >= 1024 ? 4 : 3;
           if (newItemsPerPage !== this.itemsPerPage) {
             this.itemsPerPage = newItemsPerPage;
-            // Adjust current page if needed
-            if (this.currentPage > this.totalPages) {
-              this.currentPage = this.totalPages || 1;
+            // Ensure at least one full batch is visible
+            if (this.visibleCount < newItemsPerPage) {
+              this.visibleCount = newItemsPerPage;
+              this.visibleIndices = [...this.displayedIndices];
             }
           }
         });
 
-        // Initialize display buffer and watch for changes
-        this.visibleIndices = [...this.paginatedIndices];
-        this.$watch('paginatedIndices', (newVal) => {
-          const newStr = JSON.stringify(newVal);
-          const oldStr = JSON.stringify(this.visibleIndices);
-          if (newStr !== oldStr) {
-            this._animateGrid([...newVal]);
+        // Initialize display buffer
+        this.visibleIndices = [...this.displayedIndices];
+        this._lastFilteredKey = JSON.stringify(this.filteredIndices);
+
+        // Watch for filter/sort changes (reset view with full animation)
+        this.$watch('filteredIndices', (newVal) => {
+          const newKey = JSON.stringify(newVal);
+          if (newKey !== this._lastFilteredKey) {
+            this._lastFilteredKey = newKey;
+            this.visibleCount = this.itemsPerPage;
+            this._animateGrid([...this.displayedIndices]);
           }
         });
       },
@@ -145,7 +145,7 @@ const projectsData = JSON.stringify(projectsWithImages.map((p, i) => ({
       clearFilters() {
         this.activeCategory = [];
         this.completionStatus = [];
-        this.currentPage = 1;
+        this.visibleCount = this.itemsPerPage;
       },
       toggleFilter(array, value) {
         const idx = array.indexOf(value);
@@ -154,7 +154,7 @@ const projectsData = JSON.stringify(projectsWithImages.map((p, i) => ({
         } else {
           array.splice(idx, 1);
         }
-        this.currentPage = 1;
+        this.visibleCount = this.itemsPerPage;
       },
       get filteredIndices() {
         const filtered = this.projectsData.reduce((acc, project) => {
@@ -177,17 +177,36 @@ const projectsData = JSON.stringify(projectsWithImages.map((p, i) => ({
 
         return filtered;
       },
-      get totalPages() {
-        return Math.ceil(this.filteredIndices.length / this.itemsPerPage);
+      get displayedIndices() {
+        return this.filteredIndices.slice(0, this.visibleCount);
       },
-      get paginatedIndices() {
-        const start = (this.currentPage - 1) * this.itemsPerPage;
-        const end = start + this.itemsPerPage;
-        return this.filteredIndices.slice(start, end);
+      get hasMore() {
+        return this.visibleCount < this.filteredIndices.length;
       },
-      goToPage(page) {
-        if (page < 1 || page > this.totalPages) return;
-        this.currentPage = page;
+      get remainingCount() {
+        return this.filteredIndices.length - Math.min(this.visibleCount, this.filteredIndices.length);
+      },
+
+      showMore() {
+        const prevCount = this.visibleIndices.length;
+        this.visibleCount = Math.min(this.visibleCount + this.itemsPerPage, this.filteredIndices.length);
+        this.visibleIndices = [...this.displayedIndices];
+
+        this.$nextTick(() => {
+          const grid = this.$refs.grid;
+          if (!grid || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+          const cards = grid.querySelectorAll(':scope > div:not(.hidden) .showcase-card');
+          const newCards = Array.from(cards).slice(prevCount);
+          newCards.forEach((card, i) => {
+            card.style.animation = 'none';
+            void card.offsetHeight;
+            card.style.animation = '';
+            card.style.animationDelay = i * 50 + 'ms';
+          });
+          setTimeout(() => {
+            newCards.forEach(c => { c.style.animationDelay = ''; });
+          }, newCards.length * 50 + 450);
+        });
       },
 
       async _animateGrid(newIndices) {
@@ -276,7 +295,7 @@ const projectsData = JSON.stringify(projectsWithImages.map((p, i) => ({
     <p
       x-show="filteredIndices.length > 0"
       class="text-sm text-bears-text-onDark/40 text-right mb-4"
-      x-text="`Showing ${(currentPage - 1) * itemsPerPage + 1}\u2013${Math.min(currentPage * itemsPerPage, filteredIndices.length)} of ${filteredIndices.length} projects`"
+      x-text="`Showing ${Math.min(visibleCount, filteredIndices.length)} of ${filteredIndices.length} projects`"
     ></p>
 
     <!-- No results state -->
@@ -304,7 +323,7 @@ const projectsData = JSON.stringify(projectsWithImages.map((p, i) => ({
     <div
       x-ref="grid"
       x-show="filteredIndices.length > 0"
-      class="projects-grid grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8 min-h-252 lg:min-h-168 content-start"
+      class="projects-grid grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8 content-start"
     >
       {projectsWithImages.map((project, index) => (
         <div
@@ -325,8 +344,24 @@ const projectsData = JSON.stringify(projectsWithImages.map((p, i) => ({
       ))}
     </div>
 
-    <!-- Pagination Controls -->
-    <Pagination />
+    <!-- Show More button -->
+    <div class="w-full mt-8 sm:mt-10 lg:mt-12 flex justify-center">
+      <button
+        x-show="hasMore"
+        @click="showMore()"
+        type="button"
+        class="group flex items-center justify-center gap-2.5 px-6 py-3 rounded-lg border border-white/15 text-sm text-bears-text-onDark/80 hover:border-bears-accent/50 hover:text-bears-text-onDark transition-all duration-200 cursor-pointer"
+      >
+        <span>Show more</span>
+        <span
+          class="text-bears-text-onDark/40"
+          x-text="`(${remainingCount} remaining)`"
+        ></span>
+        <svg class="w-4 h-4 transition-transform duration-200 group-hover:translate-y-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+        </svg>
+      </button>
+    </div>
 
     <CrosslinkBanner
       text="Want to see what's happening?"
