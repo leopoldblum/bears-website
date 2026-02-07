@@ -20,7 +20,7 @@ const missionImage = loadedImages[0];
   >
     <!-- Image -->
     <div
-      class="relative w-full h-80 sm:h-96 lg:h-full rounded-2xl overflow-hidden"
+      class="relative w-full h-80 sm:h-96 lg:h-full rounded-2xl overflow-hidden border border-white/10 shadow-[0_4px_12px_rgba(0,0,0,0.4)]"
     >
       <Img
         src={missionImage}
@@ -43,7 +43,7 @@ const missionImage = loadedImages[0];
       >
         {
           content?.data.subtitle && (
-            <p class="text-xs sm:text-sm font-semibold text-bears-accent uppercase tracking-widest text-right mb-1 sm:mb-2">
+            <p class="text-xs sm:text-sm font-bold uppercase tracking-[0.2em] text-bears-accent text-right mb-2 sm:mb-3">
               {content.data.subtitle}
             </p>
           )
@@ -59,7 +59,7 @@ const missionImage = loadedImages[0];
         </div>
         {
           content?.data.description && (
-            <p class="[contain:inline-size] text-sm sm:text-sm lg:text-base text-bears-text-onDark/60 text-right">
+            <p class="text-sm sm:text-base text-bears-text-onDark/60 text-right leading-relaxed">
               {content.data.description}
             </p>
           )
@@ -69,14 +69,14 @@ const missionImage = loadedImages[0];
       <!-- Numbered list -->
       {
         listContent?.data.items && (
-          <div class="col-span-1 order-1 lg:order-2 pt-10 sm:pt-10 lg:pt-0 lg:mt-auto">
-            <div class="w-fit">
-              <h3 class="text-base sm:text-base lg:text-lg font-medium text-bears-text-onDark mb-3 sm:mb-5 lg:mb-7">
+          <div class="col-span-1 order-1 lg:order-2 pt-8 sm:pt-10 lg:pt-0 lg:mt-auto lg:flex lg:justify-center lg:mx-[16%]">
+            <div class="w-fit bg-white/[0.03] border border-white/10 rounded-xl px-7 py-4 sm:px-9 sm:py-5 lg:px-10 lg:py-6">
+              <h3 class="text-sm sm:text-base lg:text-lg font-semibold text-bears-text-onDark mb-3 sm:mb-4 lg:mb-6">
                 {listContent.data.title}
               </h3>
-              <ul class="space-y-2 sm:space-y-3 lg:space-y-4 lg:mt-10 lg:mb-14">
+              <ul class="space-y-2 sm:space-y-3 lg:space-y-4">
                 {listContent.data.items.map((item, i) => (
-                  <li class="text-base sm:text-base lg:text-xl text-bears-text-onDark/80">
+                  <li class="accordion-item text-sm sm:text-base lg:text-lg text-bears-text-onDark/80" style={`animation-delay: ${i * 60}ms`}>
                     <span class="text-bears-accent font-bold mr-1 sm:mr-2 lg:mr-3">
                       /{String(i + 1).padStart(2, "0")}
                     </span>
@@ -84,7 +84,7 @@ const missionImage = loadedImages[0];
                   </li>
                 ))}
               </ul>
-              <div class="mt-8 sm:mt-10 lg:mt-14 lg:mb-6 hidden lg:flex justify-center">
+              <div class="mt-6 sm:mt-8 lg:mt-10 flex justify-center">
                 <Button variant="primary" size="large" href="#find-us">
                   Join us!
                 </Button>
@@ -93,15 +93,6 @@ const missionImage = loadedImages[0];
           </div>
         )
       }
-
-      <!-- Button: full-width centered on mobile only -->
-      <div
-        class="col-span-2 order-3 mt-10 sm:mt-14 flex justify-center lg:hidden"
-      >
-        <Button variant="primary" size="large" href="#find-us">
-          Join us!
-        </Button>
-      </div>
     </div>
   </div>
 </section>
