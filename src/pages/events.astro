@@ -5,6 +5,7 @@ import FilterMenu from "@posts-catalog/FilterMenu.astro";
 import SortMenu from "@posts-catalog/SortMenu.astro";
 import Pagination from "@posts-catalog/Pagination.astro";
 import PageHeroImage from "@reusable/PageHeroImage.astro";
+import EventsIntro from "@components/events/EventsIntro.astro";
 import { loadCollectionImages } from "@utils/imageLoader";
 import { getPublishedEvents, getPageContent } from "@utils/contentQueries";
 import { CategoryEventEnum } from "@types";
@@ -13,6 +14,7 @@ import { eventsHeroImages } from "@utils/imageGlobs";
 import { loadAllImagesFromDirectory } from "@utils/imageLoader";
 
 const pageContent = await getPageContent('events/events-title');
+const eventsIntro = await getPageContent('events/events-intro');
 const loadedHeroImages = await loadAllImagesFromDirectory(eventsHeroImages);
 const eventHeroImage = loadedHeroImages[0];
 
@@ -27,6 +29,13 @@ const eventsWithImages = eventsWithLoadedImages.map((event) => ({
   ...event.data,
   slug: event.slug,
   coverImage: event.loadedImage,
+}));
+
+// Lightweight events array for the "Next Up" callout (Alpine.js picks the right one client-side)
+const eventsForCallout = eventsWithImages.map(e => ({
+  title: e.title,
+  date: e.date.getTime(),
+  slug: e.slug,
 }));
 
 // Get category options from enum and build labels map
@@ -61,8 +70,11 @@ const eventsData = JSON.stringify(eventsWithImages.map((e, i) => ({
       sortOrder: 'newest',
       now: new Date().setHours(0,0,0,0),
       currentPage: 1,
-      itemsPerPage: window.innerWidth >= 1024 ? 6 : 4,
+      itemsPerPage: window.innerWidth >= 1024 ? 4 : 3,
       eventsData: ${eventsData},
+      visibleIndices: [],
+      _transitioning: false,
+      _pendingIndices: null,
 
       init() {
         const params = new URLSearchParams(window.location.search);
@@ -94,13 +106,23 @@ const eventsData = JSON.stringify(eventsWithImages.map((e, i) => ({
 
         // Update itemsPerPage on window resize
         window.addEventListener('resize', () => {
-          const newItemsPerPage = window.innerWidth >= 1024 ? 6 : 4;
+          const newItemsPerPage = window.innerWidth >= 1024 ? 4 : 3;
           if (newItemsPerPage !== this.itemsPerPage) {
             this.itemsPerPage = newItemsPerPage;
             // Adjust current page if needed
             if (this.currentPage > this.totalPages) {
               this.currentPage = this.totalPages || 1;
             }
+          }
+        });
+
+        // Initialize display buffer and watch for changes
+        this.visibleIndices = [...this.paginatedIndices];
+        this.$watch('paginatedIndices', (newVal) => {
+          const newStr = JSON.stringify(newVal);
+          const oldStr = JSON.stringify(this.visibleIndices);
+          if (newStr !== oldStr) {
+            this._animateGrid([...newVal]);
           }
         });
       },
@@ -154,37 +176,98 @@ const eventsData = JSON.stringify(eventsWithImages.map((e, i) => ({
       goToPage(page) {
         if (page < 1 || page > this.totalPages) return;
         this.currentPage = page;
+      },
+
+      async _animateGrid(newIndices) {
+        if (this._transitioning) {
+          this._pendingIndices = [...newIndices];
+          return;
+        }
+        this._transitioning = true;
+        const grid = this.$refs.grid;
+
+        if (!grid || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+          this.visibleIndices = [...newIndices];
+          this._transitioning = false;
+          return;
+        }
+
+        // Exit: fade out grid
+        grid.style.transition = 'opacity 150ms ease-out, transform 150ms ease-out';
+        grid.style.opacity = '0';
+        grid.style.transform = 'translateY(6px)';
+        await new Promise(r => setTimeout(r, 160));
+
+        // Swap: update display buffer while grid is invisible
+        this.visibleIndices = [...newIndices];
+        await this.$nextTick();
+
+        // Re-trigger card entrance animations with dynamic stagger
+        const visibleCards = grid.querySelectorAll(':scope > div:not(.hidden) .showcase-card');
+        visibleCards.forEach((card) => {
+          card.style.animation = 'none';
+          card.style.animationDelay = '';
+        });
+        void grid.offsetHeight;
+        visibleCards.forEach((card, i) => {
+          card.style.animation = '';
+          card.style.animationDelay = i * 50 + 'ms';
+        });
+
+        // Enter: snap grid visible, cards animate individually
+        grid.style.transition = 'none';
+        grid.style.opacity = '1';
+        grid.style.transform = '';
+
+        // Cleanup after card animations complete
+        const maxDelay = visibleCards.length * 50;
+        setTimeout(() => {
+          visibleCards.forEach((card) => { card.style.animationDelay = ''; });
+          grid.style.transition = '';
+          this._transitioning = false;
+
+          if (this._pendingIndices) {
+            const pending = this._pendingIndices;
+            this._pendingIndices = null;
+            this._animateGrid(pending);
+          }
+        }, maxDelay + 450);
       }
     }`}
   >
-    <div class="flex items-center justify-end mb-6 sm:mb-8 lg:mb-12">
-      <div class="flex items-center gap-2">
-        <SortMenu />
-        <FilterMenu
-          filterGroups={[
-            {
-              label: 'Category',
-              stateVariable: 'activeCategory',
-              categories: eventCategories,
-              categoryLabels: categoryLabelsMap
-            },
-            {
-              label: 'Date',
-              stateVariable: 'dateFilter',
-              categories: ['upcoming', 'past'],
-              categoryLabels: { upcoming: 'Upcoming', past: 'Past' }
-            }
-          ]}
-        />
-      </div>
-    </div>
+    <EventsIntro
+      subtitle={eventsIntro?.data.subtitle}
+      description={eventsIntro?.data.description}
+      events={eventsForCallout}
+    >
+      <SortMenu />
+      <FilterMenu
+        filterGroups={[
+          {
+            label: 'Category',
+            stateVariable: 'activeCategory',
+            categories: eventCategories,
+            categoryLabels: categoryLabelsMap
+          },
+          {
+            label: 'Date',
+            stateVariable: 'dateFilter',
+            categories: ['upcoming', 'past'],
+            categoryLabels: { upcoming: 'Upcoming', past: 'Past' }
+          }
+        ]}
+      />
+    </EventsIntro>
 
     <!-- Events Grid -->
-    <div class="events-grid grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 min-h-338 lg:min-h-256 content-start">
+    <div
+      x-ref="grid"
+      class="events-grid grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 min-h-252 lg:min-h-168 content-start"
+    >
       {eventsWithImages.map((event, index) => (
         <div
-          :class={`{ 'hidden': !paginatedIndices.includes(${index}) }`}
-          :style={`'order: ' + (paginatedIndices.indexOf(${index}) !== -1 ? paginatedIndices.indexOf(${index}) : 9999)`}
+          :class={`{ 'hidden': !visibleIndices.includes(${index}) }`}
+          :style={`'order: ' + (visibleIndices.indexOf(${index}) !== -1 ? visibleIndices.indexOf(${index}) : 9999)`}
         >
           <PostShowcase
             coverImage={event.coverImage}

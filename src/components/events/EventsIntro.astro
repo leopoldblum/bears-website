@@ -1,0 +1,101 @@
+---
+interface EventData {
+  title: string;
+  date: number; // timestamp
+  slug: string;
+}
+
+interface Props {
+  subtitle?: string;
+  description?: string;
+  events: EventData[];
+}
+
+const { subtitle, description, events } = Astro.props;
+
+const eventsJson = JSON.stringify(events);
+---
+
+<!-- Context Bar -->
+<div class="mb-6 sm:mb-8 lg:mb-10">
+  {subtitle && (
+    <p class="text-xs sm:text-sm font-bold uppercase tracking-[0.2em] text-bears-accent mb-2 sm:mb-3">
+      {subtitle}
+    </p>
+  )}
+
+  <div class="flex items-end justify-between gap-4">
+    {description && (
+      <p class="text-sm sm:text-base text-bears-text-onDark/60 leading-relaxed">
+        {description}
+      </p>
+    )}
+    <div class="flex items-center gap-2 shrink-0">
+      <slot />
+    </div>
+  </div>
+</div>
+
+<!-- Next Up Callout -->
+<div
+  x-data={`{
+    nextEvent: (() => {
+      const events = ${eventsJson};
+      const now = Date.now();
+      const twoWeeks = 14 * 24 * 60 * 60 * 1000;
+      const upcoming = events.filter(e => e.date >= now && e.date <= now + twoWeeks)
+        .sort((a, b) => a.date - b.date);
+      return upcoming.length > 0 ? { ...upcoming[0], label: 'Next up' } : null;
+    })()
+  }`}
+  x-show="nextEvent"
+  x-cloak
+  class="relative rounded-lg border border-white/10 bg-white/[0.03] overflow-hidden mb-10 sm:mb-12 lg:mb-16"
+>
+  <div class="h-0.5 bg-gradient-to-r from-bears-accent via-bears-accent/80 to-transparent"></div>
+  <div class="px-5 py-4 sm:px-6 sm:py-4">
+    <a
+      :href="nextEvent ? '/events/' + nextEvent.slug : '#'"
+      class="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 group/callout"
+    >
+      <div class="flex items-center gap-3 min-w-0">
+        <!-- Calendar icon -->
+        <svg
+          class="w-5 h-5 text-bears-accent shrink-0"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" />
+        </svg>
+
+        <span class="text-sm font-medium text-bears-accent uppercase tracking-wide shrink-0" x-text="nextEvent?.label"></span>
+
+        <span class="text-sm sm:text-base text-bears-text-onDark font-semibold truncate group-hover/callout:text-bears-accent transition-colors duration-200" x-text="nextEvent?.title"></span>
+      </div>
+
+      <div class="flex items-center gap-3 sm:ml-auto shrink-0 pl-8 sm:pl-0">
+        <span
+          class="text-sm text-bears-text-onDark/50"
+          x-text="nextEvent ? new Date(nextEvent.date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : ''"
+        ></span>
+
+        <!-- Arrow icon -->
+        <svg
+          class="w-4 h-4 text-bears-text-onDark/40 group-hover/callout:text-bears-accent group-hover/callout:translate-x-0.5 transition-all duration-200"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3" />
+        </svg>
+      </div>
+    </a>
+  </div>
+</div>
