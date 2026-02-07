@@ -45,7 +45,6 @@ const eventsCollection = defineCollection({
     description: z.string(),
     date: z.date(),
     categoryEvent: CategoryEventEnum,
-    tags: z.array(z.string()).optional(),
     coverImage: z.string().optional().refine(
       validateImageExtension,
       { message: `coverImage must have a valid image extension: ${VALID_EXTENSIONS_MESSAGE}` }
@@ -68,7 +67,6 @@ const projectsCollection = defineCollection({
     description: z.string(),
     date: z.date(),
     categoryProject: CategoryProjectEnum,
-    tags: z.array(z.string()).optional(),
     coverImage: z.string().optional().refine(
       validateImageExtension,
       { message: `coverImage must have a valid image extension: ${VALID_EXTENSIONS_MESSAGE}` }

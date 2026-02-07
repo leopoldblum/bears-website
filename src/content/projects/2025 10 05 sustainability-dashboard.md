@@ -3,7 +3,6 @@ title: "Campus Sustainability Dashboard"
 description: "An IoT-based monitoring system for tracking energy consumption, waste management, and environmental metrics across campus facilities."
 date: 2025-10-05
 categoryProject: "science-and-experiments"
-tags: ["iot", "sustainability", "data-visualization", "sensors", "environmental"]
 coverImage: "project-9.png"
 isDraft: false
 displayMeetTheTeam: true

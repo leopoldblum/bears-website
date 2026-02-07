@@ -3,7 +3,6 @@ title: "Guest Lecture: Mars Rover Engineering"
 description: "A special guest lecture featuring Dr. Sarah Chen from NASA's Jet Propulsion Laboratory discussing the latest advancements in Mars rover technology."
 date: 2026-02-10
 categoryEvent: "trade-fairs-and-conventions"
-tags: ["lecture", "mars", "robotics", "nasa"]
 coverImage: "event-9.jpg"
 isDraft: false
 ---

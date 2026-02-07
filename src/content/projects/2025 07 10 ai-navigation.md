@@ -3,7 +3,6 @@ title: "AI-Powered Navigation System"
 description: "Machine learning-based autonomous navigation for mobile robotics platforms, enabling intelligent path planning and obstacle avoidance in dynamic environments."
 date: 2025-07-10
 categoryProject: "science-and-experiments"
-tags: ["ai", "robotics", "navigation", "machine-learning", "computer-vision"]
 coverImage: "project-7.jpg"
 displayMeetTheTeam: true
 headOfProject: "Sophie Taylor"

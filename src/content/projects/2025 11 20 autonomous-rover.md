@@ -3,7 +3,6 @@ title: "Autonomous Rover Prototype"
 description: "Development of an AI-powered autonomous navigation system for our Mars rover prototype, featuring computer vision and obstacle avoidance capabilities."
 date: 2025-11-20
 categoryProject: "robotics"
-tags: ["ai", "rover", "autonomous", "computer-vision", "machine-learning"]
 coverImage: "project-10.jpg"
 isDraft: false
 displayMeetTheTeam: true

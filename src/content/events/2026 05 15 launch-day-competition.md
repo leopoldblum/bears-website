@@ -3,7 +3,6 @@ title: "Launch Day Competition 2026"
 description: "Annual rocket and drone launch competition featuring student teams competing for prizes in altitude, accuracy, and innovative design categories."
 date: 2026-05-15
 categoryEvent: "competitions-and-workshops"
-tags: ["competition", "rockets", "drones", "launch", "aerospace"]
 coverImage: "event-5.jpg"
 isDraft: false
 ---

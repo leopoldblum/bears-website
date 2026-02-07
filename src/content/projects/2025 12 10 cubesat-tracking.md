@@ -3,7 +3,6 @@ title: "CubeSat Tracking System"
 description: "A real-time satellite tracking dashboard for monitoring BEARS CubeSat missions in orbit, providing telemetry data visualization and ground station integration."
 date: 2025-12-10
 categoryProject: "experimental-rocketry"
-tags: ["satellite", "tracking", "software", "iot", "dashboard"]
 coverImage: "project-4.jpg"
 isDraft: false
 displayMeetTheTeam: true
