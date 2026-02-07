@@ -10,7 +10,7 @@ const navLinks = [
 ];
 
 function isActive(href: string): boolean {
-  return currentPath === href || currentPath.startsWith(href + "/");
+  return currentPath === href;
 }
 ---
 
