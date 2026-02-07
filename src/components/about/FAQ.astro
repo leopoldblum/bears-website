@@ -1,0 +1,49 @@
+---
+import Accordion from "@mdx/Accordion.astro";
+import { getPageContent } from "@utils/contentQueries";
+
+const content = await getPageContent("about-us/faq");
+
+const accordionItems = (content?.data.faqs ?? []).map((faq) => ({
+  title: faq.question,
+  content: faq.answer,
+}));
+---
+
+{accordionItems.length > 0 && (
+  <section id="faq" class="container mx-auto px-4 sm:px-8 lg:px-16 py-16 sm:py-20 lg:py-24">
+    {/* Subtitle */}
+    {content?.data.subtitle && (
+      <p class="text-xs sm:text-sm font-bold uppercase tracking-[0.2em] text-bears-accent mb-3 sm:mb-4">
+        {content.data.subtitle}
+      </p>
+    )}
+
+    {/* Heading */}
+    <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-bears-text-onDark mb-6 sm:mb-8 lg:mb-12">
+      {content?.data.title}
+    </h2>
+
+    {/* Gradient divider */}
+    <div class="h-[2px] bg-gradient-to-r from-white/30 from-30% via-white/15 via-70% to-transparent mb-6 sm:mb-8 lg:mb-10 rounded-full"></div>
+
+    {/* Description */}
+    {content?.data.description && (
+      <p class="text-sm sm:text-base lg:text-lg text-bears-text-onDark/60 leading-relaxed max-w-2xl mb-8 sm:mb-10 lg:mb-12">
+        {content.data.description}
+      </p>
+    )}
+
+    {/* Accordion in glass card */}
+    <div class="bg-white/[0.03] border border-white/10 rounded-2xl p-4 sm:p-6 lg:p-8">
+      <Accordion
+        items={accordionItems}
+        allowMultiple={true}
+      />
+    </div>
+
+    <p class="mt-8 sm:mt-10 text-sm sm:text-base text-bears-text-onDark/60">
+      Still have questions? <a href="/contact" class="text-bears-accent hover:underline">Get in touch &rarr;</a>
+    </p>
+  </section>
+)}

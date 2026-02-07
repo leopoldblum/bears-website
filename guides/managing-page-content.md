@@ -20,7 +20,8 @@ src/content/page-text/
 │   ├── our-mission.md         <- "Our Mission" section
 │   ├── whats-in-it.md         <- "What's in it for you?" list
 │   ├── faces-of-bears.md      <- Photo gallery section
-│   └── find-us.md             <- Location + schedule section
+│   ├── find-us.md             <- Location + schedule section
+│   └── faq.md                 <- FAQ accordion section
 ├── events/                    <- Events page
 │   └── events-title.md        <- Page title + subtitle
 ├── media/                     <- Media page
@@ -121,6 +122,45 @@ BEARS is a student organization dedicated to aerospace research...
 ```
 
 You can use any Markdown formatting: headings, bold, italic, lists, links, etc.
+
+## Editing the FAQ Section
+
+The About Us page includes a FAQ section with collapsible question-and-answer pairs. Edit `about-us/faq.md`:
+
+```yaml
+---
+title: "Frequently Asked Questions"
+subtitle: "Got Questions?"
+description: "Everything you need to know about joining BEARS e.V."
+faqs:
+  - question: "How can I join BEARS e.V.?"
+    answer: "Just show up to one of our weekly meetings! Check the **Find Us** section for details."
+  - question: "Do I need prior experience?"
+    answer: "Not at all! We welcome students from all backgrounds."
+---
+```
+
+| Field | Required? | What it does |
+|---|---|---|
+| `title` | Yes | The section heading |
+| `subtitle` | No | Small accent text above the heading |
+| `description` | No | Paragraph text below the heading |
+| `faqs` | No | List of question/answer pairs |
+
+Each FAQ item has:
+
+| Field | Required? | What it does |
+|---|---|---|
+| `question` | Yes | The clickable question text |
+| `answer` | Yes | The answer (supports **Markdown**: bold, links, lists, etc.) |
+
+**To add a question:** Add a new `- question:` / `answer:` pair under `faqs:`.
+
+**To remove a question:** Delete the `- question:` and `answer:` lines for that item.
+
+**To reorder questions:** Move the `- question:` / `answer:` blocks to the desired order.
+
+**To hide the FAQ section entirely:** Remove all items under `faqs:` or remove the `faqs:` field.
 
 ## Editing Images
 

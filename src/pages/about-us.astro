@@ -4,6 +4,7 @@ import PageHeroImage from "@reusable/PageHeroImage.astro";
 import OurMission from "@components/about/OurMission.astro";
 import FacesOfBears from "@components/about/FacesOfBears.astro";
 import FindUs from "@components/about/FindUs.astro";
+import FAQ from "@components/about/FAQ.astro";
 import { aboutHeroImages } from "@utils/imageGlobs";
 import { loadAllImagesFromDirectory } from "@utils/imageLoader";
 import { getPageContent } from "@utils/contentQueries";
@@ -26,4 +27,6 @@ const aboutHeroImage = loadedHeroImages[0];
   <FacesOfBears />
 
   <FindUs />
+
+  <FAQ />
 </BaseLayout>

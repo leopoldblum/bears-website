@@ -150,6 +150,10 @@ const pageTextCollection = defineCollection({
       platform: z.string(),
       url: z.string().url(),
     })).optional(),
+    faqs: z.array(z.object({
+      question: z.string(),
+      answer: z.string(),
+    })).optional(),
   }),
 });
 
