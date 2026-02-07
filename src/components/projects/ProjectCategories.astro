@@ -1,0 +1,92 @@
+---
+interface CategoryInfo {
+  key: string;
+  title: string;
+  description: string;
+}
+
+interface Props {
+  categories: CategoryInfo[];
+  subtitle?: string;
+  description?: string;
+}
+
+const { categories, subtitle, description } = Astro.props;
+
+// SVG icon paths for each project category (Heroicons-style, 24x24 viewBox)
+const categoryIcons: Record<string, string[]> = {
+  'experimental-rocketry': [
+    'M15.59 14.37a6 6 0 0 1-5.84 7.38v-4.8m5.84-2.58a14.98 14.98 0 0 0 6.16-12.12A14.98 14.98 0 0 0 9.631 8.41m5.96 5.96a14.926 14.926 0 0 1-5.841 2.58m-.119-8.54a6 6 0 0 0-7.381 5.84h4.8m2.58-5.84a14.927 14.927 0 0 1-2.58 5.84m2.699-2.556L4.555 19.72',
+    'M14.25 9.75a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0Z',
+  ],
+  'science-and-experiments': [
+    'M9.75 3.104v5.714a2.25 2.25 0 0 1-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 0 1 4.5 0m0 0v5.714a2.25 2.25 0 0 0 .659 1.591L19 14.5M14.25 3.104c.251.023.501.05.75.082M19 14.5a2.25 2.25 0 0 1 0 4.5H5a2.25 2.25 0 0 1 0-4.5m14 0V14a2.5 2.5 0 0 0-2.5-2.5h-9A2.5 2.5 0 0 0 5 14v.5',
+  ],
+  'robotics': [
+    'M4.5 12a7.5 7.5 0 0 0 15 0m-15 0a7.5 7.5 0 1 1 15 0m-15 0H3m16.5 0H21m-1.5 0H12m-8.457 3.077 1.41-.513m14.095-5.13 1.41-.513M5.106 17.785l1.15-.964m11.49-9.642 1.15-.964M7.501 19.795l.75-1.3m7.5-12.99.75-1.3m-6.063 16.658.26-1.477m2.605-14.772.26-1.477m-.26 17.726a2.25 2.25 0 0 1-2.605 0',
+    'M10.5 10.5h.008v.008H10.5V10.5Zm3 0h.008v.008H13.5V10.5Z',
+  ],
+};
+---
+
+<!-- Context Bar -->
+<div class="mb-6 sm:mb-8 lg:mb-10">
+  {subtitle && (
+    <p class="text-xs sm:text-sm font-bold uppercase tracking-[0.2em] text-bears-accent mb-2 sm:mb-3">
+      {subtitle}
+    </p>
+  )}
+
+  <div class="flex items-end justify-between gap-4">
+    {description && (
+      <p class="text-sm sm:text-base text-bears-text-onDark/60 leading-relaxed">
+        {description}
+      </p>
+    )}
+    <div class="flex items-center gap-2 shrink-0">
+      <slot />
+    </div>
+  </div>
+</div>
+
+<!-- Category Explanations -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6 mb-10 sm:mb-12 lg:mb-16">
+  {categories.map((category) => (
+    <button
+      type="button"
+      @click={`toggleFilter(activeCategory, '${category.key}')`}
+      :class={`activeCategory.includes('${category.key}')
+        ? 'border-bears-accent bg-bears-accent/5 rounded-r-lg'
+        : 'border-white/15 hover:border-bears-accent/40'`}
+      class="group/cat text-left border-l-2 pl-4 sm:pl-5 py-2 transition-all duration-300 cursor-pointer"
+    >
+      <div class="flex items-center gap-3 mb-2">
+        <svg
+          class="w-7 h-7 sm:w-8 sm:h-8 lg:w-9 lg:h-9 shrink-0 transition-colors duration-300"
+          :class={`activeCategory.includes('${category.key}')
+            ? 'text-bears-accent'
+            : 'text-bears-accent/60 group-hover/cat:text-bears-accent'`}
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          {(categoryIcons[category.key] || []).map((d) => (
+            <path d={d} />
+          ))}
+        </svg>
+        <h3
+          class="text-base sm:text-lg font-semibold text-bears-text-onDark transition-colors duration-300"
+          :class={`activeCategory.includes('${category.key}') ? 'text-bears-accent' : 'group-hover/cat:text-bears-accent'`}
+        >
+          {category.title}
+        </h3>
+      </div>
+      <p class="text-sm text-bears-text-onDark/60 leading-relaxed">
+        {category.description}
+      </p>
+    </button>
+  ))}
+</div>

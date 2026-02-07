@@ -215,9 +215,21 @@ This event will be visible during development but hidden in production until `is
 
 **Remove**: Delete the `.md` file (and optionally the cover image)
 
+## Project Category Descriptions
+
+The projects page displays a brief overview of each project category (Experimental Rocketry, Science & Experiments, Robotics) above the project grid. These descriptions help visitors understand what each category covers.
+
+To edit category descriptions, modify the files in `src/content/page-text/projects/`:
+
+- `category-experimental-rocketry.md` — title and description for rocketry projects
+- `category-science-and-experiments.md` — title and description for science projects
+- `category-robotics.md` — title and description for robotics projects
+
+Each file has a `title` (category display name) and `description` (1-2 sentence explanation).
+
 ## Important Notes
 
 - **Sorting**: Unlike sponsors and testimonials (which sort by filename), events and projects sort by the `date` field in descending order
-- **Filename**: Include the date at the start and use descriptive names like `2026 01 01 kickoff-workshop.md` or `2026 05 01 cubesat-tracking.md`. 
+- **Filename**: Include the date at the start and use descriptive names like `2026 01 01 kickoff-workshop.md` or `2026 05 01 cubesat-tracking.md`.
 - **Images**: Always place images in the correct folder (`src/assets/events/` or `src/assets/projects/`)
 - **Content**: Write full markdown content after the frontmatter for detailed event/project pages

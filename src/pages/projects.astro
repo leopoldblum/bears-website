@@ -5,6 +5,7 @@ import FilterMenu from "@posts-catalog/FilterMenu.astro";
 import SortMenu from "@posts-catalog/SortMenu.astro";
 import Pagination from "@posts-catalog/Pagination.astro";
 import PageHeroImage from "@reusable/PageHeroImage.astro";
+import ProjectCategories from "@components/projects/ProjectCategories.astro";
 import { loadCollectionImages } from "@utils/imageLoader";
 import { getPublishedProjects, getPageContent } from "@utils/contentQueries";
 import { CategoryProjectEnum } from "@types";
@@ -14,6 +15,24 @@ import { projectsHeroImages } from "@utils/imageGlobs";
 import { loadAllImagesFromDirectory } from "@utils/imageLoader";
 
 const pageContent = await getPageContent('projects/projects-title');
+const categoriesIntro = await getPageContent('projects/categories-intro');
+
+// Fetch category descriptions for the overview section
+const categoryContentIds = [
+  { key: 'experimental-rocketry', id: 'projects/category-experimental-rocketry' },
+  { key: 'science-and-experiments', id: 'projects/category-science-and-experiments' },
+  { key: 'robotics', id: 'projects/category-robotics' },
+];
+const categoryDescriptions = await Promise.all(
+  categoryContentIds.map(async ({ key, id }) => {
+    const content = await getPageContent(id);
+    return {
+      key,
+      title: content?.data.title ?? key,
+      description: content?.data.description ?? '',
+    };
+  })
+);
 const loadedHeroImages = await loadAllImagesFromDirectory(projectsHeroImages);
 const projectHeroImage = loadedHeroImages[0];
 
@@ -63,7 +82,7 @@ const projectsData = JSON.stringify(projectsWithImages.map((p, i) => ({
       completionStatus: [],
       sortOrder: 'newest',
       currentPage: 1,
-      itemsPerPage: window.innerWidth >= 1024 ? 6 : 4,
+      itemsPerPage: window.innerWidth >= 1024 ? 4 : 3,
       projectsData: ${projectsData},
 
       init() {
@@ -96,7 +115,7 @@ const projectsData = JSON.stringify(projectsWithImages.map((p, i) => ({
 
         // Update itemsPerPage on window resize
         window.addEventListener('resize', () => {
-          const newItemsPerPage = window.innerWidth >= 1024 ? 6 : 4;
+          const newItemsPerPage = window.innerWidth >= 1024 ? 4 : 3;
           if (newItemsPerPage !== this.itemsPerPage) {
             this.itemsPerPage = newItemsPerPage;
             // Adjust current page if needed
@@ -159,30 +178,33 @@ const projectsData = JSON.stringify(projectsWithImages.map((p, i) => ({
       }
     }`}
   >
-    <div class="flex items-center justify-end mb-6 sm:mb-8 lg:mb-12">
-      <div class="flex items-center gap-2">
-        <SortMenu />
-        <FilterMenu
-          filterGroups={[
-            {
-              label: 'Category',
-              stateVariable: 'activeCategory',
-              categories: projectCategories,
-              categoryLabels: categoryLabelsMap
-            },
-            {
-              label: 'Status',
-              stateVariable: 'completionStatus',
-              categories: ['completed', 'ongoing'],
-              categoryLabels: { completed: 'Completed', ongoing: 'Ongoing' }
-            }
-          ]}
-        />
-      </div>
-    </div>
+    <!-- Category Overview -->
+    <ProjectCategories
+      categories={categoryDescriptions}
+      subtitle={categoriesIntro?.data.subtitle}
+      description={categoriesIntro?.data.description}
+    >
+      <SortMenu />
+      <FilterMenu
+        filterGroups={[
+          {
+            label: 'Category',
+            stateVariable: 'activeCategory',
+            categories: projectCategories,
+            categoryLabels: categoryLabelsMap
+          },
+          {
+            label: 'Status',
+            stateVariable: 'completionStatus',
+            categories: ['completed', 'ongoing'],
+            categoryLabels: { completed: 'Completed', ongoing: 'Ongoing' }
+          }
+        ]}
+      />
+    </ProjectCategories>
 
     <!-- Projects Grid -->
-    <div class="projects-grid grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 min-h-338 lg:min-h-256 content-start">
+    <div class="projects-grid grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 min-h-252 lg:min-h-168 content-start">
       {projectsWithImages.map((project, index) => (
         <div
           :class={`{ 'hidden': !paginatedIndices.includes(${index}) }`}
