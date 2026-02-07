@@ -125,37 +125,6 @@ body {
   }
 }
 
-/* Staggered animation delays for grid items */
-.projects-grid>div:nth-child(1) .showcase-card,
-.events-grid>div:nth-child(1) .showcase-card {
-  animation-delay: 0ms;
-}
-
-.projects-grid>div:nth-child(2) .showcase-card,
-.events-grid>div:nth-child(2) .showcase-card {
-  animation-delay: 60ms;
-}
-
-.projects-grid>div:nth-child(3) .showcase-card,
-.events-grid>div:nth-child(3) .showcase-card {
-  animation-delay: 80ms;
-}
-
-.projects-grid>div:nth-child(4) .showcase-card,
-.events-grid>div:nth-child(4) .showcase-card {
-  animation-delay: 120ms;
-}
-
-.projects-grid>div:nth-child(5) .showcase-card,
-.events-grid>div:nth-child(5) .showcase-card {
-  animation-delay: 160ms;
-}
-
-.projects-grid>div:nth-child(6) .showcase-card,
-.events-grid>div:nth-child(6) .showcase-card {
-  animation-delay: 200ms;
-}
-
 /* Post content entrance animation */
 .post-container {
   animation: postContentIn 0.5s ease-out both;
