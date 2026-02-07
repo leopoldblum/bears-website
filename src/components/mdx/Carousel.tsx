@@ -36,6 +36,8 @@ export default function Carousel({
   const observerRef = useRef<MutationObserver | null>(null);
   const transitionRafRef = useRef<number | undefined>(undefined);
 
+  const EASE = 'cubic-bezier(0.4, 0, 0.2, 1)';
+
   // Apply positioning and visibility styles to all slides via JS
   const applySlideStyles = useCallback((slideElements: HTMLElement[], currentIndex: number, isAutoHeight: boolean) => {
     slideElements.forEach((slide, index) => {
@@ -55,8 +57,8 @@ export default function Carousel({
         slide.style.alignItems = 'center';
         slide.style.justifyContent = 'center';
         slide.style.transition = isActive
-          ? 'opacity 300ms, visibility 0s 0s'
-          : 'opacity 300ms, visibility 0s 300ms';
+          ? `opacity 420ms ${EASE}, transform 420ms ${EASE}, visibility 0s 0s`
+          : `opacity 420ms ${EASE}, transform 420ms ${EASE}, visibility 0s 420ms`;
         slide.style.overflow = '';
         // Non-active slides don't contribute to height
         slide.style.visibility = isActive ? 'visible' : 'hidden';
@@ -72,8 +74,8 @@ export default function Carousel({
         slide.style.alignItems = 'center';
         slide.style.justifyContent = 'center';
         slide.style.transition = isActive
-          ? 'opacity 300ms, visibility 0s 0s'
-          : 'opacity 300ms, visibility 0s 300ms';
+          ? `opacity 420ms ${EASE}, transform 420ms ${EASE}, visibility 0s 0s`
+          : `opacity 420ms ${EASE}, transform 420ms ${EASE}, visibility 0s 420ms`;
         slide.style.overflow = 'hidden';
       }
 
@@ -84,7 +86,11 @@ export default function Carousel({
           slide.style.inset = '';
           slide.style.top = '50%';
           slide.style.left = '50%';
-          slide.style.transform = 'translate(-50%, -50%)';
+          slide.style.transform = isActive
+            ? 'translate(-50%, -50%) scale(1) translateY(0)'
+            : 'translate(-50%, -50%) scale(0.97) translateY(4px)';
+        } else {
+          slide.style.transform = isActive ? 'scale(1) translateY(0)' : 'scale(0.97) translateY(4px)';
         }
         slide.style.width = 'auto';
         slide.style.height = 'auto';
@@ -96,7 +102,9 @@ export default function Carousel({
         slide.style.alignItems = '';
         slide.style.justifyContent = '';
         slide.style.overflow = '';
-        slide.style.transition = '';
+        slide.style.transition = isActive
+          ? `opacity 420ms ${EASE}, transform 420ms ${EASE}, visibility 0s 0s`
+          : `opacity 420ms ${EASE}, transform 420ms ${EASE}, visibility 0s 420ms`;
         const img = slide.querySelector('img');
         if (img) {
           if (isAutoHeight) {
@@ -129,6 +137,9 @@ export default function Carousel({
           img.style.maxHeight = isAutoHeight ? '' : '100%';
           img.style.objectFit = isAutoHeight ? '' : 'contain';
         });
+
+        // Depth transition: active slides in focus, inactive recede slightly
+        slide.style.transform = isActive ? 'scale(1) translateY(0)' : 'scale(0.97) translateY(4px)';
       }
     });
   }, []);
@@ -184,13 +195,9 @@ export default function Carousel({
       transitionRafRef.current = requestAnimationFrame(() => {
         transitionRafRef.current = requestAnimationFrame(() => {
           slideElements.forEach((slide, index) => {
-            if (slide.classList.contains('img-better')) {
-              slide.style.transition = ''; // Let CSS handle hover effects
-            } else {
-              slide.style.transition = index === 0
-                ? 'opacity 300ms, visibility 0s 0s'
-                : 'opacity 300ms, visibility 0s 300ms';
-            }
+            slide.style.transition = index === 0
+              ? `opacity 420ms ${EASE}, transform 420ms ${EASE}, visibility 0s 0s`
+              : `opacity 420ms ${EASE}, transform 420ms ${EASE}, visibility 0s 420ms`;
           });
         });
       });
