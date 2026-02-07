@@ -6,7 +6,7 @@ import { sponsorLogos } from "@utils/imageGlobs";
 import { loadImage, defaultSponsorImage } from "@utils/imageLoader";
 import { getPageContent, getSponsorsByTier } from "@utils/contentQueries";
 
-const content = await getPageContent('landing/become-sponsor');
+const content = await getPageContent("landing/become-sponsor");
 
 // Use the shared utility for grouping + sorting
 const { diamond, platinum, gold, silver, bronze } = await getSponsorsByTier();
@@ -37,14 +37,19 @@ async function loadTierImages(sponsors: typeof diamond) {
   );
 }
 
-const [diamondSponsors, platinumSponsors, goldSponsors, silverSponsors, bronzeSponsors] =
-  await Promise.all([
-    loadTierImages(diamond),
-    loadTierImages(platinum),
-    loadTierImages(gold),
-    loadTierImages(silver),
-    loadTierImages(bronze),
-  ]);
+const [
+  diamondSponsors,
+  platinumSponsors,
+  goldSponsors,
+  silverSponsors,
+  bronzeSponsors,
+] = await Promise.all([
+  loadTierImages(diamond),
+  loadTierImages(platinum),
+  loadTierImages(gold),
+  loadTierImages(silver),
+  loadTierImages(bronze),
+]);
 ---
 
 <section class="bg-bears-bg-light py-16 sm:py-20 lg:py-24">
@@ -81,19 +86,23 @@ const [diamondSponsors, platinumSponsors, goldSponsors, silverSponsors, bronzeSp
     <SponsorTier sponsors={goldSponsors} tier="gold" />
 
     <!-- Description text below logos -->
-    {content?.data.description && (
-      <p
-        class="text-sm sm:text-base text-bears-text-onLight text-center opacity-70 max-w-2xl mx-auto mt-12 sm:mt-16 lg:mt-20 mb-6 sm:mb-8"
-      >
-        {content.data.description}
-      </p>
-    )}
+    {
+      content?.data.description && (
+        <p class="text-sm sm:text-base text-bears-text-onLight text-center opacity-70 max-w-2xl mx-auto mt-12 sm:mt-16 lg:mt-20 mb-6 sm:mb-8">
+          {content.data.description}
+        </p>
+      )
+    }
 
     <!-- Learn more button -->
-    {content?.data.buttonText && content?.data.buttonHref && (
-      <div class="flex justify-center">
-        <Button variant="inverse" size="large" href={content.data.buttonHref}>{content.data.buttonText}</Button>
-      </div>
-    )}
+    {
+      content?.data.buttonText && content?.data.buttonHref && (
+        <div class="flex justify-center">
+          <Button variant="inverse" size="large" href={content.data.buttonHref}>
+            {content.data.buttonText}
+          </Button>
+        </div>
+      )
+    }
   </div>
 </section>
