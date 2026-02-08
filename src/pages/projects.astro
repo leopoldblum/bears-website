@@ -81,6 +81,7 @@ const projectsData = JSON.stringify(projectsWithImages.map((p, i) => ({
       activeCategory: [],
       completionStatus: [],
       sortOrder: 'newest',
+      gridColumns: window.innerWidth >= 1280 ? 3 : window.innerWidth >= 1024 ? 2 : 1,
       itemsPerPage: window.innerWidth >= 1280 ? 6 : window.innerWidth >= 1024 ? 4 : 3,
       visibleCount: window.innerWidth >= 1280 ? 6 : window.innerWidth >= 1024 ? 4 : 3,
       projectsData: ${projectsData},
@@ -111,19 +112,23 @@ const projectsData = JSON.stringify(projectsWithImages.map((p, i) => ({
           this.sortOrder = 'oldest';
         }
 
-        // Update itemsPerPage on window resize
+        // Update itemsPerPage and gridColumns on window resize
         window.addEventListener('resize', () => {
           const newItemsPerPage = window.innerWidth >= 1280 ? 6 : window.innerWidth >= 1024 ? 4 : 3;
-          if (newItemsPerPage !== this.itemsPerPage) {
+          const newGridColumns = window.innerWidth >= 1280 ? 3 : window.innerWidth >= 1024 ? 2 : 1;
+          if (newItemsPerPage !== this.itemsPerPage || newGridColumns !== this.gridColumns) {
             this.itemsPerPage = newItemsPerPage;
-            // Ensure at least one full batch is visible
-            if (this.visibleCount < newItemsPerPage) {
-              this.visibleCount = newItemsPerPage;
+            this.gridColumns = newGridColumns;
+            const minVisible = this.getMinVisibleCount();
+            if (this.visibleCount < minVisible) {
+              this.visibleCount = minVisible;
               this.visibleIndices = [...this.displayedIndices];
             }
           }
         });
 
+        // Ensure all important items are visible and rows are filled
+        this.visibleCount = this.getMinVisibleCount();
         // Initialize display buffer
         this.visibleIndices = [...this.displayedIndices];
         this._lastFilteredKey = JSON.stringify(this.filteredIndices);
@@ -133,7 +138,7 @@ const projectsData = JSON.stringify(projectsWithImages.map((p, i) => ({
           const newKey = JSON.stringify(newVal);
           if (newKey !== this._lastFilteredKey) {
             this._lastFilteredKey = newKey;
-            this.visibleCount = this.itemsPerPage;
+            this.visibleCount = this.getMinVisibleCount();
             this._animateGrid([...this.displayedIndices]);
           }
         });
@@ -145,7 +150,7 @@ const projectsData = JSON.stringify(projectsWithImages.map((p, i) => ({
       clearFilters() {
         this.activeCategory = [];
         this.completionStatus = [];
-        this.visibleCount = this.itemsPerPage;
+        this.visibleCount = this.getMinVisibleCount();
       },
       toggleFilter(array, value) {
         const idx = array.indexOf(value);
@@ -154,7 +159,12 @@ const projectsData = JSON.stringify(projectsWithImages.map((p, i) => ({
         } else {
           array.splice(idx, 1);
         }
-        this.visibleCount = this.itemsPerPage;
+        this.visibleCount = this.getMinVisibleCount();
+      },
+      getMinVisibleCount() {
+        const ongoingCount = this.filteredIndices.filter(i => !this.projectsData[i].isCompleted).length;
+        const minCount = Math.max(this.itemsPerPage, ongoingCount);
+        return Math.ceil(minCount / this.gridColumns) * this.gridColumns;
       },
       get filteredIndices() {
         const filtered = this.projectsData.reduce((acc, project) => {
