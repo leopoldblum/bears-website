@@ -203,15 +203,25 @@ const projectsData = JSON.stringify(projectsWithImages.map((p, i) => ({
       },
 
       showMore() {
-        const prevCount = this.visibleIndices.length;
+        const prevSet = new Set(this.visibleIndices);
         this.visibleCount = Math.min(this.visibleCount + this.itemsPerPage, this.filteredIndices.length);
         this.visibleIndices = [...this.displayedIndices];
 
         this.$nextTick(() => {
           const grid = this.$refs.grid;
           if (!grid || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-          const cards = grid.querySelectorAll(':scope > div:not(.hidden) .showcase-card');
-          const newCards = Array.from(cards).slice(prevCount);
+          const newCards = [];
+          grid.querySelectorAll(':scope > div:not(.hidden)').forEach(wrapper => {
+            if (!prevSet.has(Number(wrapper.dataset.index))) {
+              const card = wrapper.querySelector('.showcase-card');
+              if (card) newCards.push(card);
+            }
+          });
+          newCards.sort((a, b) => {
+            const orderA = parseInt(a.parentElement.style.order) || 0;
+            const orderB = parseInt(b.parentElement.style.order) || 0;
+            return orderA - orderB;
+          });
           newCards.forEach((card, i) => {
             card.style.animation = 'none';
             void card.offsetHeight;
@@ -238,11 +248,13 @@ const projectsData = JSON.stringify(projectsWithImages.map((p, i) => ({
           return;
         }
 
-        // Exit: fade out grid
-        grid.style.transition = 'opacity 150ms ease-out, transform 150ms ease-out';
-        grid.style.opacity = '0';
-        grid.style.transform = 'translateY(6px)';
-        await new Promise(r => setTimeout(r, 160));
+        // Exit: fade out grid (skip if coming from empty state)
+        if (this.visibleIndices.length > 0) {
+          grid.style.transition = 'opacity 150ms ease-out, transform 150ms ease-out';
+          grid.style.opacity = '0';
+          grid.style.transform = 'translateY(6px)';
+          await new Promise(r => setTimeout(r, 160));
+        }
 
         // Swap: update display buffer while grid is invisible
         this.visibleIndices = [...newIndices];
@@ -308,7 +320,7 @@ const projectsData = JSON.stringify(projectsWithImages.map((p, i) => ({
 
     <!-- Result count -->
     <p
-      x-show="filteredIndices.length > 0"
+      :class="{ 'invisible': filteredIndices.length === 0 }"
       class="text-sm text-bears-text-onDark/40 text-right mb-4"
       x-text="`Showing ${Math.min(visibleCount, filteredIndices.length)} of ${filteredIndices.length} projects`"
     ></p>
@@ -317,7 +329,7 @@ const projectsData = JSON.stringify(projectsWithImages.map((p, i) => ({
     <div
       x-show="filteredIndices.length === 0"
       x-cloak
-      class="flex flex-col items-center justify-center py-24 text-center"
+      class="flex flex-col items-center justify-center min-h-80 text-center"
     >
       <svg class="w-12 h-12 text-bears-text-onDark/20 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
@@ -338,10 +350,11 @@ const projectsData = JSON.stringify(projectsWithImages.map((p, i) => ({
     <div
       x-ref="grid"
       x-show="filteredIndices.length > 0"
-      class="projects-grid grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8 content-start"
+      class="projects-grid grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8 content-start min-h-80"
     >
       {projectsWithImages.map((project, index) => (
         <div
+          data-index={index}
           :class={`{ 'hidden': !visibleIndices.includes(${index}) }`}
           :style={`'order: ' + (visibleIndices.indexOf(${index}) !== -1 ? visibleIndices.indexOf(${index}) : 9999)`}
         >
