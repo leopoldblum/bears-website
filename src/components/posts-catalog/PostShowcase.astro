@@ -45,7 +45,7 @@ const Wrapper = href ? "a" : "div";
   />
 
   <!-- Date Badge - Glass-morphism style -->
-  <div class="absolute top-4 left-4 z-10">
+  <div class="absolute top-4 right-4 z-10">
     <span
       class="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-white bg-black/60 backdrop-blur-xl border border-white/10 px-3 py-1.5 rounded-md shadow-[0_4px_12px_rgba(0,0,0,0.3)]"
     >
@@ -69,7 +69,7 @@ const Wrapper = href ? "a" : "div";
   <!-- Completed Badge - With accent glow -->
   {
     isCompleted && (
-      <div class="absolute top-4 right-4 z-10">
+      <div class="absolute top-4 left-4 z-10">
         <span class="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-white bg-black/60 backdrop-blur-xl border border-white/10 px-3 py-1.5 rounded-md shadow-[0_0_12px_rgba(197,14,31,0.35),0_4px_12px_rgba(0,0,0,0.3)]">
           <svg
             class="w-4 h-4 text-bears-accent"
@@ -93,7 +93,7 @@ const Wrapper = href ? "a" : "div";
   <!-- Upcoming Badge - With accent glow -->
   {
     isUpcoming && (
-      <div class="absolute top-4 right-4 z-10">
+      <div class="absolute top-4 left-4 z-10">
         <span class="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-white bg-black/60 backdrop-blur-xl border border-white/10 px-3 py-1.5 rounded-md shadow-[0_0_12px_rgba(197,14,31,0.35),0_4px_12px_rgba(0,0,0,0.3)]">
           <svg
             class="w-4 h-4 text-bears-accent"
