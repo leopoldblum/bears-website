@@ -171,6 +171,9 @@ export default function HeroCTAIsland({ ctas }: HeroCTAIslandProps) {
   };
   const gridCols = gridColsClass[ctas.length] || 'lg:grid-cols-3';
 
+  // Mobile: use 2 cols when there are 3+ CTAs to avoid vertical overflow
+  const mobileGridCols = ctas.length >= 3 ? 'grid-cols-2' : 'grid-cols-1';
+
   // Rectangle positioned under the hovered CTA, slightly wider with curved-in foot
   const widthExpansion = 1.02; // 2% wider than CTA
   const expandedWidth = gradientPos.width * widthExpansion;
@@ -271,31 +274,43 @@ export default function HeroCTAIsland({ ctas }: HeroCTAIslandProps) {
       {/* CTA Grid */}
       <div
         ref={gridRef}
-        className={`relative z-10 grid grid-cols-1 ${gridCols} gap-6 lg:gap-8 max-w-6xl`}
+        className={`relative z-10 grid ${mobileGridCols} ${gridCols} gap-x-4 gap-y-5 sm:gap-6 lg:gap-8 max-w-6xl`}
         onMouseLeave={() => isLargeScreen && resetGradient()}
       >
-        {ctas.map((cta, index) => (
+        {ctas.map((cta, index) => {
+          // In 2-col mobile grid, right column items (odd indices) get right-aligned text
+          const isRightCol = ctas.length >= 3 && index % 2 === 1;
+          return (
           <div
             key={index}
             ref={(el) => { ctaRefs.current[index] = el; }}
             onMouseEnter={() => isLargeScreen && updateGradient(index)}
             className={`relative z-10 transition-transform duration-300 ease-out ${activeIndex === index ? 'lg:scale-105' : 'lg:scale-100'
-              }`}
+              } ${isRightCol ? 'text-right sm:text-left' : ''}`}
           >
             <a
               href={cta.href}
               className="group block cursor-pointer transition-all duration-300"
             >
-              <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-[#C50E1F] group-hover:text-white transition-colors duration-300">
+              <h3 className="text-lg sm:text-2xl lg:text-3xl font-bold text-[#C50E1F] group-hover:text-white transition-colors duration-300">
                 {cta.title}
               </h3>
-              <div className="h-px lg:h-0.5 bg-gradient-to-r from-white/50 from-30% via-white/20 via-70% to-transparent my-2 sm:my-3 lg:my-4 mr-10 rounded-full group-hover:from-white/70 group-hover:via-white/20 transition-all duration-300" />
-              <p className="text-sm sm:text-base lg:text-lg text-[#E1E1E1] leading-relaxed group-hover:text-white transition-colors duration-300">
+              {/* Divider: right-col items flip gradient direction on mobile */}
+              {isRightCol ? (
+                <>
+                  <div className="h-px bg-gradient-to-l from-white/50 from-30% via-white/20 via-70% to-transparent my-1.5 ml-4 rounded-full group-hover:from-white/70 group-hover:via-white/20 transition-all duration-300 sm:hidden" />
+                  <div className="hidden sm:block h-px lg:h-0.5 bg-gradient-to-r from-white/50 from-30% via-white/20 via-70% to-transparent sm:my-3 lg:my-4 mr-10 rounded-full group-hover:from-white/70 group-hover:via-white/20 transition-all duration-300" />
+                </>
+              ) : (
+                <div className="h-px lg:h-0.5 bg-gradient-to-r from-white/50 from-30% via-white/20 via-70% to-transparent my-1.5 sm:my-3 lg:my-4 mr-4 sm:mr-10 rounded-full group-hover:from-white/70 group-hover:via-white/20 transition-all duration-300" />
+              )}
+              <p className="hidden sm:block text-sm sm:text-base lg:text-lg text-[#E1E1E1] leading-relaxed group-hover:text-white transition-colors duration-300">
                 {cta.description}
               </p>
             </a>
           </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
