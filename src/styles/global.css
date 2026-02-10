@@ -13,11 +13,13 @@
   --color-bears-text-onDark: #E1E1E1;
   --color-bears-accent: #C50E1F;
   --color-bears-accent-muted: #A00B19;
+  --color-bears-bg-surface: #1F1F1F;
+  --color-bears-bg-elevated: #303030;
 }
 
 body {
   background-color: var(--color-bears-bg);
-  color: var(--color-bears-text);
+  color: var(--color-bears-text-onDark);
 }
 
 [x-cloak] {
