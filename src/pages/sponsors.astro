@@ -86,14 +86,14 @@ const tiers = [
 
   {/* Become a Sponsor CTA */}
   {ctaContent && (
-    <section class="container mx-auto px-4 sm:px-8 lg:px-16 py-20 sm:py-28 lg:py-36">
+    <section id="become-a-sponsor" class="container mx-auto px-4 sm:px-8 lg:px-16 py-20 sm:py-28 lg:py-36 scroll-mt-20">
       {ctaContent.data.subtitle && (
         <p class="text-xs sm:text-sm font-bold uppercase tracking-[0.2em] text-bears-accent mb-3 sm:mb-4 text-center">
           {ctaContent.data.subtitle}
         </p>
       )}
 
-      <h2 id="become-a-sponsor" class="text-3xl sm:text-4xl lg:text-5xl font-bold text-bears-text-onDark text-center mb-6 sm:mb-8 lg:mb-12">
+      <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-bears-text-onDark text-center mb-6 sm:mb-8 lg:mb-12">
         {ctaContent.data.title}
       </h2>
 

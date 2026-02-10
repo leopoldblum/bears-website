@@ -70,7 +70,7 @@ const allTierKeys = JSON.stringify(activeTiers.map(t => t.key));
         const isLast = index === activeTiers.length - 1;
 
         return (
-          <div>
+          <div id={tier.key} class="scroll-mt-20">
             {/* Accordion item */}
             <div class="accordion-item" style={`animation-delay: ${index * 60}ms`}>
               {/* Accordion header */}
