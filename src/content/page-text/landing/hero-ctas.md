@@ -3,7 +3,7 @@ title: "Hero Cards"
 ctas:
   - title: "How to Join"
     description: "Becoming a member of Bears e.V."
-    href: "/about-us"
+    href: "/about-us#find-us"
   - title: "Our Projects"
     description: "Explore what we are working on"
     href: "/projects"
