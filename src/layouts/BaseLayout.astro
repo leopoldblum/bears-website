@@ -3,12 +3,23 @@ import "@styles/global.css";
 import Header from "@layout/Header.astro";
 import Footer from "@layout/Footer.astro";
 import BackToTopButton from "@layout/BackToTopButton.astro";
+import { getPageContent } from "@utils/contentQueries";
 
 interface Props {
   title: string;
+  description?: string;
+  ogImage?: string;
 }
 
-const { title } = Astro.props;
+const siteMetadata = await getPageContent("site/metadata");
+
+const {
+  title,
+  description = siteMetadata?.data.description ?? "BEARS e.V. – Berlin Experimental Astronautics Research Student team at TU Berlin.",
+  ogImage = "/og-default.jpg",
+} = Astro.props;
+
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site ?? "https://bears-space.de");
 ---
 
 <!DOCTYPE html>
@@ -18,6 +29,23 @@ const { title } = Astro.props;
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl.href} />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalUrl.href} />
+    <meta property="og:title" content={`${title} | BEARS`} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={new URL(ogImage, canonicalUrl.origin).href} />
+    <meta property="og:site_name" content="BEARS e.V." />
+
+    <!-- Twitter / X -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={`${title} | BEARS`} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={new URL(ogImage, canonicalUrl.origin).href} />
+
     <title>{title} | BEARS</title>
   </head>
   <body class="flex flex-col min-h-screen">
