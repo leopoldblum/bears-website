@@ -20,13 +20,14 @@ interface TierGroup {
 }
 
 interface Props {
-  title: string;
+  title?: string;
   subtitle?: string;
   description?: string;
   tiers: TierGroup[];
 }
 
 const { title, subtitle, description, tiers } = Astro.props;
+const hasHeader = title || subtitle || description;
 
 // Filter to tiers that have sponsors
 const activeTiers = tiers.filter(t => t.sponsors.length > 0);
@@ -38,23 +39,27 @@ const allTierKeys = JSON.stringify(activeTiers.map(t => t.key));
 <section class="bg-bears-bg-light py-20 sm:py-28 lg:py-36">
   <div class="container mx-auto px-4 sm:px-8 lg:px-16">
     <!-- Section header -->
-    <div class="max-w-3xl mx-auto text-center mb-14 sm:mb-18 lg:mb-22">
-      {subtitle && (
-        <p class="text-xs sm:text-sm font-bold uppercase tracking-[0.2em] text-bears-accent mb-3 sm:mb-4">
-          {subtitle}
-        </p>
-      )}
+    {hasHeader && (
+      <div class={`max-w-3xl mx-auto text-center ${title ? 'mb-14 sm:mb-18 lg:mb-22' : 'mb-10 sm:mb-14 lg:mb-18'}`}>
+        {subtitle && (
+          <p class="text-xs sm:text-sm font-bold uppercase tracking-[0.2em] text-bears-accent mb-3 sm:mb-4">
+            {subtitle}
+          </p>
+        )}
 
-      <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-bears-text-onLight mb-6 sm:mb-8 lg:mb-12">
-        {title}
-      </h2>
+        {title && (
+          <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-bears-text-onLight mb-6 sm:mb-8 lg:mb-12">
+            {title}
+          </h2>
+        )}
 
-      {description && (
-        <p class="text-sm sm:text-base lg:text-lg text-bears-text-onLight/60 leading-relaxed">
-          {description}
-        </p>
-      )}
-    </div>
+        {description && (
+          <p class="text-sm sm:text-base lg:text-lg text-bears-text-onLight/60 leading-relaxed">
+            {description}
+          </p>
+        )}
+      </div>
+    )}
 
     <!-- Tier accordions -->
     <div
