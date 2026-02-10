@@ -152,10 +152,29 @@ const mediaJson = JSON.stringify(media.map((item, index) => ({
 
     getCurrentShownText() {
       return this.media[this.currentSlide]?.shownText || '';
+    },
+
+    touchStartX: 0,
+    touchStartY: 0,
+    handleTouchStart(e) {
+      this.touchStartX = e.touches[0].clientX;
+      this.touchStartY = e.touches[0].clientY;
+      this.stopAutoScroll();
+    },
+    handleTouchEnd(e) {
+      const deltaX = e.changedTouches[0].clientX - this.touchStartX;
+      const deltaY = e.changedTouches[0].clientY - this.touchStartY;
+      if (Math.abs(deltaX) > 50 && Math.abs(deltaX) > Math.abs(deltaY)) {
+        if (deltaX < 0) this.nextSlide();
+        else this.prevSlide();
+      }
+      this.startAutoScroll();
     }
   }`}
   @mouseenter="stopAutoScroll()"
   @mouseleave="startAutoScroll()"
+  @touchstart="handleTouchStart($event)"
+  @touchend="handleTouchEnd($event)"
 >
   <!-- Media Layer -->
   <div class="absolute inset-0 z-0">

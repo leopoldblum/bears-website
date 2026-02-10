@@ -35,6 +35,7 @@ export default function Carousel({
   const containerRef = useRef<HTMLDivElement>(null);
   const observerRef = useRef<MutationObserver | null>(null);
   const transitionRafRef = useRef<number | undefined>(undefined);
+  const touchStartRef = useRef<{ x: number; y: number } | null>(null);
 
   const EASE = 'cubic-bezier(0.4, 0, 0.2, 1)';
 
@@ -329,6 +330,22 @@ export default function Carousel({
           `}
           onMouseEnter={() => setIsPaused(true)}
           onMouseLeave={() => setIsPaused(false)}
+          onTouchStart={(e) => {
+            touchStartRef.current = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+            setIsPaused(true);
+          }}
+          onTouchEnd={(e) => {
+            if (touchStartRef.current) {
+              const deltaX = e.changedTouches[0].clientX - touchStartRef.current.x;
+              const deltaY = e.changedTouches[0].clientY - touchStartRef.current.y;
+              if (Math.abs(deltaX) > 50 && Math.abs(deltaX) > Math.abs(deltaY)) {
+                if (deltaX < 0) nextSlide();
+                else prevSlide();
+              }
+              touchStartRef.current = null;
+            }
+            setIsPaused(false);
+          }}
         >
           {children}
         </div>
