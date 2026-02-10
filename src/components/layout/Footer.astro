@@ -53,7 +53,7 @@ const bottomBarContent = await getPageContent("footer/bottom-bar");
 const copyrightText = (bottomBarContent?.data.title ?? "© {year} BEARS e.V. All rights reserved.").replace("{year}", String(currentYear));
 const legalLinks = bottomBarContent?.data.navLinks ?? [
   { label: "Impressum", href: "/imprint" },
-  { label: "Datenschutz", href: "#" },
+  { label: "Datenschutz", href: "/datenschutz" },
 ];
 
 const socialIcons: Record<string, { label: string; path: string }> = {
