@@ -15,7 +15,7 @@ const images: ImageWithAlt[] = loadedImages.map((image, index) => ({
 ---
 
 {images.length > 0 && (
-  <section class="container mx-auto px-4 sm:px-8 lg:px-16 py-16 sm:py-20 lg:py-24">
+  <section id="faces-of-bears" class="container mx-auto px-4 sm:px-8 lg:px-16 py-16 sm:py-20 lg:py-24 scroll-mt-20">
     <!-- Header: subtitle + title left, description right -->
     <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 lg:gap-16 mb-6 sm:mb-8 lg:mb-12">
       <div class="lg:max-w-[55%]">
@@ -24,7 +24,7 @@ const images: ImageWithAlt[] = loadedImages.map((image, index) => ({
             {content.data.subtitle}
           </p>
         )}
-        <h2 id="faces-of-bears" class="text-3xl sm:text-4xl lg:text-5xl font-bold text-bears-text-onDark">
+        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-bears-text-onDark">
           {content?.data.title}
         </h2>
         <div class="h-[2px] bg-gradient-to-r from-white/30 from-30% via-white/15 via-70% to-transparent mt-4 sm:mt-6 rounded-full"></div>
