@@ -1,5 +1,6 @@
 ---
 title: "Hero Cards"
+subtitle: "Berlin Experimental Astronautics Research Student Team e.V."
 ctas:
   - title: "How to Join"
     description: "Becoming a member of Bears e.V."

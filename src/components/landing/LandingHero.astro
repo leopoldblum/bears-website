@@ -31,6 +31,8 @@ interface Props {
   showDots?: boolean;
   /** Array of 1-3 HeroCTA items to display at the bottom */
   ctas?: HeroCTAItem[];
+  /** Optional tagline displayed below the logo */
+  tagline?: string;
 }
 
 const {
@@ -39,6 +41,7 @@ const {
   showArrows = true,
   showDots = false,
   ctas = [],
+  tagline,
 } = Astro.props;
 
 // Load slides from content collection
@@ -279,10 +282,15 @@ const mediaJson = JSON.stringify(media.map((item, index) => ({
       <!-- Top Row: Logo (left) and shownText (right) -->
       <div class="flex justify-between items-center pt-24 sm:pt-28 lg:pt-32">
         <!-- Logo - top left -->
-        <div class="flex-shrink-0">
+        <div class="shrink-0 w-min">
           <h1 class="text-[3.5rem] sm:text-[5.5rem] lg:text-8xl font-bold text-bears-accent drop-shadow-lg">
             BEARS
           </h1>
+          {tagline && (
+            <p class="text-sm sm:text-base lg:text-lg text-bears-text-onDark/70 font-medium tracking-wide mt-2">
+              {tagline}
+            </p>
+          )}
         </div>
 
         <!-- shownText display (top right corner) -->

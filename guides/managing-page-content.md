@@ -9,7 +9,7 @@ All page content files live in `src/content/page-text/`, organized by page:
 ```
 src/content/page-text/
 ├── landing/                   <- Sections on the main homepage
-│   ├── hero-ctas.md           <- Call-to-action cards on the hero
+│   ├── hero.md                <- Hero tagline + call-to-action cards
 │   ├── what-is-bears.md       <- "What is BEARS e.V.?" section
 │   ├── meet-the-team.md       <- "Meet the Team" heading
 │   ├── become-sponsor.md      <- "Become a Sponsor" section
@@ -56,13 +56,14 @@ buttonHref: "/about-us"
 
 **To hide the description:** Remove the `description` line.
 
-## Editing the Hero Call-to-Action Cards
+## Editing the Hero Section
 
-The hero section at the top of the homepage can display 0 to 4 cards. Edit `landing/hero-ctas.md`:
+The hero section at the top of the homepage has an optional tagline and up to 4 CTA cards. Edit `landing/hero.md`:
 
 ```yaml
 ---
 title: "Hero Cards"
+subtitle: "Berlin's Student Aerospace Team"
 ctas:
   - title: "How to Join"
     description: "Becoming a member of Bears e.V."
@@ -75,6 +76,8 @@ ctas:
     href: "/events"
 ---
 ```
+
+**Tagline:** The `subtitle` field displays a short tagline below the BEARS logo. Remove the line to hide it.
 
 **To add a card:** Add another item under `ctas:` (maximum 4 cards).
 

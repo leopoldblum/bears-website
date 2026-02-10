@@ -9,12 +9,13 @@ import Testimonials from "@landing/Testimonials.astro"
 import { getPageContent } from "@utils/contentQueries";
 
 // Fetch hero CTAs from content collection
-const heroCTAsContent = await getPageContent('landing/hero-ctas');
-const heroCTAs = heroCTAsContent?.data.ctas ?? [];
+const heroContent = await getPageContent('landing/hero');
+const heroCTAs = heroContent?.data.ctas ?? [];
+const heroTagline = heroContent?.data.subtitle;
 ---
 
 <BaseLayout title="Home">
-  <LandingHero ctas={heroCTAs} />
+  <LandingHero ctas={heroCTAs} tagline={heroTagline} />
   <WhatIsBears />
   <MeetTheTeam />
   <BecomeSponsor />
