@@ -25,6 +25,7 @@ function isActive(href: string): boolean {
     searchResults: [],
     searchActive: false,
     selectedIndex: -1,
+    mobileResultsHeight: 0,
 
     async doSearch() {
       if (!window.__pagefind) {
@@ -58,12 +59,13 @@ function isActive(href: string): boolean {
           return r;
         });
         this.selectedIndex = -1;
+        this.updateMobileHeight();
       } catch (e) { console.error('Pagefind search failed:', e); }
     },
 
     onSearchInput() {
       clearTimeout(window.__searchTimer);
-      if (!this.searchQuery.trim()) { this.searchResults = []; this.selectedIndex = -1; return; }
+      if (!this.searchQuery.trim()) { this.searchResults = []; this.selectedIndex = -1; this.mobileResultsHeight = 0; return; }
       window.__searchTimer = setTimeout(() => this.doSearch(), 150);
     },
 
@@ -72,6 +74,14 @@ function isActive(href: string): boolean {
       this.searchQuery = '';
       this.searchResults = [];
       this.selectedIndex = -1;
+      this.mobileResultsHeight = 0;
+    },
+
+    updateMobileHeight() {
+      this.$nextTick(() => {
+        const el = this.$refs.mobileResultsInner;
+        this.mobileResultsHeight = el ? el.scrollHeight : 0;
+      });
     },
 
     selectNext() {
@@ -283,39 +293,46 @@ function isActive(href: string): boolean {
             />
           </div>
 
-          <!-- Mobile Results -->
+          <!-- Mobile Results (JS-measured height for smooth transitions) -->
           <div
-            x-show="searchQuery.trim().length > 0 && searchResults.length > 0"
-            x-ref="mobileResults"
-            class="mt-2 bg-white/5 rounded-lg overflow-hidden max-h-60 overflow-y-auto scrollbar-bears-thin"
+            class="mt-2 overflow-hidden transition-[height] duration-200 ease-out"
+            :style="'height:' + mobileResultsHeight + 'px'"
           >
-            <template x-for="(result, idx) in searchResults" :key="result.url + idx">
-              <a
-                :href="result.displayUrl"
-                :data-idx="idx"
-                x-on:mouseenter="selectedIndex = idx"
-                class="search-result block px-3 py-2 transition-colors duration-75"
-                :class="selectedIndex === idx ? 'bg-white/10' : 'hover:bg-white/5'"
+            <div x-ref="mobileResultsInner">
+              <div
+                x-show="searchResults.length > 0"
+                x-ref="mobileResults"
+                class="bg-white/5 rounded-lg overflow-hidden max-h-60 overflow-y-auto scrollbar-bears-thin"
               >
-                <div class="flex items-center gap-2">
-                  <span class="text-sm font-medium truncate"
-                        :class="selectedIndex === idx ? 'text-white' : 'text-bears-text-onDark/90'"
-                        x-text="result.displayTitle"></span>
-                  <span class="text-[10px] uppercase tracking-wider text-gray-500 shrink-0"
-                        x-text="stripSection(result.url)"></span>
-                </div>
-                <div class="text-xs text-gray-400 mt-0.5 line-clamp-1 search-excerpt"
-                     x-html="result.displayExcerpt"></div>
-              </a>
-            </template>
-          </div>
+                <template x-for="(result, idx) in searchResults" :key="result.url + idx">
+                  <a
+                    :href="result.displayUrl"
+                    :data-idx="idx"
+                    x-on:mouseenter="selectedIndex = idx"
+                    class="search-result block px-3 py-2 transition-colors duration-75"
+                    :class="selectedIndex === idx ? 'bg-white/10' : 'hover:bg-white/5'"
+                  >
+                    <div class="flex items-center gap-2">
+                      <span class="text-sm font-medium truncate"
+                            :class="selectedIndex === idx ? 'text-white' : 'text-bears-text-onDark/90'"
+                            x-text="result.displayTitle"></span>
+                      <span class="text-[10px] uppercase tracking-wider text-gray-500 shrink-0"
+                            x-text="stripSection(result.url)"></span>
+                    </div>
+                    <div class="text-xs text-gray-400 mt-0.5 line-clamp-1 search-excerpt"
+                         x-html="result.displayExcerpt"></div>
+                  </a>
+                </template>
+              </div>
 
-          <!-- Mobile No Results -->
-          <div
-            x-show="searchQuery.trim().length > 0 && searchResults.length === 0 && window.__pagefind"
-            class="mt-2 px-3 py-4 text-center text-gray-400 text-sm"
-          >
-            No results found
+              <!-- Mobile No Results -->
+              <div
+                x-show="searchResults.length === 0 && window.__pagefind"
+                class="px-3 py-4 text-center text-gray-400 text-sm"
+              >
+                No results found
+              </div>
+            </div>
           </div>
         </div>
 
