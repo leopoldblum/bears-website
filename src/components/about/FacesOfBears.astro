@@ -1,20 +1,28 @@
 ---
-import CollapsibleImageGrid from "@reusable/CollapsibleImageGrid.astro";
-import type { ImageWithAlt } from "@types";
-import { getPageContent } from "@utils/contentQueries";
-import { facesOfBearsImages } from "@utils/imageGlobs";
-import { loadAllImagesFromDirectory } from "@utils/imageLoader";
+import FaceCard from "./FaceCard.astro";
+import CarouselArrow from "@reusable/CarouselArrow.astro";
+import GradientDivider from "@reusable/GradientDivider.astro";
+import { getPageContent, getFacesOfBearsSorted } from "@utils/contentQueries";
+import { loadCollectionImages } from "@utils/imageLoader";
 
 const content = await getPageContent("about-us/faces-of-bears");
 
-const loadedImages = await loadAllImagesFromDirectory(facesOfBearsImages);
-const images: ImageWithAlt[] = loadedImages.map((image, index) => ({
-  image,
-  alt: `BEARS members photo ${index + 1}`,
+const sortedFaces = await getFacesOfBearsSorted();
+const facesWithImages = await loadCollectionImages(sortedFaces, "face");
+
+const faces = facesWithImages.map((face) => ({
+  name: face.data.name,
+  role: face.data.role,
+  coverImage: face.loadedImage,
 }));
+
+const cols = 3;
+const previewRows = 1.5;
+const mobileColWidth = "50vw";
+const desktopColWidth = `${+(100 / cols).toFixed(3)}vw`;
 ---
 
-{images.length > 0 && (
+{faces.length > 0 && (
   <section id="faces-of-bears" class="container mx-auto px-4 sm:px-8 lg:px-16 py-16 sm:py-20 lg:py-24 scroll-mt-20">
     <!-- Header: subtitle + title left, description right -->
     <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 lg:gap-16 mb-6 sm:mb-8 lg:mb-12">
@@ -27,7 +35,7 @@ const images: ImageWithAlt[] = loadedImages.map((image, index) => ({
         <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-bears-text-onDark">
           {content?.data.title}
         </h2>
-        <div class="h-[2px] bg-gradient-to-r from-white/30 from-30% via-white/15 via-70% to-transparent mt-4 sm:mt-6 rounded-full"></div>
+        <GradientDivider class="mt-4 sm:mt-6" />
       </div>
       {content?.data.description && (
         <p class="text-sm sm:text-base text-bears-text-onDark/60 lg:text-right lg:max-w-[35%]">
@@ -36,12 +44,117 @@ const images: ImageWithAlt[] = loadedImages.map((image, index) => ({
       )}
     </div>
 
-    <CollapsibleImageGrid
-      images={images}
-      cols={3}
-      gap="md"
-      previewRows={1.5}
-      class="!px-1 !py-1"
-    />
+    <!-- Collapsible Person Card Masonry Grid -->
+    <div
+      class="collapsible-faces relative"
+      x-data={`{
+        isOpen: false,
+        contentHeight: 0,
+        overflows: false,
+        isAnimating: false,
+        calculateHeight() {
+          const wrapper = this.$refs.wrapper;
+          const content = this.$refs.content;
+          if (content && wrapper) {
+            this.contentHeight = content.scrollHeight;
+            this.overflows = wrapper.scrollHeight > wrapper.clientHeight + 10;
+          }
+        },
+        toggle() {
+          if (this.isAnimating) return;
+          this.isAnimating = true;
+          this.isOpen = !this.isOpen;
+          setTimeout(() => { this.isAnimating = false; }, 500);
+        }
+      }`}
+      x-init="
+        $nextTick(() => {
+          calculateHeight();
+          let resizeTimer;
+          window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => calculateHeight(), 100);
+          });
+          $refs.content?.querySelectorAll('img').forEach(img => {
+            if (!img.complete) img.addEventListener('load', () => calculateHeight());
+          });
+        });
+      "
+    >
+      <div
+        x-ref="wrapper"
+        class="overflow-hidden transition-all duration-500 ease-in-out"
+        x-bind:style="`max-height: ${isOpen ? contentHeight + 'px' : 'var(--preview-height, 300px)'}`"
+        x-bind:class="isOpen ? 'pb-6' : 'pb-0'"
+      >
+        <div x-ref="content" class="p-1">
+          <div class="columns-2 lg:columns-3 gap-4 lg:gap-6">
+            {faces.map((face) => (
+              <div class="break-inside-avoid mb-4 lg:mb-6">
+                <FaceCard
+                  coverImage={face.coverImage}
+                  name={face.name}
+                  role={face.role}
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <!-- Gradient overlay with expand arrow (shown when collapsed) -->
+      <div
+        class="absolute bottom-0 left-0 right-0 h-40 sm:h-48 flex items-end justify-center pb-4 pointer-events-none transition-all duration-500 ease-out"
+        x-bind:class="isOpen ? 'opacity-0 translate-y-full pointer-events-none' : 'opacity-100 translate-y-0'"
+        x-show="overflows"
+        style="background: linear-gradient(to bottom, transparent 0%, color-mix(in srgb, var(--color-bears-bg) 30%, transparent) 20%, color-mix(in srgb, var(--color-bears-bg) 70%, transparent) 40%, var(--color-bears-bg) 60%, var(--color-bears-bg) 100%);"
+      >
+        <div class="pointer-events-auto">
+          <CarouselArrow
+            direction="down"
+            onClick="toggle()"
+            variant="flex"
+          />
+        </div>
+      </div>
+
+      <!-- Collapse arrow (shown when expanded) -->
+      <div
+        x-show="overflows"
+        class="flex justify-center pt-6 transition-all duration-300"
+        x-bind:class="isOpen ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4 pointer-events-none'"
+      >
+        <CarouselArrow
+          direction="prev"
+          onClick="toggle()"
+          variant="flex"
+          class="rotate-90 [&_svg]:rotate-0"
+        />
+      </div>
+    </div>
   </section>
 )}
+
+<style define:vars={{ mobileColWidth, desktopColWidth, previewRows }}>
+  .collapsible-faces [x-ref="wrapper"] {
+    will-change: max-height;
+  }
+
+  @media (max-width: 640px) {
+    .collapsible-faces {
+      --preview-height: calc((var(--mobileColWidth) - 1.5rem) * var(--previewRows));
+    }
+  }
+
+  @media (min-width: 641px) and (max-width: 1024px) {
+    .collapsible-faces {
+      --preview-height: calc((var(--mobileColWidth) - 2rem) * var(--previewRows));
+    }
+  }
+
+  @media (min-width: 1025px) {
+    .collapsible-faces {
+      --preview-height: calc((var(--desktopColWidth) - 3rem) * var(--previewRows));
+    }
+  }
+</style>

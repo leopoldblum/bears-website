@@ -1,0 +1,58 @@
+---
+import Img from "@mdx/Img.astro";
+import ImageModal from "@mdx/ImageModal.astro";
+import type { ImageMetadata } from "astro";
+import { getImage } from "astro:assets";
+
+interface Props {
+  coverImage: ImageMetadata;
+  name: string;
+  role: string;
+}
+
+const { coverImage, name, role } = Astro.props;
+
+const modalSrc = (await getImage({ src: coverImage, format: 'webp' })).src;
+---
+
+<div
+  class="face-card relative rounded-lg overflow-hidden group cursor-pointer ring-0 ring-bears-accent transition-all duration-300 hover:ring-2 border border-transparent shadow-[0_4px_12px_rgba(0,0,0,0.4)] lg:hover:shadow-[0_8px_24px_rgba(0,0,0,0.5),0_0_20px_rgba(197,14,31,0.15)] lg:hover:border-bears-accent/30"
+  x-data="{ modalOpen: false }"
+  x-on:click="modalOpen = true"
+>
+  <!-- Image with native aspect ratio -->
+  <Img
+    src={coverImage}
+    alt={name}
+    class="w-full h-auto object-cover transition-transform duration-500 lg:group-hover:scale-105"
+    loading="lazy"
+    sizes="(min-width: 1024px) 33vw, 50vw"
+    enableClickToEnlarge={false}
+  />
+
+  <!-- Content Overlay -->
+  <div class="absolute inset-x-0 bottom-0">
+    <!-- Color gradient layer -->
+    <div
+      class="absolute inset-0"
+      style="background: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.5) 15%, rgba(0, 0, 0, 0.75) 30%, rgba(0, 0, 0, 0.82) 50%, rgba(0, 0, 0, 0.88) 70%, rgba(0, 0, 0, 0.95) 100%);"
+    ></div>
+    <!-- Blur gradient layer — hidden on Firefox via CSS due to poor backdrop-filter performance -->
+    <div
+      class="showcase-blur-overlay absolute inset-x-0 -top-32 bottom-0 backdrop-blur-[2px]"
+      style="-webkit-mask-image: linear-gradient(to bottom, transparent 40%, black 70%); mask-image: linear-gradient(to bottom, transparent 40%, black 70%);"
+    ></div>
+
+    <!-- Content -->
+    <div class="relative p-4 sm:p-5">
+      <h3 class="text-base sm:text-lg font-bold text-bears-text-onDark tracking-tight">
+        {name}
+      </h3>
+      <p class="text-xs sm:text-sm text-bears-text-onDark/70 mt-0.5 sm:mt-1">
+        {role}
+      </p>
+    </div>
+  </div>
+
+  <ImageModal src={modalSrc} alt={name} />
+</div>

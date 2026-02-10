@@ -205,6 +205,20 @@ export async function getTestimonialsSorted() {
 }
 
 /**
+ * Gets all faces of BEARS sorted alphabetically by slug.
+ * Used by the "Faces of BEARS" section on the about page.
+ *
+ * @returns Array of faces sorted by slug (numeric prefix ordering)
+ *
+ * @example
+ * const faces = await getFacesOfBearsSorted();
+ */
+export async function getFacesOfBearsSorted() {
+  const allFaces = await getCollection('faces-of-bears');
+  return sortBySlug(allFaces);
+}
+
+/**
  * Gets all sponsors grouped by tier, sorted alphabetically within each tier.
  *
  * @returns Object with sponsors grouped by tier (gold, silver, bronze)

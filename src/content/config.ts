@@ -132,6 +132,18 @@ const instagramCollection = defineCollection({
   }),
 });
 
+const facesOfBearsCollection = defineCollection({
+  type: 'content',
+  schema: z.object({
+    name: z.string(),
+    role: z.string(),
+    coverImage: z.string().refine(
+      validateImageExtension,
+      { message: `coverImage must have a valid image extension: ${VALID_EXTENSIONS_MESSAGE}` }
+    ),
+  }),
+});
+
 const pageTextCollection = defineCollection({
   type: 'content',
   schema: z.object({
@@ -178,4 +190,5 @@ export const collections = {
   'hero-slides': heroSlidesCollection,
   'page-text': pageTextCollection,
   instagram: instagramCollection,
+  'faces-of-bears': facesOfBearsCollection,
 };

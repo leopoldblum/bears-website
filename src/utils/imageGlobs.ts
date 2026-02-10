@@ -70,10 +70,10 @@ export const ourMissionImages: ImageGlob = import.meta.glob<{ default: ImageMeta
 );
 
 /**
- * Faces of BEARS gallery images
+ * Faces of BEARS portrait images
  * Used by: FacesOfBears.astro
  */
-export const facesOfBearsImages: ImageGlob = import.meta.glob<{ default: ImageMetadata }>(
+export const faceImages: ImageGlob = import.meta.glob<{ default: ImageMetadata }>(
   "/src/assets/about-us/faces-of-bears/*.{jpg,jpeg,png,webp}"
 );
 

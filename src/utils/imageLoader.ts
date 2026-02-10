@@ -11,9 +11,10 @@ import defaultEventImage from '@assets/default-images/default-event.jpg';
 import defaultProjectImage from '@assets/default-images/default-project.jpg';
 import defaultTestimonialImage from '@assets/default-images/default-testimonial.jpg';
 import defaultSponsorImage from '@assets/default-images/default-sponsor.jpg';
+import defaultFaceImage from '@assets/default-images/default-face.jpg';
 
 // Export default images for components that need direct access
-export { defaultEventImage, defaultProjectImage, defaultTestimonialImage, defaultSponsorImage };
+export { defaultEventImage, defaultProjectImage, defaultTestimonialImage, defaultSponsorImage, defaultFaceImage };
 
 /**
  * Options for loading a single image
@@ -315,9 +316,13 @@ export async function loadCollectionImages(
   type: 'testimonial'
 ): Promise<Array<CollectionEntry<'testimonials'> & { loadedImage: ImageMetadata }>>;
 export async function loadCollectionImages(
-  collection: CollectionEntry<'events'>[] | CollectionEntry<'projects'>[] | CollectionEntry<'testimonials'>[],
-  type: 'event' | 'project' | 'testimonial'
-): Promise<Array<(CollectionEntry<'events'> | CollectionEntry<'projects'> | CollectionEntry<'testimonials'>) & { loadedImage: ImageMetadata }>> {
+  collection: CollectionEntry<'faces-of-bears'>[],
+  type: 'face'
+): Promise<Array<CollectionEntry<'faces-of-bears'> & { loadedImage: ImageMetadata }>>;
+export async function loadCollectionImages(
+  collection: CollectionEntry<'events'>[] | CollectionEntry<'projects'>[] | CollectionEntry<'testimonials'>[] | CollectionEntry<'faces-of-bears'>[],
+  type: 'event' | 'project' | 'testimonial' | 'face'
+): Promise<Array<(CollectionEntry<'events'> | CollectionEntry<'projects'> | CollectionEntry<'testimonials'> | CollectionEntry<'faces-of-bears'>) & { loadedImage: ImageMetadata }>> {
   // Configuration mapping for each collection type
   const config = {
     event: {
@@ -337,6 +342,12 @@ export async function loadCollectionImages(
       baseDir: '/src/assets/testimonials',
       fallbackImage: defaultTestimonialImage,
       postType: 'testimonial' as const,
+    },
+    face: {
+      glob: async () => (await import('./imageGlobs')).faceImages,
+      baseDir: '/src/assets/about-us/faces-of-bears',
+      fallbackImage: defaultFaceImage,
+      postType: 'face' as const,
     },
   };
 

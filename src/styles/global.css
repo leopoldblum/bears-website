@@ -135,8 +135,9 @@ body {
   }
 }
 
-/* PostShowcase card entrance animation */
-.showcase-card {
+/* PostShowcase and FaceCard entrance animation */
+.showcase-card,
+.face-card {
   animation: showcaseCardIn 0.28s ease-out both;
 }
 
@@ -249,6 +250,7 @@ body {
 @media (prefers-reduced-motion: reduce) {
 
   .showcase-card,
+  .face-card,
   .accordion-item,
   .sponsor-card,
   .post-container,
