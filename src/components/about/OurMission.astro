@@ -1,6 +1,7 @@
 ---
 import Img from "@mdx/Img.astro";
 import Button from "@mdx/Button.astro";
+import GradientDivider from "@reusable/GradientDivider.astro";
 import { getPageContent } from "@utils/contentQueries";
 import { ourMissionImages } from "@utils/imageGlobs";
 import { loadAllImagesFromDirectory } from "@utils/imageLoader";
@@ -60,10 +61,7 @@ const parsedItems =
       >
         {content?.data.title}
       </h2>
-      <div
-        class="h-[2px] bg-gradient-to-r from-white/30 from-30% via-white/15 via-70% to-transparent mt-4 sm:mt-6 rounded-full"
-      >
-      </div>
+      <GradientDivider class="mt-4 sm:mt-6" />
       {
         content?.data.description && (
           <p class="text-sm sm:text-base lg:text-lg text-bears-text-onDark/60 leading-relaxed mt-4 sm:mt-6 max-w-xl">

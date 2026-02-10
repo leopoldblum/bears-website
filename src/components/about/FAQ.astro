@@ -1,5 +1,6 @@
 ---
 import Accordion from "@mdx/Accordion.astro";
+import GradientDivider from "@reusable/GradientDivider.astro";
 import { getPageContent } from "@utils/contentQueries";
 
 const content = await getPageContent("about-us/faq");
@@ -26,7 +27,7 @@ const accordionItems = (content?.data.faqs ?? []).map((faq) => ({
     <span class="sr-only" data-pagefind-weight="8">FAQ</span>
 
     {/* Gradient divider */}
-    <div class="h-[2px] bg-gradient-to-r from-white/30 from-30% via-white/15 via-70% to-transparent mb-6 sm:mb-8 lg:mb-10 rounded-full"></div>
+    <GradientDivider class="mb-6 sm:mb-8 lg:mb-10" />
 
     {/* Description */}
     {content?.data.description && (

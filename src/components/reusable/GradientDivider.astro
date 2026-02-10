@@ -1,0 +1,16 @@
+---
+interface Props {
+  /** "dark" for white-based divider on dark backgrounds, "light" for black-based on light backgrounds */
+  variant?: "dark" | "light";
+  class?: string;
+}
+
+const { variant = "dark", class: className } = Astro.props;
+
+const colorClasses =
+  variant === "dark"
+    ? "from-white/30 from-30% via-white/15 via-70% to-transparent"
+    : "from-black/20 from-30% via-black/10 via-70% to-transparent";
+---
+
+<div class:list={["h-[2px] bg-gradient-to-r rounded-full", colorClasses, className]} />

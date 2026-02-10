@@ -1,4 +1,5 @@
 ---
+import GradientDivider from "@reusable/GradientDivider.astro";
 import { getPageContent } from "@utils/contentQueries";
 
 const content = await getPageContent("about-us/find-us");
@@ -26,16 +27,13 @@ const location = { lat: 52.5154722, lng: 13.3240833 };
     <!-- Heading -->
     <h2
       id="find-us"
-      class="text-3xl sm:text-4xl lg:text-5xl font-bold text-bears-text-onDark mb-6 sm:mb-8 lg:mb-12"
+      class="text-3xl sm:text-4xl lg:text-5xl font-bold text-bears-text-onDark mb-8 sm:mb-10 lg:mb-14"
     >
       {content?.data.title}
     </h2>
 
     <!-- Gradient divider -->
-    <div
-      class="h-[2px] bg-gradient-to-r from-white/30 from-30% via-white/15 via-70% to-transparent mb-6 sm:mb-8 lg:mb-10 rounded-full"
-    >
-    </div>
+    <GradientDivider class="mb-6 sm:mb-8 lg:mb-10" />
 
     <!-- Two-column: text/remember + map -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-10 items-start">

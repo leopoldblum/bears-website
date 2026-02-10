@@ -1,6 +1,7 @@
 ---
 // SponsorShowcase - Light-bg section with all sponsor tiers as accordions (open by default)
 import SponsorTier from "@landing/SponsorTier.astro";
+import GradientDivider from "@reusable/GradientDivider.astro";
 import type { ImageMetadata } from "astro";
 import type { SponsorTier as SponsorTierType } from "@types";
 
@@ -48,13 +49,13 @@ const allTierKeys = JSON.stringify(activeTiers.map(t => t.key));
         )}
 
         {title && (
-          <h2 id="sponsor-tiers" class="text-3xl sm:text-4xl lg:text-5xl font-bold text-bears-text-onLight mb-4 sm:mb-6">
+          <h2 id="sponsor-tiers" class="text-3xl sm:text-4xl lg:text-5xl font-bold text-bears-text-onLight mb-8 sm:mb-10 lg:mb-14">
             {title}
           </h2>
         )}
 
         {title && (
-          <div class="h-[2px] bg-gradient-to-r from-black/20 from-30% via-black/10 via-70% to-transparent rounded-full max-w-md mx-auto mb-4 sm:mb-6"></div>
+          <GradientDivider variant="light" class="max-w-md mx-auto mb-4 sm:mb-6" />
         )}
 
         {description && (
@@ -129,7 +130,7 @@ const allTierKeys = JSON.stringify(activeTiers.map(t => t.key));
 
             {/* Divider between tiers */}
             {!isLast && (
-              <div class="h-[2px] bg-gradient-to-r from-bears-text-onLight/20 from-30% via-bears-text-onLight/10 via-70% to-transparent max-w-3xl mx-auto my-6 sm:my-8 rounded-full"></div>
+              <GradientDivider variant="light" class="max-w-3xl mx-auto my-6 sm:my-8" />
             )}
           </div>
         );
