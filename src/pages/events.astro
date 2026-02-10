@@ -62,7 +62,7 @@ const eventsData = JSON.stringify(eventsWithImages.map((e, i) => ({
   />
 
   <div
-    class="container mx-auto px-4 py-8 sm:px-6 sm:py-10 lg:px-8 lg:py-12"
+    class="container mx-auto px-4 pt-8 sm:px-6 sm:pt-10 lg:px-8 lg:pt-12"
     x-data={`{
       filterMenuOpen: false,
       sortMenuOpen: false,
@@ -75,11 +75,8 @@ const eventsData = JSON.stringify(eventsWithImages.map((e, i) => ({
       visibleCount: window.innerWidth >= 1280 ? 6 : window.innerWidth >= 1024 ? 4 : 3,
       eventsData: ${eventsData},
       visibleIndices: [],
-      _transitioning: false,
-      _animGeneration: 0,
-      _lastFilteredKey: '',
-      _fadeOutAnim: null,
-      _cleanupTimer: null,
+      _fading: false,
+      _fadeGen: 0,
 
       init() {
         const params = new URLSearchParams(window.location.search);
@@ -122,16 +119,11 @@ const eventsData = JSON.stringify(eventsWithImages.map((e, i) => ({
         this.visibleCount = this.getMinVisibleCount();
         // Initialize display buffer
         this.visibleIndices = [...this.displayedIndices];
-        this._lastFilteredKey = JSON.stringify(this.filteredIndices);
 
-        // Watch for filter/sort changes (reset view with full animation)
-        this.$watch('filteredIndices', (newVal) => {
-          const newKey = JSON.stringify(newVal);
-          if (newKey !== this._lastFilteredKey) {
-            this._lastFilteredKey = newKey;
-            this.visibleCount = this.getMinVisibleCount();
-            this._animateGrid([...this.displayedIndices]);
-          }
+        // Watch for filter/sort changes
+        this.$watch('filteredIndices', () => {
+          this.visibleCount = this.getMinVisibleCount();
+          this._animateGrid([...this.displayedIndices]);
         });
       },
 
@@ -197,35 +189,29 @@ const eventsData = JSON.stringify(eventsWithImages.map((e, i) => ({
 
       showMore() {
         const grid = this.$refs.grid;
-        const prevHeight = grid ? grid.offsetHeight : 0;
-
-        // Lock grid at current height before DOM changes
-        if (grid) {
-          grid.style.height = prevHeight + 'px';
-          grid.style.overflow = 'hidden';
-        }
+        if (!grid) return;
+        const prevHeight = grid.offsetHeight;
+        grid.style.height = prevHeight + 'px';
+        grid.style.overflow = 'hidden';
 
         const prevSet = new Set(this.visibleIndices);
         this.visibleCount = Math.min(this.visibleCount + this.itemsPerPage, this.filteredIndices.length);
         this.visibleIndices = [...this.displayedIndices];
 
         this.$nextTick(() => {
-          if (!grid || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-            if (grid) { grid.style.height = ''; grid.style.overflow = ''; }
+          if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            grid.style.height = '';
+            grid.style.overflow = '';
             return;
           }
 
-          // Measure new natural height (briefly unset, measure, re-lock)
           grid.style.height = '';
           const newHeight = grid.offsetHeight;
           grid.style.height = prevHeight + 'px';
-
-          // Animate grid height to new size
           void grid.offsetHeight;
           grid.style.transition = 'height 300ms ease-out';
           grid.style.height = newHeight + 'px';
 
-          // Card entrance animations
           const newCards = [];
           grid.querySelectorAll(':scope > div:not(.hidden)').forEach(wrapper => {
             if (!prevSet.has(Number(wrapper.dataset.index))) {
@@ -233,121 +219,84 @@ const eventsData = JSON.stringify(eventsWithImages.map((e, i) => ({
               if (card) newCards.push(card);
             }
           });
-          newCards.sort((a, b) => {
-            const orderA = parseInt(a.parentElement.style.order) || 0;
-            const orderB = parseInt(b.parentElement.style.order) || 0;
-            return orderA - orderB;
-          });
+          newCards.sort((a, b) => (parseInt(a.parentElement.style.order) || 0) - (parseInt(b.parentElement.style.order) || 0));
+          newCards.forEach(card => { card.style.animation = 'none'; });
+          void grid.offsetHeight;
           newCards.forEach((card, i) => {
-            card.style.animation = 'none';
-            void card.offsetHeight;
             card.style.animation = '';
             card.style.animationDelay = i * 30 + 'ms';
           });
 
-          // Cleanup after height + card animations finish
-          const cardDuration = newCards.length * 30 + 300;
           setTimeout(() => {
             newCards.forEach(c => { c.style.animationDelay = ''; });
             grid.style.height = '';
             grid.style.overflow = '';
             grid.style.transition = '';
-          }, Math.max(310, cardDuration));
+          }, Math.max(310, newCards.length * 30 + 300));
         });
       },
 
-      async _animateGrid(newIndices) {
-        const gen = ++this._animGeneration;
+      _animateGrid(newIndices) {
         const grid = this.$refs.grid;
-
-        // Cancel in-flight animations from previous generation
-        if (this._fadeOutAnim) { this._fadeOutAnim.cancel(); this._fadeOutAnim = null; }
-        if (this._cleanupTimer) { clearTimeout(this._cleanupTimer); this._cleanupTimer = null; }
-        grid.getAnimations().forEach(a => a.cancel());
-        grid.style.transition = 'none';
 
         if (!grid || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
           this.visibleIndices = [...newIndices];
-          this._transitioning = false;
+          this._fading = false;
           return;
         }
 
-        const wasTransitioning = this._transitioning;
-        this._transitioning = true;
-
-        // 1. Lock height
+        const gen = ++this._fadeGen;
+        this._fading = true;
         const prevHeight = grid.offsetHeight;
-        grid.style.height = prevHeight + 'px';
-        grid.style.overflow = 'hidden';
 
-        // 2. Pre-measure newHeight (swap -> measure -> restore, all microtasks before paint)
-        const oldIndices = [...this.visibleIndices];
-        this.visibleIndices = [...newIndices];
-        await this.$nextTick();
-        if (gen !== this._animGeneration) return;
-        grid.style.height = '';
-        const newHeight = grid.offsetHeight;
-        grid.style.height = prevHeight + 'px';
-        this.visibleIndices = [...oldIndices];
-        await this.$nextTick();
-        if (gen !== this._animGeneration) return;
+        // Phase 1: Fade grid out
+        grid.style.transition = 'opacity 150ms ease-out';
+        grid.style.opacity = '0';
 
-        // 3. Start CSS height transition (runs uninterrupted)
-        const sameHeight = Math.abs(prevHeight - newHeight) < 2;
-        const isGrowing = newHeight > prevHeight;
-        const heightDuration = sameHeight ? 0 : (isGrowing ? 300 : 400);
-        const heightEasing = isGrowing ? 'ease-out' : 'ease-in-out';
-        if (!sameHeight) {
-          void grid.offsetHeight;
-          grid.style.transition = 'height ' + heightDuration + 'ms ' + heightEasing;
-          grid.style.height = newHeight + 'px';
-        }
+        let fadedOut = false;
+        const afterFadeOut = () => {
+          if (fadedOut || gen !== this._fadeGen) return;
+          fadedOut = true;
 
-        // 4. Fade-out via Web Animations API (concurrent with height)
-        if (!wasTransitioning && oldIndices.length > 0) {
-          this._fadeOutAnim = grid.animate(
-            [{ opacity: 1 }, { opacity: 0 }],
-            { duration: 120, easing: 'ease-out', fill: 'forwards' }
-          );
-          try { await this._fadeOutAnim.finished; } catch(e) { return; }
-          if (gen !== this._animGeneration) return;
-        } else {
-          grid.style.opacity = '0';
-        }
+          // Lock at previous height during content swap
+          grid.style.height = prevHeight + 'px';
+          grid.style.overflow = 'hidden';
+          this.visibleIndices = [...newIndices];
 
-        // 5. Swap content (grid invisible)
-        this.visibleIndices = [...newIndices];
-        await this.$nextTick();
-        if (gen !== this._animGeneration) return;
+          this.$nextTick(() => {
+            if (gen !== this._fadeGen) return;
 
-        // 6. Set up card entrance animations
-        const visibleCards = grid.querySelectorAll(':scope > div:not(.hidden) .showcase-card');
-        visibleCards.forEach(card => {
-          card.style.animation = 'none';
-          card.style.animationDelay = '';
-        });
-        void grid.offsetHeight;
-        visibleCards.forEach((card, i) => {
-          card.style.animation = '';
-          card.style.animationDelay = i * 30 + 'ms';
-        });
+            // Measure new natural height (invisible at opacity 0)
+            grid.style.height = '';
+            const newHeight = grid.offsetHeight;
+            const heightChanged = Math.abs(prevHeight - newHeight) > 1;
 
-        // 7. Cancel fade-out, snap visible (cards at opacity 0 from CSS animation)
-        if (this._fadeOutAnim) { this._fadeOutAnim.cancel(); this._fadeOutAnim = null; }
-        grid.style.opacity = '1';
-        this._transitioning = false;
+            if (heightChanged) {
+              grid.style.height = prevHeight + 'px';
+              void grid.offsetHeight;
+            }
 
-        // 8. Cleanup when everything finishes
-        const maxCardTime = visibleCards.length * 30 + 300;
-        const cleanupDelay = Math.max(heightDuration + 10, maxCardTime);
-        this._cleanupTimer = setTimeout(() => {
-          if (gen !== this._animGeneration) return;
-          visibleCards.forEach(card => { card.style.animationDelay = ''; });
-          grid.style.height = '';
-          grid.style.overflow = '';
-          grid.style.transition = '';
-          this._cleanupTimer = null;
-        }, cleanupDelay);
+            // Phase 2: Fade in + height animation (matched durations)
+            grid.style.transition = heightChanged
+              ? 'opacity 250ms ease-in, height 250ms ease-out'
+              : 'opacity 200ms ease-in';
+            grid.style.opacity = '1';
+            if (heightChanged) {
+              grid.style.height = newHeight + 'px';
+            }
+
+            setTimeout(() => {
+              if (gen !== this._fadeGen) return;
+              grid.style.transition = '';
+              grid.style.opacity = '';
+              grid.style.height = '';
+              grid.style.overflow = '';
+              this._fading = false;
+            }, 300);
+          });
+        };
+        grid.addEventListener('transitionend', afterFadeOut, { once: true });
+        setTimeout(afterFadeOut, 200);
       }
     }`}
   >
@@ -432,10 +381,10 @@ const eventsData = JSON.stringify(eventsWithImages.map((e, i) => ({
     <div
       x-cloak
       class="grid w-full overflow-hidden"
-      :style="hasMore && !_transitioning
+      :style="hasMore && !_fading
         ? 'transition: opacity 300ms ease-in, grid-template-rows 300ms ease-out, margin 300ms ease-out'
         : 'transition: opacity 100ms ease-out, grid-template-rows 100ms ease-out, margin 100ms ease-out'"
-      :class="hasMore && !_transitioning
+      :class="hasMore && !_fading
         ? 'grid-rows-[1fr] mt-8 sm:mt-10 lg:mt-12 opacity-100'
         : 'grid-rows-[0fr] mt-0 opacity-0'"
     >
