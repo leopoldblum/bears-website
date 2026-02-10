@@ -32,26 +32,31 @@ const categoryIcons: Record<string, string[]> = {
 <!-- Context Bar -->
 <div class="mb-6 sm:mb-8 lg:mb-10">
   {subtitle && (
-    <p class="text-xs sm:text-sm font-bold uppercase tracking-[0.2em] text-bears-accent mb-2 sm:mb-3">
+    <p class="text-xs sm:text-sm font-bold uppercase tracking-[0.2em] text-bears-accent mb-3 sm:mb-4">
       {subtitle}
     </p>
   )}
 
-  <div class="flex items-end justify-between gap-4">
-    {description && (
-      <p class="text-sm sm:text-base text-bears-text-onDark/60 leading-relaxed">
-        {description}
-      </p>
-    )}
-    <div class="flex items-center gap-2 shrink-0">
-      <slot />
-    </div>
-  </div>
+  {description && (
+    <p class="text-sm sm:text-base text-bears-text-onDark/60 leading-relaxed">
+      {description}
+    </p>
+  )}
 </div>
 
-<!-- Category Explanations — narrower than project grid to break false column alignment -->
-<div class="max-w-4xl mx-auto mb-6 sm:mb-8 lg:mb-10">
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-3 lg:gap-5">
+<!-- Category Cards + Sort/Filter Buttons -->
+<div class="flex flex-col lg:grid lg:grid-cols-3 gap-4 lg:gap-6 lg:items-stretch mb-8 sm:mb-10 lg:mb-14">
+  <!-- Sort/Filter buttons + result count — first in DOM for mobile, col 3 on lg -->
+  <div class="flex flex-col items-end justify-end gap-2 lg:col-start-3 lg:row-start-1">
+    <div class="flex items-center gap-2">
+      <slot />
+    </div>
+    <slot name="result-count" />
+  </div>
+
+  <!-- Category cards — cols 1-2 on lg -->
+  <div class="lg:col-start-1 lg:col-span-2 lg:row-start-1">
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 lg:gap-5">
     {categories.map((category) => (
       <button
         type="button"
@@ -90,6 +95,6 @@ const categoryIcons: Record<string, string[]> = {
         </p>
       </button>
     ))}
+    </div>
   </div>
 </div>
-
