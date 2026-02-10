@@ -423,6 +423,33 @@ describe('getLandingHeroSlides', () => {
     const result = await getLandingHeroSlides();
     expect(result.map(s => s.id)).toEqual(['1-slide.md', '2-slide.md', '10-slide.md']);
   });
+
+  it('sorts slides without numeric prefix to the beginning', async () => {
+    mockedGetCollection.mockResolvedValue([
+      { id: '05-slide.md', slug: 'slide-5', data: {} },
+      { id: 'about.md', slug: 'about', data: {} },
+      { id: '01-slide.md', slug: 'slide-1', data: {} },
+    ]);
+    const result = await getLandingHeroSlides();
+    expect(result.map(s => s.id)).toEqual(['about.md', '01-slide.md', '05-slide.md']);
+  });
+
+  it('handles slides with same numeric prefix', async () => {
+    mockedGetCollection.mockResolvedValue([
+      { id: '01-alpha.md', slug: 'alpha', data: {} },
+      { id: '01-beta.md', slug: 'beta', data: {} },
+    ]);
+    const result = await getLandingHeroSlides();
+    expect(result).toHaveLength(2);
+    expect(result.map(s => s.id)).toContain('01-alpha.md');
+    expect(result.map(s => s.id)).toContain('01-beta.md');
+  });
+
+  it('returns empty array for empty collection', async () => {
+    mockedGetCollection.mockResolvedValue([]);
+    const result = await getLandingHeroSlides();
+    expect(result).toEqual([]);
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -534,6 +561,13 @@ describe('getSponsorsByTier', () => {
     mockedGetCollection.mockResolvedValue([]);
     await getSponsorsByTier();
     expect(mockedGetCollection).toHaveBeenCalledWith('sponsors');
+  });
+
+  it('throws when sponsor has unknown tier prefix', async () => {
+    mockedGetCollection.mockResolvedValue([
+      makeSponsor({ id: 'unknown/corp', slug: 'corp' }),
+    ]);
+    await expect(getSponsorsByTier()).rejects.toThrow();
   });
 });
 
