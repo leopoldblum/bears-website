@@ -2,7 +2,6 @@
 // LatestNews component - Shows latest news from BEARS
 import PostShowcase from "@posts-catalog/PostShowcase.astro";
 import Button from "@mdx/Button.astro";
-import CarouselArrow from "@reusable/CarouselArrow.astro";
 import type { PostType } from '@types';
 import { loadCollectionImages } from '@utils/imageLoader';
 import { getLatestPosts, sortByDateDesc, getPageContent, getLatestInstagramPosts } from '@utils/contentQueries';
@@ -128,23 +127,31 @@ const newsItems = allPostsWithImages.map((post) => {
     </div>
   )}
 
-  <!-- Show All Button - Only visible on mobile when not all posts are shown -->
-  <div x-show="!showAll" class="flex justify-center mt-8 lg:hidden">
-    <CarouselArrow
-      direction="down"
-      onClick="showAll = true"
-      variant="flex"
-    />
-  </div>
-
-  <!-- Show Less Button - Only visible on mobile when all posts are shown -->
-  <div x-show="showAll" class="flex justify-center mt-8 lg:hidden">
-    <CarouselArrow
-      direction="prev"
-      onClick="hideAndScroll()"
-      variant="flex"
-      class="rotate-90 [&_svg]:rotate-0"
-    />
+  <!-- Show All / Show Less Button - Only visible on mobile -->
+  <div class="flex justify-center mt-8 lg:hidden">
+    <button
+      x-show="!showAll"
+      @click="showAll = true"
+      type="button"
+      class="group flex items-center justify-center gap-2.5 px-6 py-3 rounded-lg border border-white/15 text-sm text-bears-text-onDark/80 hover:border-bears-accent/50 hover:text-bears-text-onDark transition-all duration-200 cursor-pointer"
+    >
+      <span>Show more</span>
+      <svg class="w-4 h-4 transition-transform duration-200 group-hover:translate-y-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+      </svg>
+    </button>
+    <button
+      x-show="showAll"
+      x-cloak
+      @click="hideAndScroll()"
+      type="button"
+      class="group flex items-center justify-center gap-2.5 px-6 py-3 rounded-lg border border-white/15 text-sm text-bears-text-onDark/80 hover:border-bears-accent/50 hover:text-bears-text-onDark transition-all duration-200 cursor-pointer"
+    >
+      <span>Show less</span>
+      <svg class="w-4 h-4 transition-transform duration-200 group-hover:-translate-y-0.5 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+      </svg>
+    </button>
   </div>
 </section>
 
