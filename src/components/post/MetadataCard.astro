@@ -36,7 +36,7 @@ const backLabel = type === 'event' ? 'Back to Events' : 'Back to Projects';
 
   <div class="metadata-section">
     <h3 class="metadata-label">Category</h3>
-    <div class="category-badge">
+    <div class="category-badge" data-pagefind-weight="4">
       {formatCategory(category)}
     </div>
   </div>
@@ -44,7 +44,7 @@ const backLabel = type === 'event' ? 'Back to Events' : 'Back to Projects';
   {headOfProject && (
     <div class="metadata-section">
       <h3 class="metadata-label">Project Lead</h3>
-      <p class="metadata-value">{headOfProject}</p>
+      <p class="metadata-value" data-pagefind-weight="3">{headOfProject}</p>
     </div>
   )}
 

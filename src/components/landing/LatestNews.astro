@@ -55,7 +55,7 @@ const newsItems = allPostsWithImages.map((post) => {
   }"
 >
   <!-- Header - left aligned -->
-  <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-bears-text-onDark mb-8 sm:mb-10 lg:mb-14">
+  <h2 id="latest-news" class="text-3xl sm:text-4xl lg:text-5xl font-bold text-bears-text-onDark mb-8 sm:mb-10 lg:mb-14">
     {content?.data.title}
   </h2>
 
@@ -74,7 +74,7 @@ const newsItems = allPostsWithImages.map((post) => {
   )}
 
   <!-- News Preview Grid -->
-  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 my-10 sm:my-14 px-4 sm:px-0">
+  <div data-pagefind-ignore class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 my-10 sm:my-14 px-4 sm:px-0">
     {newsItems.map((news, index) => (
       index < 2 ? (
         <PostShowcase

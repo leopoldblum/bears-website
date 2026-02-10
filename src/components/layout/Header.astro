@@ -36,7 +36,20 @@ function isActive(href: string): boolean {
       if (!this.searchQuery.trim()) { this.searchResults = []; return; }
       try {
         const s = await window.__pagefind.search(this.searchQuery.trim());
-        this.searchResults = await Promise.all(s.results.slice(0, 8).map(r => r.data()));
+        const results = await Promise.all(s.results.slice(0, 8).map(r => r.data()));
+        this.searchResults = results.map(r => {
+          const best = r.sub_results?.[0];
+          if (best) {
+            r.displayUrl = best.url;
+            r.displayTitle = best.title || r.meta?.title || 'Untitled';
+            r.displayExcerpt = best.excerpt || '';
+          } else {
+            r.displayUrl = r.url;
+            r.displayTitle = r.meta?.title || 'Untitled';
+            r.displayExcerpt = r.excerpt || '';
+          }
+          return r;
+        });
         this.selectedIndex = -1;
       } catch (e) { console.error('Pagefind search failed:', e); }
     },
@@ -74,7 +87,7 @@ function isActive(href: string): boolean {
 
     confirmSelection() {
       if (this.selectedIndex >= 0 && this.searchResults[this.selectedIndex]) {
-        window.location.href = this.searchResults[this.selectedIndex].url;
+        window.location.href = this.searchResults[this.selectedIndex].displayUrl;
       }
     },
 
@@ -182,7 +195,7 @@ function isActive(href: string): boolean {
               <div class="py-1">
                 <template x-for="(result, idx) in searchResults" :key="result.url + idx">
                   <a
-                    :href="result.url"
+                    :href="result.displayUrl"
                     :data-idx="idx"
                     x-on:mouseenter="selectedIndex = idx"
                     x-on:mousedown.prevent
@@ -192,12 +205,12 @@ function isActive(href: string): boolean {
                     <div class="flex items-center gap-2">
                       <span class="text-sm font-medium truncate"
                             :class="selectedIndex === idx ? 'text-white' : 'text-bears-text-onDark/90'"
-                            x-text="result.meta?.title || 'Untitled'"></span>
+                            x-text="result.displayTitle"></span>
                       <span class="text-[10px] uppercase tracking-wider text-gray-500 shrink-0"
                             x-text="stripSection(result.url)"></span>
                     </div>
                     <div class="text-xs text-gray-400 mt-0.5 line-clamp-1 search-excerpt"
-                         x-html="result.excerpt || ''"></div>
+                         x-html="result.displayExcerpt"></div>
                   </a>
                 </template>
               </div>
@@ -271,7 +284,7 @@ function isActive(href: string): boolean {
           >
             <template x-for="(result, idx) in searchResults" :key="result.url + idx">
               <a
-                :href="result.url"
+                :href="result.displayUrl"
                 :data-idx="idx"
                 x-on:mouseenter="selectedIndex = idx"
                 class="search-result block px-3 py-2 transition-colors duration-75"
@@ -280,12 +293,12 @@ function isActive(href: string): boolean {
                 <div class="flex items-center gap-2">
                   <span class="text-sm font-medium truncate"
                         :class="selectedIndex === idx ? 'text-white' : 'text-bears-text-onDark/90'"
-                        x-text="result.meta?.title || 'Untitled'"></span>
+                        x-text="result.displayTitle"></span>
                   <span class="text-[10px] uppercase tracking-wider text-gray-500 shrink-0"
                         x-text="stripSection(result.url)"></span>
                 </div>
                 <div class="text-xs text-gray-400 mt-0.5 line-clamp-1 search-excerpt"
-                     x-html="result.excerpt || ''"></div>
+                     x-html="result.displayExcerpt"></div>
               </a>
             </template>
           </div>

@@ -69,7 +69,7 @@ const processedItems = await Promise.all(
           }
           aria-controls={itemId}
         >
-          <span>{item.title}</span>
+          <span data-pagefind-weight="6">{item.title}</span>
           <svg
             class="w-4 h-4 flex-shrink-0 ml-3 transition-all duration-200"
             x-bind:class={allowMultiple
@@ -102,6 +102,7 @@ const processedItems = await Promise.all(
               )}
               <div
                 class="text-sm sm:text-base text-bears-text-onDark/90 leading-relaxed"
+                data-pagefind-weight="2"
                 set:html={item.content}
               />
             </div>

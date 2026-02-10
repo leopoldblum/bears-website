@@ -11,7 +11,6 @@ const location = { lat: 52.5154722, lng: 13.3240833 };
 ---
 
 <section
-  id="find-us"
   class="relative overflow-hidden py-10 sm:py-12 lg:py-16 lg:min-h-[75vh] flex flex-col justify-center"
 >
   <div class="container mx-auto px-4 sm:px-6 lg:px-12">
@@ -26,6 +25,7 @@ const location = { lat: 52.5154722, lng: 13.3240833 };
 
     <!-- Heading -->
     <h2
+      id="find-us"
       class="text-3xl sm:text-4xl lg:text-5xl font-bold text-bears-text-onDark mb-6 sm:mb-8 lg:mb-12"
     >
       {content?.data.title}
@@ -63,11 +63,13 @@ const location = { lat: 52.5154722, lng: 13.3240833 };
           <div class="border-l-[3px] border-bears-accent pl-4 sm:pl-6">
             <p
               class="text-5xl sm:text-6xl lg:text-7xl font-black text-bears-text-onDark leading-tight"
+              data-pagefind-weight="5"
             >
               {room}
             </p>
             <p
               class="text-3xl sm:text-4xl lg:text-5xl font-bold text-bears-text-onDark/80 leading-tight mt-1 sm:mt-2"
+              data-pagefind-weight="5"
             >
               {schedule}
             </p>
