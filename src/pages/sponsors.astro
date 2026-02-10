@@ -1,19 +1,75 @@
 ---
 import BaseLayout from "@layouts/BaseLayout.astro";
 import PageHeroImage from "@reusable/PageHeroImage.astro";
-import { sponsorsHeroImages } from "@utils/imageGlobs";
-import { loadAllImagesFromDirectory } from "@utils/imageLoader";
-import { getPageContent } from "@utils/contentQueries";
+import SponsorShowcase from "@components/sponsors/SponsorShowcase.astro";
+import Button from "@mdx/Button.astro";
+import CrosslinkBanner from "@reusable/CrosslinkBanner.astro";
+import { sponsorsHeroImages, sponsorLogos } from "@utils/imageGlobs";
+import { loadAllImagesFromDirectory, loadImage, defaultSponsorImage } from "@utils/imageLoader";
+import { getPageContent, getSponsorsByTier } from "@utils/contentQueries";
 
+// Page text content
 const pageContent = await getPageContent("sponsors/sponsors-title");
+const introContent = await getPageContent("sponsors/sponsors-intro");
+const tiersContent = await getPageContent("sponsors/sponsor-tiers");
+const ctaContent = await getPageContent("sponsors/become-sponsor-cta");
+
+// Hero image
 const loadedHeroImages = await loadAllImagesFromDirectory(sponsorsHeroImages);
 const sponsorHeroImage = loadedHeroImages[0];
-const { Content } = pageContent
-  ? await pageContent.render()
-  : { Content: null };
+
+// Sponsors by tier
+const { diamond, platinum, gold, silver, bronze } = await getSponsorsByTier();
+
+// Load images for a tier's sponsors (same pattern as BecomeSponsor.astro)
+async function loadTierImages(sponsors: typeof diamond) {
+  return Promise.all(
+    sponsors.map(async (sponsor) => {
+      const tier = sponsor.id.split("/")[0];
+      const logoData =
+        (await loadImage({
+          glob: sponsorLogos,
+          imagePath: `/src/assets/sponsors/${tier}/${sponsor.data.logo}`,
+          fallbackImage: defaultSponsorImage,
+          context: {
+            itemTitle: sponsor.data.name,
+            itemSlug: sponsor.slug,
+          },
+        })) || defaultSponsorImage;
+
+      return {
+        ...sponsor.data,
+        logo: logoData,
+        slug: sponsor.slug,
+        tier: tier as "bronze" | "silver" | "gold" | "platinum" | "diamond",
+      };
+    }),
+  );
+}
+
+const [diamondSponsors, platinumSponsors, goldSponsors, silverSponsors, bronzeSponsors] =
+  await Promise.all([
+    loadTierImages(diamond),
+    loadTierImages(platinum),
+    loadTierImages(gold),
+    loadTierImages(silver),
+    loadTierImages(bronze),
+  ]);
+
+// Tier descriptions from items array: [0]=Diamond, [1]=Platinum, [2]=Gold, [3]=Silver, [4]=Bronze
+const tierDescriptions = tiersContent?.data.items ?? [];
+
+const tiers = [
+  { name: "Diamond", key: "diamond" as const, sponsors: diamondSponsors, description: tierDescriptions[0] },
+  { name: "Platinum", key: "platinum" as const, sponsors: platinumSponsors, description: tierDescriptions[1] },
+  { name: "Gold", key: "gold" as const, sponsors: goldSponsors, description: tierDescriptions[2] },
+  { name: "Silver", key: "silver" as const, sponsors: silverSponsors, description: tierDescriptions[3] },
+  { name: "Bronze", key: "bronze" as const, sponsors: bronzeSponsors, description: tierDescriptions[4] },
+];
 ---
 
 <BaseLayout title={pageContent?.data.title ?? "Sponsors"}>
+  {/* Hero */}
   <PageHeroImage
     image={sponsorHeroImage}
     alt="Partnership and collaboration opportunities with BEARS"
@@ -21,13 +77,49 @@ const { Content } = pageContent
     subtitle={pageContent?.data.subtitle ?? ""}
   />
 
-  {
-    Content && (
-      <div class="container mx-auto px-4 py-6 sm:px-6 sm:py-8 lg:px-8">
-        <article class="prose prose-lg max-w-4xl mx-auto text-bears-text-onDark">
-          <Content />
-        </article>
+  {/* Sponsor Showcase (light bg, tier accordions) */}
+  <SponsorShowcase
+    title={tiersContent?.data.title ?? "Our Sponsors"}
+    subtitle={introContent?.data.subtitle}
+    description={introContent?.data.description}
+    tiers={tiers}
+  />
+
+  {/* Become a Sponsor CTA */}
+  {ctaContent && (
+    <section class="container mx-auto px-4 sm:px-8 lg:px-16 py-20 sm:py-28 lg:py-36">
+      {ctaContent.data.subtitle && (
+        <p class="text-xs sm:text-sm font-bold uppercase tracking-[0.2em] text-bears-accent mb-3 sm:mb-4 text-center">
+          {ctaContent.data.subtitle}
+        </p>
+      )}
+
+      <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-bears-text-onDark text-center mb-6 sm:mb-8 lg:mb-12">
+        {ctaContent.data.title}
+      </h2>
+
+      <div class="max-w-2xl mx-auto bg-white/[0.03] border border-white/10 rounded-2xl p-6 sm:p-8 lg:p-10 text-center">
+        {ctaContent.data.description && (
+          <p class="text-sm sm:text-base lg:text-lg text-bears-text-onDark/70 leading-relaxed mb-8 sm:mb-10">
+            {ctaContent.data.description}
+          </p>
+        )}
+
+        {ctaContent.data.buttonText && ctaContent.data.buttonHref && (
+          <Button variant="primary" size="large" href={ctaContent.data.buttonHref}>
+            {ctaContent.data.buttonText}
+          </Button>
+        )}
       </div>
-    )
-  }
+    </section>
+  )}
+
+  {/* Crosslink to projects */}
+  <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+    <CrosslinkBanner
+      text="See what your support makes possible"
+      linkText="Explore our projects"
+      href="/projects"
+    />
+  </div>
 </BaseLayout>
