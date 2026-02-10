@@ -1,5 +1,5 @@
 ---
 title: "Our Mission"
 subtitle: "This is"
-description: "Bridging the gap between the classroom and the launchpad what even is this field, what if the text is insanely long here? so it spans across multiple lines?"
+description: "We bridge the gap between the classroom and the launchpad. At BEARS, students design, build, and launch real aerospace systems — turning theoretical knowledge into hands-on engineering experience that prepares you for the industry."
 ---

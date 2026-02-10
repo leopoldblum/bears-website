@@ -10,17 +10,29 @@ const listContent = await getPageContent("about-us/whats-in-it");
 
 const loadedImages = await loadAllImagesFromDirectory(ourMissionImages);
 const missionImage = loadedImages[0];
+
+// Parse items: "Title -> Description" or just "Title"
+const parsedItems =
+  listContent?.data.items?.map((item) => {
+    const separatorIndex = item.indexOf(" -> ");
+    if (separatorIndex !== -1) {
+      return {
+        title: item.slice(0, separatorIndex),
+        description: item.slice(separatorIndex + 4) || undefined,
+      };
+    }
+    return { title: item, description: undefined };
+  }) ?? [];
 ---
 
 <section
   class="container mx-auto px-4 sm:px-8 lg:px-16 py-16 sm:py-20 lg:py-24"
 >
-  <div
-    class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-stretch min-h-[500px] lg:min-h-[60vh]"
-  >
+  <!-- Part 1: Mission Statement -->
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
     <!-- Image -->
     <div
-      class="relative w-full h-80 sm:h-96 lg:h-full rounded-2xl overflow-hidden border border-white/10 shadow-[0_4px_12px_rgba(0,0,0,0.4)]"
+      class="relative w-full h-72 sm:h-80 lg:h-[480px] rounded-2xl overflow-hidden border border-white/10 shadow-[0_4px_12px_rgba(0,0,0,0.4)]"
     >
       <Img
         src={missionImage}
@@ -33,67 +45,70 @@ const missionImage = loadedImages[0];
       />
     </div>
 
-    <!-- Text: side-by-side on mobile, stacked column on desktop -->
-    <div
-      class="grid grid-cols-2 lg:grid-cols-1 lg:flex lg:flex-col lg:min-h-[60vh] gap-2 sm:gap-6 lg:gap-0"
-    >
-      <!-- Title + subtitle -->
-      <div
-        class="pr-2 sm:pr-0 lg:w-fit lg:ml-auto col-span-1 order-2 lg:order-1"
-      >
-        {
-          content?.data.subtitle && (
-            <p class="text-xs sm:text-sm font-bold uppercase tracking-[0.2em] text-bears-accent text-right mb-2 sm:mb-3">
-              {content.data.subtitle}
-            </p>
-          )
-        }
-        <h2
-          id="our-mission"
-          class="text-2xl sm:text-3xl lg:text-5xl font-bold text-bears-text-onDark text-right pl-12 sm:pl-12 lg:pl-24"
-        >
-          {content?.data.title}
-        </h2>
-        <div
-          class="h-[2px] bg-gradient-to-l from-white/30 from-30% via-white/15 via-70% to-transparent my-3 sm:my-4 lg:my-6 rounded-full"
-        >
-        </div>
-        {
-          content?.data.description && (
-            <p class="text-sm sm:text-base text-bears-text-onDark/60 text-right leading-relaxed">
-              {content.data.description}
-            </p>
-          )
-        }
-      </div>
-
-      <!-- Numbered list -->
+    <!-- Text -->
+    <div>
       {
-        listContent?.data.items && (
-          <div class="col-span-1 order-1 lg:order-2 pt-8 sm:pt-10 lg:pt-0 lg:mt-auto lg:flex lg:justify-center lg:mx-[16%]">
-            <div class="w-fit bg-white/[0.03] border border-white/10 rounded-xl px-7 py-4 sm:px-9 sm:py-5 lg:px-10 lg:py-6">
-              <h3 class="text-sm sm:text-base lg:text-lg font-semibold text-bears-text-onDark mb-3 sm:mb-4 lg:mb-6">
-                {listContent.data.title}
-              </h3>
-              <ul class="space-y-2 sm:space-y-3 lg:space-y-4">
-                {listContent.data.items.map((item, i) => (
-                  <li class="accordion-item text-sm sm:text-base lg:text-lg text-bears-text-onDark/80" style={`animation-delay: ${i * 60}ms`}>
-                    <span class="text-bears-accent font-bold mr-1 sm:mr-2 lg:mr-3">
-                      /{String(i + 1).padStart(2, "0")}
-                    </span>
-                    {item}
-                  </li>
-                ))}
-              </ul>
-              <div class="mt-6 sm:mt-8 lg:mt-10 flex justify-center">
-                <Button variant="primary" size="large" href="#find-us">
-                  Join us!
-                </Button>
-              </div>
-            </div>
-          </div>
+        content?.data.subtitle && (
+          <p class="text-xs sm:text-sm font-bold uppercase tracking-[0.2em] text-bears-accent mb-2 sm:mb-3">
+            {content.data.subtitle}
+          </p>
+        )
+      }
+      <h2
+        id="our-mission"
+        class="text-3xl sm:text-4xl lg:text-5xl font-bold text-bears-text-onDark"
+      >
+        {content?.data.title}
+      </h2>
+      <div
+        class="h-[2px] bg-gradient-to-r from-white/30 from-30% via-white/15 via-70% to-transparent mt-4 sm:mt-6 rounded-full"
+      >
+      </div>
+      {
+        content?.data.description && (
+          <p class="text-sm sm:text-base lg:text-lg text-bears-text-onDark/60 leading-relaxed mt-4 sm:mt-6 max-w-xl">
+            {content.data.description}
+          </p>
         )
       }
     </div>
   </div>
+
+  <!-- Part 2: Benefits Grid -->
+  {
+    parsedItems.length > 0 && (
+      <div class="mt-16 sm:mt-20 lg:mt-24">
+        <h3 class="text-xl sm:text-2xl lg:text-3xl font-bold text-bears-text-onDark mb-8 sm:mb-10 lg:mb-14">
+          {listContent?.data.title}
+        </h3>
+
+        <div class="flex flex-wrap justify-center gap-4 sm:gap-5 lg:gap-6">
+          {parsedItems.map((item, i) => (
+            <div
+              class="accordion-item bg-white/[0.03] border border-white/10 rounded-xl p-5 sm:p-6 transition-colors duration-300 hover:bg-white/[0.06] w-full sm:w-[calc(50%-0.625rem)] lg:w-[calc(33.333%-1rem)]"
+              style={`animation-delay: ${i * 60}ms`}
+            >
+              <h4 class="text-base sm:text-lg font-semibold text-bears-text-onDark">
+                <span class="text-bears-accent font-bold text-sm sm:text-base mr-2">
+                  /{String(i + 1).padStart(2, "0")}
+                </span>
+                {item.title}
+              </h4>
+              {item.description && (
+                <p class="text-sm text-bears-text-onDark/50 leading-relaxed mt-2">
+                  {item.description}
+                </p>
+              )}
+            </div>
+          ))}
+        </div>
+
+        <div class="mt-8 sm:mt-10 lg:mt-12 flex justify-center">
+          <Button variant="primary" size="large" href="#find-us">
+            Join us!
+          </Button>
+        </div>
+      </div>
+    )
+  }
 </section>
