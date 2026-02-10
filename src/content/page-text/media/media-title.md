@@ -1,5 +1,5 @@
 ---
 title: "Media"
 subtitle: "lorem ipsum"
-description: "No media available at the moment."
+seoDescription: "TODO: Write a ~150 character meta description for the Media page."
 ---

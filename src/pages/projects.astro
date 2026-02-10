@@ -67,7 +67,7 @@ const projectsData = JSON.stringify(projectsWithImages.map((p, i) => ({
 })));
 ---
 
-<BaseLayout title={pageContent?.data.title ?? "Projects"}>
+<BaseLayout title={pageContent?.data.title ?? "Projects"} description={pageContent?.data.seoDescription}>
   <PageHeroImage
     image={projectHeroImage}
     alt="BEARS student working on satellite project"

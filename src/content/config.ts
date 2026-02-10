@@ -150,6 +150,7 @@ const pageTextCollection = defineCollection({
     title: z.string(),
     subtitle: z.string().optional(),
     description: z.string().optional(),
+    seoDescription: z.string().optional(),
     buttonText: z.string().optional(),
     buttonHref: z.string().optional(),
     ctas: z.array(z.object({

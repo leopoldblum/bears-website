@@ -13,7 +13,7 @@ const loadedHeroImages = await loadAllImagesFromDirectory(contactHeroImages);
 const contactHeroImage = loadedHeroImages[0];
 ---
 
-<BaseLayout title={pageContent?.data.title ?? "Contact"}>
+<BaseLayout title={pageContent?.data.title ?? "Contact"} description={pageContent?.data.seoDescription}>
   <PageHeroImage
     image={contactHeroImage}
     alt="Contact BEARS"

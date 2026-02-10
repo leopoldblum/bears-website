@@ -1,6 +1,15 @@
 # Astro.js Website for BEARS
 
 > **TODO:** Add an `og-default.jpg` image (1200 x 630 px) to `/public/` for social media link previews (WhatsApp, LinkedIn, X, etc.). Without it, shared links will have text but no preview image.
+>
+> **TODO:** Write SEO meta descriptions (~150 characters each) in the `seoDescription` field of these content files:
+> - `src/content/page-text/landing/hero.md` (homepage)
+> - `src/content/page-text/about-us/about-us-title.md`
+> - `src/content/page-text/events/events-title.md`
+> - `src/content/page-text/projects/projects-title.md`
+> - `src/content/page-text/sponsors/sponsors-title.md`
+> - `src/content/page-text/media/media-title.md`
+> - `src/content/page-text/contact/contact-title.md`
 
 ## Local Quickstart
 

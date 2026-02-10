@@ -55,7 +55,7 @@ const eventsData = JSON.stringify(eventsWithImages.map((e, i) => ({
 })));
 ---
 
-<BaseLayout title={pageContent?.data.title ?? "Events"}>
+<BaseLayout title={pageContent?.data.title ?? "Events"} description={pageContent?.data.seoDescription}>
   <PageHeroImage
     image={eventHeroImage}
     alt="BEARS members collaborating at a workshop event"

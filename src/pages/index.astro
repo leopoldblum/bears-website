@@ -14,7 +14,7 @@ const heroCTAs = heroContent?.data.ctas ?? [];
 const heroTagline = heroContent?.data.subtitle;
 ---
 
-<BaseLayout title="Home">
+<BaseLayout title="Home" description={heroContent?.data.seoDescription}>
   <LandingHero ctas={heroCTAs} tagline={heroTagline} />
   <WhatIsBears />
   <MeetTheTeam />

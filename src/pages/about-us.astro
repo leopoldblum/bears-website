@@ -14,7 +14,7 @@ const loadedHeroImages = await loadAllImagesFromDirectory(aboutHeroImages);
 const aboutHeroImage = loadedHeroImages[0];
 ---
 
-<BaseLayout title={pageContent?.data.title ?? "About Us"}>
+<BaseLayout title={pageContent?.data.title ?? "About Us"} description={pageContent?.data.seoDescription}>
   <PageHeroImage
     image={aboutHeroImage}
     alt="BEARS team working together on aerospace projects"
