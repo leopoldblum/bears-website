@@ -38,7 +38,14 @@ function isActive(href: string): boolean {
         const s = await window.__pagefind.search(this.searchQuery.trim());
         const results = await Promise.all(s.results.slice(0, 8).map(r => r.data()));
         this.searchResults = results.map(r => {
-          const best = r.sub_results?.[0];
+          const subs = r.sub_results || [];
+          const best = subs.length > 1
+            ? subs.reduce((a, b) => {
+                const sa = a.weighted_locations?.reduce((s, l) => s + l.balanced_score, 0) || 0;
+                const sb = b.weighted_locations?.reduce((s, l) => s + l.balanced_score, 0) || 0;
+                return sb > sa ? b : a;
+              })
+            : subs[0];
           if (best) {
             r.displayUrl = best.url;
             r.displayTitle = best.title || r.meta?.title || 'Untitled';
