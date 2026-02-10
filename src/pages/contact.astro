@@ -8,6 +8,7 @@ import { loadAllImagesFromDirectory } from "@utils/imageLoader";
 import { getPageContent } from "@utils/contentQueries";
 
 const pageContent = await getPageContent('contact/contact-title');
+const crosslink = await getPageContent('contact/contact-crosslink');
 const loadedHeroImages = await loadAllImagesFromDirectory(contactHeroImages);
 const contactHeroImage = loadedHeroImages[0];
 ---
@@ -24,9 +25,9 @@ const contactHeroImage = loadedHeroImages[0];
 
   <div class="container mx-auto px-4 sm:px-6 lg:px-8">
     <CrosslinkBanner
-      text="Interested in joining BEARS?"
-      linkText="Find out how"
-      href="/about-us#find-us"
+      text={crosslink?.data.title ?? "Interested in joining BEARS?"}
+      linkText={crosslink?.data.buttonText ?? "Find out how"}
+      href={crosslink?.data.buttonHref ?? "/about-us#find-us"}
     />
   </div>
 </BaseLayout>

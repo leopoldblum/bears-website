@@ -6,6 +6,9 @@ const currentYear = new Date().getFullYear();
 const socialContent = await getPageContent("footer/social-links");
 const socialLinks = socialContent?.data.socialLinks ?? [];
 
+const addressContent = await getPageContent("footer/footer-address");
+const addressLines = addressContent?.data.items ?? [];
+
 const socialIcons: Record<string, { label: string; path: string }> = {
   instagram: {
     label: "Instagram",
@@ -45,12 +48,10 @@ const socialIcons: Record<string, { label: string; path: string }> = {
         <address
           class="not-italic text-sm text-bears-text-onLight/70 leading-relaxed text-center lg:text-left"
         >
-          Berlin Experimental Astronautics<br />
-          Research Student team e.V.<br />
-          c/o TU Berlin - Institut für Luft-<br />
-          und Raumfahrt<br />
-          Marchstraße 12-14<br />
-          10587 Berlin
+          {addressLines.length > 0
+            ? addressLines.map((line, i) => <>{line}{i < addressLines.length - 1 && <br />}</>)
+            : <>Berlin Experimental Astronautics<br />Research Student team e.V.<br />c/o TU Berlin - Institut für Luft- und Raumfahrt<br />Marchstraße 12-14<br />10587 Berlin</>
+          }
         </address>
       </div>
 

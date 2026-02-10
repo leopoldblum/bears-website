@@ -13,6 +13,7 @@ const pageContent = await getPageContent("sponsors/sponsors-title");
 const introContent = await getPageContent("sponsors/sponsors-intro");
 const tiersContent = await getPageContent("sponsors/sponsor-tiers");
 const ctaContent = await getPageContent("sponsors/become-sponsor-cta");
+const crosslink = await getPageContent("sponsors/sponsors-crosslink");
 
 // Hero image
 const loadedHeroImages = await loadAllImagesFromDirectory(sponsorsHeroImages);
@@ -92,7 +93,7 @@ const tiers = [
         </p>
       )}
 
-      <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-bears-text-onDark text-center mb-6 sm:mb-8 lg:mb-12">
+      <h2 id="become-a-sponsor" class="text-3xl sm:text-4xl lg:text-5xl font-bold text-bears-text-onDark text-center mb-6 sm:mb-8 lg:mb-12">
         {ctaContent.data.title}
       </h2>
 
@@ -115,9 +116,9 @@ const tiers = [
   {/* Crosslink to projects */}
   <div class="container mx-auto px-4 sm:px-6 lg:px-8">
     <CrosslinkBanner
-      text="See what your support makes possible"
-      linkText="Explore our projects"
-      href="/projects"
+      text={crosslink?.data.title ?? "See what your support makes possible"}
+      linkText={crosslink?.data.buttonText ?? "Explore our projects"}
+      href={crosslink?.data.buttonHref ?? "/projects"}
     />
   </div>
 </BaseLayout>

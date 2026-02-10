@@ -112,7 +112,7 @@ const allImages = categoriesWithImages.flatMap((category) => category.images);
             />
           </svg>
           <p class="text-lg text-bears-text-onDark/60">
-            No media available at the moment.
+            {pageContent?.data.description ?? "No media available at the moment."}
           </p>
         </div>
       )

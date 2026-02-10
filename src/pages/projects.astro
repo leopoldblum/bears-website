@@ -17,6 +17,8 @@ import { loadAllImagesFromDirectory } from "@utils/imageLoader";
 
 const pageContent = await getPageContent('projects/projects-title');
 const categoriesIntro = await getPageContent('projects/categories-intro');
+const emptyState = await getPageContent('projects/projects-empty-state');
+const crosslink = await getPageContent('projects/projects-crosslink');
 // Fetch category descriptions for the overview section
 const categoryContentIds = [
   { key: 'experimental-rocketry', id: 'projects/category-experimental-rocketry' },
@@ -350,8 +352,8 @@ const projectsData = JSON.stringify(projectsWithImages.map((p, i) => ({
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
           d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
       </svg>
-      <p class="text-bears-text-onDark/50 text-lg mb-1">No projects match your filters</p>
-      <p class="text-bears-text-onDark/30 text-sm mb-6">Try adjusting or clearing your filters</p>
+      <p class="text-bears-text-onDark/50 text-lg mb-1">{emptyState?.data.title ?? "No projects match your filters"}</p>
+      <p class="text-bears-text-onDark/30 text-sm mb-6">{emptyState?.data.description ?? "Try adjusting or clearing your filters"}</p>
       <button
         type="button"
         @click="clearFilters()"
@@ -365,6 +367,7 @@ const projectsData = JSON.stringify(projectsWithImages.map((p, i) => ({
     <div
       x-ref="grid"
       x-show="filteredIndices.length > 0"
+      data-pagefind-ignore
       class="projects-grid grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8 content-start min-h-80"
     >
       {projectsWithImages.map((project, index) => (
@@ -417,9 +420,9 @@ const projectsData = JSON.stringify(projectsWithImages.map((p, i) => ({
     </div>
 
     <CrosslinkBanner
-      text="Want to see what's happening?"
-      linkText="Check out our events"
-      href="/events"
+      text={crosslink?.data.title ?? "Want to see what's happening?"}
+      linkText={crosslink?.data.buttonText ?? "Check out our events"}
+      href={crosslink?.data.buttonHref ?? "/events"}
     />
   </div>
 </BaseLayout>

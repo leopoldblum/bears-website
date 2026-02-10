@@ -16,6 +16,8 @@ import { loadAllImagesFromDirectory } from "@utils/imageLoader";
 
 const pageContent = await getPageContent('events/events-title');
 const eventsIntro = await getPageContent('events/events-intro');
+const emptyState = await getPageContent('events/events-empty-state');
+const crosslink = await getPageContent('events/events-crosslink');
 const loadedHeroImages = await loadAllImagesFromDirectory(eventsHeroImages);
 const eventHeroImage = loadedHeroImages[0];
 
@@ -340,8 +342,8 @@ const eventsData = JSON.stringify(eventsWithImages.map((e, i) => ({
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
           d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
       </svg>
-      <p class="text-bears-text-onDark/50 text-lg mb-1">No events match your filters</p>
-      <p class="text-bears-text-onDark/30 text-sm mb-6">Try adjusting or clearing your filters</p>
+      <p class="text-bears-text-onDark/50 text-lg mb-1">{emptyState?.data.title ?? "No events match your filters"}</p>
+      <p class="text-bears-text-onDark/30 text-sm mb-6">{emptyState?.data.description ?? "Try adjusting or clearing your filters"}</p>
       <button
         type="button"
         @click="clearFilters()"
@@ -355,6 +357,7 @@ const eventsData = JSON.stringify(eventsWithImages.map((e, i) => ({
     <div
       x-ref="grid"
       x-show="filteredIndices.length > 0"
+      data-pagefind-ignore
       class="events-grid grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8 content-start min-h-80"
     >
       {eventsWithImages.map((event, index) => (
@@ -407,9 +410,9 @@ const eventsData = JSON.stringify(eventsWithImages.map((e, i) => ({
     </div>
 
     <CrosslinkBanner
-      text="Curious what we're building?"
-      linkText="Explore our projects"
-      href="/projects"
+      text={crosslink?.data.title ?? "Curious what we're building?"}
+      linkText={crosslink?.data.buttonText ?? "Explore our projects"}
+      href={crosslink?.data.buttonHref ?? "/projects"}
     />
   </div>
 </BaseLayout>
