@@ -116,12 +116,16 @@ const Wrapper = href ? "a" : "div";
 
   <!-- Content Overlay - Enhanced with subtle glass effect -->
   <div class="absolute inset-x-0 bottom-0 transition-all duration-300">
-    <!-- Gradient with subtle blur for depth - Inverse logarithmic curve: transparent top, gets dark fast, then slowly darker -->
+    <!-- Color gradient layer -->
     <div
-      class="absolute inset-0 backdrop-blur-[2px]"
+      class="absolute inset-0"
       style="background: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.5) 15%, rgba(0, 0, 0, 0.75) 30%, rgba(0, 0, 0, 0.82) 50%, rgba(0, 0, 0, 0.88) 70%, rgba(0, 0, 0, 0.95) 100%);"
-    >
-    </div>
+    ></div>
+    <!-- Blur gradient layer — extends slightly above parent so mask can fade smoothly -->
+    <div
+      class="absolute inset-x-0 -top-32 bottom-0 backdrop-blur-[2px]"
+      style="-webkit-mask-image: linear-gradient(to bottom, transparent 40%, black 70%); mask-image: linear-gradient(to bottom, transparent 40%, black 70%);"
+    ></div>
 
     <!-- Content -->
     <div class="relative p-6">
