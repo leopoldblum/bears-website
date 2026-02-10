@@ -12,12 +12,12 @@ const content = await getPageContent('landing/what-is-bears');
 ---
 
 <section
-  class="container mx-auto px-4 sm:px-8 lg:px-16 py-16 sm:py-20 lg:py-24"
+  class="container mx-auto px-4 sm:px-8 lg:px-16 py-20 sm:py-24 lg:py-32"
 >
   <div class="flex flex-col max-w-3xl mx-auto text-center">
     <!-- Header -->
     <h2
-      class="text-3xl sm:text-4xl lg:text-5xl font-bold text-bears-text-onDark mb-6 sm:mb-8 lg:mb-12"
+      class="text-3xl sm:text-4xl lg:text-5xl font-bold text-bears-text-onDark mb-8 sm:mb-10 lg:mb-14"
     >
       {content?.data.title}
     </h2>
@@ -31,13 +31,13 @@ const content = await getPageContent('landing/what-is-bears');
 
     <!-- Button -->
     {content?.data.buttonText && content?.data.buttonHref && (
-      <div class="mt-4 sm:mt-6">
+      <div class="mt-6 sm:mt-8">
         <Button variant="primary" href={content.data.buttonHref}>{content.data.buttonText}</Button>
       </div>
     )}
   </div>
 
-  <div class="mt-12 sm:mt-16">
+  <div class="mt-16 sm:mt-20">
     <Marquee speed={160} gap="1.5rem" height="md">
       {
         carouselImages.map((img, index) => (

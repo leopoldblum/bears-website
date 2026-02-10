@@ -52,11 +52,11 @@ const [
 ]);
 ---
 
-<section class="bg-bears-bg-light py-16 sm:py-20 lg:py-24">
+<section class="bg-bears-bg-light py-20 sm:py-24 lg:py-32">
   <div class="container mx-auto px-4 sm:px-8 lg:px-16">
     <!-- Headline -->
     <h2
-      class="text-3xl sm:text-4xl lg:text-5xl font-bold text-center text-bears-text-onLight mb-12 sm:mb-16 lg:mb-20"
+      class="text-3xl sm:text-4xl lg:text-5xl font-bold text-center text-bears-text-onLight mb-14 sm:mb-18 lg:mb-22"
     >
       {content?.data.title}
     </h2>
@@ -68,7 +68,7 @@ const [
     {
       diamondSponsors.length > 0 &&
         (platinumSponsors.length > 0 || goldSponsors.length > 0) && (
-          <hr class="w-full max-w-3xl mx-auto border-t border-bears-text-onLight opacity-20 my-8 sm:my-10 lg:my-12" />
+          <hr class="w-full max-w-3xl mx-auto border-t border-bears-text-onLight opacity-20 my-10 sm:my-12 lg:my-16" />
         )
     }
 
@@ -78,7 +78,7 @@ const [
     <!-- Divider: Platinum to other tiers -->
     {
       platinumSponsors.length > 0 && goldSponsors.length > 0 && (
-        <hr class="w-full max-w-3xl mx-auto border-t border-bears-text-onLight opacity-20 my-8 sm:my-10 lg:my-12" />
+        <hr class="w-full max-w-3xl mx-auto border-t border-bears-text-onLight opacity-20 my-10 sm:my-12 lg:my-16" />
       )
     }
 
@@ -88,7 +88,7 @@ const [
     <!-- Description text below logos -->
     {
       content?.data.description && (
-        <p class="text-sm sm:text-base text-bears-text-onLight text-center opacity-70 max-w-2xl mx-auto mt-12 sm:mt-16 lg:mt-20 mb-6 sm:mb-8">
+        <p class="text-sm sm:text-base text-bears-text-onLight text-center opacity-70 max-w-2xl mx-auto mt-14 sm:mt-18 lg:mt-22 mb-6 sm:mb-8">
           {content.data.description}
         </p>
       )
