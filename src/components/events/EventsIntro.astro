@@ -17,7 +17,7 @@ const eventsJson = JSON.stringify(events);
 ---
 
 <!-- Context Bar -->
-<div class="mt-2 sm:mt-4 lg:mt-6 mb-8 sm:mb-10 lg:mb-14">
+<div class="mt-6 sm:mt-8 lg:mt-10 mb-10 sm:mb-12 lg:mb-16">
   {subtitle && (
     <p class="text-xs sm:text-sm font-bold uppercase tracking-[0.2em] text-bears-accent mb-3 sm:mb-4">
       {subtitle}
@@ -32,16 +32,9 @@ const eventsJson = JSON.stringify(events);
 </div>
 
 <!-- Next Up Callout + Sort/Filter Buttons -->
-<div class="flex flex-col lg:grid lg:grid-cols-3 gap-4 lg:gap-6 lg:items-stretch mb-10 sm:mb-12 lg:mb-16">
-  <!-- Sort/Filter buttons + result count — first in DOM for mobile, col 3 on lg -->
-  <div class="flex flex-col items-end justify-end gap-2 lg:col-start-3 lg:row-start-1">
-    <div class="flex items-center gap-2">
-      <slot />
-    </div>
-    <slot name="result-count" />
-  </div>
+<div class="flex flex-col lg:grid lg:grid-cols-3 gap-5 lg:gap-7 lg:items-stretch mb-4 lg:mb-6">
+  <!-- Next Up Callout — first in DOM for mobile, cols 1-2 on lg -->
 
-  <!-- Next Up Callout — second in DOM, cols 1-2 on lg -->
   <div
     x-data={`{
       nextEvent: (() => {
@@ -103,6 +96,14 @@ const eventsJson = JSON.stringify(events);
         </div>
       </a>
     </div>
+  </div>
+
+  <!-- Sort/Filter buttons + result count — second in DOM for mobile, col 3 on lg -->
+  <div class="flex flex-col items-end justify-end gap-2 lg:col-start-3 lg:row-start-1">
+    <div class="flex items-center gap-2">
+      <slot />
+    </div>
+    <slot name="result-count" />
   </div>
 
 </div>
