@@ -24,15 +24,17 @@ body {
   display: none !important;
 }
 
-/* Global keyboard focus indicators */
-a:focus-visible,
-button:focus-visible,
-input:focus-visible,
-select:focus-visible,
-textarea:focus-visible,
-[role="button"]:focus-visible {
-  outline: 2px solid var(--color-bears-accent);
-  outline-offset: 2px;
+/* Global keyboard focus indicators — in @layer base so utilities can override */
+@layer base {
+  a:focus-visible,
+  button:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible,
+  [role="button"]:focus-visible {
+    outline: 2px solid var(--color-bears-accent);
+    outline-offset: 2px;
+  }
 }
 
 /* Filter chip stagger animation */
@@ -187,6 +189,31 @@ textarea:focus-visible,
   }
 }
 
+/* Search result entrance animation */
+.search-result {
+  animation: searchResultIn 0.15s ease-out both;
+}
+
+@keyframes searchResultIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Pagefind excerpt highlight marks */
+.search-excerpt mark {
+  background-color: color-mix(in srgb, var(--color-bears-accent) 30%, transparent);
+  color: var(--color-bears-text-onDark);
+  border-radius: 2px;
+  padding: 0 2px;
+}
+
 /* Respect user preference for reduced motion */
 @media (prefers-reduced-motion: reduce) {
 
@@ -195,7 +222,8 @@ textarea:focus-visible,
   .post-container,
   .metadata-card,
   .contact-card,
-  .nav-link {
+  .nav-link,
+  .search-result {
     animation: none;
   }
 

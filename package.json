@@ -4,7 +4,7 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "astro dev",
-    "build": "vitest run && astro build",
+    "build": "vitest run && astro build && pagefind --site dist && node -e \"require('fs').cpSync('dist/pagefind','public/pagefind',{recursive:true})\"",
     "preview": "astro preview",
     "astro": "astro",
     "test": "vitest run",
@@ -36,6 +36,7 @@
   },
   "devDependencies": {
     "@tailwindcss/typography": "^0.5.19",
+    "pagefind": "^1.4.0",
     "tailwind-scrollbar": "^4.0.2",
     "vitest": "^4.0.18"
   }
