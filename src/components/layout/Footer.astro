@@ -215,7 +215,14 @@ const socialIcons: Record<string, { label: string; path: string }> = {
                 href={link.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                class="group w-10 h-10 rounded-full bg-bears-text-onLight/10 flex items-center justify-center hover:bg-bears-accent hover:scale-110 transition-all duration-200"
+                x-data="{ hovered: false }"
+                x-on:mouseenter="hovered = true"
+                x-on:mouseleave="hovered = false"
+                x-bind:style={link.hoverColor ? `hovered ? 'background-color: ${link.hoverColor}' : ''` : ''}
+                class:list={[
+                  "group w-10 h-10 rounded-full bg-bears-text-onLight/10 flex items-center justify-center hover:scale-110 transition-all duration-200",
+                  !link.hoverColor && "hover:bg-bears-accent",
+                ]}
                 aria-label={icon.label}
               >
                 <svg

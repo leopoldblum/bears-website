@@ -5,6 +5,7 @@ socialLinks:
     url: "https://www.instagram.com/bears.space/"
   - platform: "linkedin"
     url: "https://www.linkedin.com/company/bears-ev/"
+    hoverColor: "#0A66C2"
   - platform: "youtube"
     url: "https://www.youtube.com/@BEARS-Space"
 ---

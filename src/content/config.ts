@@ -149,6 +149,7 @@ const pageTextCollection = defineCollection({
     socialLinks: z.array(z.object({
       platform: z.string(),
       url: z.string().url(),
+      hoverColor: z.string().optional(),
     })).optional(),
     faqs: z.array(z.object({
       question: z.string(),
