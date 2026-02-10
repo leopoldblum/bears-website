@@ -43,6 +43,9 @@ function deriveSizes(width: string): string {
 
 const sizes = customSizes || deriveSizes(width);
 
+// Default to rounded-lg, but allow overriding via class prop
+const roundedClass = className?.match(/\brounded(-\w+)?\b/) ? '' : 'rounded-lg';
+
 // Generate full-res modal image only if click-to-enlarge enabled
 const modalSrc = enableClickToEnlarge
   ? (await getImage({ src, format: 'webp' })).src
@@ -52,7 +55,7 @@ const modalSrc = enableClickToEnlarge
 {enableClickToEnlarge ? (
   <!-- With wrapper: enables click-to-enlarge modal -->
   <div
-    class={`img-better group/image rounded-lg overflow-hidden ring-0 ring-bears-accent transition-all duration-300 hover:ring-2 ${width === '100%' ? 'w-full h-full' : 'h-full'}`}
+    class={`img-better group/image ${roundedClass} overflow-hidden ring-0 ring-bears-accent transition-all duration-300 hover:ring-2 ${width === '100%' ? 'w-full h-full' : 'h-full'} ${className || ''}`.trim()}
     x-data="{ modalOpen: false }"
     style={fill ? (width !== '100%' ? `width: ${width}` : undefined) : `aspect-ratio: ${src.width} / ${src.height}${width !== '100%' ? `; width: ${width}` : ''}`}
   >
@@ -72,7 +75,7 @@ const modalSrc = enableClickToEnlarge
   </div>
 ) : fill ? (
   <!-- With wrapper for fill mode: ensures image fills container -->
-  <div class="w-full h-full">
+  <div class={`w-full h-full ${roundedClass} overflow-hidden ${className || ''}`.trim()}>
     <Image
       src={src}
       alt={alt}
@@ -91,7 +94,7 @@ const modalSrc = enableClickToEnlarge
     alt={alt}
     widths={widths}
     sizes={sizes}
-    class={className}
+    class={`${roundedClass} ${className || ''}`.trim()}
     loading={loading}
     format="webp"
     fetchpriority={fetchpriority}
