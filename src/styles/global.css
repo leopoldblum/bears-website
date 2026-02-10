@@ -24,6 +24,17 @@ body {
   display: none !important;
 }
 
+/* Global keyboard focus indicators */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+[role="button"]:focus-visible {
+  outline: 2px solid var(--color-bears-accent);
+  outline-offset: 2px;
+}
+
 /* Filter chip stagger animation */
 .filter-chip {
   animation: filterChipIn 0.25s ease-out both;
