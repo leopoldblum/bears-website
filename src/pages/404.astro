@@ -9,13 +9,41 @@ import BaseLayout from "@layouts/BaseLayout.astro";
     x-init="setTimeout(() => show = true, 50)"
   >
     <div
-      class="text-center py-16 sm:py-20"
+      class="text-center py-16 sm:py-20 -translate-y-20 sm:-translate-y-24"
       x-show="show"
       x-transition:enter="transition ease-out duration-500"
       x-transition:enter-start="opacity-0 translate-y-4"
       x-transition:enter-end="opacity-100 translate-y-0"
       x-cloak
     >
+      <div class="astronaut-float mb-6" aria-hidden="true">
+        <svg class="w-16 h-16 sm:w-20 sm:h-20 mx-auto" viewBox="0 0 100 100" fill="none">
+          <!-- helmet -->
+          <circle cx="50" cy="36" r="18" fill="white" opacity="0.9"/>
+          <!-- visor -->
+          <ellipse cx="50" cy="37" rx="12" ry="10" fill="#1a1a2e" opacity="0.85"/>
+          <ellipse cx="50" cy="36" rx="10" ry="8" fill="#2a2a4a">
+            <animate attributeName="opacity" values="0.6;0.9;0.6" dur="3s" repeatCount="indefinite"/>
+          </ellipse>
+          <!-- visor glint -->
+          <ellipse cx="45" cy="33" rx="3" ry="2" fill="white" opacity="0.25"/>
+          <!-- body -->
+          <rect x="36" y="52" width="28" height="24" rx="8" fill="white" opacity="0.85"/>
+          <!-- backpack -->
+          <rect x="30" y="54" width="8" height="18" rx="3" fill="white" opacity="0.6"/>
+          <!-- left arm -->
+          <rect x="22" y="54" width="16" height="7" rx="3.5" fill="white" opacity="0.8" transform="rotate(-20 30 57)"/>
+          <!-- right arm -->
+          <rect x="62" y="54" width="16" height="7" rx="3.5" fill="white" opacity="0.8" transform="rotate(25 70 57)"/>
+          <!-- left leg -->
+          <rect x="39" y="73" width="8" height="14" rx="4" fill="white" opacity="0.8" transform="rotate(10 43 80)"/>
+          <!-- right leg -->
+          <rect x="53" y="73" width="8" height="14" rx="4" fill="white" opacity="0.8" transform="rotate(-8 57 80)"/>
+          <!-- tether (cut) -->
+          <path d="M30 62 Q15 55 8 48" stroke="white" stroke-width="1.5" opacity="0.3" stroke-linecap="round" stroke-dasharray="3 3"/>
+        </svg>
+      </div>
+
       <h1
         class="text-8xl sm:text-9xl font-bold text-bears-accent leading-none tracking-tight"
       >
@@ -89,3 +117,19 @@ import BaseLayout from "@layouts/BaseLayout.astro";
     </div>
   </div>
 </BaseLayout>
+
+<style>
+  .astronaut-float {
+    animation: float 6s ease-in-out infinite, spin 20s linear infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+  }
+
+  @keyframes spin {
+    from { rotate: 0deg; }
+    to { rotate: 360deg; }
+  }
+</style>
