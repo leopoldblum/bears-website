@@ -170,6 +170,23 @@ textarea:focus-visible,
   }
 }
 
+/* Contact card stagger animation */
+.contact-card {
+  animation: contactCardIn 0.35s ease-out both;
+}
+
+@keyframes contactCardIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* Respect user preference for reduced motion */
 @media (prefers-reduced-motion: reduce) {
 
@@ -177,6 +194,7 @@ textarea:focus-visible,
   .accordion-item,
   .post-container,
   .metadata-card,
+  .contact-card,
   .nav-link {
     animation: none;
   }
