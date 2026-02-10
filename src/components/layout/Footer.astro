@@ -9,6 +9,53 @@ const socialLinks = socialContent?.data.socialLinks ?? [];
 const addressContent = await getPageContent("footer/footer-address");
 const addressLines = addressContent?.data.items ?? [];
 
+const navContent = await getPageContent("footer/navigation");
+const navColumns = navContent?.data.navColumns ?? [
+  {
+    heading: "Projects", href: "/projects",
+    links: [
+      { label: "Current Projects", href: "/projects?status=ongoing#what-we-build" },
+      { label: "Experimental Rocketry", href: "/projects?category=experimental-rocketry#what-we-build" },
+      { label: "Science & Experiments", href: "/projects?category=science-and-experiments#what-we-build" },
+      { label: "Robotics", href: "/projects?category=robotics#what-we-build" },
+      { label: "Past Projects", href: "/projects?status=completed#what-we-build" },
+    ],
+  },
+  {
+    heading: "Sponsors", href: "/sponsors",
+    links: [
+      { label: "Become a Sponsor", href: "/sponsors#become-a-sponsor" },
+      { label: "Our Partners", href: "/sponsors#diamond" },
+      { label: "Benefits", href: "/sponsors" },
+    ],
+  },
+  {
+    heading: "Events", href: "/events",
+    links: [
+      { label: "Upcoming Events", href: "/events?date=upcoming#whats-happening" },
+      { label: "Competitions & Workshops", href: "/events?category=competitions-and-workshops#whats-happening" },
+      { label: "Conventions", href: "/events?category=trade-fairs-and-conventions#whats-happening" },
+      { label: "Past Events", href: "/events?date=past#whats-happening" },
+    ],
+  },
+  {
+    heading: "About Us", href: "/about-us",
+    links: [
+      { label: "Our Team", href: "/about-us#faces-of-bears" },
+      { label: "Media", href: "/media" },
+      { label: "Contact", href: "/contact" },
+      { label: "FAQ", href: "/about-us#faq" },
+    ],
+  },
+];
+
+const bottomBarContent = await getPageContent("footer/bottom-bar");
+const copyrightText = (bottomBarContent?.data.title ?? "© {year} BEARS e.V. All rights reserved.").replace("{year}", String(currentYear));
+const legalLinks = bottomBarContent?.data.navLinks ?? [
+  { label: "Impressum", href: "/imprint" },
+  { label: "Datenschutz", href: "#" },
+];
+
 const socialIcons: Record<string, { label: string; path: string }> = {
   instagram: {
     label: "Instagram",
@@ -33,12 +80,12 @@ const socialIcons: Record<string, { label: string; path: string }> = {
   </div>
 
   <div class="container mx-auto px-4 sm:px-8 lg:px-12 pt-12 sm:pt-16 lg:pt-20">
-    <!-- Main footer grid: stacks on mobile, horizontal on desktop -->
+    <!-- Main footer content: single row at lg+ via flex + contents -->
     <div
-      class="flex flex-col lg:grid lg:grid-cols-[auto_1fr_auto] gap-12 lg:gap-16 lg:items-start"
+      class="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-12 lg:gap-6 xl:gap-8"
     >
       <!-- Logo + Address -->
-      <div class="flex flex-col gap-4 items-center lg:items-start">
+      <div class="lg:order-first flex flex-col gap-4 items-center lg:items-start min-w-0">
         <a
           href="/"
           class="text-bears-accent text-2xl lg:text-3xl font-bold hover:text-bears-accent-muted transition-colors"
@@ -55,163 +102,37 @@ const socialIcons: Record<string, { label: string; path: string }> = {
         </address>
       </div>
 
-      <!-- Navigation -->
+      <!-- Navigation: grid on mobile, dissolves into parent flex row at lg -->
       <nav
-        class="grid grid-cols-2 gap-x-8 gap-y-10 lg:grid-cols-4 lg:gap-x-12 lg:gap-y-8 justify-items-center lg:justify-items-start"
+        class="grid grid-cols-2 gap-x-8 gap-y-10 lg:contents justify-items-center"
       >
-        <!-- Projects Column -->
-        <div class="flex flex-col gap-2 text-center lg:text-left">
-          <h3
-            class="text-sm lg:text-base font-semibold uppercase tracking-wider text-bears-text-onLight mb-3"
-          >
-            <a
-              href="/projects"
-              class="hover:text-bears-accent transition-colors"
+        {navColumns.map((column) => (
+          <div class="flex flex-col gap-2 text-center lg:text-left min-w-0">
+            <h3
+              class="text-sm lg:text-base font-semibold uppercase tracking-wider text-bears-text-onLight mb-3"
             >
-              Projects
-            </a>
-          </h3>
-          <a
-            href="/projects?status=ongoing#what-we-build"
-            class="text-sm text-bears-text-onLight/70 hover:text-bears-accent transition-colors"
-          >
-            Current Projects
-          </a>
-          <a
-            href="/projects?category=experimental-rocketry#what-we-build"
-            class="text-sm text-bears-text-onLight/70 hover:text-bears-accent transition-colors"
-          >
-            Experimental Rocketry
-          </a>
-          <a
-            href="/projects?category=science-and-experiments#what-we-build"
-            class="text-sm text-bears-text-onLight/70 hover:text-bears-accent transition-colors"
-          >
-            Science & Experiments
-          </a>
-          <a
-            href="/projects?category=robotics#what-we-build"
-            class="text-sm text-bears-text-onLight/70 hover:text-bears-accent transition-colors"
-          >
-            Robotics
-          </a>
-          <a
-            href="/projects?status=completed#what-we-build"
-            class="text-sm text-bears-text-onLight/70 hover:text-bears-accent transition-colors"
-          >
-            Past Projects
-          </a>
-        </div>
-
-        <!-- Sponsors Column -->
-        <div class="flex flex-col gap-2 text-center lg:text-left">
-          <h3
-            class="text-sm lg:text-base font-semibold uppercase tracking-wider text-bears-text-onLight mb-3"
-          >
-            <a
-              href="/sponsors"
-              class="hover:text-bears-accent transition-colors"
-            >
-              Sponsors
-            </a>
-          </h3>
-          <a
-            href="/sponsors#become-a-sponsor"
-            class="text-sm text-bears-text-onLight/70 hover:text-bears-accent transition-colors"
-          >
-            Become a Sponsor
-          </a>
-          <a
-            href="/sponsors#diamond"
-            class="text-sm text-bears-text-onLight/70 hover:text-bears-accent transition-colors"
-          >
-            Our Partners
-          </a>
-          <a
-            href="/sponsors"
-            class="text-sm text-bears-text-onLight/70 hover:text-bears-accent transition-colors"
-          >
-            Benefits
-          </a>
-        </div>
-
-        <!-- Events Column -->
-        <div class="flex flex-col gap-2 text-center lg:text-left">
-          <h3
-            class="text-sm lg:text-base font-semibold uppercase tracking-wider text-bears-text-onLight mb-3"
-          >
-            <a href="/events" class="hover:text-bears-accent transition-colors">
-              Events
-            </a>
-          </h3>
-          <a
-            href="/events?date=upcoming#whats-happening"
-            class="text-sm text-bears-text-onLight/70 hover:text-bears-accent transition-colors"
-          >
-            Upcoming Events
-          </a>
-          <a
-            href="/events?category=competitions-and-workshops#whats-happening"
-            class="text-sm text-bears-text-onLight/70 hover:text-bears-accent transition-colors"
-          >
-            Competitions & Workshops
-          </a>
-          <a
-            href="/events?category=trade-fairs-and-conventions#whats-happening"
-            class="text-sm text-bears-text-onLight/70 hover:text-bears-accent transition-colors"
-          >
-            Conventions
-          </a>
-          <a
-            href="/events?date=past#whats-happening"
-            class="text-sm text-bears-text-onLight/70 hover:text-bears-accent transition-colors"
-          >
-            Past Events
-          </a>
-        </div>
-
-        <!-- About Us Column -->
-        <div class="flex flex-col gap-2 text-center lg:text-left">
-          <h3
-            class="text-sm lg:text-base font-semibold uppercase tracking-wider text-bears-text-onLight mb-3"
-          >
-            <a
-              href="/about-us"
-              class="hover:text-bears-accent transition-colors"
-            >
-              About Us
-            </a>
-          </h3>
-          <a
-            href="/about-us#faces-of-bears"
-            class="text-sm text-bears-text-onLight/70 hover:text-bears-accent transition-colors"
-          >
-            Our Team
-          </a>
-          <a
-            href="/media"
-            class="text-sm text-bears-text-onLight/70 hover:text-bears-accent transition-colors"
-          >
-            Media
-          </a>
-          <a
-            href="/contact"
-            class="text-sm text-bears-text-onLight/70 hover:text-bears-accent transition-colors"
-          >
-            Contact
-          </a>
-          <a
-            href="/about-us#faq"
-            class="text-sm text-bears-text-onLight/70 hover:text-bears-accent transition-colors"
-          >
-            FAQ
-          </a>
-        </div>
+              <a
+                href={column.href}
+                class="hover:text-bears-accent transition-colors"
+              >
+                {column.heading}
+              </a>
+            </h3>
+            {column.links.map((link) => (
+              <a
+                href={link.href}
+                class="text-sm text-bears-text-onLight/70 hover:text-bears-accent transition-colors"
+              >
+                {link.label}
+              </a>
+            ))}
+          </div>
+        ))}
       </nav>
 
       <!-- Social Media Icons -->
       <div
-        class="flex gap-3 items-center justify-center lg:justify-end lg:self-center"
+        class="lg:order-last flex gap-3 items-center justify-center shrink-0"
       >
         {
           socialLinks.map((link) => {
@@ -255,16 +176,17 @@ const socialIcons: Record<string, { label: string; path: string }> = {
       class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 sm:pt-8 pb-8 sm:pb-10 lg:pb-12"
     >
       <p class="text-xs text-bears-text-onLight/60">
-        &copy; {currentYear} BEARS e.V. All rights reserved.
+        {copyrightText}
       </p>
       <div class="flex items-center gap-4 text-xs text-bears-text-onLight/60">
-        <a href="/imprint" class="hover:text-bears-accent transition-colors">
-          Impressum
-        </a>
-        <span class="text-bears-text-onLight/30">|</span>
-        <a href="#" class="hover:text-bears-accent transition-colors">
-          Datenschutz
-        </a>
+        {legalLinks.map((link, i) => (
+          <>
+            {i > 0 && <span class="text-bears-text-onLight/30">|</span>}
+            <a href={link.href} class="hover:text-bears-accent transition-colors">
+              {link.label}
+            </a>
+          </>
+        ))}
       </div>
     </div>
   </div>

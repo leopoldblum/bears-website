@@ -151,6 +151,18 @@ const pageTextCollection = defineCollection({
       url: z.string().url(),
       hoverColor: z.string().optional(),
     })).optional(),
+    navLinks: z.array(z.object({
+      label: z.string(),
+      href: z.string(),
+    })).optional(),
+    navColumns: z.array(z.object({
+      heading: z.string(),
+      href: z.string(),
+      links: z.array(z.object({
+        label: z.string(),
+        href: z.string(),
+      })),
+    })).optional(),
     faqs: z.array(z.object({
       question: z.string(),
       answer: z.string(),

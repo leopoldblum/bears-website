@@ -59,6 +59,11 @@ describe('events schema', () => {
       expect(result.data.isDraft).toBe(true);
     }
   });
+
+  it('rejects invalid categoryEvent enum value', () => {
+    const result = schema.safeParse({ ...validBase, categoryEvent: 'invalid-category' });
+    expect(result.success).toBe(false);
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -118,6 +123,17 @@ describe('projects schema', () => {
     if (result.success) {
       expect(result.data.coverImageType).toBe('DEFAULT');
     }
+  });
+
+  it('rejects invalid categoryProject enum value', () => {
+    const result = schema.safeParse({ ...validBase, categoryProject: 'invalid-category' });
+    expect(result.success).toBe(false);
+  });
+
+  it('fails when isProjectCompleted is missing', () => {
+    const { isProjectCompleted, ...withoutCompleted } = validBase;
+    const result = schema.safeParse(withoutCompleted);
+    expect(result.success).toBe(false);
   });
 });
 
@@ -214,6 +230,252 @@ describe('sponsors schema', () => {
     const result = schema.safeParse({
       name: 'Acme Corp',
       logo: 'acme.svg',
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it('rejects invalid url format', () => {
+    const result = schema.safeParse({
+      name: 'Acme Corp',
+      logo: 'acme.png',
+      url: 'not-a-url',
+    });
+    expect(result.success).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Instagram schema
+// ---------------------------------------------------------------------------
+
+describe('instagram schema', () => {
+  const schema = collections.instagram.schema;
+
+  const validBase = {
+    url: 'https://www.instagram.com/p/abc123/',
+    date: new Date('2024-06-15'),
+  };
+
+  it('accepts valid data', () => {
+    const result = schema.safeParse(validBase);
+    expect(result.success).toBe(true);
+  });
+
+  it('rejects invalid URL', () => {
+    const result = schema.safeParse({ ...validBase, url: 'not-a-url' });
+    expect(result.success).toBe(false);
+  });
+
+  it('rejects missing url', () => {
+    const result = schema.safeParse({ date: new Date('2024-01-01') });
+    expect(result.success).toBe(false);
+  });
+
+  it('rejects missing date', () => {
+    const result = schema.safeParse({ url: 'https://instagram.com/p/1' });
+    expect(result.success).toBe(false);
+  });
+
+  it('allows isDraft to be omitted', () => {
+    const result = schema.safeParse(validBase);
+    expect(result.success).toBe(true);
+  });
+
+  it('accepts isDraft: true', () => {
+    const result = schema.safeParse({ ...validBase, isDraft: true });
+    expect(result.success).toBe(true);
+    if (result.success) {
+      expect(result.data.isDraft).toBe(true);
+    }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Page-text schema
+// ---------------------------------------------------------------------------
+
+describe('page-text schema', () => {
+  const schema = collections['page-text'].schema;
+
+  const validBase = { title: 'Test Page Title' };
+
+  it('accepts minimal valid data (title only)', () => {
+    const result = schema.safeParse(validBase);
+    expect(result.success).toBe(true);
+  });
+
+  it('accepts full data with all optional fields', () => {
+    const result = schema.safeParse({
+      ...validBase,
+      subtitle: 'A subtitle',
+      description: 'Some description',
+      buttonText: 'Click me',
+      buttonHref: '/some-path',
+      ctas: [
+        { title: 'CTA 1', description: 'Desc 1', href: '/cta-1' },
+        { title: 'CTA 2', description: 'Desc 2', href: '/cta-2' },
+      ],
+      items: ['Item 1', 'Item 2'],
+      socialLinks: [
+        { platform: 'github', url: 'https://github.com/bears', hoverColor: '#333' },
+      ],
+      navLinks: [
+        { label: 'Impressum', href: '/imprint' },
+      ],
+      navColumns: [
+        {
+          heading: 'Projects',
+          href: '/projects',
+          links: [
+            { label: 'Current Projects', href: '/projects?status=ongoing' },
+          ],
+        },
+      ],
+      faqs: [
+        { question: 'What is BEARS?', answer: 'An awesome student organization.' },
+      ],
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it('rejects missing title', () => {
+    const result = schema.safeParse({});
+    expect(result.success).toBe(false);
+  });
+
+  it('rejects ctas with more than 4 items', () => {
+    const ctas = Array.from({ length: 5 }, (_, i) => ({
+      title: `CTA ${i}`,
+      description: `Desc ${i}`,
+      href: `/cta-${i}`,
+    }));
+    const result = schema.safeParse({ ...validBase, ctas });
+    expect(result.success).toBe(false);
+  });
+
+  it('accepts ctas with exactly 4 items', () => {
+    const ctas = Array.from({ length: 4 }, (_, i) => ({
+      title: `CTA ${i}`,
+      description: `Desc ${i}`,
+      href: `/cta-${i}`,
+    }));
+    const result = schema.safeParse({ ...validBase, ctas });
+    expect(result.success).toBe(true);
+  });
+
+  it('rejects invalid socialLinks url', () => {
+    const result = schema.safeParse({
+      ...validBase,
+      socialLinks: [{ platform: 'x', url: 'not-a-url' }],
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it('rejects ctas item missing required fields', () => {
+    const result = schema.safeParse({
+      ...validBase,
+      ctas: [{ title: 'Only title' }],
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it('rejects faqs item missing required fields', () => {
+    const result = schema.safeParse({
+      ...validBase,
+      faqs: [{ question: 'Q only' }],
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it('accepts socialLinks without optional hoverColor', () => {
+    const result = schema.safeParse({
+      ...validBase,
+      socialLinks: [{ platform: 'github', url: 'https://github.com' }],
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it('accepts navLinks array', () => {
+    const result = schema.safeParse({
+      ...validBase,
+      navLinks: [
+        { label: 'Home', href: '/' },
+        { label: 'About', href: '/about' },
+      ],
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it('rejects navLinks item missing label', () => {
+    const result = schema.safeParse({
+      ...validBase,
+      navLinks: [{ href: '/about' }],
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it('rejects navLinks item missing href', () => {
+    const result = schema.safeParse({
+      ...validBase,
+      navLinks: [{ label: 'About' }],
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it('accepts navColumns with nested links', () => {
+    const result = schema.safeParse({
+      ...validBase,
+      navColumns: [
+        {
+          heading: 'Projects',
+          href: '/projects',
+          links: [
+            { label: 'Current', href: '/projects?status=ongoing' },
+            { label: 'Past', href: '/projects?status=completed' },
+          ],
+        },
+        {
+          heading: 'Events',
+          href: '/events',
+          links: [{ label: 'Upcoming', href: '/events?date=upcoming' }],
+        },
+      ],
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it('accepts navColumns with empty links array', () => {
+    const result = schema.safeParse({
+      ...validBase,
+      navColumns: [{ heading: 'Empty', href: '/empty', links: [] }],
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it('rejects navColumns item missing heading', () => {
+    const result = schema.safeParse({
+      ...validBase,
+      navColumns: [{ href: '/projects', links: [] }],
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it('rejects navColumns item missing links', () => {
+    const result = schema.safeParse({
+      ...validBase,
+      navColumns: [{ heading: 'Projects', href: '/projects' }],
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it('rejects navColumns link missing label', () => {
+    const result = schema.safeParse({
+      ...validBase,
+      navColumns: [{
+        heading: 'Projects',
+        href: '/projects',
+        links: [{ href: '/projects?status=ongoing' }],
+      }],
     });
     expect(result.success).toBe(false);
   });
