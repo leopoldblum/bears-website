@@ -23,6 +23,7 @@ const tierConfig = {
     sizeClasses: "h-32 w-32 sm:h-40 sm:w-40 lg:h-48 lg:w-48",
     gapClasses: "gap-10 sm:gap-14 lg:gap-20",
     marginClasses: "mb-6 sm:mb-8",
+    hoverClasses: "hover:scale-110 hover:drop-shadow-[0_0_12px_rgba(197,14,31,0.25)]",
     sizes: "(min-width: 1024px) 192px, (min-width: 640px) 160px, 128px",
   },
   platinum: {
@@ -52,6 +53,7 @@ const tierConfig = {
 };
 
 const config = tierConfig[tier] || tierConfig.bronze;
+const hoverClasses = config.hoverClasses ?? "hover:scale-110 hover:opacity-80";
 ---
 
 {
@@ -59,7 +61,7 @@ const config = tierConfig[tier] || tierConfig.bronze;
     <div
       class={`flex flex-wrap justify-center items-center ${config.gapClasses} ${config.marginClasses}`}
     >
-      {sponsors.map((sponsor) => {
+      {sponsors.map((sponsor, sponsorIndex) => {
         const content = (
           <Img
             src={sponsor.logo}
@@ -74,14 +76,20 @@ const config = tierConfig[tier] || tierConfig.bronze;
         return sponsor.url ? (
           <a
             href={sponsor.url}
-            class="inline-block hover:scale-110 hover:opacity-80 transition-all duration-300"
+            class={`sponsor-card inline-block ${hoverClasses} transition-all duration-300`}
+            style={`animation-delay: ${sponsorIndex * 60}ms`}
             target="_blank"
             rel="noopener noreferrer"
           >
             {content}
           </a>
         ) : (
-          <div class="inline-block">{content}</div>
+          <div
+            class="sponsor-card inline-block"
+            style={`animation-delay: ${sponsorIndex * 60}ms`}
+          >
+            {content}
+          </div>
         );
       })}
     </div>

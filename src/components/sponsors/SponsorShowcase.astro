@@ -48,9 +48,13 @@ const allTierKeys = JSON.stringify(activeTiers.map(t => t.key));
         )}
 
         {title && (
-          <h2 id="sponsor-tiers" class="text-3xl sm:text-4xl lg:text-5xl font-bold text-bears-text-onLight mb-6 sm:mb-8 lg:mb-12">
+          <h2 id="sponsor-tiers" class="text-3xl sm:text-4xl lg:text-5xl font-bold text-bears-text-onLight mb-4 sm:mb-6">
             {title}
           </h2>
+        )}
+
+        {title && (
+          <div class="h-[2px] bg-gradient-to-r from-black/20 from-30% via-black/10 via-70% to-transparent rounded-full max-w-md mx-auto mb-4 sm:mb-6"></div>
         )}
 
         {description && (
@@ -58,12 +62,18 @@ const allTierKeys = JSON.stringify(activeTiers.map(t => t.key));
             {description}
           </p>
         )}
+
+        {description && (
+          <p class="text-sm text-bears-text-onLight/40 mt-3">
+            {activeTiers.reduce((sum, t) => sum + t.sponsors.length, 0)} partners across {activeTiers.length} tiers
+          </p>
+        )}
       </div>
     )}
 
     <!-- Tier accordions -->
     <div
-      class="max-w-5xl mx-auto"
+      class="max-w-6xl mx-auto"
       x-data={`{ openTiers: ${allTierKeys} }`}
     >
       {activeTiers.map((tier, index) => {
@@ -81,7 +91,7 @@ const allTierKeys = JSON.stringify(activeTiers.map(t => t.key));
                 x-bind:aria-expanded={`openTiers.includes('${tier.key}') ? 'true' : 'false'`}
               >
                 <span>
-                  <span class="text-bears-accent font-bold mr-1 sm:mr-2">/</span>
+                  <span class="text-bears-accent font-bold text-sm sm:text-base mr-2">/{String(index + 1).padStart(2, '0')}</span>
                   <span class="capitalize">{tier.name}</span>
                 </span>
                 <svg
@@ -119,7 +129,7 @@ const allTierKeys = JSON.stringify(activeTiers.map(t => t.key));
 
             {/* Divider between tiers */}
             {!isLast && (
-              <hr class="w-full max-w-3xl mx-auto border-t border-bears-text-onLight opacity-20 my-4 sm:my-6" />
+              <div class="h-[2px] bg-gradient-to-r from-bears-text-onLight/20 from-30% via-bears-text-onLight/10 via-70% to-transparent max-w-3xl mx-auto my-6 sm:my-8 rounded-full"></div>
             )}
           </div>
         );
