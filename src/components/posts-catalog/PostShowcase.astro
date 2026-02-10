@@ -39,7 +39,7 @@ const Wrapper = href ? "a" : "div";
     src={coverImage}
     alt={imageAlt}
     class="w-full h-full object-cover transition-transform duration-500 lg:group-hover:scale-105"
-    loading="eager"
+    loading="lazy"
     sizes="(min-width: 1280px) 33vw, (min-width: 1024px) 50vw, 100vw"
     enableClickToEnlarge={false}
   />
@@ -47,7 +47,7 @@ const Wrapper = href ? "a" : "div";
   <!-- Date Badge - Glass-morphism style -->
   <div class="absolute top-4 right-4 z-10">
     <span
-      class="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-white bg-black/60 backdrop-blur-xl border border-white/10 px-3 py-1.5 rounded-md shadow-[0_4px_12px_rgba(0,0,0,0.3)]"
+      class="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-white showcase-badge bg-black/60 backdrop-blur-xl border border-white/10 px-3 py-1.5 rounded-md shadow-[0_4px_12px_rgba(0,0,0,0.3)]"
     >
       <svg
         class="w-4 h-4"
@@ -70,7 +70,7 @@ const Wrapper = href ? "a" : "div";
   {
     isCompleted && (
       <div class="absolute top-4 left-4 z-10">
-        <span class="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-white bg-black/60 backdrop-blur-xl border border-white/10 px-3 py-1.5 rounded-md shadow-[0_0_12px_rgba(197,14,31,0.35),0_4px_12px_rgba(0,0,0,0.3)]">
+        <span class="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-white showcase-badge bg-black/60 backdrop-blur-xl border border-white/10 px-3 py-1.5 rounded-md shadow-[0_0_12px_rgba(197,14,31,0.35),0_4px_12px_rgba(0,0,0,0.3)]">
           <svg
             class="w-4 h-4 text-bears-accent"
             fill="none"
@@ -94,7 +94,7 @@ const Wrapper = href ? "a" : "div";
   {
     isUpcoming && (
       <div class="absolute top-4 left-4 z-10">
-        <span class="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-white bg-black/60 backdrop-blur-xl border border-white/10 px-3 py-1.5 rounded-md shadow-[0_0_12px_rgba(197,14,31,0.35),0_4px_12px_rgba(0,0,0,0.3)]">
+        <span class="flex items-center gap-2 text-xs font-medium uppercase tracking-wide text-white showcase-badge bg-black/60 backdrop-blur-xl border border-white/10 px-3 py-1.5 rounded-md shadow-[0_0_12px_rgba(197,14,31,0.35),0_4px_12px_rgba(0,0,0,0.3)]">
           <svg
             class="w-4 h-4 text-bears-accent"
             fill="none"
@@ -121,9 +121,9 @@ const Wrapper = href ? "a" : "div";
       class="absolute inset-0"
       style="background: linear-gradient(to bottom, transparent 0%, rgba(0, 0, 0, 0.5) 15%, rgba(0, 0, 0, 0.75) 30%, rgba(0, 0, 0, 0.82) 50%, rgba(0, 0, 0, 0.88) 70%, rgba(0, 0, 0, 0.95) 100%);"
     ></div>
-    <!-- Blur gradient layer — extends slightly above parent so mask can fade smoothly -->
+    <!-- Blur gradient layer — hidden on Firefox via CSS due to poor backdrop-filter performance -->
     <div
-      class="absolute inset-x-0 -top-32 bottom-0 backdrop-blur-[2px]"
+      class="showcase-blur-overlay absolute inset-x-0 -top-32 bottom-0 backdrop-blur-[2px]"
       style="-webkit-mask-image: linear-gradient(to bottom, transparent 40%, black 70%); mask-image: linear-gradient(to bottom, transparent 40%, black 70%);"
     ></div>
 
