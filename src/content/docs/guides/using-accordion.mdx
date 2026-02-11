@@ -1,0 +1,109 @@
+---
+title: "Using Accordions"
+description: "Add expandable sections to your pages — great for FAQs and detailed content."
+order: 30
+group: "MDX Components"
+---
+
+import { Accordion } from '@mdx';
+
+Accordions hide content behind clickable titles — perfect for FAQs and long-form content. Add this to any `.mdx` file:
+
+```mdx
+import { Accordion, Button, Callout, Carousel, Center, Img, Instagram, Marquee, YouTube, SideBySide, Left, Right } from '@mdx';
+
+<Accordion
+  items={[
+    { title: "When do we meet?", content: "Every Thursday at 18:00." },
+    { title: "Do I need experience?", content: "No! We welcome beginners." },
+    { title: "How do I join?", content: "Come to a meeting and talk to a project lead." }
+  ]}
+/>
+```
+
+<div class="not-prose mb-4">
+  <Accordion
+    items={[
+      { title: "When do we meet?", content: "Every Thursday at 18:00." },
+      { title: "Do I need experience?", content: "No! We welcome beginners." },
+      { title: "How do I join?", content: "Come to a meeting and talk to a project lead." }
+    ]}
+  />
+</div>
+
+Each item needs a `title` and `content`. The content supports Markdown — use `\n\n` for paragraphs, `**bold**`, `- lists`, etc.
+
+## Options
+
+### `defaultOpen` — start with an item expanded
+
+Pass the item number, starting from `0`:
+
+```mdx
+<Accordion defaultOpen={0} items={[...]} />
+```
+
+<div class="not-prose mb-4">
+  <Accordion
+    defaultOpen={0}
+    items={[
+      { title: "This starts open", content: "Because `defaultOpen` is set to `0` (the first item)." },
+      { title: "This starts closed", content: "Click to expand." }
+    ]}
+  />
+</div>
+
+### `allowMultiple` — open several at once
+
+By default, opening one item closes the others. Set `allowMultiple` to change that:
+
+```mdx
+<Accordion allowMultiple={true} items={[...]} />
+```
+
+<div class="not-prose mb-4">
+  <Accordion
+    allowMultiple={true}
+    items={[
+      { title: "Open me", content: "Now open the next one too — this stays open." },
+      { title: "Open me too", content: "Both can be expanded at the same time." }
+    ]}
+  />
+</div>
+
+### `subtitle` — categorize items
+
+Add a `subtitle` field to items to show a small label:
+
+```mdx
+<Accordion
+  items={[
+    { title: "How do I apply?", subtitle: "Membership", content: "..." },
+    { title: "Where is the workshop?", subtitle: "Location", content: "..." }
+  ]}
+/>
+```
+
+<div class="not-prose mb-4">
+  <Accordion
+    items={[
+      { title: "How do I apply?", subtitle: "Membership", content: "Fill out the form on our contact page." },
+      { title: "Where is the workshop?", subtitle: "Location", content: "Building MAR, Room 6.001 on the TU Berlin campus." }
+    ]}
+  />
+</div>
+
+## Required Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `items` | array | List of sections — each needs `title` and `content`, optional `subtitle` |
+
+## Optional Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `defaultOpen` | number | Which item starts expanded, counting from `0` (default: all closed) |
+| `allowMultiple` | boolean | Let readers open more than one at a time (default: `false`) |
+| `allowCloseAll` | boolean | Let readers close all items |
+| `width` | string | Width of the accordion (default: `"100%"`) |

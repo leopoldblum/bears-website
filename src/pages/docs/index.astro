@@ -1,0 +1,67 @@
+---
+import DocsLayout from "@layouts/DocsLayout.astro";
+import { getDocsBySection } from "@utils/contentQueries";
+import type { CollectionEntry } from "astro:content";
+
+const sections = await getDocsBySection();
+
+const sectionConfig: Record<string, { label: string; description: string; order: number }> = {
+  guides: {
+    label: "Guides",
+    description: "Step-by-step guides for content creators and maintainers.",
+    order: 1,
+  },
+  dev: {
+    label: "Dev Docs",
+    description: "Technical reference for developers working on the codebase.",
+    order: 2,
+  },
+};
+
+const sortedSections = Object.entries(sections).sort(
+  ([a], [b]) => (sectionConfig[a]?.order ?? 99) - (sectionConfig[b]?.order ?? 99)
+);
+
+function groupDocs(docs: CollectionEntry<'docs'>[]) {
+  const groups: Record<string, CollectionEntry<'docs'>[]> = {};
+  docs.forEach(doc => {
+    const key = doc.data.group ?? '';
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(doc);
+  });
+  return Object.entries(groups).sort(([a], [b]) => {
+    if (a === '') return -1;
+    if (b === '') return 1;
+    return a.localeCompare(b);
+  });
+}
+---
+
+<DocsLayout title="Documentation">
+  <h1>BEARS Documentation</h1>
+  <p>Welcome to the BEARS website documentation.</p>
+
+  {sortedSections.map(([sectionKey, docs]) => (
+    <section class="mt-10">
+      <h2>{sectionConfig[sectionKey]?.label ?? sectionKey}</h2>
+      <p>{sectionConfig[sectionKey]?.description}</p>
+      {groupDocs(docs).map(([groupName, groupDocs]) => (
+        <div>
+          {groupName && (
+            <h3>{groupName}</h3>
+          )}
+          <ul>
+            {groupDocs.map(doc => (
+              <li>
+                <a href={`/docs/${doc.slug}/`}>{doc.data.title}</a>
+                {doc.data.description && (
+                  <span class="text-bears-text-onDark/50"> &mdash; {doc.data.description}</span>
+                )}
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </section>
+  ))}
+</DocsLayout>

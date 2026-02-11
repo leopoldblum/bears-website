@@ -1,0 +1,68 @@
+---
+title: "Using Marquees"
+description: "Create an infinite scrolling gallery of images."
+order: 38
+group: "MDX Components"
+---
+
+import { Marquee, Img } from '@mdx';
+import testImage from '@assets/projects/project-1.jpg';
+
+Marquees create an infinite horizontal scroll — great for photo galleries or logo strips. Items are automatically duplicated to fill the screen:
+
+```mdx
+import { Accordion, Button, Callout, Carousel, Center, Img, Instagram, Marquee, YouTube, SideBySide, Left, Right } from '@mdx';
+import photo1 from '@assets/events/photo-1.jpg';
+import photo2 from '@assets/events/photo-2.jpg';
+import photo3 from '@assets/events/photo-3.jpg';
+
+<Marquee>
+  <Img src={photo1} alt="Photo 1" />
+  <Img src={photo2} alt="Photo 2" />
+  <Img src={photo3} alt="Photo 3" />
+</Marquee>
+```
+
+<div class="not-prose mb-4">
+  <Marquee>
+    <Img src={testImage} alt="Photo 1" />
+    <Img src={testImage} alt="Photo 2" />
+    <Img src={testImage} alt="Photo 3" />
+  </Marquee>
+</div>
+
+Hover over the marquee to pause it.
+
+## Options
+
+### Speed and direction
+
+```mdx
+<Marquee speed={80} direction="right">...</Marquee>
+```
+
+`speed` is in pixels per second (default: 50). `direction` can be `"left"` (default) or `"right"`.
+
+### Height
+
+Four presets: `"sm"` (12rem), `"md"` (16rem, default), `"lg"` (20rem), `"xl"` (24rem):
+
+```mdx
+<Marquee height="lg">...</Marquee>
+```
+
+### Disable pause on hover
+
+```mdx
+<Marquee pauseOnHover={false}>...</Marquee>
+```
+
+## Optional Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `speed` | number | Scroll speed in pixels per second (default: `50`) |
+| `direction` | enum | `"left"` or `"right"` (default: `"left"`) |
+| `height` | enum | `"sm"`, `"md"`, `"lg"`, `"xl"` (default: `"md"`) |
+| `gap` | string | Space between items as a CSS value (default: `"2rem"`) |
+| `pauseOnHover` | boolean | Pause scrolling on hover (default: `true`) |

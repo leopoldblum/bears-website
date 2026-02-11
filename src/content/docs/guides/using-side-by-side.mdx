@@ -1,0 +1,110 @@
+---
+title: "Using Side-by-Side Layouts"
+description: "Place content in two columns that stack on mobile."
+order: 36
+group: "MDX Components"
+---
+
+import { SideBySide, Left, Right, Callout } from '@mdx';
+
+Split content into two columns that appear side-by-side on desktop and stack on mobile:
+
+```mdx
+import { Accordion, Button, Callout, Carousel, Center, Img, Instagram, Marquee, YouTube, SideBySide, Left, Right } from '@mdx';
+
+<SideBySide>
+  <Left>
+    ## Left Column
+    Content on the left side.
+  </Left>
+  <Right>
+    ## Right Column
+    Content on the right side.
+  </Right>
+</SideBySide>
+```
+
+<div class="not-prose mb-4">
+  <SideBySide>
+    <Left>
+      <h3 class="text-lg font-semibold text-bears-text-onDark mb-2">Left Column</h3>
+      <p class="text-bears-text-onDark/80 text-sm">Content on the left side. On mobile, this stacks above the right column.</p>
+    </Left>
+    <Right>
+      <h3 class="text-lg font-semibold text-bears-text-onDark mb-2">Right Column</h3>
+      <p class="text-bears-text-onDark/80 text-sm">Content on the right side. On desktop (1024px+), these sit next to each other.</p>
+    </Right>
+  </SideBySide>
+</div>
+
+## Nesting Other Components
+
+You can put any component inside Left or Right — images, callouts, buttons, accordions, etc:
+
+```mdx
+import { Accordion, Button, Callout, Carousel, Center, Img, Instagram, Marquee, YouTube, SideBySide, Left, Right } from '@mdx';
+import photo from '@assets/events/my-photo.jpg';
+
+<SideBySide showDivider={false}>
+  <Left>
+    <Img src={photo} alt="Workshop" enableClickToEnlarge={false} />
+  </Left>
+  <Right centerVertical>
+    <Callout title="Tip">
+      Pair an image on one side with text or a callout on the other.
+    </Callout>
+  </Right>
+</SideBySide>
+```
+
+<div class="not-prose mb-4">
+  <SideBySide showDivider={false}>
+    <Left>
+      <div class="rounded-lg bg-white/5 border border-white/10 p-8 flex items-center justify-center text-bears-text-onDark/40 text-sm">Image, video, or any component here</div>
+    </Left>
+    <Right centerVertical>
+      <Callout title="Tip">
+        Pair an image on one side with text or a callout on the other.
+      </Callout>
+    </Right>
+  </SideBySide>
+</div>
+
+## Options
+
+### Hide the divider
+
+A vertical line appears between columns on desktop by default. Turn it off with `showDivider={false}`:
+
+```mdx
+<SideBySide showDivider={false}>
+  <Left>...</Left>
+  <Right>...</Right>
+</SideBySide>
+```
+
+### Center content vertically
+
+Use `centerVertical` on Left or Right to vertically center shorter content:
+
+```mdx
+<SideBySide>
+  <Left centerVertical>Short text, centered.</Left>
+  <Right>Longer content on the other side...</Right>
+</SideBySide>
+```
+
+## Optional Fields
+
+**SideBySide:**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `showDivider` | boolean | Show a vertical line between columns on desktop (default: `true`) |
+
+**Left / Right:**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `centerVertical` | boolean | Vertically center the column content (default: `false`) |
+| `class` | string | Extra CSS classes |

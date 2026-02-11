@@ -1,0 +1,71 @@
+---
+title: "Using Buttons"
+description: "Add styled buttons and links to your pages."
+order: 31
+group: "MDX Components"
+---
+
+import { Button } from '@mdx';
+
+Buttons can act as clickable actions or as styled links. Add this to any `.mdx` file:
+
+```mdx
+import { Accordion, Button, Callout, Carousel, Center, Img, Instagram, Marquee, YouTube, SideBySide, Left, Right } from '@mdx';
+
+<Button content="Click me" />
+<Button content="Visit our page" href="/about-us" />
+```
+
+<div class="not-prose flex flex-wrap gap-3 mb-4">
+  <Button content="Click me" />
+  <Button content="Visit our page" href="/about-us" />
+</div>
+
+When you add `href`, the button renders as a link. Without it, it's a regular button.
+
+## Variants
+
+Three visual styles — `primary` (default), `secondary`, and `inverse`:
+
+```mdx
+<Button content="Primary" variant="primary" />
+<Button content="Secondary" variant="secondary" />
+<Button content="Inverse" variant="inverse" />
+```
+
+<div class="not-prose flex flex-wrap gap-3 mb-4">
+  <Button content="Primary" variant="primary" />
+  <Button content="Secondary" variant="secondary" />
+  <Button content="Inverse" variant="inverse" />
+</div>
+
+## Sizes
+
+Three sizes — `standard` (default), `large`, and `xlarge`:
+
+```mdx
+<Button content="Standard" size="standard" />
+<Button content="Large" size="large" />
+<Button content="XLarge" size="xlarge" />
+```
+
+<div class="not-prose flex flex-wrap items-center gap-3 mb-4">
+  <Button content="Standard" size="standard" />
+  <Button content="Large" size="large" />
+  <Button content="XLarge" size="xlarge" />
+</div>
+
+## Required Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `content` | string | Button text |
+
+## Optional Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `href` | string | Makes it a link to this URL |
+| `variant` | enum | Visual style: `"primary"`, `"secondary"`, `"inverse"` (default: `"primary"`) |
+| `size` | enum | Button size: `"standard"`, `"large"`, `"xlarge"` (default: `"standard"`) |
+| `disabled` | boolean | Greys out and disables the button (default: `false`) |

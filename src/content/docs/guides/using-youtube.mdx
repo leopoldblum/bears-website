@@ -1,0 +1,58 @@
+---
+title: "Using YouTube Embeds"
+description: "Embed YouTube videos in your pages."
+order: 34
+group: "MDX Components"
+---
+
+import { YouTube } from '@mdx';
+
+Embed YouTube videos by passing a video URL or ID. Uses privacy-enhanced mode (no cookies).
+
+```mdx
+import { Accordion, Button, Callout, Carousel, Center, Img, Instagram, Marquee, YouTube, SideBySide, Left, Right } from '@mdx';
+
+<YouTube id="dQw4w9WgXcQ" title="Example video" />
+```
+
+<div class="not-prose mb-4">
+  <YouTube id="dQw4w9WgXcQ" title="Example video" />
+</div>
+
+You can pass a full YouTube URL too — any format works:
+
+```mdx
+<YouTube id="https://www.youtube.com/watch?v=dQw4w9WgXcQ" />
+<YouTube id="https://youtu.be/dQw4w9WgXcQ" />
+```
+
+## Options
+
+### Start at a specific time
+
+Use `start` with the number of seconds:
+
+```mdx
+<YouTube id="dQw4w9WgXcQ" start={30} title="Starting at 0:30" />
+```
+
+### Set width
+
+```mdx
+<YouTube id="dQw4w9WgXcQ" width="60%" />
+```
+
+## Required Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | string | YouTube video ID or full URL |
+
+## Optional Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `title` | string | Accessible label for the embed (default: `"YouTube video"`) |
+| `width` | string | CSS width, e.g. `"60%"`, `"500px"` (default: `"100%"`) |
+| `start` | number | Start time in seconds |
+| `class` | string | Extra CSS classes on the container |

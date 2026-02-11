@@ -1,0 +1,49 @@
+---
+title: "Button Component"
+description: "Technical reference for the Button component with live examples."
+order: 20
+---
+
+import Button from '@mdx/Button.astro';
+
+The `Button` component is a versatile button/link element supporting multiple variants and sizes.
+
+## Import
+
+```astro
+import Button from '@mdx/Button.astro';
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `content` | string | &mdash; | Button text (slot takes priority) |
+| `href` | string | &mdash; | If set, renders as `<a>` instead of `<button>` |
+| `variant` | `'primary'` \| `'secondary'` \| `'inverse'` | `'primary'` | Visual style |
+| `size` | `'standard'` \| `'large'` \| `'xlarge'` | `'standard'` | Button size |
+| `disabled` | boolean | `false` | Disables the button |
+
+## Live Examples
+
+### Variants
+
+<div class="not-prose flex flex-wrap gap-3 my-6">
+  <Button content="Primary" variant="primary" />
+  <Button content="Secondary" variant="secondary" />
+  <Button content="Inverse" variant="inverse" />
+</div>
+
+### Sizes
+
+<div class="not-prose flex flex-wrap items-center gap-3 my-6">
+  <Button content="Standard" size="standard" />
+  <Button content="Large" size="large" />
+  <Button content="XLarge" size="xlarge" />
+</div>
+
+### As Link
+
+<div class="not-prose my-6">
+  <Button content="Visit BEARS" href="/" variant="primary" />
+</div>

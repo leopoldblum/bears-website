@@ -16,6 +16,9 @@
       "@components/*": [
         "src/components/*"
       ],
+      "@mdx": [
+        "src/components/mdx/index.ts"
+      ],
       "@mdx/*": [
         "src/components/mdx/*"
       ],

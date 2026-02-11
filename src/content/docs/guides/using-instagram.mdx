@@ -1,0 +1,40 @@
+---
+title: "Using Instagram Embeds"
+description: "Embed Instagram posts in your pages."
+order: 35
+group: "MDX Components"
+---
+
+import { Instagram } from '@mdx';
+
+Embed an Instagram post by passing its URL or shortcode:
+
+```mdx
+import { Accordion, Button, Callout, Carousel, Center, Img, Instagram, Marquee, YouTube, SideBySide, Left, Right } from '@mdx';
+
+<Instagram url="https://www.instagram.com/p/ABC123/" />
+```
+
+## Sizes
+
+Four size presets control the max width of the embed:
+
+```mdx
+<Instagram url="..." size="small" />   <!-- 380px -->
+<Instagram url="..." size="medium" />  <!-- 460px (default) -->
+<Instagram url="..." size="large" />   <!-- 540px -->
+<Instagram url="..." size="full" />    <!-- 100% -->
+```
+
+## Required Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `url` | string | Instagram post URL or shortcode |
+
+## Optional Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `size` | enum | Max width: `"small"`, `"medium"`, `"large"`, `"full"` (default: `"medium"`) |
+| `class` | string | Extra CSS classes on the container |

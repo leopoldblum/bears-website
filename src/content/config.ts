@@ -155,6 +155,16 @@ const facesOfBearsCollection = defineCollection({
   }),
 });
 
+const docsCollection = defineCollection({
+  type: 'content',
+  schema: z.object({
+    title: z.string(),
+    description: z.string().optional(),
+    order: z.number(),
+    group: z.string().optional(),
+  }),
+});
+
 const pageTextCollection = defineCollection({
   type: 'content',
   schema: z.object({
@@ -203,4 +213,5 @@ export const collections = {
   'page-text': pageTextCollection,
   instagram: instagramCollection,
   'faces-of-bears': facesOfBearsCollection,
+  docs: docsCollection,
 };

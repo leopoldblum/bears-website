@@ -1,0 +1,50 @@
+---
+title: "Using Center"
+description: "Center content horizontally on the page."
+order: 39
+group: "MDX Components"
+---
+
+import { Center, Button } from '@mdx';
+
+The `<Center>` component horizontally centers its children. Multiple children are stacked vertically with consistent spacing.
+
+```mdx
+<Center>
+  This text is centered.
+</Center>
+```
+
+<div class="not-prose mb-4">
+  <Center>
+    This text is centered.
+  </Center>
+</div>
+
+## Multiple Children
+
+When you place several elements inside `<Center>`, they stack vertically and stay centered:
+
+```mdx
+<Center>
+  **Welcome to BEARS**
+
+  We build cool things together.
+
+  <Button content="Join us" href="/about-us" />
+</Center>
+```
+
+<div class="not-prose mb-4">
+  <Center>
+    <p class="font-bold text-lg">Welcome to BEARS</p>
+    <p>We build cool things together.</p>
+    <Button content="Join us" href="/about-us" />
+  </Center>
+</div>
+
+## Optional Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `class` | string | Additional CSS classes to apply to the wrapper |

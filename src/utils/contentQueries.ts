@@ -274,6 +274,42 @@ export async function getPageContent(id: string) {
   return entry;
 }
 
+// ============================================================================
+// PRE-COMPOSED QUERY FUNCTIONS FOR DOCS
+// ============================================================================
+
+/**
+ * Gets all documentation pages grouped by section and sorted by order.
+ * Section is derived from the folder path (e.g., 'guides/' or 'dev/').
+ *
+ * @returns Object with docs grouped by section, each sorted by order ascending
+ *
+ * @example
+ * const sections = await getDocsBySection();
+ * // { guides: [...], dev: [...] }
+ */
+export async function getDocsBySection() {
+  const allDocs = await getCollection('docs');
+
+  const sections: Record<string, CollectionEntry<'docs'>[]> = {};
+
+  allDocs.forEach(doc => {
+    const section = doc.id.split('/')[0];
+    if (!sections[section]) sections[section] = [];
+    sections[section].push(doc);
+  });
+
+  Object.values(sections).forEach(docs =>
+    docs.sort((a, b) => a.data.order - b.data.order)
+  );
+
+  return sections;
+}
+
+// ============================================================================
+// PRE-COMPOSED QUERY FUNCTIONS FOR HERO SLIDES
+// ============================================================================
+
 /**
  * Gets all hero slides sorted by numeric filename prefix.
  * Files should be prefixed with numbers for ordering (e.g., 01-slide.md, 02-slide.md).

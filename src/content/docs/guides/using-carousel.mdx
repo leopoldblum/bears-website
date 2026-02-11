@@ -1,0 +1,70 @@
+---
+title: "Using Carousels"
+description: "Create image slideshows with navigation controls."
+order: 37
+group: "MDX Components"
+---
+
+import { Carousel, Img } from '@mdx';
+import testImage from '@assets/projects/project-1.jpg';
+
+Carousels cycle through slides with arrows, dots, and optional auto-scrolling. Each direct child becomes a slide.
+
+**Important:** `<Img>` images inside a carousel must have click-to-enlarge enabled (the default) for proper rendering. Do not set `enableClickToEnlarge={false}` on carousel slides.
+
+```mdx
+import { Accordion, Button, Callout, Carousel, Center, Img, Instagram, Marquee, YouTube, SideBySide, Left, Right } from '@mdx';
+import photo1 from '@assets/events/photo-1.jpg';
+import photo2 from '@assets/events/photo-2.jpg';
+
+<Carousel>
+  <Img src={photo1} alt="First slide" />
+  <Img src={photo2} alt="Second slide" />
+</Carousel>
+```
+
+<div class="not-prose mb-4">
+  <Carousel>
+    <Img src={testImage} alt="Slide 1" />
+    <Img src={testImage} alt="Slide 2" />
+    <Img src={testImage} alt="Slide 3" />
+  </Carousel>
+</div>
+
+Navigate with the arrows or dots below. On mobile, you can swipe.
+
+## Options
+
+### Auto-scrolling
+
+```mdx
+<Carousel autoScroll autoScrollInterval={3000}>
+  ...
+</Carousel>
+```
+
+Pauses on hover. `autoScrollInterval` is in milliseconds (default: 5000).
+
+### Height
+
+Five presets: `"sm"` (300px), `"md"` (400px, default), `"lg"` (500px), `"xl"` (600px), or `"auto"` (content height):
+
+```mdx
+<Carousel height="lg">...</Carousel>
+```
+
+### Hide controls
+
+```mdx
+<Carousel showArrows={false} showDots={false}>...</Carousel>
+```
+
+## Optional Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `autoScroll` | boolean | Automatically cycle through slides (default: `false`) |
+| `autoScrollInterval` | number | Time between slides in ms (default: `5000`) |
+| `height` | enum | `"sm"`, `"md"`, `"lg"`, `"xl"`, or `"auto"` (default: `"md"`) |
+| `showArrows` | boolean | Show prev/next arrow buttons (default: `true`) |
+| `showDots` | boolean | Show dot navigation below (default: `true`) |

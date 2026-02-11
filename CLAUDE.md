@@ -199,9 +199,14 @@ const content = await getPageContent('events/events-title');
 
 ## Documentation
 
-The `/guides/` directory contains user-facing guides for content creators and maintainers. These documents explain how to add and manage content on the website.
+All documentation lives in `src/content/docs/` as a content collection, served at `/docs/` on the website. Files are `.md` or `.mdx` (MDX allows importing and live-demoing components).
 
-**Important**: When you make code changes that affect documented behavior or data structures, you must update the corresponding documentation files to keep them in sync with the implementation.
+- **Guides** (`src/content/docs/guides/`): User-facing guides for content creators
+- **Dev Docs** (`src/content/docs/dev/`): Technical reference for developers
+
+Documentation pages use `DocsLayout.astro` with a sidebar navigation auto-generated from the collection. Each doc file has frontmatter with `title`, `description` (optional), and `order` (numeric sort order within its section).
+
+**Important**: When you make code changes that affect documented behavior or data structures, update the corresponding doc file in `src/content/docs/`.
 
 ### When to Update Documentation
 
@@ -211,23 +216,4 @@ Update documentation files when:
 - Changing file organization or naming conventions
 - Updating asset paths or directory structures
 - Modifying how content is displayed or validated
-
-### Documentation Files
-
-The project uses a **hybrid documentation approach**:
-
-**For Content Creators (`/guides/`):**
-User-friendly guides for managing website content:
-- `using-buttons.md` - Add buttons to MDX pages
-- `managing-events-and-projects.md` - Manage events and projects
-- `managing-sponsors.md` - Manage sponsor content
-- `managing-testimonials.md` - Manage testimonials
-
-**For Developers (Co-located with code):**
-Technical documentation lives alongside the source code it documents:
-- `/src/components/reusable/Button.md` - Button component reference
-- `/src/types/types-documentation.md` - TypeScript types reference
-
-**Important:** When you change code that affects documented behavior, update the corresponding co-located documentation.
-
-See `/guides/README.md` for the content creator guides index.
+- Adding or changing MDX component props or behavior
