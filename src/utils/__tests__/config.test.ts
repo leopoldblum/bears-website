@@ -12,22 +12,21 @@ describe('events schema', () => {
     description: 'A description',
     date: new Date('2024-06-15'),
     categoryEvent: 'competitions-and-workshops',
+    coverImage: 'event.jpg',
   };
 
   it('adds coverImageType "CUSTOM" when coverImage is provided', () => {
-    const result = schema.safeParse({ ...validBase, coverImage: 'event.jpg' });
+    const result = schema.safeParse(validBase);
     expect(result.success).toBe(true);
     if (result.success) {
       expect(result.data.coverImageType).toBe('CUSTOM');
     }
   });
 
-  it('adds coverImageType "DEFAULT" when coverImage is absent', () => {
-    const result = schema.safeParse(validBase);
-    expect(result.success).toBe(true);
-    if (result.success) {
-      expect(result.data.coverImageType).toBe('DEFAULT');
-    }
+  it('fails when coverImage is missing', () => {
+    const { coverImage, ...withoutCover } = validBase;
+    const result = schema.safeParse(withoutCover);
+    expect(result.success).toBe(false);
   });
 
   it('rejects invalid image extension', () => {
@@ -78,6 +77,7 @@ describe('projects schema', () => {
     description: 'A project description',
     date: new Date('2024-06-15'),
     categoryProject: 'experimental-rocketry',
+    coverImage: 'project.jpg',
     isProjectCompleted: false,
   };
 
@@ -110,19 +110,17 @@ describe('projects schema', () => {
   });
 
   it('adds coverImageType "CUSTOM" when coverImage is provided', () => {
-    const result = schema.safeParse({ ...validBase, coverImage: 'project.jpg' });
+    const result = schema.safeParse(validBase);
     expect(result.success).toBe(true);
     if (result.success) {
       expect(result.data.coverImageType).toBe('CUSTOM');
     }
   });
 
-  it('adds coverImageType "DEFAULT" when coverImage is absent', () => {
-    const result = schema.safeParse(validBase);
-    expect(result.success).toBe(true);
-    if (result.success) {
-      expect(result.data.coverImageType).toBe('DEFAULT');
-    }
+  it('fails when coverImage is missing', () => {
+    const { coverImage, ...withoutCover } = validBase;
+    const result = schema.safeParse(withoutCover);
+    expect(result.success).toBe(false);
   });
 
   it('rejects invalid categoryProject enum value', () => {
@@ -146,7 +144,7 @@ describe('hero-slides schema', () => {
 
   it('accepts image extensions', () => {
     for (const ext of ['jpg', 'jpeg', 'png', 'webp']) {
-      const result = schema.safeParse({ type: 'image', media: `hero.${ext}` });
+      const result = schema.safeParse({ type: 'image', media: `hero.${ext}`, alt: 'description' });
       expect(result.success).toBe(true);
     }
   });
@@ -159,8 +157,18 @@ describe('hero-slides schema', () => {
   });
 
   it('rejects invalid media extensions', () => {
-    const result = schema.safeParse({ type: 'image', media: 'hero.gif' });
+    const result = schema.safeParse({ type: 'image', media: 'hero.gif', alt: 'description' });
     expect(result.success).toBe(false);
+  });
+
+  it('requires alt for image slides', () => {
+    const result = schema.safeParse({ type: 'image', media: 'hero.jpg' });
+    expect(result.success).toBe(false);
+  });
+
+  it('does not require alt for video slides', () => {
+    const result = schema.safeParse({ type: 'video', media: 'hero.mp4' });
+    expect(result.success).toBe(true);
   });
 
   it('rejects invalid poster extension', () => {

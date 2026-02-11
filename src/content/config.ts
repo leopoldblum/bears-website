@@ -45,7 +45,7 @@ const eventsCollection = defineCollection({
     description: z.string(),
     date: z.date(),
     categoryEvent: CategoryEventEnum,
-    coverImage: z.string().optional().refine(
+    coverImage: z.string().refine(
       validateImageExtension,
       { message: `coverImage must have a valid image extension: ${VALID_EXTENSIONS_MESSAGE}` }
     ),
@@ -67,7 +67,7 @@ const projectsCollection = defineCollection({
     description: z.string(),
     date: z.date(),
     categoryProject: CategoryProjectEnum,
-    coverImage: z.string().optional().refine(
+    coverImage: z.string().refine(
       validateImageExtension,
       { message: `coverImage must have a valid image extension: ${VALID_EXTENSIONS_MESSAGE}` }
     ),
@@ -106,21 +106,32 @@ const validateMediaExtension = (value: string | undefined) => {
   return IMAGE_EXTENSION_REGEX.test(value) || /\.(mp4|webm|ogg)$/i.test(value);
 };
 
+const heroSlideBase = {
+  media: z.string().refine(
+    validateMediaExtension,
+    { message: `media must have a valid extension: ${VALID_EXTENSIONS_MESSAGE} or mp4, webm, ogg` }
+  ),
+  shownText: z.string().optional(),
+};
+
 const heroSlidesCollection = defineCollection({
   type: 'content',
-  schema: z.object({
-    type: z.enum(['image', 'video']),
-    media: z.string().refine(
-      validateMediaExtension,
-      { message: `media must have a valid extension: ${VALID_EXTENSIONS_MESSAGE} or mp4, webm, ogg` }
-    ),
-    alt: z.string().optional(),
-    poster: z.string().optional().refine(
-      validateImageExtension,
-      { message: `poster must have a valid image extension: ${VALID_EXTENSIONS_MESSAGE}` }
-    ),
-    shownText: z.string().optional(),
-  }),
+  schema: z.discriminatedUnion('type', [
+    z.object({
+      type: z.literal('image'),
+      ...heroSlideBase,
+      alt: z.string(),
+    }),
+    z.object({
+      type: z.literal('video'),
+      ...heroSlideBase,
+      alt: z.string().optional(),
+      poster: z.string().optional().refine(
+        validateImageExtension,
+        { message: `poster must have a valid image extension: ${VALID_EXTENSIONS_MESSAGE}` }
+      ),
+    }),
+  ]),
 });
 
 const instagramCollection = defineCollection({
