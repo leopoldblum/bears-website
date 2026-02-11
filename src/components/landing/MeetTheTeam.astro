@@ -27,7 +27,34 @@ const content = await getPageContent('landing/meet-the-team');
   <!-- Responsive layout: flex-col for lg, grid for xl -->
   <div
     class="flex flex-col gap-6 lg:gap-8 xl:grid xl:grid-cols-[120px_minmax(0,2fr)_minmax(0,1fr)]"
-    x-data="{ activeIndex: 0 }"
+    x-data="{
+      activeIndex: 0,
+      _reducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+      _openPanel(i) {
+        const panel = this.$refs['teamPanel' + i];
+        if (!panel) return;
+        if (this._reducedMotion) { panel.style.height = 'auto'; return; }
+        const target = panel.scrollHeight;
+        panel.style.transition = 'none';
+        panel.style.height = panel.offsetHeight + 'px';
+        panel.offsetHeight;
+        panel.style.transition = 'height 250ms ease-out';
+        panel.style.height = target + 'px';
+        setTimeout(() => {
+          if (this.activeIndex === i) { panel.style.transition = ''; panel.style.height = 'auto'; }
+        }, 260);
+      },
+      _closePanel(i) {
+        const panel = this.$refs['teamPanel' + i];
+        if (!panel) return;
+        if (this._reducedMotion) { panel.style.height = '0px'; return; }
+        panel.style.transition = 'none';
+        panel.style.height = panel.offsetHeight + 'px';
+        panel.offsetHeight;
+        panel.style.transition = 'height 200ms ease-in';
+        panel.style.height = '0px';
+      }
+    }"
     x-init="$nextTick(() => {
       const syncHeight = () => {
         const img = $refs.mainImage;
@@ -42,15 +69,21 @@ const content = await getPageContent('landing/meet-the-team');
       syncHeight();
       window.addEventListener('resize', syncHeight);
 
-      $watch('activeIndex', (index) => {
+      const p0 = $refs['teamPanel0'];
+      if (p0) p0.style.height = 'auto';
+
+      $watch('activeIndex', (newVal, oldVal) => {
+        if (oldVal !== null && oldVal !== newVal) _closePanel(oldVal);
+        if (newVal !== null) _openPanel(newVal);
+
         const thumbs = $refs.thumbnails;
         if (thumbs) {
-          const btn = thumbs.children[index];
+          const btn = thumbs.children[newVal];
           if (btn) btn.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
         const hThumbs = $refs.horizontalThumbnails;
         if (hThumbs) {
-          const btn = hThumbs.children[index];
+          const btn = hThumbs.children[newVal];
           if (btn) {
             const scrollLeft = btn.offsetLeft - hThumbs.offsetWidth / 2 + btn.offsetWidth / 2;
             hThumbs.scrollTo({ left: scrollLeft, behavior: 'smooth' });
@@ -170,14 +203,14 @@ const content = await getPageContent('landing/meet-the-team');
                 >
                   <button
                     type="button"
-                    class="flex items-center justify-between w-full text-left py-3.5 px-4 text-base sm:text-lg font-semibold text-bears-text-onDark hover:bg-white/5 transition-all duration-200 cursor-pointer group"
+                    class="flex items-center justify-between w-full text-left py-3.5 px-4 text-base sm:text-lg font-semibold text-bears-text-onDark hover:bg-white/5 transition-colors duration-200 cursor-pointer group"
                     x-on:click={`activeIndex = ${index}`}
                     x-bind:aria-expanded={`activeIndex === ${index} ? 'true' : 'false'`}
                     aria-controls={itemId}
                   >
                     <span>{project.data.title}</span>
                     <svg
-                      class="w-4 h-4 flex-shrink-0 ml-3 transition-all duration-200"
+                      class="w-4 h-4 flex-shrink-0 ml-3 transition-[transform,color] duration-200"
                       x-bind:class={`activeIndex === ${index} ? 'rotate-180 text-bears-accent' : 'rotate-0 text-bears-text-onDark/60 group-hover:text-bears-accent'`}
                       fill="none"
                       stroke="currentColor"
@@ -194,21 +227,20 @@ const content = await getPageContent('landing/meet-the-team');
 
                   <div
                     id={itemId}
-                    class="grid transition-[grid-template-rows] duration-200 ease-in-out"
-                    x-bind:class={`activeIndex === ${index} ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'`}
+                    x-ref={`teamPanel${index}`}
+                    class="overflow-hidden"
+                    style={index === 0 ? '' : 'height: 0px;'}
                   >
-                    <div class="overflow-hidden">
-                      <div class="px-4 pb-4">
-                        {project.data.headOfProject && (
-                          <p class="text-xs sm:text-sm text-bears-accent font-medium mb-2">
-                            {project.data.headOfProject}
-                          </p>
-                        )}
-                        <div
-                          class="text-sm sm:text-base text-bears-text-onDark/90 leading-relaxed"
-                          set:html={project.data.description}
-                        />
-                      </div>
+                    <div class="px-4 pb-4">
+                      {project.data.headOfProject && (
+                        <p class="text-xs sm:text-sm text-bears-accent font-medium mb-2">
+                          {project.data.headOfProject}
+                        </p>
+                      )}
+                      <div
+                        class="text-sm sm:text-base text-bears-text-onDark/90 leading-relaxed"
+                        set:html={project.data.description}
+                      />
                     </div>
                   </div>
 

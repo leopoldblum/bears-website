@@ -123,10 +123,10 @@ In multi mode, all sections can be closed regardless of the `defaultOpen` settin
 
 ### Smooth Animations
 
-Uses CSS Grid transitions for smooth expand/collapse animations:
-- Transition: `transition-[grid-template-rows] duration-300 ease-in-out`
-- Open state: `grid-rows-[1fr]`
-- Closed state: `grid-rows-[0fr]`
+Uses JavaScript-measured height animation via Alpine.js for smooth expand/collapse:
+- **Open**: measures content `scrollHeight` once, animates `height` from current value to target (250ms ease-out), then sets `height: auto` for responsive flexibility
+- **Close**: reads current rendered height, animates to `0px` (200ms ease-in)
+- Respects `prefers-reduced-motion` by skipping animation and toggling instantly
 
 ### Dynamic Styling
 
@@ -323,7 +323,8 @@ The logic: if `allowCloseAll` is true AND the clicked item is already open, set 
 Content visibility is controlled via Alpine.js bindings:
 
 ```astro
-x-bind:class="activeIndex === 0 ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'"
+x-on:click="toggle(0)"
+x-bind:aria-expanded="isOpen(0) ? 'true' : 'false'"
 ```
 
 ## Accessibility
@@ -530,14 +531,12 @@ transition-colors duration-200 cursor-pointer
 ### Content Panel
 
 ```css
-/* Wrapper for animation */
-grid transition-[grid-template-rows] duration-300 ease-in-out
-
-/* Open: grid-rows-[1fr] */
-/* Closed: grid-rows-[0fr] */
+/* Panel wrapper */
+overflow-hidden
+/* height managed by Alpine.js: 0px (closed) → measured px → auto (open) */
 
 /* Inner container */
-overflow-hidden > div > pb-4 px-2
+px-4 pb-4
 ```
 
 ## Design System Alignment
@@ -547,7 +546,7 @@ The Accordion follows the BEARS design system:
 - **Typography:** Responsive font sizes with `sm:` breakpoint
 - **Colors:** Uses theme colors (`bears-text-onDark`, `bears-accent`)
 - **Spacing:** Consistent padding and margins
-- **Transitions:** Smooth 300ms animations
+- **Transitions:** Smooth JS-measured height animations (250ms open / 200ms close)
 - **Accessibility:** Semantic HTML and ARIA attributes
 
 ## Browser Support
@@ -603,9 +602,10 @@ If you **want** multiple sections to be open, use `allowMultiple={true}`.
 
 ## Performance Considerations
 
-- **Rendering:** All items render in the DOM (display controlled by CSS Grid)
-- **Animation:** Uses GPU-accelerated CSS Grid transitions
+- **Rendering:** All items render in the DOM (height controlled by JS)
+- **Animation:** Uses single DOM measurement + explicit pixel height transition (avoids per-frame grid layout recalculation)
 - **State:** Lightweight Alpine.js state management
+- **Reduced motion:** Respects `prefers-reduced-motion` by toggling instantly
 - **Scalability:** Tested with 10+ items without performance issues
 
 ## Questions?

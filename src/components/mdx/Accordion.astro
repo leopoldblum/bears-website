@@ -31,6 +31,10 @@ const processedItems = await Promise.all(
     content: await markdownToHtml(item.content)
   }))
 );
+
+// Server-side check: is item open at initial render?
+const isItemDefaultOpen = (index: number) =>
+  defaultOpen !== null && defaultOpen !== undefined && defaultOpen === index;
 ---
 
 <div
@@ -41,9 +45,58 @@ const processedItems = await Promise.all(
     openIndices: ${allowMultiple && defaultOpen !== null && defaultOpen !== undefined ? `[${defaultOpen}]` : '[]'},
     allowCloseAll: ${allowCloseAll},
     allowMultiple: ${allowMultiple},
+    _reducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+    isOpen(i) {
+      return this.allowMultiple ? this.openIndices.includes(i) : this.activeIndex === i;
+    },
     init() {
-      this.$watch('activeIndex', () => {});
-      this.$watch('openIndices', () => {});
+      this.$nextTick(() => {
+        for (let i = 0; i < ${processedItems.length}; i++) {
+          if (this.isOpen(i)) {
+            const p = this.$refs['panel' + i];
+            if (p) p.style.height = 'auto';
+          }
+        }
+      });
+    },
+    toggle(i) {
+      const wasOpen = this.isOpen(i);
+      if (wasOpen && !this.allowMultiple && !this.allowCloseAll) return;
+      if (!this.allowMultiple && !wasOpen && this.activeIndex !== null) {
+        this._closePanel(this.activeIndex);
+      }
+      if (this.allowMultiple) {
+        this.openIndices = wasOpen
+          ? this.openIndices.filter(idx => idx !== i)
+          : [...this.openIndices, i];
+      } else {
+        this.activeIndex = wasOpen ? null : i;
+      }
+      if (wasOpen) { this._closePanel(i); } else { this._openPanel(i); }
+    },
+    _openPanel(i) {
+      const panel = this.$refs['panel' + i];
+      if (!panel) return;
+      if (this._reducedMotion) { panel.style.height = 'auto'; return; }
+      const target = panel.scrollHeight;
+      panel.style.transition = 'none';
+      panel.style.height = panel.offsetHeight + 'px';
+      panel.offsetHeight;
+      panel.style.transition = 'height 250ms ease-out';
+      panel.style.height = target + 'px';
+      setTimeout(() => {
+        if (this.isOpen(i)) { panel.style.transition = ''; panel.style.height = 'auto'; }
+      }, 260);
+    },
+    _closePanel(i) {
+      const panel = this.$refs['panel' + i];
+      if (!panel) return;
+      if (this._reducedMotion) { panel.style.height = '0px'; return; }
+      panel.style.transition = 'none';
+      panel.style.height = panel.offsetHeight + 'px';
+      panel.offsetHeight;
+      panel.style.transition = 'height 200ms ease-in';
+      panel.style.height = '0px';
     }
   }`}
 >
@@ -58,24 +111,15 @@ const processedItems = await Promise.all(
       >
         <button
           type="button"
-          class="flex items-center justify-between w-full text-left py-3.5 px-4 text-base sm:text-lg font-semibold text-bears-text-onDark hover:bg-white/5 transition-all duration-200 cursor-pointer group"
-          x-on:click={allowMultiple
-            ? `if (openIndices.includes(${index})) { openIndices = openIndices.filter(i => i !== ${index}); } else { openIndices = [...openIndices, ${index}]; }`
-            : `activeIndex = (allowCloseAll && activeIndex === ${index}) ? null : ${index}; const parent = $el.closest('[x-data]'); if (parent && parent !== $root && parent.activeProject !== undefined) parent.activeProject = activeIndex`
-          }
-          x-bind:aria-expanded={allowMultiple
-            ? `openIndices.includes(${index}) ? 'true' : 'false'`
-            : `activeIndex === ${index} ? 'true' : 'false'`
-          }
+          class="flex items-center justify-between w-full text-left py-3.5 px-4 text-base sm:text-lg font-semibold text-bears-text-onDark hover:bg-white/5 transition-colors duration-200 cursor-pointer group"
+          x-on:click={`toggle(${index})`}
+          x-bind:aria-expanded={`isOpen(${index}) ? 'true' : 'false'`}
           aria-controls={itemId}
         >
           <span data-pagefind-weight="6">{item.title}</span>
           <svg
-            class="w-4 h-4 flex-shrink-0 ml-3 transition-all duration-200"
-            x-bind:class={allowMultiple
-              ? `openIndices.includes(${index}) ? 'rotate-180 text-bears-accent' : 'rotate-0 text-bears-text-onDark/60 group-hover:text-bears-accent'`
-              : `activeIndex === ${index} ? 'rotate-180 text-bears-accent' : 'rotate-0 text-bears-text-onDark/60 group-hover:text-bears-accent'`
-            }
+            class="w-4 h-4 flex-shrink-0 ml-3 transition-[transform,color] duration-200"
+            x-bind:class={`isOpen(${index}) ? 'rotate-180 text-bears-accent' : 'rotate-0 text-bears-text-onDark/60 group-hover:text-bears-accent'`}
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -87,25 +131,21 @@ const processedItems = await Promise.all(
 
         <div
           id={itemId}
-          class="grid transition-[grid-template-rows] duration-200 ease-in-out"
-          x-bind:class={allowMultiple
-            ? `openIndices.includes(${index}) ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'`
-            : `activeIndex === ${index} ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'`
-          }
+          x-ref={`panel${index}`}
+          class="overflow-hidden"
+          style={isItemDefaultOpen(index) ? '' : 'height: 0px;'}
         >
-          <div class="overflow-hidden">
-            <div class="px-4 pb-4">
-              {item.subtitle && (
-                <p class="not-prose text-xs sm:text-sm text-bears-accent font-medium mb-2">
-                  {item.subtitle}
-                </p>
-              )}
-              <div
-                class="text-sm sm:text-base text-bears-text-onDark/90 leading-relaxed"
-                data-pagefind-weight="2"
-                set:html={item.content}
-              />
-            </div>
+          <div class="px-4 pb-4">
+            {item.subtitle && (
+              <p class="not-prose text-xs sm:text-sm text-bears-accent font-medium mb-2">
+                {item.subtitle}
+              </p>
+            )}
+            <div
+              class="text-sm sm:text-base text-bears-text-onDark/90 leading-relaxed"
+              data-pagefind-weight="2"
+              set:html={item.content}
+            />
           </div>
         </div>
 

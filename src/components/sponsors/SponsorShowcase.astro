@@ -75,7 +75,50 @@ const allTierKeys = JSON.stringify(activeTiers.map(t => t.key));
     <!-- Tier accordions -->
     <div
       class="max-w-6xl mx-auto"
-      x-data={`{ openTiers: ${allTierKeys} }`}
+      x-data={`{
+        openTiers: ${allTierKeys},
+        _reducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+        isOpen(key) { return this.openTiers.includes(key); },
+        init() {
+          this.$nextTick(() => {
+            ${allTierKeys}.forEach(key => {
+              const p = this.$refs['tierPanel_' + key];
+              if (p) p.style.height = 'auto';
+            });
+          });
+        },
+        toggleTier(key) {
+          const wasOpen = this.isOpen(key);
+          this.openTiers = wasOpen
+            ? this.openTiers.filter(t => t !== key)
+            : [...this.openTiers, key];
+          if (wasOpen) { this._closePanel(key); } else { this._openPanel(key); }
+        },
+        _openPanel(key) {
+          const panel = this.$refs['tierPanel_' + key];
+          if (!panel) return;
+          if (this._reducedMotion) { panel.style.height = 'auto'; return; }
+          const target = panel.scrollHeight;
+          panel.style.transition = 'none';
+          panel.style.height = panel.offsetHeight + 'px';
+          panel.offsetHeight;
+          panel.style.transition = 'height 250ms ease-out';
+          panel.style.height = target + 'px';
+          setTimeout(() => {
+            if (this.isOpen(key)) { panel.style.transition = ''; panel.style.height = 'auto'; }
+          }, 260);
+        },
+        _closePanel(key) {
+          const panel = this.$refs['tierPanel_' + key];
+          if (!panel) return;
+          if (this._reducedMotion) { panel.style.height = '0px'; return; }
+          panel.style.transition = 'none';
+          panel.style.height = panel.offsetHeight + 'px';
+          panel.offsetHeight;
+          panel.style.transition = 'height 200ms ease-in';
+          panel.style.height = '0px';
+        }
+      }`}
     >
       {activeTiers.map((tier, index) => {
         const isLast = index === activeTiers.length - 1;
@@ -87,17 +130,17 @@ const allTierKeys = JSON.stringify(activeTiers.map(t => t.key));
               {/* Accordion header */}
               <button
                 type="button"
-                class="flex items-center justify-between w-full text-left py-4 sm:py-5 text-lg sm:text-xl font-bold text-bears-text-onLight hover:bg-black/[0.03] transition-all duration-200 cursor-pointer group px-2 rounded-lg"
-                x-on:click={`openTiers.includes('${tier.key}') ? openTiers = openTiers.filter(t => t !== '${tier.key}') : openTiers = [...openTiers, '${tier.key}']`}
-                x-bind:aria-expanded={`openTiers.includes('${tier.key}') ? 'true' : 'false'`}
+                class="flex items-center justify-between w-full text-left py-4 sm:py-5 text-lg sm:text-xl font-bold text-bears-text-onLight hover:bg-black/[0.03] transition-colors duration-200 cursor-pointer group px-2 rounded-lg"
+                x-on:click={`toggleTier('${tier.key}')`}
+                x-bind:aria-expanded={`isOpen('${tier.key}') ? 'true' : 'false'`}
               >
                 <span>
                   <span class="text-bears-accent font-bold text-sm sm:text-base mr-2">/{String(index + 1).padStart(2, '0')}</span>
                   <span class="capitalize">{tier.name}</span>
                 </span>
                 <svg
-                  class="w-5 h-5 flex-shrink-0 ml-3 transition-all duration-200"
-                  x-bind:class={`openTiers.includes('${tier.key}') ? 'rotate-180 text-bears-accent' : 'rotate-0 text-bears-text-onLight/40 group-hover:text-bears-accent'`}
+                  class="w-5 h-5 flex-shrink-0 ml-3 transition-[transform,color] duration-200"
+                  x-bind:class={`isOpen('${tier.key}') ? 'rotate-180 text-bears-accent' : 'rotate-0 text-bears-text-onLight/40 group-hover:text-bears-accent'`}
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -109,21 +152,19 @@ const allTierKeys = JSON.stringify(activeTiers.map(t => t.key));
 
               {/* Accordion body */}
               <div
-                class="grid transition-[grid-template-rows] duration-200 ease-in-out"
-                x-bind:class={`openTiers.includes('${tier.key}') ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'`}
+                x-ref={`tierPanel_${tier.key}`}
+                class="overflow-hidden"
               >
-                <div class="overflow-hidden">
-                  <div class="px-2 pb-6 sm:pb-8">
-                    {/* Tier description */}
-                    {tier.description && (
-                      <p class="text-sm sm:text-base text-bears-text-onLight/60 leading-relaxed mb-6 sm:mb-8">
-                        {tier.description}
-                      </p>
-                    )}
+                <div class="px-2 pb-6 sm:pb-8">
+                  {/* Tier description */}
+                  {tier.description && (
+                    <p class="text-sm sm:text-base text-bears-text-onLight/60 leading-relaxed mb-6 sm:mb-8">
+                      {tier.description}
+                    </p>
+                  )}
 
-                    {/* Sponsor logos */}
-                    <SponsorTier sponsors={tier.sponsors} tier={tier.key} />
-                  </div>
+                  {/* Sponsor logos */}
+                  <SponsorTier sponsors={tier.sponsors} tier={tier.key} />
                 </div>
               </div>
             </div>
