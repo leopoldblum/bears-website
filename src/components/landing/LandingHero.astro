@@ -282,7 +282,7 @@ const mediaJson = JSON.stringify(media.map((item, index) => ({
       <!-- Top Row: Logo (left) and shownText (right) -->
       <div class="flex justify-between items-center pt-24 sm:pt-28 lg:pt-32">
         <!-- Logo - top left -->
-        <div class="shrink-0 w-min">
+        <div class="shrink-0 w-min pr-8">
           <h1 class="text-[3.5rem] sm:text-[5.5rem] lg:text-8xl font-bold text-bears-accent drop-shadow-lg">
             BEARS
           </h1>
@@ -303,7 +303,7 @@ const mediaJson = JSON.stringify(media.map((item, index) => ({
           x-transition:leave="transition ease-in duration-200"
           x-transition:leave-start="opacity-100 translate-y-0"
           x-transition:leave-end="opacity-0 translate-y-2"
-          class="bg-black/50 backdrop-blur-sm rounded-xl px-4 py-2 text-white text-sm sm:text-base lg:text-lg max-w-xs text-right"
+          class="bg-black/50 backdrop-blur-sm rounded-xl px-4 py-2 text-white text-sm sm:text-base lg:text-lg shrink text-center"
         ></div>
       </div>
 
