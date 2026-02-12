@@ -10,6 +10,8 @@
 > - `src/content/page-text/sponsors/sponsors-title.md`
 > - `src/content/page-text/media/media-title.md`
 > - `src/content/page-text/contact/contact-title.md`
+>
+> **TODO:** Add benefits section to sponsors and link in footer, or remove entry in footer.
 
 ## Local Quickstart
 
