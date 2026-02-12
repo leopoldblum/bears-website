@@ -31,6 +31,7 @@ const {
 
 const siteOrigin = Astro.site!.origin;
 const pageUrl = `${siteOrigin}/${type === "event" ? "events" : "projects"}/${slug}`;
+const imageUrl = coverImage ? `${siteOrigin}${coverImage.src}` : undefined;
 
 const structuredData = type === "event"
   ? {
@@ -40,6 +41,17 @@ const structuredData = type === "event"
       description,
       startDate: date.toISOString(),
       url: pageUrl,
+      ...(imageUrl && { image: imageUrl }),
+      eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
+      location: {
+        "@type": "Place",
+        name: "TU Berlin",
+        address: {
+          "@type": "PostalAddress",
+          addressLocality: "Berlin",
+          addressCountry: "DE",
+        },
+      },
       organizer: {
         "@type": "Organization",
         name: "BEARS e.V.",
@@ -53,6 +65,7 @@ const structuredData = type === "event"
       description,
       datePublished: date.toISOString(),
       url: pageUrl,
+      ...(imageUrl && { image: imageUrl }),
       author: {
         "@type": "Organization",
         name: "BEARS e.V.",
