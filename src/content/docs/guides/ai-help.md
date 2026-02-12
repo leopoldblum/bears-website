@@ -48,6 +48,7 @@ Frontmatter:
   isDraft: boolean (optional, default false)
   displayMeetTheTeam: boolean (optional) — shows a "Meet the Team" section
   headOfProject: string (optional) — REQUIRED when displayMeetTheTeam is true
+  personImage: string (optional) — REQUIRED when displayMeetTheTeam is true, filename in src/assets/projects/team-members/, valid: .jpg .jpeg .png .webp
 Body: Markdown or MDX content for the detail page.
 
 SPONSORS (src/content/sponsors/)
@@ -116,7 +117,7 @@ Frontmatter (only title is required, all others optional):
   navColumns: array — each: { heading, href, links: [{ label, href }] }
 
 Page text folder structure:
-  landing/        — homepage sections (what-is-bears, hero, meet-the-team, become-sponsor, etc.)
+  landing/        — homepage sections (hero, what-is-bears, latest-news, meet-the-team, testimonials, become-sponsor, instagram-feed)
   about-us/       — about page (about-us-title, our-mission, whats-in-it, faq, find-us, faces-of-bears)
   events/         — events page (events-title, events-intro, events-crosslink, events-empty-state)
   projects/       — projects page (projects-title, categories-intro, category-*, projects-crosslink, projects-empty-state)
@@ -224,6 +225,7 @@ All images must be local files in src/assets/ subdirectories:
   src/assets/sponsors/         — sponsor logos
   src/assets/testimonials/     — testimonial portraits
   src/assets/about-us/faces-of-bears/ — team member portraits
+  src/assets/projects/team-members/ — project team lead portraits (for Meet the Team)
   src/assets/hero/landingpage/ — hero slides (images and videos)
 
 Valid image formats: .jpg, .jpeg, .png, .webp
@@ -239,7 +241,7 @@ KEY CONVENTIONS
 - FAQ answers and Accordion content support Markdown: **bold**, [links](/path), - bullet lists.
 - Sponsor tier is determined by folder name (diamond/, platinum/, gold/, silver/, bronze/), not frontmatter.
 - The seoDescription field sets a page's <meta name="description"> tag. Keep it ~150 characters.
-- For projects, if displayMeetTheTeam is true then headOfProject must also be provided.
+- For projects, if displayMeetTheTeam is true then both headOfProject and personImage must also be provided.
 ````
 
   </div>
