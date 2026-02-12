@@ -11,20 +11,27 @@ Projects are stored in `src/content/projects/` as Markdown or MDX files.
 
 Create a new file in `src/content/projects/` with the naming convention `YYYY MM DD title.md`:
 
-```yaml
+```md
 ---
 title: "Autonomous Rover Prototype"
-description: "Development of an AI-powered rover with autonomous navigation capabilities."
+description: "An AI-powered rover with autonomous navigation, computer vision, and obstacle avoidance."
 date: 2025-11-20
 categoryProject: "robotics"
 coverImage: "project-10.jpg"
 isProjectCompleted: false
-displayMeetTheTeam: true
-headOfProject: "Jane Doe"
+isDraft: false              # Optional — defaults to false, set true to hide from production
+displayMeetTheTeam: true    # Optional — show this project in the homepage "Meet the Team" section
+headOfProject: "Emma Watson" # Optional — required when displayMeetTheTeam is true
+personImage: "emma-watson.jpg" # Optional — required when displayMeetTheTeam is true
 ---
-```
 
-The body of the file is written in Markdown and becomes the project's detail page content.
+## Project Overview
+
+The Autonomous Rover Prototype focuses on developing advanced navigation
+algorithms for a Mars rover-inspired vehicle. Our goal is a fully
+autonomous system capable of navigating challenging terrain while avoiding
+obstacles and achieving mission objectives.
+```
 
 ## Required Fields
 
@@ -44,6 +51,7 @@ The body of the file is written in Markdown and becomes the project's detail pag
 | `isDraft` | boolean | Set to `true` to hide in production (default: `false`) |
 | `displayMeetTheTeam` | boolean | Show a "Meet the Team" section on the project page |
 | `headOfProject` | string | Name of the project lead (**required** if `displayMeetTheTeam` is `true`) |
+| `personImage` | string | Portrait image filename in `src/assets/projects/team-members/` (**required** if `displayMeetTheTeam` is `true`) |
 
 ## Cover Images
 
@@ -51,4 +59,8 @@ Place cover images in `src/assets/projects/`. Valid formats: `.jpg`, `.jpeg`, `.
 
 ## Meet the Team
 
-If you set `displayMeetTheTeam: true`, you must also provide `headOfProject`. The build will fail if `headOfProject` is missing when `displayMeetTheTeam` is enabled.
+If you set `displayMeetTheTeam: true`, you must also provide `headOfProject` and `personImage`. The build will fail if either field is missing when `displayMeetTheTeam` is enabled.
+
+### Person Images
+
+Place team member portrait images in `src/assets/projects/team-members/`. Valid formats: `.jpg`, `.jpeg`, `.png`, `.webp`. Use descriptive filenames matching the person's name (e.g., `emma-watson.jpg`).

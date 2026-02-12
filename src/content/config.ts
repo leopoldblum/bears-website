@@ -74,6 +74,10 @@ const projectsCollection = defineCollection({
     isDraft: z.boolean().default(false).optional(),
     displayMeetTheTeam: z.boolean().optional(),
     headOfProject: z.string().optional(),
+    personImage: z.string().optional().refine(
+      validateImageExtension,
+      { message: `personImage must have a valid image extension: ${VALID_EXTENSIONS_MESSAGE}` }
+    ),
     isProjectCompleted: z.boolean(),
   }).refine(
     (data) => {
@@ -86,6 +90,18 @@ const projectsCollection = defineCollection({
     {
       message: "headOfProject is required when displayMeetTheTeam is true",
       path: ["headOfProject"],
+    }
+  ).refine(
+    (data) => {
+      // If displayMeetTheTeam is true, personImage must be provided
+      if (data.displayMeetTheTeam === true && !data.personImage) {
+        return false;
+      }
+      return true;
+    },
+    {
+      message: "personImage is required when displayMeetTheTeam is true",
+      path: ["personImage"],
     }
   ).transform((data) => {
     // Derive coverImageType from coverImage presence

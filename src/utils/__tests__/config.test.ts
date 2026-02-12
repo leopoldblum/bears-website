@@ -82,7 +82,7 @@ describe('projects schema', () => {
   };
 
   it('fails when displayMeetTheTeam is true but headOfProject is missing', () => {
-    const result = schema.safeParse({ ...validBase, displayMeetTheTeam: true });
+    const result = schema.safeParse({ ...validBase, displayMeetTheTeam: true, personImage: 'person.jpg' });
     expect(result.success).toBe(false);
     if (!result.success) {
       const paths = result.error.issues.map(i => i.path.join('.'));
@@ -90,16 +90,38 @@ describe('projects schema', () => {
     }
   });
 
-  it('passes when displayMeetTheTeam is true and headOfProject is provided', () => {
+  it('fails when displayMeetTheTeam is true but personImage is missing', () => {
+    const result = schema.safeParse({ ...validBase, displayMeetTheTeam: true, headOfProject: 'Jane Doe' });
+    expect(result.success).toBe(false);
+    if (!result.success) {
+      const paths = result.error.issues.map(i => i.path.join('.'));
+      expect(paths).toContain('personImage');
+    }
+  });
+
+  it('passes when displayMeetTheTeam is true with headOfProject and personImage', () => {
     const result = schema.safeParse({
       ...validBase,
       displayMeetTheTeam: true,
       headOfProject: 'Jane Doe',
+      personImage: 'jane-doe.jpg',
     });
     expect(result.success).toBe(true);
   });
 
-  it('passes when displayMeetTheTeam is false without headOfProject', () => {
+  it('rejects invalid personImage extension', () => {
+    const result = schema.safeParse({ ...validBase, personImage: 'person.gif' });
+    expect(result.success).toBe(false);
+  });
+
+  it('accepts personImage with valid extensions', () => {
+    for (const ext of ['jpg', 'jpeg', 'png', 'webp']) {
+      const result = schema.safeParse({ ...validBase, personImage: `person.${ext}` });
+      expect(result.success).toBe(true);
+    }
+  });
+
+  it('passes when displayMeetTheTeam is false without headOfProject or personImage', () => {
     const result = schema.safeParse({ ...validBase, displayMeetTheTeam: false });
     expect(result.success).toBe(true);
   });

@@ -7,6 +7,7 @@ coverImage: "project-10.jpg"
 isDraft: false
 displayMeetTheTeam: true
 headOfProject: "Emma Watson"
+personImage: "emma-watson.jpg"
 isProjectCompleted: true
 ---
 

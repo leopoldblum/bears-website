@@ -7,6 +7,7 @@ coverImage: "project-4.jpg"
 isDraft: false
 displayMeetTheTeam: true
 headOfProject: "Alice Johnson"
+personImage: "alice-johnson.jpg"
 isProjectCompleted: false
 ---
 

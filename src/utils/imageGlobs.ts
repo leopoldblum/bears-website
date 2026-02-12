@@ -26,11 +26,19 @@ export const eventImages: ImageGlob = import.meta.glob<{ default: ImageMetadata 
 
 /**
  * Project cover images
- * Used by: projects.astro, [slug].astro, LatestNews.astro, MeetTheTeam.astro
+ * Used by: projects.astro, [slug].astro, LatestNews.astro
  * Pattern: Generated from IMAGE_GLOB_PATTERN constant
  */
 export const projectImages: ImageGlob = import.meta.glob<{ default: ImageMetadata }>(
   "/src/assets/projects/*.{jpg,jpeg,png,webp}"
+);
+
+/**
+ * Team member portrait images for Meet the Team section
+ * Used by: MeetTheTeam.astro
+ */
+export const teamImages: ImageGlob = import.meta.glob<{ default: ImageMetadata }>(
+  "/src/assets/projects/team-members/*.{jpg,jpeg,png,webp}"
 );
 
 /**

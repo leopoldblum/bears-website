@@ -6,6 +6,7 @@ categoryProject: "experimental-rocketry"
 coverImage: "project-8.jpg"
 displayMeetTheTeam: true
 headOfProject: "David Martinez"
+personImage: "david-martinez.jpg"
 isProjectCompleted: false
 ---
 

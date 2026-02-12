@@ -6,6 +6,7 @@ categoryProject: "science-and-experiments"
 coverImage: "project-7.jpg"
 displayMeetTheTeam: true
 headOfProject: "Sophie Taylor"
+personImage: "sophie-taylor.jpg"
 isProjectCompleted: true
 ---
 
