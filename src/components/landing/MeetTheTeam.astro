@@ -38,7 +38,7 @@ const content = await getPageContent('landing/meet-the-team');
         panel.style.transition = 'none';
         panel.style.height = panel.offsetHeight + 'px';
         panel.offsetHeight;
-        panel.style.transition = 'height 250ms ease-out';
+        panel.style.transition = 'height 250ms ease';
         panel.style.height = target + 'px';
         setTimeout(() => {
           if (this.activeIndex === i) { panel.style.transition = ''; panel.style.height = 'auto'; }
@@ -51,7 +51,7 @@ const content = await getPageContent('landing/meet-the-team');
         panel.style.transition = 'none';
         panel.style.height = panel.offsetHeight + 'px';
         panel.offsetHeight;
-        panel.style.transition = 'height 200ms ease-in';
+        panel.style.transition = 'height 250ms ease';
         panel.style.height = '0px';
       }
     }"
