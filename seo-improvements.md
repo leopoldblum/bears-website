@@ -2,7 +2,7 @@
 
 ## Overall SEO Rating: 6/10 (up from 4/10)
 
-The site has a strong technical foundation (Astro SSG, semantic HTML, image optimization, accessibility) and now includes canonical URLs, Open Graph tags, Twitter Cards, and an XML sitemap. The remaining gaps are: missing robots.txt, placeholder meta descriptions, no structured data, and a missing default OG image.
+The site has a strong technical foundation (Astro SSG, semantic HTML, image optimization, accessibility) and now includes canonical URLs, Open Graph tags, Twitter Cards, an XML sitemap, and JSON-LD structured data. The remaining gaps are: missing robots.txt, placeholder meta descriptions, and a missing default OG image.
 
 **Site status:** In development (not yet live at bears-space.de)
 
@@ -21,7 +21,7 @@ The site has a strong technical foundation (Astro SSG, semantic HTML, image opti
 
 5. ~~**Add Open Graph & Twitter Card tags**~~ — Now present in `BaseLayout.astro` lines 35-47
 6. **Optimize page titles** — Still generic (e.g., "Home | BEARS", "Events | BEARS"). Consider more descriptive titles like "Student Aerospace Projects | BEARS e.V."
-7. **Add JSON-LD structured data** — Organization schema, Event schema for event detail pages, Project schema for project detail pages
+7. ~~**Add JSON-LD structured data**~~ — Organization schema on all pages (BaseLayout), Event schema on event detail pages, Article schema on project detail pages (PostLayout)
 8. ~~**Fix broken footer links**~~ — Footer links now sourced from content collection (`footer/nav-columns`, `footer/social-links`), no longer broken
 9. ~~**Fix duplicate H1 on landing page**~~ — Landing page now has single H1 in hero section
 10. **NEW: Create og-default.jpg** — Referenced in `BaseLayout.astro` line 19 (`ogImage = "/og-default.jpg"`) but the file does not exist in `public/`. Social shares will show a broken image.
@@ -81,7 +81,7 @@ The site has a strong technical foundation (Astro SSG, semantic HTML, image opti
 | Keyboard navigation | PASS | Cmd/Ctrl+K search shortcut, arrow keys in results, Escape to close |
 | og-default.jpg | FAIL | **NEW** — File referenced but missing from `public/` |
 
-### On-Page Optimization (5/10, up from 2/10)
+### On-Page Optimization (6/10, up from 5/10)
 
 | Element | Status | Details |
 |---------|--------|---------|
@@ -92,7 +92,7 @@ The site has a strong technical foundation (Astro SSG, semantic HTML, image opti
 | ~~Open Graph tags~~ | ~~PASS~~ | ~~FIXED~~ — og:type, og:url, og:title, og:description, og:image, og:site_name |
 | ~~Twitter Cards~~ | ~~PASS~~ | ~~FIXED~~ — summary_large_image with title, description, image |
 | ~~Canonical URLs~~ | ~~PASS~~ | ~~FIXED~~ — Self-referencing canonical on every page |
-| Structured data | MISSING | No JSON-LD / schema.org markup |
+| ~~Structured data~~ | ~~PASS~~ | ~~FIXED~~ — Organization schema on all pages, Event schema on event detail pages, Article schema on project detail pages |
 | Image alt text | PASS | All images have descriptive alt text |
 | ~~Internal linking~~ | ~~PASS~~ | ~~FIXED~~ — Footer rebuilt with content-driven nav columns, deep links with URL params + hash anchors, CrosslinkBanner for cross-page linking |
 
@@ -139,6 +139,7 @@ The site has a strong technical foundation (Astro SSG, semantic HTML, image opti
 - Pagefind integration for lightweight static search
 - Content-driven page text via `page-text` collection — headings, descriptions, and SEO fields editable without touching code
 - Alpine.js bundled (not CDN) — no external runtime dependency
+- JSON-LD structured data: Organization schema on every page, Event schema on event detail pages, Article schema on project detail pages
 - XML sitemap auto-generated via `@astrojs/sitemap` (docs pages excluded)
 - Docs section intentionally excluded from indexing (`noindex`)
 
