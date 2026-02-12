@@ -1,6 +1,7 @@
 ---
 // MetadataCard.astro - Metadata display for detail page sidebar
 interface Props {
+  title: string;
   category: string;
   date: Date;
   isCompleted?: boolean;
@@ -8,7 +9,7 @@ interface Props {
   type: 'event' | 'project';
 }
 
-const { category, date, isCompleted, headOfProject, type } = Astro.props;
+const { title, category, date, isCompleted, headOfProject, type } = Astro.props;
 
 // Format category for display
 const formatCategory = (cat: string) => {
@@ -25,14 +26,18 @@ const formattedDate = date.toLocaleDateString('en-US', {
   day: 'numeric'
 });
 
-const backHref = type === 'event' ? '/events' : '/projects';
-const backLabel = type === 'event' ? 'Back to Events' : 'Back to Projects';
+const parentHref = type === 'event' ? '/events' : '/projects';
+const parentLabel = type === 'event' ? 'Events' : 'Projects';
 ---
 
 <aside class="metadata-card">
-  <a href={backHref} class="back-link">
-    <span aria-hidden="true">&larr;</span> {backLabel}
-  </a>
+  <nav aria-label="Breadcrumb" class="breadcrumb">
+    <ol>
+      <li><a href="/">Home</a></li>
+      <li><a href={parentHref}>{parentLabel}</a></li>
+      <li aria-current="page"><span class="breadcrumb-current">{title}</span></li>
+    </ol>
+  </nav>
 
   <div class="metadata-section">
     <h3 class="metadata-label">Category</h3>
@@ -96,20 +101,53 @@ const backLabel = type === 'event' ? 'Back to Events' : 'Back to Projects';
     }
   }
 
-  .back-link {
+  .breadcrumb {
+    flex-basis: 100%;
+  }
+
+  .breadcrumb ol {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: 0;
+  }
+
+  .breadcrumb li {
     display: inline-flex;
     align-items: center;
-    gap: 0.25rem;
-    font-size: 0.875rem;
-    font-weight: 500;
+    font-size: 0.8125rem;
+    line-height: 1.4;
+  }
+
+  .breadcrumb li:not(:last-child)::after {
+    content: '›';
+    margin: 0 0.5rem;
     color: var(--color-bears-text-onDark);
-    opacity: 0.7;
+    opacity: 0.3;
+    font-size: 0.875rem;
+  }
+
+  .breadcrumb a {
+    color: var(--color-bears-text-onDark);
+    opacity: 0.55;
     text-decoration: none;
     transition: opacity 0.2s ease;
   }
 
-  .back-link:hover {
+  .breadcrumb a:hover {
     opacity: 1;
+  }
+
+  .breadcrumb-current {
+    color: var(--color-bears-text-onDark);
+    opacity: 0.85;
+    max-width: 18ch;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .metadata-section {
@@ -222,7 +260,7 @@ const backLabel = type === 'event' ? 'Back to Events' : 'Back to Projects';
       gap: 1rem 1.5rem;
     }
 
-    .back-link {
+    .breadcrumb {
       flex-basis: 100%;
     }
 
@@ -233,7 +271,7 @@ const backLabel = type === 'event' ? 'Back to Events' : 'Back to Projects';
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .back-link {
+    .breadcrumb a {
       transition: none;
     }
   }
