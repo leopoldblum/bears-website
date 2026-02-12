@@ -11,15 +11,22 @@ Events are stored in `src/content/events/` as Markdown or MDX files.
 
 Create a new file in `src/content/events/` with the naming convention `YYYY MM DD title.md`:
 
-```yaml
+```md
 ---
-title: "Rocket Engine Test Day"
-description: "Join us for a live test of our latest engine prototype."
+title: "BEARS 24-Hour Hackathon 2026"
+description: "Test your skills in our annual hackathon focused on autonomous systems and sustainable engineering."
 date: 2026-03-15
 categoryEvent: "competitions-and-workshops"
-coverImage: "event-1.jpg"
-isDraft: false
+coverImage: "event-10.jpg"
+isDraft: false   # Optional — defaults to false, set true to hide from production
 ---
+
+## About the Hackathon
+
+Get ready for the most exciting event of the semester! Our annual hackathon
+challenges teams to design, build, and program innovative solutions within
+24 hours. Whether it's waste-sorting robots, energy-efficient drones, or
+smart agricultural systems, we want to see your creative solutions.
 ```
 
 ## Required Fields
