@@ -34,6 +34,8 @@ const { title, date, categoryEvent } = entry.data;
 
 <PostLayout
   title={title}
+  description={entry.data.description}
+  slug={entry.slug}
   date={date}
   coverImage={coverImageData}
   category={categoryEvent}
