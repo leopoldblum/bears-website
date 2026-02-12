@@ -28,7 +28,6 @@ shownText: "Explore Mars"
 ---
 type: "video"
 media: "sample-video.webm"
-poster: "video-thumbnail.jpg"
 shownText: "Video Background Example"
 ---
 ```
@@ -47,7 +46,6 @@ The body of hero slide files is not used.
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `poster` | string | Poster/thumbnail image filename (video slides only) |
 | `shownText` | string | Overlay text displayed on the slide |
 
 ## Media Files

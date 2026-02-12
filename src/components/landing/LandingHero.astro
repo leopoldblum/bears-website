@@ -73,21 +73,10 @@ const media: MediaItem[] = await Promise.all(
       }
     }
 
-    // Load poster image if specified
-    let posterSrc: string | undefined;
-    if (slide.data.poster) {
-      const posterPath = `/src/assets/hero/landingpage/${slide.data.poster}`;
-      if (heroMedia[posterPath]) {
-        const posterModule = await heroMedia[posterPath]();
-        posterSrc = posterModule.default as string;
-      }
-    }
-
     return {
       type: slide.data.type,
       src,
       alt: slide.data.alt,
-      poster: posterSrc,
       shownText: slide.data.shownText,
     };
   })
@@ -198,7 +187,6 @@ const mediaJson = JSON.stringify(media.map((item, index) => ({
             <video
               class="absolute inset-0 w-full h-full object-cover"
               src={typeof item.src === 'string' ? item.src : undefined}
-              poster={item.poster}
               autoplay
               muted
               loop

@@ -81,7 +81,6 @@ Video slide:
   type: "video" (required)
   media: string (required) — video filename in src/assets/hero/landingpage/, valid: .mp4 .webm .ogg
   alt: string (optional)
-  poster: string (optional) — thumbnail image
   shownText: string (optional)
 
 INSTAGRAM POSTS (src/content/instagram/)

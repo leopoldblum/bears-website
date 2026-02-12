@@ -142,10 +142,6 @@ const heroSlidesCollection = defineCollection({
       type: z.literal('video'),
       ...heroSlideBase,
       alt: z.string().optional(),
-      poster: z.string().optional().refine(
-        validateImageExtension,
-        { message: `poster must have a valid image extension: ${VALID_EXTENSIONS_MESSAGE}` }
-      ),
     }),
   ]),
 });

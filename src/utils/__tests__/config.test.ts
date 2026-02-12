@@ -193,15 +193,6 @@ describe('hero-slides schema', () => {
     expect(result.success).toBe(true);
   });
 
-  it('rejects invalid poster extension', () => {
-    const result = schema.safeParse({ type: 'video', media: 'hero.mp4', poster: 'poster.bmp' });
-    expect(result.success).toBe(false);
-  });
-
-  it('accepts valid poster extension', () => {
-    const result = schema.safeParse({ type: 'video', media: 'hero.mp4', poster: 'poster.jpg' });
-    expect(result.success).toBe(true);
-  });
 });
 
 // ---------------------------------------------------------------------------
