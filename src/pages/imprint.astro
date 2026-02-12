@@ -12,7 +12,7 @@ const { Content } = entry ? await entry.render() : { Content: null };
   <div class="imprint-container">
     <div class="imprint-inner">
       <header class="imprint-header">
-        <h1 class="imprint-title">{title}</h1>
+        <h1 id="imprint" class="imprint-title scroll-mt-20">{title}</h1>
         {subtitle && <p class="imprint-subtitle">{subtitle}</p>}
         <div class="imprint-divider"></div>
       </header>

@@ -23,7 +23,7 @@ const socialIcons: Record<string, { label: string; path: string }> = {
 };
 ---
 
-<section class="container mx-auto px-4 sm:px-8 lg:px-16 py-16 sm:py-20 lg:py-24">
+<section id="contact-info" class="container mx-auto px-4 sm:px-8 lg:px-16 py-16 sm:py-20 lg:py-24 scroll-mt-20">
   {/* Description */}
   {content?.data.description && (
     <p class="text-sm sm:text-base lg:text-lg text-bears-text-onDark/60 leading-relaxed max-w-2xl mb-10 sm:mb-12 lg:mb-16">
@@ -46,7 +46,7 @@ const socialIcons: Record<string, { label: string; path: string }> = {
               <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 0 1-2.25 2.25h-15a2.25 2.25 0 0 1-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0 0 19.5 4.5h-15a2.25 2.25 0 0 0-2.25 2.25m19.5 0v.243a2.25 2.25 0 0 1-1.07 1.916l-7.5 4.615a2.25 2.25 0 0 1-2.36 0L3.32 8.91a2.25 2.25 0 0 1-1.07-1.916V6.75" />
             </svg>
           </div>
-          <h3 class="text-lg sm:text-xl font-semibold text-bears-text-onDark">Email</h3>
+          <h3 id="contact-email" class="text-lg sm:text-xl font-semibold text-bears-text-onDark scroll-mt-20">Email</h3>
         </div>
         <div class="flex-1 flex items-center">
           <a
@@ -72,7 +72,7 @@ const socialIcons: Record<string, { label: string; path: string }> = {
               <path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 0 1 7.843 4.582M12 3a8.997 8.997 0 0 0-7.843 4.582m15.686 0A11.953 11.953 0 0 1 12 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0 1 21 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0 1 12 16.5a17.92 17.92 0 0 1-8.716-2.247m0 0A9 9 0 0 1 3 12c0-1.47.353-2.856.978-4.082" />
             </svg>
           </div>
-          <h3 class="text-lg sm:text-xl font-semibold text-bears-text-onDark">Follow Us</h3>
+          <h3 id="contact-social" class="text-lg sm:text-xl font-semibold text-bears-text-onDark scroll-mt-20">Follow Us</h3>
         </div>
         <div class="flex-1 flex items-center">
           <div class="flex gap-4">
@@ -133,7 +133,7 @@ const socialIcons: Record<string, { label: string; path: string }> = {
               <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 10.5c0 7.142-7.5 11.25-7.5 11.25S4.5 17.642 4.5 10.5a7.5 7.5 0 1 1 15 0Z" />
             </svg>
           </div>
-          <h3 class="text-lg sm:text-xl font-semibold text-bears-text-onDark">Address</h3>
+          <h3 id="contact-address" class="text-lg sm:text-xl font-semibold text-bears-text-onDark scroll-mt-20">Address</h3>
         </div>
         <div class="flex-1 flex items-center">
           <div>
@@ -146,7 +146,7 @@ const socialIcons: Record<string, { label: string; path: string }> = {
               ))}
             </address>
             <a
-              href="/about-us#find-us"
+              href="/about-us#find-us-section"
               class="inline-flex items-center gap-1.5 mt-4 text-sm text-bears-accent/70 hover:text-bears-accent transition-colors duration-200"
             >
               View on map

@@ -27,7 +27,8 @@ const parsedItems =
 ---
 
 <section
-  class="container mx-auto px-4 sm:px-8 lg:px-16 py-16 sm:py-20 lg:py-24"
+  id="our-mission-section"
+  class="container mx-auto px-4 sm:px-8 lg:px-16 py-16 sm:py-20 lg:py-24 scroll-mt-20"
 >
   <!-- Part 1: Mission Statement -->
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
@@ -56,7 +57,6 @@ const parsedItems =
         )
       }
       <h2
-        id="our-mission"
         class="text-3xl sm:text-4xl lg:text-5xl font-bold text-bears-text-onDark"
       >
         {content?.data.title}
@@ -76,7 +76,7 @@ const parsedItems =
   {
     parsedItems.length > 0 && (
       <div class="mt-16 sm:mt-20 lg:mt-24">
-        <h3 class="text-xl sm:text-2xl lg:text-3xl font-bold text-bears-text-onDark mb-8 sm:mb-10 lg:mb-14">
+        <h3 id="whats-in-it" class="text-xl sm:text-2xl lg:text-3xl font-bold text-bears-text-onDark mb-8 sm:mb-10 lg:mb-14 scroll-mt-20">
           {listContent?.data.title}
         </h3>
 
@@ -102,7 +102,7 @@ const parsedItems =
         </div>
 
         <div class="mt-8 sm:mt-10 lg:mt-12 flex justify-center">
-          <Button variant="primary" size="large" href="#find-us">
+          <Button variant="primary" size="large" href="#find-us-section">
             Join us!
           </Button>
         </div>

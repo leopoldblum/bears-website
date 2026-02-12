@@ -60,6 +60,14 @@ const organizationSchema = {
 
     <!-- Structured Data -->
     <script type="application/ld+json" set:html={JSON.stringify(organizationSchema)} />
+
+    <!-- Intercept hash before browser scrolls — we handle it ourselves -->
+    <script is:inline>
+      if (window.location.hash) {
+        window.__scrollTarget = window.location.hash;
+        history.replaceState(null, '', window.location.pathname + window.location.search);
+      }
+    </script>
   </head>
   <body class="flex flex-col min-h-screen">
     <Header />
@@ -68,5 +76,32 @@ const organizationSchema = {
     </main>
     <Footer />
     <BackToTopButton />
+    <script>
+      if (window.__scrollTarget) {
+        const hash = window.__scrollTarget;
+        delete window.__scrollTarget;
+
+        const scrollToTarget = () => {
+          try {
+            const el = document.querySelector(hash);
+            if (el) {
+              el.scrollIntoView({ behavior: "smooth" });
+              history.replaceState(null, '', window.location.pathname + window.location.search + hash);
+            }
+          } catch { /* invalid selector */ }
+        };
+
+        let done = false;
+        const doScroll = () => {
+          if (done) return;
+          done = true;
+          requestAnimationFrame(() => requestAnimationFrame(scrollToTarget));
+        };
+
+        document.addEventListener("alpine:initialized", doScroll, { once: true });
+        // Fallback for pages without Alpine (imprint, datenschutz)
+        window.addEventListener("load", () => setTimeout(doScroll, 100), { once: true });
+      }
+    </script>
   </body>
 </html>

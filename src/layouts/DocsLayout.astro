@@ -20,6 +20,14 @@ const { title, description } = Astro.props;
     {description && <meta name="description" content={description} />}
     <meta name="robots" content="noindex" />
     <title>{title} | BEARS Docs</title>
+
+    <!-- Intercept hash before browser scrolls — we handle it ourselves -->
+    <script is:inline>
+      if (window.location.hash) {
+        window.__scrollTarget = window.location.hash;
+        history.replaceState(null, '', window.location.pathname + window.location.search);
+      }
+    </script>
   </head>
   <body class="min-h-screen bg-bears-bg text-bears-text-onDark">
     <!-- Minimal docs header -->
@@ -78,6 +86,32 @@ const { title, description } = Astro.props;
         });
         wrapper.appendChild(btn);
       });
+    </script>
+    <script>
+      if (window.__scrollTarget) {
+        const hash = window.__scrollTarget;
+        delete window.__scrollTarget;
+
+        const scrollToTarget = () => {
+          try {
+            const el = document.querySelector(hash);
+            if (el) {
+              el.scrollIntoView({ behavior: "smooth" });
+              history.replaceState(null, '', window.location.pathname + window.location.search + hash);
+            }
+          } catch { /* invalid selector */ }
+        };
+
+        let done = false;
+        const doScroll = () => {
+          if (done) return;
+          done = true;
+          requestAnimationFrame(() => requestAnimationFrame(scrollToTarget));
+        };
+
+        document.addEventListener("alpine:initialized", doScroll, { once: true });
+        window.addEventListener("load", () => setTimeout(doScroll, 100), { once: true });
+      }
     </script>
   </body>
 </html>

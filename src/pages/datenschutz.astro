@@ -12,7 +12,7 @@ const { Content } = entry ? await entry.render() : { Content: null };
   <div class="datenschutz-container">
     <div class="datenschutz-inner">
       <header class="datenschutz-header">
-        <h1 class="datenschutz-title">{title}</h1>
+        <h1 id="datenschutz" class="datenschutz-title scroll-mt-20">{title}</h1>
         {subtitle && <p class="datenschutz-subtitle">{subtitle}</p>}
         <div class="datenschutz-divider"></div>
       </header>

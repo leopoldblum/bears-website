@@ -12,7 +12,7 @@ const accordionItems = (content?.data.faqs ?? []).map((faq) => ({
 ---
 
 {accordionItems.length > 0 && (
-  <section id="faq" class="container mx-auto px-4 sm:px-8 lg:px-16 py-16 sm:py-20 lg:py-24 scroll-mt-20">
+  <section class="container mx-auto px-4 sm:px-8 lg:px-16 py-16 sm:py-20 lg:py-24">
     {/* Subtitle */}
     {content?.data.subtitle && (
       <p class="text-xs sm:text-sm font-bold uppercase tracking-[0.2em] text-bears-accent mb-3 sm:mb-4">
@@ -21,7 +21,7 @@ const accordionItems = (content?.data.faqs ?? []).map((faq) => ({
     )}
 
     {/* Heading */}
-    <h2 data-pagefind-index-attrs="id" class="text-3xl sm:text-4xl lg:text-5xl font-bold text-bears-text-onDark mb-8 sm:mb-10 lg:mb-14">
+    <h2 id="faq-title" data-pagefind-index-attrs="id" class="text-3xl sm:text-4xl lg:text-5xl font-bold text-bears-text-onDark mb-8 sm:mb-10 lg:mb-14 scroll-mt-20">
       {content?.data.title}
     </h2>
     <span class="sr-only" data-pagefind-weight="8">FAQ</span>

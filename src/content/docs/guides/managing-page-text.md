@@ -226,7 +226,7 @@ seoDescription: "BEARS e.V. – Student aerospace team at TU Berlin building roc
 ctas:
   - title: "How to Join"
     description: "Becoming a member of Bears e.V."
-    href: "/about-us#find-us"
+    href: "/about-us#find-us-section"
   - title: "Our Projects"
     description: "Explore what we are working on"
     href: "/projects"
@@ -307,13 +307,13 @@ navColumns:
     href: "/about-us"
     links:
       - label: "Our Team"
-        href: "/about-us#faces-of-bears"
+        href: "/about-us#faces-of-bears-title"
       - label: "Media"
         href: "/media"
       - label: "Contact"
         href: "/contact"
       - label: "FAQ"
-        href: "/about-us#faq"
+        href: "/about-us#faq-title"
 ---
 ```
 

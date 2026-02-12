@@ -37,7 +37,7 @@ const activeTiers = tiers.filter(t => t.sponsors.length > 0);
 const allTierKeys = JSON.stringify(activeTiers.map(t => t.key));
 ---
 
-<section class="bg-bears-bg-light py-20 sm:py-28 lg:py-36">
+<section id="sponsor-showcase" class="bg-bears-bg-light py-20 sm:py-28 lg:py-36 scroll-mt-20">
   <div class="container mx-auto px-4 sm:px-8 lg:px-16">
     <!-- Section header -->
     {hasHeader && (
@@ -49,7 +49,7 @@ const allTierKeys = JSON.stringify(activeTiers.map(t => t.key));
         )}
 
         {title && (
-          <h2 id="sponsor-tiers" class="text-3xl sm:text-4xl lg:text-5xl font-bold text-bears-text-onLight mb-8 sm:mb-10 lg:mb-14">
+          <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-bears-text-onLight mb-8 sm:mb-10 lg:mb-14">
             {title}
           </h2>
         )}

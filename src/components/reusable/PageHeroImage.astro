@@ -36,7 +36,8 @@ const isLight = variant === "light";
 ---
 
 <section
-  class={`relative h-[50vh] lg:h-[60vh] min-h-[450px] max-h-[800px] w-full max-w-[2560px] mx-auto overflow-hidden ${className || ""}`}
+  id="page-hero"
+  class={`relative h-[50vh] lg:h-[60vh] min-h-[450px] max-h-[800px] w-full max-w-[2560px] mx-auto overflow-hidden scroll-mt-20 ${className || ""}`}
 >
   {/* Background Image Layer */}
   <div class="absolute inset-0 z-0">
@@ -91,7 +92,8 @@ const isLight = variant === "light";
       <div class="w-full lg:w-1/2 pb-16 sm:pb-20 lg:pb-24">
         {/* Title */}
         <h1
-          class="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold text-bears-accent leading-tight"
+          id="page-title"
+          class="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold text-bears-accent leading-tight scroll-mt-20"
         >
           {title}
         </h1>

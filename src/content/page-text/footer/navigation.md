@@ -18,7 +18,7 @@ navColumns:
     href: "/sponsors"
     links:
       - label: "Become a Sponsor"
-        href: "/sponsors#become-a-sponsor"
+        href: "/sponsors#become-a-sponsor-title"
       - label: "Our Partners"
         href: "/sponsors#diamond"
       - label: "Benefits"
@@ -38,11 +38,11 @@ navColumns:
     href: "/about-us"
     links:
       - label: "Our Team"
-        href: "/about-us#faces-of-bears"
+        href: "/about-us#faces-of-bears-title"
       - label: "Media"
         href: "/media"
       - label: "Contact"
         href: "/contact"
       - label: "FAQ"
-        href: "/about-us#faq"
+        href: "/about-us#faq-title"
 ---

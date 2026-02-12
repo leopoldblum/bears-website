@@ -23,7 +23,7 @@ const desktopColWidth = `${+(100 / cols).toFixed(3)}vw`;
 ---
 
 {faces.length > 0 && (
-  <section id="faces-of-bears" class="container mx-auto px-4 sm:px-8 lg:px-16 py-16 sm:py-20 lg:py-24 scroll-mt-20">
+  <section class="container mx-auto px-4 sm:px-8 lg:px-16 py-16 sm:py-20 lg:py-24">
     <!-- Header: subtitle + title left, description right -->
     <div class="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-6 lg:gap-16 mb-6 sm:mb-8 lg:mb-12">
       <div class="lg:max-w-[55%]">
@@ -32,7 +32,7 @@ const desktopColWidth = `${+(100 / cols).toFixed(3)}vw`;
             {content.data.subtitle}
           </p>
         )}
-        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-bears-text-onDark">
+        <h2 id="faces-of-bears-title" class="text-3xl sm:text-4xl lg:text-5xl font-bold text-bears-text-onDark scroll-mt-20">
           {content?.data.title}
         </h2>
         <GradientDivider class="mt-4 sm:mt-6" />
@@ -84,6 +84,7 @@ const desktopColWidth = `${+(100 / cols).toFixed(3)}vw`;
       <div
         x-ref="wrapper"
         class="overflow-hidden transition-all duration-500 ease-in-out"
+        style="max-height: var(--preview-height, 300px)"
         x-bind:style="`max-height: ${isOpen ? contentHeight + 'px' : 'var(--preview-height, 300px)'}`"
         x-bind:class="isOpen ? 'pb-6' : 'pb-0'"
       >

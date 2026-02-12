@@ -76,6 +76,7 @@ const desktopColWidth = `${+(100 / cols).toFixed(3)}vw`;
   <div
     x-ref="wrapper"
     class="overflow-hidden transition-all duration-500 ease-in-out"
+    style="max-height: var(--preview-height, 300px)"
     x-bind:style="`max-height: ${isOpen ? contentHeight + 'px' : 'var(--preview-height, 300px)'}`"
     x-bind:class="isOpen ? 'pb-6' : 'pb-0'"
   >

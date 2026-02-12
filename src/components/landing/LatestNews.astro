@@ -42,7 +42,7 @@ const newsItems = allPostsWithImages.map((post) => {
 
 <section
   id="latest-news-section"
-  class="container mx-auto px-4 sm:px-8 lg:px-16 py-20 sm:py-24 lg:py-32"
+  class="container mx-auto px-4 sm:px-8 lg:px-16 py-20 sm:py-24 lg:py-32 scroll-mt-20"
   x-data="{
     showAll: false,
     hideAndScroll() {
@@ -55,7 +55,7 @@ const newsItems = allPostsWithImages.map((post) => {
   }"
 >
   <!-- Header - left aligned -->
-  <h2 id="latest-news" class="text-3xl sm:text-4xl lg:text-5xl font-bold text-bears-text-onDark mb-8 sm:mb-10 lg:mb-14">
+  <h2 id="latest-news" class="text-3xl sm:text-4xl lg:text-5xl font-bold text-bears-text-onDark mb-8 sm:mb-10 lg:mb-14 scroll-mt-20">
     {content?.data.title}
   </h2>
 

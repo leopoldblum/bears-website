@@ -5,7 +5,7 @@ seoDescription: "TODO: Write a ~150 character meta description for the homepage.
 ctas:
   - title: "How to Join"
     description: "Becoming a member of Bears e.V."
-    href: "/about-us#find-us"
+    href: "/about-us#find-us-section"
   - title: "Our Projects"
     description: "Explore what we are working on"
     href: "/projects"
