@@ -133,9 +133,9 @@ const newsItems = allPostsWithImages.map((post) => {
 
   <!-- Instagram Posts - newest post on mobile, 2 on lg, 3 on xl -->
   {instagramPosts.length > 0 && (
-    <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8 mt-10 lg:mt-14">
+    <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 items-center gap-6 lg:gap-8 mt-10 lg:mt-14">
       {instagramPosts.map((post, index) => (
-        <div class:list={["instagram-feed-card rounded-xl border border-white/10 bg-white/[0.03] backdrop-blur-sm shadow-[0_4px_12px_rgba(0,0,0,0.4)] overflow-hidden px-6 pt-6 pb-3 transition-all duration-300 lg:hover:border-bears-accent/30 lg:hover:shadow-[0_8px_24px_rgba(0,0,0,0.5),0_0_20px_rgba(197,14,31,0.15)] lg:hover:scale-[1.02]", { "hidden lg:block": index === 1 }, { "hidden xl:block": index === 2 }]}>
+        <div class:list={["instagram-feed-card rounded-xl border border-white/10 bg-white/[0.03] backdrop-blur-sm shadow-[0_4px_12px_rgba(0,0,0,0.4)] overflow-hidden transition-all duration-300 lg:hover:border-bears-accent/30 lg:hover:shadow-[0_8px_24px_rgba(0,0,0,0.5),0_0_20px_rgba(197,14,31,0.15)] lg:hover:scale-[1.02]", { "hidden lg:block": index === 1 }, { "hidden xl:block": index === 2 }]}>
           <blockquote
             class="instagram-media"
             data-instgrm-permalink={post.data.url.endsWith('/') ? post.data.url : `${post.data.url}/`}
@@ -180,12 +180,13 @@ const newsItems = allPostsWithImages.map((post) => {
 
 </section>
 
-<style>
+<style is:global>
   .instagram-feed-card iframe {
     margin: 0 !important;
     display: block;
     min-width: 0 !important;
     max-width: 100% !important;
+    filter: brightness(0.96) saturate(0.95);
   }
 </style>
 
