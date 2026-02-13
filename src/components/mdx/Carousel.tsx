@@ -104,8 +104,8 @@ export default function Carousel({
         slide.style.justifyContent = '';
         slide.style.overflow = '';
         slide.style.transition = isActive
-          ? `opacity 420ms ${EASE}, transform 420ms ${EASE}, visibility 0s 0s`
-          : `opacity 420ms ${EASE}, transform 420ms ${EASE}, visibility 0s 420ms`;
+          ? `opacity 420ms ${EASE}, transform 420ms ${EASE}, box-shadow 300ms ${EASE}, visibility 0s 0s`
+          : `opacity 420ms ${EASE}, transform 420ms ${EASE}, box-shadow 300ms ${EASE}, visibility 0s 420ms`;
         const img = slide.querySelector('img');
         if (img) {
           if (isAutoHeight) {
@@ -196,9 +196,10 @@ export default function Carousel({
       transitionRafRef.current = requestAnimationFrame(() => {
         transitionRafRef.current = requestAnimationFrame(() => {
           slideElements.forEach((slide, index) => {
+            const boxShadow = slide.classList.contains('img-better') ? `, box-shadow 300ms ${EASE}` : '';
             slide.style.transition = index === 0
-              ? `opacity 420ms ${EASE}, transform 420ms ${EASE}, visibility 0s 0s`
-              : `opacity 420ms ${EASE}, transform 420ms ${EASE}, visibility 0s 420ms`;
+              ? `opacity 420ms ${EASE}, transform 420ms ${EASE}${boxShadow}, visibility 0s 0s`
+              : `opacity 420ms ${EASE}, transform 420ms ${EASE}${boxShadow}, visibility 0s 420ms`;
           });
         });
       });
