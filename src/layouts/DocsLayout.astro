@@ -59,13 +59,13 @@ const { title, description, headings = [] } = Astro.props;
     <div class="flex">
       <DocsSidebar />
 
-      <div class="flex-1 min-w-0">
+      <div class="flex-1 min-w-0 overflow-x-clip">
         <main class="docs-main relative max-w-4xl px-4 sm:px-8 lg:px-12 xl:px-16 py-8 lg:py-12">
           <article class="docs-prose">
             <slot />
           </article>
 
-          <aside class="hidden xl:block absolute left-full top-0 bottom-0 w-52 pt-8 lg:pt-12 pl-4">
+          <aside class="docs-toc-aside hidden xl:block absolute left-full top-0 bottom-0 pt-8 lg:pt-12 pl-5">
             <DocsToc headings={headings} />
           </aside>
         </main>
@@ -338,6 +338,13 @@ const { title, description, headings = [] } = Astro.props;
     margin: 1.5rem 0;
   }
 
+  /* Images inside Img component wrappers — the wrapper already handles
+     spacing and aspect-ratio, so the inner img must not add its own margin
+     (which would shift it down relative to the hover:ring). */
+  .docs-prose :global(.img-better img) {
+    margin: 0;
+  }
+
   /* AI context block — remove pre margin inside custom container */
   .docs-prose :global([data-no-auto-copy] pre) {
     margin: 0;
@@ -354,16 +361,25 @@ const { title, description, headings = [] } = Astro.props;
 
   /* Center main content on the full viewport, not just the post-sidebar area.
      On lg+ the sidebar is 16rem wide, so we offset the centering.
-     Falls back to 0 (left-aligned in wrapper) when viewport is too narrow. */
+     --docs-ml is exposed so the TOC aside can compute its available width. */
   .docs-main {
+    --docs-ml: 0px;
     margin-left: auto;
     margin-right: auto;
   }
 
   @media (min-width: 1024px) {
     .docs-main {
-      margin-left: max(0px, calc((100vw - 56rem) / 2 - 16rem));
+      --docs-ml: max(0px, calc((100vw - 56rem) / 2 - 16rem));
+      margin-left: var(--docs-ml);
       margin-right: auto;
     }
+  }
+
+  /* TOC aside — fills from main's right edge to the wrapper's right edge.
+     Width = wrapper (100vw − sidebar 16rem) − main width (100%) − main margin-left − 1rem buffer.
+     Capped at 16rem so it doesn't sprawl on ultra-wide screens. */
+  .docs-toc-aside {
+    width: min(16rem, calc(100vw - 16rem - 100% - var(--docs-ml) - 1rem));
   }
 </style>

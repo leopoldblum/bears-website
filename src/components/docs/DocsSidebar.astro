@@ -5,9 +5,9 @@ import type { CollectionEntry } from "astro:content";
 const sections = await getDocsBySection();
 const currentPath = Astro.url.pathname;
 
-const sectionConfig: Record<string, { label: string; order: number }> = {
+const sectionConfig: Record<string, { label: string; order: number; defaultExpanded?: boolean }> = {
   guides: { label: "Guides", order: 1 },
-  dev: { label: "Dev Docs", order: 2 },
+  dev: { label: "Dev Docs", order: 2, defaultExpanded: false },
 };
 
 const sortedSections = Object.entries(sections).sort(
@@ -41,11 +41,11 @@ function groupHasActive(docs: CollectionEntry<'docs'>[]) {
 
 <!-- Desktop sidebar -->
 <aside class="hidden lg:block w-64 shrink-0 border-r border-white/10">
-  <nav class="sticky top-14 h-[calc(100vh-3.5rem)] overflow-y-auto py-6 px-4 scrollbar-bears-thin">
+  <nav id="docs-sidebar-nav" class="sticky top-14 h-[calc(100vh-3.5rem)] overflow-y-auto py-6 px-4 scrollbar-bears-thin">
     {sortedSections.map(([sectionKey, docs], i) => (
       <div
         class:list={["mb-6", i > 0 && "pt-6 border-t border-white/10"]}
-        x-data={`{ expanded: JSON.parse(localStorage.getItem('docs-nav-section-${sectionKey}') ?? 'true') }`}
+        x-data={`{ expanded: JSON.parse(localStorage.getItem('docs-nav-section-${sectionKey}') ?? '${sectionConfig[sectionKey]?.defaultExpanded !== false}') }`}
         x-init={`$watch('expanded', v => localStorage.setItem('docs-nav-section-${sectionKey}', JSON.stringify(v)))`}
       >
         <button
@@ -66,6 +66,7 @@ function groupHasActive(docs: CollectionEntry<'docs'>[]) {
           x-bind:style="'grid-template-rows:' + (expanded ? '1fr' : '0fr')"
           style="grid-template-rows: 0fr"
           data-group-key={`docs-nav-section-${sectionKey}`}
+          {...(sectionConfig[sectionKey]?.defaultExpanded === false ? { 'data-default-collapsed': '' } : {})}
         >
         <ul class="overflow-hidden pl-2">
           {groupDocs(docs).map(([groupName, groupItems]) => (
@@ -184,7 +185,7 @@ function groupHasActive(docs: CollectionEntry<'docs'>[]) {
       {sortedSections.map(([sectionKey, docs], i) => (
         <div
           class:list={["mb-6", i > 0 && "pt-6 border-t border-white/10"]}
-          x-data={`{ expanded: JSON.parse(localStorage.getItem('docs-nav-section-${sectionKey}') ?? 'true') }`}
+          x-data={`{ expanded: JSON.parse(localStorage.getItem('docs-nav-section-${sectionKey}') ?? '${sectionConfig[sectionKey]?.defaultExpanded !== false}') }`}
           x-init={`$watch('expanded', v => localStorage.setItem('docs-nav-section-${sectionKey}', JSON.stringify(v)))`}
         >
           <button
@@ -280,11 +281,26 @@ function groupHasActive(docs: CollectionEntry<'docs'>[]) {
 
 <script is:inline>
 document.querySelectorAll('[data-group-key]').forEach(function(el) {
-  if (localStorage.getItem(el.getAttribute('data-group-key')) !== 'false') {
+  var key = el.getAttribute('data-group-key');
+  var stored = localStorage.getItem(key);
+  var defaultCollapsed = el.hasAttribute('data-default-collapsed');
+  var shouldExpand = stored !== null ? stored !== 'false' : !defaultCollapsed;
+  if (shouldExpand) {
     el.style.transition = 'none';
     el.style.gridTemplateRows = '1fr';
     el.offsetHeight;
     el.style.transition = '';
   }
 });
+
+// Persist sidebar scroll position across page navigations
+(function() {
+  var nav = document.getElementById('docs-sidebar-nav');
+  if (!nav) return;
+  var saved = sessionStorage.getItem('docs-sidebar-scroll');
+  if (saved) nav.scrollTop = +saved;
+  window.addEventListener('beforeunload', function() {
+    sessionStorage.setItem('docs-sidebar-scroll', nav.scrollTop);
+  });
+})();
 </script>
