@@ -43,11 +43,31 @@ function groupHasActive(docs: CollectionEntry<'docs'>[]) {
 <aside class="hidden lg:block w-64 shrink-0 border-r border-white/10">
   <nav class="sticky top-14 h-[calc(100vh-3.5rem)] overflow-y-auto py-6 px-4 scrollbar-bears-thin">
     {sortedSections.map(([sectionKey, docs], i) => (
-      <div class:list={["mb-6", i > 0 && "pt-6 border-t border-white/10"]}>
-        <h3 class="text-xs uppercase tracking-wider text-bears-text-onDark/50 font-semibold mb-2 px-3">
-          {sectionConfig[sectionKey]?.label ?? sectionKey}
-        </h3>
-        <ul>
+      <div
+        class:list={["mb-6", i > 0 && "pt-6 border-t border-white/10"]}
+        x-data={`{ expanded: JSON.parse(localStorage.getItem('docs-nav-section-${sectionKey}') ?? 'true') }`}
+        x-init={`$watch('expanded', v => localStorage.setItem('docs-nav-section-${sectionKey}', JSON.stringify(v)))`}
+      >
+        <button
+          x-on:click="expanded = !expanded"
+          class="flex items-center justify-between w-full text-xs uppercase tracking-wider text-bears-text-onDark/50 font-semibold mb-2 px-3 cursor-pointer hover:text-bears-text-onDark/70 transition-colors"
+        >
+          <span>{sectionConfig[sectionKey]?.label ?? sectionKey}</span>
+          <svg
+            class="w-3 h-3 transition-transform duration-150"
+            x-bind:class="expanded ? 'rotate-90' : ''"
+            fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"
+          >
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+        <div
+          class="grid transition-[grid-template-rows] duration-200 ease-out"
+          x-bind:style="'grid-template-rows:' + (expanded ? '1fr' : '0fr')"
+          style="grid-template-rows: 0fr"
+          data-group-key={`docs-nav-section-${sectionKey}`}
+        >
+        <ul class="overflow-hidden pl-2">
           {groupDocs(docs).map(([groupName, groupItems]) => (
             <>
               {groupName ? (
@@ -71,7 +91,7 @@ function groupHasActive(docs: CollectionEntry<'docs'>[]) {
                     style="grid-template-rows: 0fr"
                     data-group-key={`docs-nav-${sectionKey}-${groupName}`}
                   >
-                    <ul class="overflow-hidden">
+                    <ul class="overflow-hidden pl-2">
                       {groupItems.map(doc => (
                         <li>
                           <a
@@ -112,6 +132,7 @@ function groupHasActive(docs: CollectionEntry<'docs'>[]) {
             </>
           ))}
         </ul>
+        </div>
       </div>
     ))}
   </nav>
@@ -161,11 +182,31 @@ function groupHasActive(docs: CollectionEntry<'docs'>[]) {
     </div>
     <nav class="overflow-y-auto h-[calc(100%-3.25rem)] py-4 px-4 scrollbar-bears-thin">
       {sortedSections.map(([sectionKey, docs], i) => (
-        <div class:list={["mb-6", i > 0 && "pt-6 border-t border-white/10"]}>
-          <h3 class="text-xs uppercase tracking-wider text-bears-text-onDark/50 font-semibold mb-2 px-3">
-            {sectionConfig[sectionKey]?.label ?? sectionKey}
-          </h3>
-          <ul>
+        <div
+          class:list={["mb-6", i > 0 && "pt-6 border-t border-white/10"]}
+          x-data={`{ expanded: JSON.parse(localStorage.getItem('docs-nav-section-${sectionKey}') ?? 'true') }`}
+          x-init={`$watch('expanded', v => localStorage.setItem('docs-nav-section-${sectionKey}', JSON.stringify(v)))`}
+        >
+          <button
+            x-on:click="expanded = !expanded"
+            class="flex items-center justify-between w-full text-xs uppercase tracking-wider text-bears-text-onDark/50 font-semibold mb-2 px-3 cursor-pointer hover:text-bears-text-onDark/70 transition-colors"
+          >
+            <span>{sectionConfig[sectionKey]?.label ?? sectionKey}</span>
+            <svg
+              class="w-3 h-3 transition-transform duration-150"
+              x-bind:class="expanded ? 'rotate-90' : ''"
+              fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"
+            >
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+          <div
+            class="grid transition-[grid-template-rows] duration-200 ease-out"
+            x-bind:style="'grid-template-rows:' + (expanded ? '1fr' : '0fr')"
+            style="grid-template-rows: 0fr"
+            data-group-key={`docs-nav-section-${sectionKey}`}
+          >
+          <ul class="overflow-hidden pl-2">
             {groupDocs(docs).map(([groupName, groupItems]) => (
               <>
                 {groupName ? (
@@ -189,7 +230,7 @@ function groupHasActive(docs: CollectionEntry<'docs'>[]) {
                       style="grid-template-rows: 0fr"
                       data-group-key={`docs-nav-${sectionKey}-${groupName}`}
                     >
-                      <ul class="overflow-hidden">
+                      <ul class="overflow-hidden pl-2">
                         {groupItems.map(doc => (
                           <li>
                             <a
@@ -230,6 +271,7 @@ function groupHasActive(docs: CollectionEntry<'docs'>[]) {
               </>
             ))}
           </ul>
+          </div>
         </div>
       ))}
     </nav>
@@ -239,7 +281,10 @@ function groupHasActive(docs: CollectionEntry<'docs'>[]) {
 <script is:inline>
 document.querySelectorAll('[data-group-key]').forEach(function(el) {
   if (localStorage.getItem(el.getAttribute('data-group-key')) !== 'false') {
+    el.style.transition = 'none';
     el.style.gridTemplateRows = '1fr';
+    el.offsetHeight;
+    el.style.transition = '';
   }
 });
 </script>
