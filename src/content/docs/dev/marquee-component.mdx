@@ -1,0 +1,63 @@
+---
+title: "Marquee"
+description: "Infinite horizontal scroll for images and content."
+order: 27
+group: "MDX Components"
+---
+
+The `Marquee` component creates a seamless infinite horizontal scroll effect. It works with any content including `Img` components, automatically cloning children to fill the viewport and create a continuous loop.
+
+## Import
+
+```astro
+import Marquee from '@mdx/Marquee.astro';
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `speed` | `number` | `50` | Scroll speed in pixels per second |
+| `gap` | `string` | `"2rem"` | Gap between items (any CSS length) |
+| `pauseOnHover` | `boolean` | `true` | Pause animation on hover |
+| `height` | `'sm' \| 'md' \| 'lg' \| 'xl'` | `'md'` | Height preset |
+| `direction` | `'left' \| 'right'` | `'left'` | Scroll direction |
+
+### Height Presets
+
+| Preset | Value |
+|--------|-------|
+| `sm` | 12rem |
+| `md` | 16rem |
+| `lg` | 20rem |
+| `xl` | 24rem |
+
+Children are passed as a slot. Each direct child becomes a marquee item.
+
+## Usage
+
+```mdx
+<Marquee speed={40} height="lg" gap="1.5rem">
+  <Img src={photo1} alt="Photo 1" enableClickToEnlarge={false} />
+  <Img src={photo2} alt="Photo 2" enableClickToEnlarge={false} />
+  <Img src={photo3} alt="Photo 3" enableClickToEnlarge={false} />
+</Marquee>
+```
+
+## Implementation Notes
+
+**Initialization flow (Alpine.js `init()`):**
+1. Wait for all images to load (with 3-second timeout fallback)
+2. Measure the original content width
+3. Clone items repeatedly until content overflows the container
+4. Add one more complete set as seamless animation buffer
+5. Calculate CSS `--marquee-width` and `--marquee-duration` from the original width and speed
+6. Set `ready = true` to start the animation
+
+**Animation:** Uses CSS `@keyframes marquee-scroll` with `translateX(calc(-1 * var(--marquee-width)))`. The duration is computed as `originalWidth / speed` seconds for consistent speed regardless of content size.
+
+**Reduced motion:** Animation is completely disabled when `prefers-reduced-motion: reduce` is active.
+
+**Img compatibility:** Special CSS rules ensure `Img` wrapper divs (`.img-better`) fill height correctly within the marquee.
+
+**Source:** `src/components/mdx/Marquee.astro`

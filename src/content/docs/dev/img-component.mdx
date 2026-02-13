@@ -1,0 +1,74 @@
+---
+title: "Img"
+description: "Optimized image with responsive srcset and click-to-enlarge modal."
+order: 25
+group: "MDX Components"
+---
+
+The `Img` component wraps Astro's `<Image>` with responsive srcset generation, automatic size derivation, and an optional click-to-enlarge fullscreen modal.
+
+## Import
+
+```astro
+import Img from '@mdx/Img.astro';
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `src` | `ImageMetadata` | &mdash; | **Required.** Local image import (no remote URLs) |
+| `alt` | `string` | &mdash; | **Required.** Descriptive alt text |
+| `width` | `string` | `"100%"` | CSS width: `"50%"`, `"800px"`, `"100%"`, etc. |
+| `sizes` | `string` | Auto-derived | Override for srcset sizes hint |
+| `widths` | `number[]` | `[240, 480, 720, 960, 1280, 1920, 2560]` | Widths for srcset generation |
+| `class` | `string` | &mdash; | Additional CSS classes (e.g., `rounded-xl`, `shadow-lg`) |
+| `enableClickToEnlarge` | `boolean` | `true` | Show fullscreen modal on click |
+| `loading` | `'eager' \| 'lazy'` | `'lazy'` | Image loading strategy |
+| `fetchpriority` | `'high' \| 'low' \| 'auto'` | &mdash; | Fetch priority hint |
+| `fill` | `boolean` | `false` | Fill parent container (ignores native aspect ratio) |
+
+## Size Derivation
+
+When `sizes` is not explicitly provided, it is automatically derived from the `width` prop:
+
+| Width Value | Derived Sizes |
+|-------------|---------------|
+| `"50%"` | `"50vw"` |
+| `"33.333%"` | `"33vw"` |
+| `"800px"` | `"800px"` |
+| `"100%"` (default) | `"100vw"` |
+
+This tells the browser the expected display width so it can pick the optimal image from the generated srcset without downloading unnecessarily large files.
+
+## Usage
+
+```mdx
+import myImage from '@assets/events/event-1.jpg';
+
+<Img src={myImage} alt="Event photo" width="60%" />
+```
+
+## Rendering Modes
+
+The component has three rendering paths:
+
+1. **Click-to-enlarge enabled** (default) &mdash; Wraps in a `<div>` with `x-data="{ modalOpen: false }"`, renders `ImageModal` via `x-teleport="body"`, adds hover ring effect
+2. **Fill mode without modal** &mdash; Wraps in a `<div>` with `object-cover` for container-filling behavior
+3. **Plain image** &mdash; Renders just the Astro `<Image>` element with no wrapper
+
+## ImageModal Integration
+
+When `enableClickToEnlarge` is true, a full-resolution WebP image is pre-generated at build time via `getImage()`. The `ImageModal` component uses `x-teleport="body"` to render a fullscreen overlay with:
+- Backdrop click to close
+- Escape key to close
+- Close button (top-right)
+- Fade transition (200ms in, 150ms out)
+
+The modal reads `modalOpen` from the parent `Img` component's Alpine scope.
+
+## Rounding Behavior
+
+If no `rounded-*` class is detected in the `class` prop, the component automatically applies `rounded-lg`. To override, pass any Tailwind rounding class (e.g., `class="rounded-xl"` or `class="rounded-none"`).
+
+**Source:** `src/components/mdx/Img.astro`, `src/components/mdx/ImageModal.astro`

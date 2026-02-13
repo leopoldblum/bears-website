@@ -1,0 +1,53 @@
+---
+title: "Instagram"
+description: "Embedded Instagram posts with size presets."
+order: 26
+group: "MDX Components"
+---
+
+The `Instagram` component embeds an Instagram post using the official Instagram embed API. It renders inside a glass-morphism card with hover effects.
+
+## Import
+
+```astro
+import Instagram from '@mdx/Instagram.astro';
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `url` | `string` | &mdash; | **Required.** Instagram post URL or shortcode |
+| `size` | `'small' \| 'medium' \| 'large' \| 'full'` | `'medium'` | Width preset |
+| `class` | `string` | &mdash; | Additional CSS classes |
+
+### Size Presets
+
+| Size | Max Width |
+|------|-----------|
+| `small` | 380px |
+| `medium` | 460px |
+| `large` | 540px |
+| `full` | 100% |
+
+## URL Handling
+
+The component accepts either a full Instagram URL or just a shortcode:
+
+```mdx
+<!-- Full URL -->
+<Instagram url="https://www.instagram.com/p/ABC123/" />
+
+<!-- Shortcode only -->
+<Instagram url="ABC123" />
+```
+
+Shortcodes (alphanumeric strings without slashes) are automatically converted to full URLs: `https://www.instagram.com/p/{shortcode}/`. A trailing slash is always ensured for Instagram embed compatibility.
+
+## Implementation Notes
+
+**Embed script loading:** On first render, the component injects Instagram's `embed.js` script into the page. If the script is already present (e.g., from another Instagram component on the same page), it calls `window.instgrm.Embeds.process()` to initialize the new embed.
+
+**Styling:** The embed container uses glass-morphism (translucent background, border, backdrop blur) with a hover effect that adds accent border glow and slight scale on desktop (`lg:hover`).
+
+**Source:** `src/components/mdx/Instagram.astro`

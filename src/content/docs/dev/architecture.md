@@ -1,7 +1,7 @@
 ---
 title: "Architecture"
 description: "Overview of the project structure and technology stack."
-order: 10
+order: 1
 ---
 
 The BEARS website is built with Astro.js 5.x, Tailwind CSS v4, and Alpine.js.

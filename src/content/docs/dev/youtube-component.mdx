@@ -1,0 +1,55 @@
+---
+title: "YouTube"
+description: "Responsive YouTube video embed with privacy-enhanced mode."
+order: 29
+group: "MDX Components"
+---
+
+The `YouTube` component embeds a YouTube video in a responsive 16:9 container using the privacy-enhanced embed domain (`youtube-nocookie.com`).
+
+## Import
+
+```astro
+import YouTube from '@mdx/YouTube.astro';
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `id` | `string` | &mdash; | **Required.** YouTube video ID or full URL |
+| `title` | `string` | `"YouTube video"` | iframe title for accessibility |
+| `width` | `string` | `"100%"` | CSS width of the container |
+| `start` | `number` | &mdash; | Start time in seconds |
+| `class` | `string` | &mdash; | Additional CSS classes |
+
+## URL Handling
+
+The `id` prop accepts multiple formats, all automatically resolved to a video ID:
+
+| Input Format | Example |
+|--------------|---------|
+| Video ID (11 chars) | `dQw4w9WgXcQ` |
+| `youtube.com/watch?v=...` | `https://www.youtube.com/watch?v=dQw4w9WgXcQ` |
+| `youtu.be/...` | `https://youtu.be/dQw4w9WgXcQ` |
+| `youtube.com/embed/...` | `https://www.youtube.com/embed/dQw4w9WgXcQ` |
+| `youtube.com/shorts/...` | `https://www.youtube.com/shorts/dQw4w9WgXcQ` |
+
+## Usage
+
+```mdx
+<YouTube id="dQw4w9WgXcQ" />
+<YouTube id="https://youtu.be/dQw4w9WgXcQ" start={30} width="80%" />
+```
+
+## Implementation Notes
+
+**Privacy:** Uses `youtube-nocookie.com` domain to prevent YouTube from setting cookies until the user plays the video.
+
+**Responsive:** The iframe is wrapped in a `<div>` with `aspect-video` (16:9 ratio) and the iframe uses absolute positioning to fill it.
+
+**Lazy loading:** The iframe has `loading="lazy"` by default.
+
+**Permissions:** The iframe allows accelerometer, autoplay, clipboard-write, encrypted-media, gyroscope, picture-in-picture, and web-share.
+
+**Source:** `src/components/mdx/YouTube.astro`

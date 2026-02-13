@@ -1,0 +1,39 @@
+---
+title: "Center"
+description: "Horizontal centering wrapper for content."
+order: 24
+group: "MDX Components"
+---
+
+import Center from '@mdx/Center.astro';
+import Button from '@mdx/Button.astro';
+
+The `Center` component horizontally centers its children. Multiple children are stacked vertically with consistent spacing.
+
+## Import
+
+```astro
+import Center from '@mdx/Center.astro';
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `class` | `string` | &mdash; | Additional CSS classes |
+
+Content is passed as a slot (children).
+
+## Live Example
+
+<div class="not-prose my-6">
+  <Center>
+    <Button content="Centered Button" variant="primary" />
+  </Center>
+</div>
+
+## Implementation Notes
+
+Renders a `<div>` with `flex flex-col items-center gap-4 w-full max-w-full`. Purely a layout utility with no interactivity.
+
+**Source:** `src/components/mdx/Center.astro`

@@ -1,0 +1,55 @@
+---
+title: "SideBySide"
+description: "Responsive two-column layout with optional divider."
+order: 28
+group: "MDX Components"
+---
+
+The `SideBySide` component creates a responsive two-column layout that stacks on mobile and displays side-by-side on desktop (lg+). It uses three component files: `SideBySide`, `Left`, and `Right`.
+
+## Import
+
+```astro
+import { SideBySide, Left, Right } from '@mdx';
+```
+
+## Props
+
+### SideBySide
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `showDivider` | `boolean` | `true` | Show a gradient divider between columns |
+| `class` | `string` | &mdash; | Additional CSS classes |
+
+### Left / Right
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `class` | `string` | &mdash; | Additional CSS classes |
+| `centerVertical` | `boolean` | `false` | Vertically center the content |
+
+## Usage
+
+```mdx
+<SideBySide>
+  <Left>
+    Left column content (text, images, etc.)
+  </Left>
+  <Right centerVertical>
+    Right column content, vertically centered.
+  </Right>
+</SideBySide>
+```
+
+## Implementation Notes
+
+**Layout:** Uses `flex-col lg:flex-row`. Each column (`Left`/`Right`) uses `flex-1 min-w-0` for equal 50/50 width distribution. The `min-w-0` prevents flex children from overflowing.
+
+**Divider:** When enabled, an absolutely positioned gradient line renders:
+- **Mobile:** Hidden (`display: none`) to prevent overlap with stacked content
+- **Desktop:** Vertical line at horizontal center with a top-to-bottom fade gradient
+
+**Padding:** `Left` has `lg:pr-10` (right padding on desktop), `Right` has `lg:pl-10` (left padding), creating space around the divider.
+
+**Source:** `src/components/mdx/SideBySide/SideBySide.astro`, `Left.astro`, `Right.astro`

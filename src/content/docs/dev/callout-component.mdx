@@ -1,0 +1,49 @@
+---
+title: "Callout"
+description: "Glass-morphism highlight card for emphasized content."
+order: 22
+group: "MDX Components"
+---
+
+import Callout from '@mdx/Callout.astro';
+
+The `Callout` component wraps content in a visually distinct card with a red accent gradient bar at the top. It uses glass-morphism styling (translucent background, subtle border).
+
+## Import
+
+```astro
+import Callout from '@mdx/Callout.astro';
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `title` | `string` | &mdash; | Optional bold title above the content |
+| `class` | `string` | &mdash; | Additional CSS classes for the container |
+
+Content is passed as a slot (children).
+
+## Live Examples
+
+### Without title
+
+<div class="not-prose my-6">
+  <Callout>
+    This is a callout without a title. Use it to highlight important information.
+  </Callout>
+</div>
+
+### With title
+
+<div class="not-prose my-6">
+  <Callout title="Important">
+    This callout has a title displayed above the body text.
+  </Callout>
+</div>
+
+## Implementation Notes
+
+**Styling:** The component uses a gradient top bar (`from-bears-accent via-bears-accent/80 to-transparent`), a translucent background (`bg-white/[0.03]`), and a subtle border (`border-white/10`). The last child element's bottom margin is removed via `[&>:last-child]:!mb-0`.
+
+**Source:** `src/components/mdx/Callout.astro`

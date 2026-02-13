@@ -1,0 +1,143 @@
+---
+title: "Image System"
+description: "Image loading pipeline, glob patterns, fallbacks, and optimization."
+order: 50
+group: "Systems"
+---
+
+All images on the site are local files in `src/assets/`, processed by Astro's image optimization pipeline at build time. The image system consists of three utility modules that work together.
+
+## Architecture
+
+```
+imageConstants.ts    →  Supported formats, validation regex
+imageGlobs.ts        →  Centralized glob patterns per directory
+imageLoader.ts       →  Loading functions with fallback + dev warnings
+```
+
+## Image Constants
+
+**File:** `src/utils/imageConstants.ts`
+
+| Export | Value | Purpose |
+|--------|-------|---------|
+| `VALID_IMAGE_EXTENSIONS` | `['jpg', 'jpeg', 'png', 'webp']` | Source of truth for supported formats |
+| `IMAGE_GLOB_PATTERN` | `*.{jpg,jpeg,png,webp}` | For use in glob patterns |
+| `IMAGE_EXTENSION_REGEX` | `/\.(jpg\|jpeg\|png\|webp)$/i` | Schema validation |
+| `VALID_EXTENSIONS_MESSAGE` | `".jpg, .jpeg, .png, or .webp"` | Error messages |
+
+## Glob Patterns
+
+**File:** `src/utils/imageGlobs.ts`
+
+Each asset directory has a centralized glob pattern exported as a constant:
+
+| Export | Directory | Used by |
+|--------|-----------|---------|
+| `eventImages` | `/src/assets/events/` | Events listing, detail pages |
+| `projectImages` | `/src/assets/projects/` | Projects listing, detail pages |
+| `teamImages` | `/src/assets/projects/team-members/` | Meet the Team section |
+| `testimonialImages` | `/src/assets/testimonials/` | Testimonials carousel |
+| `sponsorLogos` | `/src/assets/sponsors/**/` | Sponsor showcase |
+| `whatIsBearsImages` | `/src/assets/whatIsBears/` | Landing "What is BEARS" carousel |
+| `ourMissionImages` | `/src/assets/about-us/our-mission/` | About page hero |
+| `faceImages` | `/src/assets/about-us/faces-of-bears/` | Faces of BEARS section |
+| `aboutHeroImages` | `/src/assets/hero/about-us/` | About page hero |
+| `eventsHeroImages` | `/src/assets/hero/events/` | Events page hero |
+| `projectsHeroImages` | `/src/assets/hero/projects/` | Projects page hero |
+| `mediaHeroImages` | `/src/assets/hero/media/` | Media page hero |
+| `sponsorsHeroImages` | `/src/assets/hero/sponsors/` | Sponsors page hero |
+| `contactHeroImages` | `/src/assets/hero/contact/` | Contact page hero |
+| `heroImages` | `/src/assets/hero/landingpage/` | Landing hero images only |
+| `heroMedia` | `/src/assets/hero/landingpage/` | Landing hero images + videos |
+
+**Vite limitation:** Glob pattern strings must be static literals. They cannot be constructed dynamically from variables. This is why each pattern is hardcoded rather than generated from `IMAGE_GLOB_PATTERN`.
+
+## Loader Functions
+
+**File:** `src/utils/imageLoader.ts`
+
+### `loadImage(options)`
+
+Loads a single image from a glob with optional fallback.
+
+```typescript
+const image = await loadImage({
+  glob: eventImages,
+  imagePath: "/src/assets/events/event-1.jpg",
+  fallbackImage: defaultEventImage,
+  context: { itemTitle: "My Event", itemSlug: "my-event" }
+});
+```
+
+Returns `ImageMetadata | null`.
+
+### `loadCollectionImages(collection, type)`
+
+The primary API for loading images for a content collection. Uses type-specific configuration (glob, base directory, fallback image) and returns items with a `loadedImage` property attached.
+
+```typescript
+const eventsWithImages = await loadCollectionImages(sortedEvents, 'event');
+const projectsWithImages = await loadCollectionImages(sortedProjects, 'project');
+const testimonialsWithImages = await loadCollectionImages(sortedTestimonials, 'testimonial');
+const facesWithImages = await loadCollectionImages(sortedFaces, 'face');
+```
+
+Supported types: `'event'`, `'project'`, `'testimonial'`, `'face'`.
+
+TypeScript overloads guarantee that when a fallback is configured (which it always is for the built-in types), `loadedImage` is non-null.
+
+### `loadCoverImage(fileName, type, context?)`
+
+Loads a single cover image for a detail page. Used in `[slug].astro` routes.
+
+```typescript
+const coverImage = await loadCoverImage(
+  entry.data.coverImage, 'event',
+  { itemTitle: entry.data.title, itemSlug: entry.slug }
+);
+```
+
+Always returns a non-null `ImageMetadata` (falls back to default).
+
+### `loadAllImagesFromDirectory(glob)`
+
+Loads all images from a glob. Used for carousels and galleries.
+
+```typescript
+const carouselImages = await loadAllImagesFromDirectory(whatIsBearsImages);
+```
+
+Returns `ImageMetadata[]`, filtering out failed loads.
+
+## Default / Fallback Images
+
+Default images are imported from `src/assets/default-images/`:
+
+| Export | File | Used for |
+|--------|------|----------|
+| `defaultEventImage` | `default-event.jpg` | Events with no custom cover |
+| `defaultProjectImage` | `default-project.jpg` | Projects with no custom cover |
+| `defaultTestimonialImage` | `default-testimonial.jpg` | Testimonials with missing portrait |
+| `defaultSponsorImage` | `default-sponsor.jpg` | Sponsors with missing logo |
+| `defaultFaceImage` | `default-face.jpg` | Faces of BEARS with missing portrait |
+
+## coverImageType Logic
+
+Events and projects have a `coverImageType` field (derived in the schema transform):
+
+- **`DEFAULT`** &mdash; No custom image provided. Uses the fallback image. Logs `🔹` in dev console.
+- **`CUSTOM`** &mdash; Custom image specified. Attempts to load it. If it fails, logs `⚠️` and falls back.
+
+## Adding Images for a New Collection
+
+1. Create an asset directory: `src/assets/<name>/`
+2. Add a default fallback image: `src/assets/default-images/default-<name>.jpg`
+3. Add a glob export in `src/utils/imageGlobs.ts`:
+   ```typescript
+   export const myImages: ImageGlob = import.meta.glob<{ default: ImageMetadata }>(
+     "/src/assets/<name>/*.{jpg,jpeg,png,webp}"
+   );
+   ```
+4. Import the default image and add a type config to `loadCollectionImages()` in `src/utils/imageLoader.ts`
+5. Add an overload signature for the new type
