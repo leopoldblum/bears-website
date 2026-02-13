@@ -1,13 +1,15 @@
 ---
 import "@styles/global.css";
 import DocsSidebar from "@components/docs/DocsSidebar.astro";
+import DocsToc from "@components/docs/DocsToc.astro";
 
 interface Props {
   title: string;
   description?: string;
+  headings?: { depth: number; slug: string; text: string }[];
 }
 
-const { title, description } = Astro.props;
+const { title, description, headings = [] } = Astro.props;
 ---
 
 <!DOCTYPE html>
@@ -57,11 +59,17 @@ const { title, description } = Astro.props;
     <div class="flex">
       <DocsSidebar />
 
-      <main class="flex-1 min-w-0 px-4 sm:px-8 lg:px-12 py-8 lg:py-12 max-w-4xl">
-        <article class="docs-prose">
-          <slot />
-        </article>
-      </main>
+      <div class="flex-1 min-w-0">
+        <main class="docs-main relative max-w-4xl px-4 sm:px-8 lg:px-12 xl:px-16 py-8 lg:py-12">
+          <article class="docs-prose">
+            <slot />
+          </article>
+
+          <aside class="hidden xl:block absolute left-full top-0 bottom-0 w-52 pt-8 lg:pt-12 pl-4">
+            <DocsToc headings={headings} />
+          </aside>
+        </main>
+      </div>
     </div>
 
     <script>
@@ -136,6 +144,7 @@ const { title, description } = Astro.props;
     margin-bottom: 0.75rem;
     padding-bottom: 0.5rem;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    scroll-margin-top: 4.5rem;
   }
 
   .docs-prose :global(h3) {
@@ -145,6 +154,7 @@ const { title, description } = Astro.props;
     color: var(--color-bears-text-onDark);
     margin-top: 2rem;
     margin-bottom: 0.625rem;
+    scroll-margin-top: 4.5rem;
   }
 
   .docs-prose :global(h4) {
@@ -154,6 +164,7 @@ const { title, description } = Astro.props;
     color: var(--color-bears-text-onDark);
     margin-top: 1.5rem;
     margin-bottom: 0.5rem;
+    scroll-margin-top: 4.5rem;
   }
 
   .docs-prose :global(p) {
@@ -338,6 +349,21 @@ const { title, description } = Astro.props;
   @media (prefers-reduced-motion: reduce) {
     .docs-prose :global(a:not(.not-prose)) {
       transition: none;
+    }
+  }
+
+  /* Center main content on the full viewport, not just the post-sidebar area.
+     On lg+ the sidebar is 16rem wide, so we offset the centering.
+     Falls back to 0 (left-aligned in wrapper) when viewport is too narrow. */
+  .docs-main {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  @media (min-width: 1024px) {
+    .docs-main {
+      margin-left: max(0px, calc((100vw - 56rem) / 2 - 16rem));
+      margin-right: auto;
     }
   }
 </style>

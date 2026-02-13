@@ -15,10 +15,10 @@ interface Props {
 }
 
 const { entry } = Astro.props;
-const { Content } = await entry.render();
+const { Content, headings } = await entry.render();
 ---
 
-<DocsLayout title={entry.data.title} description={entry.data.description}>
+<DocsLayout title={entry.data.title} description={entry.data.description} headings={headings}>
   <h1>{entry.data.title}</h1>
   <Content />
 </DocsLayout>
