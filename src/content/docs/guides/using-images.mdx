@@ -10,6 +10,15 @@ import testImage from '@assets/projects/project-1.jpg';
 
 The `Img` component displays optimized images with automatic responsive sizing and an optional click-to-enlarge modal. Images must be local files in `src/assets/`.
 
+**Place images in the matching asset folder for your post type:**
+
+| Post type | Image folder |
+|-----------|-------------|
+| Events | `src/assets/events/` |
+| Projects | `src/assets/projects/` |
+
+Then import the image using the `@assets` alias:
+
 ```mdx
 import { Accordion, Button, Callout, Carousel, Center, Img, Instagram, Marquee, YouTube, SideBySide, Left, Right } from '@mdx';
 import photo from '@assets/events/my-photo.jpg';

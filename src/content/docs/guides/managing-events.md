@@ -9,9 +9,9 @@ Events are stored in `src/content/events/` as Markdown or MDX files.
 
 ## Creating an Event
 
-Create a new file in `src/content/events/` with the naming convention `YYYY MM DD title.md`:
+Create a new file in `src/content/events/` with the naming convention `YYYY MM DD title.mdx`:
 
-```md
+```mdx
 ---
 title: "BEARS 24-Hour Hackathon 2026"
 description: "Test your skills in our annual hackathon focused on autonomous systems and sustainable engineering."
@@ -21,7 +21,13 @@ coverImage: "event-10.jpg"
 isDraft: false   # Optional — defaults to false, set true to hide from production
 ---
 
+import { Accordion, Button, Callout, Carousel, Center, Img, Instagram, Marquee, YouTube, SideBySide, Left, Right } from '@mdx';
+
 ## About the Hackathon
+
+<Callout title="Registration Open">
+  Sign up before March 1st to secure your spot!
+</Callout>
 
 Get ready for the most exciting event of the semester! Our annual hackathon
 challenges teams to design, build, and program innovative solutions within

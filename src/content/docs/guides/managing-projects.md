@@ -9,9 +9,9 @@ Projects are stored in `src/content/projects/` as Markdown or MDX files.
 
 ## Creating a Project
 
-Create a new file in `src/content/projects/` with the naming convention `YYYY MM DD title.md`:
+Create a new file in `src/content/projects/` with the naming convention `YYYY MM DD title.mdx`:
 
-```md
+```mdx
 ---
 title: "Autonomous Rover Prototype"
 description: "An AI-powered rover with autonomous navigation, computer vision, and obstacle avoidance."
@@ -25,7 +25,13 @@ headOfProject: "Emma Watson" # Optional — required when displayMeetTheTeam is 
 personImage: "emma-watson.jpg" # Optional — required when displayMeetTheTeam is true
 ---
 
+import { Accordion, Button, Callout, Carousel, Center, Img, Instagram, Marquee, YouTube, SideBySide, Left, Right } from '@mdx';
+
 ## Project Overview
+
+<Callout title="Status: In Progress">
+  Currently in the testing phase — stay tuned for updates!
+</Callout>
 
 The Autonomous Rover Prototype focuses on developing advanced navigation
 algorithms for a Mars rover-inspired vehicle. Our goal is a fully
