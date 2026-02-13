@@ -123,8 +123,8 @@ Page text folder structure:
   sponsors/       — sponsors page (sponsors-title, sponsors-intro, sponsor-tiers, sponsors-crosslink, become-sponsor-cta)
   contact/        — contact page (contact-title, contact-info, contact-crosslink)
   media/          — media page (media-title)
-  footer/         — footer (navigation, social-links, footer-address, bottom-bar)
-  site/           — site-wide (metadata — default site title and meta description)
+  footer/         — footer (navigation, footer-address, bottom-bar)
+  site/           — site-wide (metadata, social-links — social media links used across the site)
   404/            — 404 page (not-found)
   imprint/        — imprint page
   datenschutz/    — privacy policy page
@@ -219,13 +219,17 @@ IMAGE RULES
 ========================================
 
 All images must be local files in src/assets/ subdirectories:
-  src/assets/events/           — event cover images
-  src/assets/projects/         — project cover images
-  src/assets/sponsors/         — sponsor logos
-  src/assets/testimonials/     — testimonial portraits
-  src/assets/about-us/faces-of-bears/ — team member portraits
+  src/assets/events/              — event cover images
+  src/assets/projects/            — project cover images
   src/assets/projects/team-members/ — project team lead portraits (for Meet the Team)
-  src/assets/hero/landingpage/ — hero slides (images and videos)
+  src/assets/sponsors/{tier}/     — sponsor logos, organized by tier folder (diamond/, platinum/, gold/, silver/, bronze/)
+  src/assets/testimonials/        — testimonial portraits
+  src/assets/about-us/faces-of-bears/ — Faces of BEARS portraits
+  src/assets/about-us/our-mission/    — about page mission section images
+  src/assets/whatIsBears/         — What is BEARS carousel images
+  src/assets/hero/landingpage/    — landing page hero slides (images and videos)
+  src/assets/hero/{about-us,contact,events,media,projects,sponsors}/ — sub-page hero images
+  src/assets/default-images/      — fallback images when no custom image is provided
 
 Valid image formats: .jpg, .jpeg, .png, .webp
 Valid video formats (hero slides only): .mp4, .webm, .ogg
