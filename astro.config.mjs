@@ -12,7 +12,7 @@ import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://bears.leopold-blum.de',
+  site: 'https://bears-space.de',
 
   i18n: {
     defaultLocale: 'en',
