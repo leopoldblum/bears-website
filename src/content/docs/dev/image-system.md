@@ -41,7 +41,7 @@ Each asset directory has a centralized glob pattern exported as a constant:
 | `sponsorLogos` | `/src/assets/sponsors/**/` | Sponsor showcase |
 | `whatIsBearsImages` | `/src/assets/whatIsBears/` | Landing "What is BEARS" carousel |
 | `ourMissionImages` | `/src/assets/about-us/our-mission/` | About page hero |
-| `faceImages` | `/src/assets/about-us/faces-of-bears/` | Faces of BEARS section |
+| `faceImages` | `/src/assets/faces-of-bears/` | Faces of BEARS section |
 | `aboutHeroImages` | `/src/assets/hero/about-us/` | About page hero |
 | `eventsHeroImages` | `/src/assets/hero/events/` | Events page hero |
 | `projectsHeroImages` | `/src/assets/hero/projects/` | Projects page hero |

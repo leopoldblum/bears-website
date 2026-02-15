@@ -96,7 +96,7 @@ File naming: "NN-name.md" (numeric prefix = display order)
 Frontmatter:
   name: string (required)
   role: string (required)
-  coverImage: string (required) — filename in src/assets/about-us/faces-of-bears/, valid: .jpg .jpeg .png .webp
+  coverImage: string (required) — filename in src/assets/faces-of-bears/, valid: .jpg .jpeg .png .webp
 
 PAGE TEXT (src/content/page-text/)
 Editable headings, descriptions, buttons, and structured data for every page section.
@@ -116,7 +116,7 @@ Frontmatter (only title is required, all others optional):
   navColumns: array — each: { heading, href, links: [{ label, href }] }
 
 Page text folder structure:
-  landing/        — homepage sections (hero, what-is-bears, latest-news, meet-the-team, testimonials, become-sponsor, instagram-feed)
+  landing/        — homepage sections (hero, what-is-bears, latest-news, meet-the-team, testimonials, become-sponsor)
   about-us/       — about page (about-us-title, our-mission, whats-in-it, faq, find-us, faces-of-bears)
   events/         — events page (events-title, events-intro, events-crosslink, events-empty-state)
   projects/       — projects page (projects-title, categories-intro, category-*, projects-crosslink, projects-empty-state)
@@ -224,7 +224,7 @@ All images must be local files in src/assets/ subdirectories:
   src/assets/projects/team-members/ — project team lead portraits (for Meet the Team)
   src/assets/sponsors/{tier}/     — sponsor logos, organized by tier folder (diamond/, platinum/, gold/, silver/, bronze/)
   src/assets/testimonials/        — testimonial portraits
-  src/assets/about-us/faces-of-bears/ — Faces of BEARS portraits
+  src/assets/faces-of-bears/         — Faces of BEARS portraits
   src/assets/about-us/our-mission/    — about page mission section images
   src/assets/whatIsBears/         — What is BEARS carousel images
   src/assets/hero/landingpage/    — landing page hero slides (images and videos)

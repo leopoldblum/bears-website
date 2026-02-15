@@ -345,7 +345,7 @@ export async function loadCollectionImages(
     },
     face: {
       glob: async () => (await import('./imageGlobs')).faceImages,
-      baseDir: '/src/assets/about-us/faces-of-bears',
+      baseDir: '/src/assets/faces-of-bears',
       fallbackImage: defaultFaceImage,
       postType: 'face' as const,
     },

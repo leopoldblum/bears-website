@@ -82,7 +82,7 @@ export const ourMissionImages: ImageGlob = import.meta.glob<{ default: ImageMeta
  * Used by: FacesOfBears.astro
  */
 export const faceImages: ImageGlob = import.meta.glob<{ default: ImageMetadata }>(
-  "/src/assets/about-us/faces-of-bears/*.{jpg,jpeg,png,webp}"
+  "/src/assets/faces-of-bears/*.{jpg,jpeg,png,webp}"
 );
 
 /**

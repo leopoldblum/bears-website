@@ -29,11 +29,11 @@ All fields are required:
 |-------|------|-------------|
 | `name` | string | Team member's name |
 | `role` | string | Their role, year, or team |
-| `coverImage` | string | Filename of portrait image in `src/assets/about-us/faces-of-bears/` |
+| `coverImage` | string | Filename of portrait image in `src/assets/faces-of-bears/` |
 
 ## Images
 
-Place portrait images in `src/assets/about-us/faces-of-bears/`. Valid formats: `.jpg`, `.jpeg`, `.png`, `.webp`.
+Place portrait images in `src/assets/faces-of-bears/`. Valid formats: `.jpg`, `.jpeg`, `.png`, `.webp`.
 
 ## Display Order
 
