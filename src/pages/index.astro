@@ -14,11 +14,10 @@ const locale = getLocale(Astro.url);
 // Fetch hero CTAs from content collection
 const heroContent = await getPageContent('landing/hero', locale);
 const heroCTAs = heroContent?.data.ctas ?? [];
-const heroTagline = heroContent?.data.subtitle;
 ---
 
 <BaseLayout title={locale === 'de' ? 'Startseite' : 'Home'} description={heroContent?.data.seoDescription}>
-  <LandingHero ctas={heroCTAs} tagline={heroTagline} locale={locale} />
+  <LandingHero ctas={heroCTAs} locale={locale} />
   <WhatIsBears locale={locale} />
   <MeetTheTeam locale={locale} />
   <BecomeSponsor locale={locale} />
