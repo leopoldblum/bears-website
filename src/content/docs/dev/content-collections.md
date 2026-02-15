@@ -15,7 +15,7 @@ All website content is managed through [Astro content collections](https://docs.
 | `projects` | `src/content/projects/{en,de}/` | Yes | title, description, date, categoryProject, coverImage, isDraft, isProjectCompleted |
 | `testimonials` | `src/content/testimonials/{en,de}/` | Yes | quote, name, role, coverImage |
 | `faces-of-bears` | `src/content/faces-of-bears/{en,de}/` | Yes | name, role, coverImage |
-| `page-text` | `src/content/page-text/{en,de}/` | Yes | title, subtitle, description, ctas, items, socialLinks, navColumns, faqs |
+| `page-text` | `src/content/page-text/{en,de}/` | Yes | title, subtitle, description, ctas, items, socialLinks, navColumns, faqs, instagramButtonText |
 | `sponsors` | `src/content/sponsors/<tier>/` | No | name, logo, url (tier from folder) |
 | `hero-slides` | `src/content/hero-slides/` | No | type (image\|video), media, shownText, alt |
 | `instagram` | `src/content/instagram/` | No | url, date, isDraft |
@@ -104,6 +104,7 @@ The `page-text` collection is the most flexible schema, supporting many optional
 | `navLinks` | array? | Label + href pairs |
 | `navColumns` | array? | Grouped navigation (heading + links) |
 | `faqs` | array? | Question + answer pairs |
+| `instagramButtonText` | string? | Instagram CTA button label |
 
 ## Adding a New Collection
 

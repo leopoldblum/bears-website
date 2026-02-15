@@ -58,6 +58,7 @@ Only `title` is required. Every other field is optional &mdash; each file uses o
 | `seoDescription` | string | Meta description for search engines (~150 characters) |
 | `buttonText` | string | Button label (pair with `buttonHref`) |
 | `buttonHref` | string | Button link URL (pair with `buttonText`) |
+| `instagramButtonText` | string | Label for the "Follow us on Instagram" button |
 | `ctas` | array | Call-to-action cards (max 4), each with `title`, `description`, `href` |
 | `items` | array | List of strings (for addresses, benefits, tiers &mdash; see below) |
 | `faqs` | array | FAQ entries, each with `question` and `answer` (answers support Markdown) |
@@ -106,9 +107,9 @@ buttonHref: "/about-us"
 
 **Where it appears:** Standalone sections on the homepage, intro paragraphs on content pages, and crosslink banners at the bottom of pages ("Want to see our projects? &rarr;").
 
-**Fields used:** `title`, `description` (optional), `buttonText` + `buttonHref` (optional, always used as a pair)
+**Fields used:** `title`, `description` (optional), `buttonText` + `buttonHref` (optional, always used as a pair), `instagramButtonText` (optional, only in `landing/latest-news`)
 
-**Files:** `landing/what-is-bears`, `landing/become-sponsor`, `events/events-intro`, `events/events-crosslink`, `projects/projects-crosslink`, `sponsors/sponsors-intro`, `sponsors/sponsors-crosslink`, `sponsors/become-sponsor-cta`
+**Files:** `landing/what-is-bears`, `landing/latest-news`, `landing/become-sponsor`, `events/events-intro`, `events/events-crosslink`, `projects/projects-crosslink`, `sponsors/sponsors-intro`, `sponsors/sponsors-crosslink`, `sponsors/become-sponsor-cta`
 
 ---
 
