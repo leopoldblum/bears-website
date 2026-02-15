@@ -180,7 +180,7 @@ const docsCollection = defineCollection({
 const pageTextCollection = defineCollection({
   type: 'content',
   schema: z.object({
-    title: z.string(),
+    title: z.string().optional(),
     subtitle: z.string().optional(),
     description: z.string().optional(),
     seoDescription: z.string().optional(),

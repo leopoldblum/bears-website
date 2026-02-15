@@ -404,18 +404,17 @@ description: "Check back soon — we're always planning something new!"
 
 ### Category Descriptions (Projects)
 
-Each project category can have its own introductory text, shown on the Projects page when browsing that category.
+Each project category can have its own introductory text, shown on the Projects page below the category heading. The heading itself is derived automatically from the category enum label (via `getCategoryLabel` in `src/utils/i18n.ts`), so it does not need to be set here.
 
 ```yaml
 ---
-title: "Experimental Rocketry"
 description: "From design to launch — building and testing real sounding rockets, hybrid engines, and recovery systems."
 ---
 ```
 
 **Where it appears:** The Projects page category filter section, as a short description under each category heading.
 
-**Fields used:** `title`, `description`
+**Fields used:** `description`
 
 **Files:** `projects/category-experimental-rocketry`, `projects/category-science-and-experiments`, `projects/category-robotics`
 
@@ -423,7 +422,7 @@ description: "From design to launch — building and testing real sounding rocke
 
 ## Tips
 
-- **Only `title` is required.** You can safely leave out any other field &mdash; the component will skip it or use a sensible default.
+- **All fields are optional.** You can safely leave out any field &mdash; the component will skip it or use a sensible default. Most sections use `title` as their heading, so it is typically provided.
 - **`buttonText` and `buttonHref` go together.** If you provide one without the other, the button will not appear.
 - **`seoDescription` matters for search engines.** Keep it around 150 characters. It appears in Google search results and social media previews. Only page header files (the `-title` files) typically need this field.
 - **FAQ answers support Markdown.** Use `**bold**`, `[link text](/path)`, and `- bullet items` to format answers.

@@ -93,7 +93,7 @@ The `page-text` collection is the most flexible schema, supporting many optional
 
 | Field | Type | Purpose |
 |-------|------|---------|
-| `title` | string | Section heading (required) |
+| `title` | string? | Section heading |
 | `subtitle` | string? | Secondary heading |
 | `description` | string? | Body copy |
 | `seoDescription` | string? | Meta description override |

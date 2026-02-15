@@ -359,9 +359,9 @@ describe('page-text schema', () => {
     expect(result.success).toBe(true);
   });
 
-  it('rejects missing title', () => {
+  it('accepts missing title (optional)', () => {
     const result = schema.safeParse({});
-    expect(result.success).toBe(false);
+    expect(result.success).toBe(true);
   });
 
   it('rejects ctas with more than 4 items', () => {
