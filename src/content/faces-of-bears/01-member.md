@@ -1,5 +1,5 @@
 ---
-name: "Member 1"
-role: "Role / Year"
+name: "Matti Keller"
+role: "CEO"
 coverImage: "carousel-7.jpg"
 ---
