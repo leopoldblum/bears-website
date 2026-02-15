@@ -44,7 +44,7 @@ const categoryDescriptions = await Promise.all(
     const content = await getPageContent(id, locale);
     return {
       key,
-      title: content?.data.title ?? key,
+      title: getCategoryLabel(key, locale),
       description: content?.data.description ?? '',
     };
   })
