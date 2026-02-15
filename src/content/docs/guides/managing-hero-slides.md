@@ -55,6 +55,10 @@ Place all media files in `src/assets/hero/landingpage/`.
 - **Images:** `.jpg`, `.jpeg`, `.png`, `.webp`
 - **Videos:** `.mp4`, `.webm`, `.ogg`
 
+## Hero Logo
+
+The landing hero displays a logo image instead of a text heading. The logo is loaded from `src/assets/hero/landingpage/logo/` &mdash; place a single image file in this directory. The filename does not matter; the component picks the first image it finds. To replace the logo, simply swap the file. If the directory is empty, a plain-text "BEARS" heading is shown as a fallback.
+
 ## Ordering
 
 Slides are sorted by the numeric prefix in the filename. Use two-digit numbers (`01`, `02`, ... `10`, `11`) to ensure correct ordering &mdash; the sort is numeric, not alphabetical.

@@ -1,8 +1,12 @@
 ---
 import { Image } from 'astro:assets';
-import bearsLogo from '@assets/header/bears-writing.png';
+import { headerLogoImages } from '@utils/imageGlobs';
 import { getPageContent } from '@utils/contentQueries';
 import { localizeUrl, stripLocalePrefix, getAlternateLocale, type Locale } from '@utils/i18n';
+
+// Load the first image from src/assets/header/
+const logoEntry = Object.values(headerLogoImages)[0];
+const bearsLogo = logoEntry ? (await logoEntry()).default : null;
 
 interface Props {
   locale: Locale;
@@ -159,7 +163,11 @@ const noResultsText = locale === 'de' ? 'Keine Ergebnisse' : 'No results found';
   <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
     <div class="flex items-center justify-between">
       <a href={localizeUrl('/', locale)} class="shrink-0">
-        <Image src={bearsLogo} alt="BEARS" class="h-7 w-auto" width={400} loading="eager" />
+        {bearsLogo ? (
+          <Image src={bearsLogo} alt="BEARS" class="h-7 w-auto" width={400} loading="eager" />
+        ) : (
+          <span class="text-2xl font-bold text-bears-accent">BEARS</span>
+        )}
       </a>
 
       <button

@@ -48,8 +48,19 @@ Each asset directory has a centralized glob pattern exported as a constant:
 | `mediaHeroImages` | `/src/assets/hero/media/` | Media page hero |
 | `sponsorsHeroImages` | `/src/assets/hero/sponsors/` | Sponsors page hero |
 | `contactHeroImages` | `/src/assets/hero/contact/` | Contact page hero |
+| `headerLogoImages` | `/src/assets/header/` | Site header logo |
+| `heroLogoImages` | `/src/assets/hero/landingpage/logo/` | Landing hero logo |
 | `heroImages` | `/src/assets/hero/landingpage/` | Landing hero images only |
 | `heroMedia` | `/src/assets/hero/landingpage/` | Landing hero images + videos |
+
+### Logo images
+
+The header and landing hero logos are loaded via globs &mdash; each directory should contain a single image file. The components pick the first image found, so the filename does not matter. To replace a logo, swap the file in the directory (or rename it freely):
+
+| Directory | Used by | Fallback |
+|-----------|---------|----------|
+| `src/assets/header/` | Header logo (all pages) | Plain "BEARS" text |
+| `src/assets/hero/landingpage/logo/` | Landing page hero logo | Plain "BEARS" heading |
 
 **Vite limitation:** Glob pattern strings must be static literals. They cannot be constructed dynamically from variables. This is why each pattern is hardcoded rather than generated from `IMAGE_GLOB_PATTERN`.
 

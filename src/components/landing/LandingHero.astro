@@ -6,11 +6,14 @@
 import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
 import Img from '@mdx/Img.astro';
-import bearsHeroLogo from '@assets/hero/landingpage/bears-writing-with-motto.png';
 import HeroCTAIsland from './HeroCTAIsland';
 import CarouselArrow from '@reusable/CarouselArrow.astro';
 import { getLandingHeroSlides } from '@utils/contentQueries';
-import { heroImages, heroMedia } from '@utils/imageGlobs';
+import { heroImages, heroMedia, heroLogoImages } from '@utils/imageGlobs';
+
+// Load the first image from src/assets/hero/landingpage/logo/
+const heroLogoEntry = Object.values(heroLogoImages)[0];
+const bearsHeroLogo = heroLogoEntry ? (await heroLogoEntry()).default : null;
 
 interface MediaItem {
   type: 'video' | 'image';
@@ -273,13 +276,17 @@ const mediaJson = JSON.stringify(media.map((item, index) => ({
         <!-- Logo - top left -->
         <div class="shrink-0 pr-8">
           <h1>
-            <Image
-              src={bearsHeroLogo}
-              alt="BEARS — Dare the Limits"
-              class="h-16 sm:h-24 lg:h-28 w-auto drop-shadow-lg"
-              width={800}
-              loading="eager"
-            />
+            {bearsHeroLogo ? (
+              <Image
+                src={bearsHeroLogo}
+                alt="BEARS — Dare the Limits"
+                class="h-16 sm:h-24 lg:h-28 w-auto drop-shadow-lg"
+                width={800}
+                loading="eager"
+              />
+            ) : (
+              <span class="text-[3.5rem] sm:text-[5.5rem] lg:text-8xl font-bold text-bears-accent drop-shadow-lg">BEARS</span>
+            )}
           </h1>
         </div>
 

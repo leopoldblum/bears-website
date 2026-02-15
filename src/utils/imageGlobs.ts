@@ -109,6 +109,24 @@ export const contactHeroImages: ImageGlob = import.meta.glob<{ default: ImageMet
 );
 
 /**
+ * Header logo image
+ * Used by: Header.astro
+ * Place a single image in this directory to use as the site header logo.
+ */
+export const headerLogoImages: ImageGlob = import.meta.glob<{ default: ImageMetadata }>(
+  "/src/assets/header/*.{jpg,jpeg,png,webp}"
+);
+
+/**
+ * Landing hero logo image
+ * Used by: LandingHero.astro
+ * Place a single image in this directory to use as the landing page hero logo.
+ */
+export const heroLogoImages: ImageGlob = import.meta.glob<{ default: ImageMetadata }>(
+  "/src/assets/hero/landingpage/logo/*.{jpg,jpeg,png,webp}"
+);
+
+/**
  * Landing Hero background images
  * Used by: LandingHero.astro
  */
