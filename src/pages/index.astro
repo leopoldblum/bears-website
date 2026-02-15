@@ -7,13 +7,16 @@ import BecomeSponsor from "@landing/BecomeSponsor.astro";
 import LatestNews from "@landing/LatestNews.astro";
 import Testimonials from "@landing/Testimonials.astro"
 import { getPageContent } from "@utils/contentQueries";
-import { getLocale } from "@utils/i18n";
+import { getLocale, localizeUrl } from "@utils/i18n";
 
 const locale = getLocale(Astro.url);
 
 // Fetch hero CTAs from content collection
 const heroContent = await getPageContent('landing/hero', locale);
-const heroCTAs = heroContent?.data.ctas ?? [];
+const heroCTAs = (heroContent?.data.ctas ?? []).map(cta => ({
+  ...cta,
+  href: localizeUrl(cta.href, locale),
+}));
 ---
 
 <BaseLayout title={locale === 'de' ? 'Startseite' : 'Home'} description={heroContent?.data.seoDescription}>

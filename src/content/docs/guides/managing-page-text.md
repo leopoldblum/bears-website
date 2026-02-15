@@ -251,6 +251,8 @@ ctas:
 
 **Important:** You can have between 0 and 4 CTA cards. The grid layout adjusts automatically. If you remove all CTAs, only the logo and subtitle are shown.
 
+**Link paths:** Always write `href` values **without** a `/de/` prefix (e.g., `/projects`, not `/de/projects`). The code automatically adds the correct locale prefix when rendering the German version of the page.
+
 **Fields used:** `title` (not displayed, used internally), `subtitle` (hero tagline), `seoDescription` (homepage meta description), `ctas` (each with `title`, `description`, `href`)
 
 **Files:** `landing/hero`
@@ -429,3 +431,4 @@ description: "From design to launch — building and testing real sounding rocke
 - **The `{year}` placeholder** in the copyright text is the only dynamic template supported. It is replaced with the current year at build time.
 - **To find which file controls a section**, look at the page's subfolder. For example, all About Us content is in `about-us/`, all footer content is in `footer/`.
 - **Adding or removing CTA cards** on the hero automatically adjusts the grid layout (1–4 columns). You can also set `ctas` to an empty list to show no cards.
+- **All `href` values must be locale-neutral** &mdash; always write paths without a `/de/` prefix (e.g., `/projects`, `/about-us#find-us-section`). The website automatically adds the correct locale prefix when rendering the German version. This applies to `buttonHref`, `ctas[].href`, `navLinks[].href`, and `navColumns` links. Writing `/de/projects` would result in a broken double-prefix (`/de/de/projects`).
