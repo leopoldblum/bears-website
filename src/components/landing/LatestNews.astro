@@ -37,7 +37,7 @@ const allPostsWithImages = sortByDateDesc([...eventsWithImages, ...projectsWithI
 // Build news items for PostShowcase
 const newsItems = allPostsWithImages.map((post) => {
   const postType: PostType = post._collectionType;
-  const href = localizeUrl(`/${postType}/${post.slug}`, locale);
+  const href = localizeUrl(`/${postType}/${stripLocaleFromSlug(post.slug)}`, locale);
 
   return {
     imageData: post.loadedImage,
