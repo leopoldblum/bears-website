@@ -54,7 +54,7 @@ const noResultsText = locale === 'de' ? 'Keine Ergebnisse' : 'No results found';
       if (!window.__pagefind) {
         try {
           window.__pagefind = await import('/pagefind/pagefind.js');
-          await window.__pagefind.init();
+          await window.__pagefind.init({ language: document.documentElement.lang });
         } catch (e) { console.error('Pagefind load failed:', e); return; }
       }
       if (!this.searchQuery.trim()) { this.searchResults = []; return; }
