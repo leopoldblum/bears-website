@@ -15,6 +15,5 @@ export {
 } from './content';
 
 export type {
-  SponsorEntry,
   ImageWithAlt,
 } from './components';
