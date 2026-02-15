@@ -101,8 +101,8 @@ Frontmatter:
 PAGE TEXT (src/content/page-text/)
 Editable headings, descriptions, buttons, and structured data for every page section.
 Only frontmatter is used — the body is ignored.
-Frontmatter (only title is required, all others optional):
-  title: string (required)
+Frontmatter (all fields optional, use only what the section needs):
+  title: string — section heading (most sections use this)
   subtitle: string — secondary heading or label
   description: string — paragraph text
   seoDescription: string — meta description for search engines (~150 chars)

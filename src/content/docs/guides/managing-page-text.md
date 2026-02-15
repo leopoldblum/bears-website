@@ -48,11 +48,11 @@ Both `en/` and `de/` folders use identical filenames. If a German translation is
 
 ## Available Fields
 
-Only `title` is required. Every other field is optional &mdash; each file uses only the fields its section needs.
+All fields are optional &mdash; each file uses only the fields its section needs. Most sections use `title` as their heading, so it is typically provided.
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `title` | string | Section heading (**required**) |
+| `title` | string | Section heading |
 | `subtitle` | string | Secondary heading, label, or tagline displayed above or below the title |
 | `description` | string | Paragraph text (intro copy, explanations) |
 | `seoDescription` | string | Meta description for search engines (~150 characters) |
