@@ -6,9 +6,16 @@ import Img from "@mdx/Img.astro";
 import { whatIsBearsImages } from "@utils/imageGlobs";
 import { loadAllImagesFromDirectory } from "@utils/imageLoader";
 import { getPageContent } from "@utils/contentQueries";
+import { type Locale } from '@utils/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
 
 const carouselImages = await loadAllImagesFromDirectory(whatIsBearsImages);
-const content = await getPageContent('landing/what-is-bears');
+const content = await getPageContent('landing/what-is-bears', locale);
 ---
 
 <section

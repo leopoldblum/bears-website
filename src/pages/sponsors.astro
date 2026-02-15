@@ -7,13 +7,16 @@ import CrosslinkBanner from "@reusable/CrosslinkBanner.astro";
 import { sponsorsHeroImages, sponsorLogos } from "@utils/imageGlobs";
 import { loadAllImagesFromDirectory, loadImage, defaultSponsorImage } from "@utils/imageLoader";
 import { getPageContent, getSponsorsByTier } from "@utils/contentQueries";
+import { getLocale, localizeUrl } from "@utils/i18n";
+
+const locale = getLocale(Astro.url);
 
 // Page text content
-const pageContent = await getPageContent("sponsors/sponsors-title");
-const introContent = await getPageContent("sponsors/sponsors-intro");
-const tiersContent = await getPageContent("sponsors/sponsor-tiers");
-const ctaContent = await getPageContent("sponsors/become-sponsor-cta");
-const crosslink = await getPageContent("sponsors/sponsors-crosslink");
+const pageContent = await getPageContent("sponsors/sponsors-title", locale);
+const introContent = await getPageContent("sponsors/sponsors-intro", locale);
+const tiersContent = await getPageContent("sponsors/sponsor-tiers", locale);
+const ctaContent = await getPageContent("sponsors/become-sponsor-cta", locale);
+const crosslink = await getPageContent("sponsors/sponsors-crosslink", locale);
 
 // Hero image
 const loadedHeroImages = await loadAllImagesFromDirectory(sponsorsHeroImages);
@@ -119,7 +122,7 @@ const tiers = [
     <CrosslinkBanner
       text={crosslink?.data.title ?? "See what your support makes possible"}
       linkText={crosslink?.data.buttonText ?? "Explore our projects"}
-      href={crosslink?.data.buttonHref ?? "/projects"}
+      href={localizeUrl(crosslink?.data.buttonHref ?? "/projects", locale)}
     />
   </div>
 </BaseLayout>

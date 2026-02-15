@@ -1,9 +1,16 @@
 ---
 import { getPageContent } from "@utils/contentQueries";
 import { socialIcons } from "@utils/socialIcons";
+import { type Locale } from '@utils/i18n';
 
-const content = await getPageContent("contact/contact-info");
-const socialContent = await getPageContent("site/social-links");
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+
+const content = await getPageContent("contact/contact-info", locale);
+const socialContent = await getPageContent("site/social-links", locale);
 
 const email = content?.data.items?.[0] ?? "info@bears-space.de";
 const addressLines = content?.data.items?.slice(1) ?? [];

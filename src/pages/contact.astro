@@ -6,9 +6,11 @@ import CrosslinkBanner from "@reusable/CrosslinkBanner.astro";
 import { contactHeroImages } from "@utils/imageGlobs";
 import { loadAllImagesFromDirectory } from "@utils/imageLoader";
 import { getPageContent } from "@utils/contentQueries";
+import { getLocale, localizeUrl } from "@utils/i18n";
 
-const pageContent = await getPageContent('contact/contact-title');
-const crosslink = await getPageContent('contact/contact-crosslink');
+const locale = getLocale(Astro.url);
+const pageContent = await getPageContent('contact/contact-title', locale);
+const crosslink = await getPageContent('contact/contact-crosslink', locale);
 const loadedHeroImages = await loadAllImagesFromDirectory(contactHeroImages);
 const contactHeroImage = loadedHeroImages[0];
 ---
@@ -21,13 +23,13 @@ const contactHeroImage = loadedHeroImages[0];
     subtitle={pageContent?.data.subtitle ?? ""}
   />
 
-  <ContactInfo />
+  <ContactInfo locale={locale} />
 
   <div class="container mx-auto px-4 sm:px-6 lg:px-8">
     <CrosslinkBanner
       text={crosslink?.data.title ?? "Interested in joining BEARS?"}
       linkText={crosslink?.data.buttonText ?? "Find out how"}
-      href={crosslink?.data.buttonHref ?? "/about-us#find-us-section"}
+      href={localizeUrl(crosslink?.data.buttonHref ?? "/about-us#find-us-section", locale)}
     />
   </div>
 </BaseLayout>

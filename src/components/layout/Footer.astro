@@ -1,16 +1,22 @@
 ---
 import { getPageContent } from "@utils/contentQueries";
 import { socialIcons } from "@utils/socialIcons";
+import { localizeUrl, type Locale } from "@utils/i18n";
 
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
 const currentYear = new Date().getFullYear();
 
-const socialContent = await getPageContent("site/social-links");
+const socialContent = await getPageContent("site/social-links", locale);
 const socialLinks = socialContent?.data.socialLinks ?? [];
 
-const addressContent = await getPageContent("footer/footer-address");
+const addressContent = await getPageContent("footer/footer-address", locale);
 const addressLines = addressContent?.data.items ?? [];
 
-const navContent = await getPageContent("footer/navigation");
+const navContent = await getPageContent("footer/navigation", locale);
 const navColumns = navContent?.data.navColumns ?? [
   {
     heading: "Projects", href: "/projects",
@@ -50,7 +56,7 @@ const navColumns = navContent?.data.navColumns ?? [
   },
 ];
 
-const bottomBarContent = await getPageContent("footer/bottom-bar");
+const bottomBarContent = await getPageContent("footer/bottom-bar", locale);
 const copyrightText = (bottomBarContent?.data.title ?? "© {year} BEARS e.V. All rights reserved.").replace("{year}", String(currentYear));
 const legalLinks = bottomBarContent?.data.navLinks ?? [
   { label: "Impressum", href: "/imprint" },
@@ -74,7 +80,7 @@ const legalLinks = bottomBarContent?.data.navLinks ?? [
       <!-- Logo + Address -->
       <div class="lg:order-first flex flex-col gap-4 items-center lg:items-start min-w-0">
         <a
-          href="/"
+          href={localizeUrl('/', locale)}
           class="text-bears-accent text-2xl lg:text-3xl font-bold hover:text-bears-accent-muted transition-colors"
         >
           BEARS
@@ -99,7 +105,7 @@ const legalLinks = bottomBarContent?.data.navLinks ?? [
               class="text-sm lg:text-base font-semibold uppercase tracking-wider text-bears-text-onLight mb-3"
             >
               <a
-                href={column.href}
+                href={localizeUrl(column.href, locale)}
                 class="hover:text-bears-accent transition-colors"
               >
                 {column.heading}
@@ -107,7 +113,7 @@ const legalLinks = bottomBarContent?.data.navLinks ?? [
             </h3>
             {column.links.map((link) => (
               <a
-                href={link.href}
+                href={localizeUrl(link.href, locale)}
                 class="text-sm text-bears-text-onLight/70 hover:text-bears-accent transition-colors"
               >
                 {link.label}
@@ -169,7 +175,7 @@ const legalLinks = bottomBarContent?.data.navLinks ?? [
         {legalLinks.map((link, i) => (
           <>
             {i > 0 && <span class="text-bears-text-onLight/30">|</span>}
-            <a href={link.href} class="hover:text-bears-accent transition-colors">
+            <a href={localizeUrl(link.href, locale)} class="hover:text-bears-accent transition-colors">
               {link.label}
             </a>
           </>

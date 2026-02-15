@@ -9,20 +9,34 @@ import EventsIntro from "@components/events/EventsIntro.astro";
 import { loadCollectionImages } from "@utils/imageLoader";
 import { getPublishedEvents, getPageContent } from "@utils/contentQueries";
 import { CategoryEventEnum } from "@types";
-import { getCategoryLabel } from "@utils/categoryLabels";
+import { getLocale, localizeUrl, getCategoryLabel } from "@utils/i18n";
+import { stripLocaleFromSlug } from "@utils/contentQueries";
 import CrosslinkBanner from "@reusable/CrosslinkBanner.astro";
 import { eventsHeroImages } from "@utils/imageGlobs";
 import { loadAllImagesFromDirectory } from "@utils/imageLoader";
 
-const pageContent = await getPageContent('events/events-title');
-const eventsIntro = await getPageContent('events/events-intro');
-const emptyState = await getPageContent('events/events-empty-state');
-const crosslink = await getPageContent('events/events-crosslink');
+const locale = getLocale(Astro.url);
+
+// Locale-aware UI strings for Alpine.js
+const showingText = locale === 'de' ? 'Zeige' : 'Showing';
+const ofText = locale === 'de' ? 'von' : 'of';
+const eventsWord = locale === 'de' ? 'Veranstaltungen' : 'events';
+const showMoreText = locale === 'de' ? 'Mehr anzeigen' : 'Show more';
+const remainingText = locale === 'de' ? 'verbleibend' : 'remaining';
+const clearFiltersText = locale === 'de' ? 'Alle Filter zurücksetzen' : 'Clear all filters';
+const filterCategoryLabel = locale === 'de' ? 'Kategorie' : 'Category';
+const filterDateLabel = locale === 'de' ? 'Datum' : 'Date';
+const upcomingLabel = locale === 'de' ? 'Bevorstehend' : 'Upcoming';
+const pastLabel = locale === 'de' ? 'Vergangen' : 'Past';
+const pageContent = await getPageContent('events/events-title', locale);
+const eventsIntro = await getPageContent('events/events-intro', locale);
+const emptyState = await getPageContent('events/events-empty-state', locale);
+const crosslink = await getPageContent('events/events-crosslink', locale);
 const loadedHeroImages = await loadAllImagesFromDirectory(eventsHeroImages);
 const eventHeroImage = loadedHeroImages[0];
 
 // Get all published events (filtered and sorted)
-const sortedEvents = await getPublishedEvents();
+const sortedEvents = await getPublishedEvents(locale);
 
 // Load images for events
 const eventsWithLoadedImages = await loadCollectionImages(sortedEvents, 'event');
@@ -44,7 +58,7 @@ const eventsForCallout = eventsWithImages.map(e => ({
 // Get category options from enum and build labels map
 const eventCategories = CategoryEventEnum.options;
 const categoryLabelsMap = Object.fromEntries(
-  eventCategories.map(cat => [cat, getCategoryLabel(cat)])
+  eventCategories.map(cat => [cat, getCategoryLabel(cat, locale)])
 );
 
 // Prepare data for Alpine.js (embedded directly in x-data to avoid race conditions)
@@ -307,21 +321,22 @@ const eventsData = JSON.stringify(eventsWithImages.map((e, i) => ({
       subtitle={eventsIntro?.data.subtitle}
       description={eventsIntro?.data.description}
       events={eventsForCallout}
+      locale={locale}
     >
       <SortMenu />
       <FilterMenu
         filterGroups={[
           {
-            label: 'Category',
+            label: filterCategoryLabel,
             stateVariable: 'activeCategory',
             categories: eventCategories,
             categoryLabels: categoryLabelsMap
           },
           {
-            label: 'Date',
+            label: filterDateLabel,
             stateVariable: 'dateFilter',
             categories: ['upcoming', 'past'],
-            categoryLabels: { upcoming: 'Upcoming', past: 'Past' }
+            categoryLabels: { upcoming: upcomingLabel, past: pastLabel }
           }
         ]}
       />
@@ -329,7 +344,7 @@ const eventsData = JSON.stringify(eventsWithImages.map((e, i) => ({
         slot="result-count"
         :class="{ 'invisible': filteredIndices.length === 0 }"
         class="text-sm text-bears-text-onDark/40"
-        x-text="`Showing ${Math.min(visibleCount, filteredIndices.length)} of ${filteredIndices.length} events`"
+        x-text={`\`${showingText} \${Math.min(visibleCount, filteredIndices.length)} ${ofText} \${filteredIndices.length} ${eventsWord}\``}
       ></p>
     </EventsIntro>
 
@@ -350,7 +365,7 @@ const eventsData = JSON.stringify(eventsWithImages.map((e, i) => ({
         @click="clearFilters()"
         class="text-sm text-bears-accent hover:text-bears-accent/80 transition-colors cursor-pointer"
       >
-        Clear all filters
+        {clearFiltersText}
       </button>
     </div>
 
@@ -370,12 +385,12 @@ const eventsData = JSON.stringify(eventsWithImages.map((e, i) => ({
           <PostShowcase
             coverImage={event.coverImage}
             imageAlt={event.title}
-            date={event.date.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
+            date={event.date.toLocaleDateString(locale === 'de' ? 'de-DE' : 'en-US', { year: 'numeric', month: 'long', day: 'numeric' })}
             title={event.title}
             description={event.description}
-            href={`/events/${event.slug}`}
+            href={localizeUrl(`/events/${stripLocaleFromSlug(event.slug)}`, locale)}
             isUpcoming={event.date.getTime() >= new Date().setHours(0, 0, 0, 0)}
-            category={getCategoryLabel(event.categoryEvent)}
+            category={getCategoryLabel(event.categoryEvent, locale)}
           />
         </div>
       ))}
@@ -398,10 +413,10 @@ const eventsData = JSON.stringify(eventsWithImages.map((e, i) => ({
           type="button"
           class="group flex items-center justify-center gap-2.5 px-6 py-3 rounded-lg border border-white/15 text-sm text-bears-text-onDark/80 hover:border-bears-accent/50 hover:text-bears-text-onDark transition-all duration-200 cursor-pointer"
         >
-          <span>Show more</span>
+          <span>{showMoreText}</span>
           <span
             class="text-bears-text-onDark/40"
-            x-text="`(${remainingCount} remaining)`"
+            x-text={`\`(\${remainingCount} ${remainingText})\``}
           ></span>
           <svg class="w-4 h-4 transition-transform duration-200 group-hover:translate-y-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
@@ -413,7 +428,7 @@ const eventsData = JSON.stringify(eventsWithImages.map((e, i) => ({
     <CrosslinkBanner
       text={crosslink?.data.title ?? "Curious what we're building?"}
       linkText={crosslink?.data.buttonText ?? "Explore our projects"}
-      href={crosslink?.data.buttonHref ?? "/projects"}
+      href={localizeUrl(crosslink?.data.buttonHref ?? "/projects", locale)}
     />
   </div>
 </BaseLayout>

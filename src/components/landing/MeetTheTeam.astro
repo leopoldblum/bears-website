@@ -5,9 +5,16 @@ import Img from "@mdx/Img.astro";
 import { loadImage, defaultFaceImage } from "@utils/imageLoader";
 import { teamImages } from "@utils/imageGlobs";
 import { getMeetTheTeamProjects, getPageContent } from "@utils/contentQueries";
+import { type Locale } from '@utils/i18n';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
 
 // Get projects for MeetTheTeam section (filtered and sorted)
-const sortedProjects = await getMeetTheTeamProjects();
+const sortedProjects = await getMeetTheTeamProjects(locale);
 
 // Load person portrait images for each team member
 const projects = await Promise.all(
@@ -27,7 +34,7 @@ const projects = await Promise.all(
   })
 );
 
-const content = await getPageContent('landing/meet-the-team');
+const content = await getPageContent('landing/meet-the-team', locale);
 ---
 
 <section

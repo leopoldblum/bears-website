@@ -1,14 +1,14 @@
 ---
-title: "Header Navigation"
+title: "Header-Navigation"
 navLinks:
-  - label: "danm boiii"
+  - label: "Projekte"
     href: "/projects"
-  - label: "Sponsors"
+  - label: "Sponsoren"
     href: "/sponsors"
   - label: "Events"
     href: "/events"
-  - label: "About Us"
+  - label: "Über Uns"
     href: "/about-us"
-  - label: "Contact"
+  - label: "Kontakt"
     href: "/contact"
 ---

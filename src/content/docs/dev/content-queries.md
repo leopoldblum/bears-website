@@ -7,6 +7,8 @@ group: "Systems"
 
 All content query functions live in `src/utils/contentQueries.ts`. They follow a composable pattern: generic utilities are combined into pre-composed functions for each collection.
 
+Most query functions accept an optional `locale` parameter (type `Locale` from `src/utils/i18n.ts`, defaults to `'en'`). Localized collections are filtered by their `en/` or `de/` id prefix, with automatic fallback to English when no entries exist for the requested locale.
+
 ## Composable Utilities
 
 ### Sorting
@@ -22,21 +24,29 @@ Both return new arrays without mutating the original. They work with any collect
 
 ```typescript
 filterDrafts<T>(entries: T[]): T[]
+filterByLocale<T>(entries: T[], locale: Locale): T[]
+stripLocaleFromSlug(slug: string): string
 ```
 
-In development (`import.meta.env.DEV`), returns all entries including drafts. In production, removes entries where `isDraft` is `true`.
+`filterDrafts`: In development (`import.meta.env.DEV`), returns all entries including drafts. In production, removes entries where `isDraft` is `true`.
+
+`filterByLocale`: Filters entries by their id prefix (e.g., `en/` or `de/`). Falls back to the default locale (English) if no entries exist for the requested locale.
+
+`stripLocaleFromSlug`: Removes the `en/` or `de/` prefix from a slug (e.g., `en/rocket-launch` &rarr; `rocket-launch`). Used in dynamic routes to generate clean URL paths.
 
 ## Pre-Composed Queries
 
 ### Posts (Events + Projects)
 
+All post query functions accept an optional `locale` parameter (defaults to `'en'`):
+
 | Function | Returns | Notes |
 |----------|---------|-------|
-| `getPublishedEvents()` | `CollectionEntry<'events'>[]` | Filtered + sorted by date |
-| `getPublishedProjects()` | `CollectionEntry<'projects'>[]` | Filtered + sorted by date |
-| `getPublishedPosts()` | Combined array with `_collectionType` | Events + projects merged, sorted |
-| `getLatestPosts(limit = 4)` | Sliced array of latest posts | Used by "Latest News" |
-| `getMeetTheTeamProjects()` | Projects with `displayMeetTheTeam: true` | Filtered + sorted by date |
+| `getPublishedEvents(locale?)` | `CollectionEntry<'events'>[]` | Filtered by locale + sorted by date |
+| `getPublishedProjects(locale?)` | `CollectionEntry<'projects'>[]` | Filtered by locale + sorted by date |
+| `getPublishedPosts(locale?)` | Combined array with `_collectionType` | Events + projects merged, sorted |
+| `getLatestPosts(limit?, locale?)` | Sliced array of latest posts | Used by "Latest News" |
+| `getMeetTheTeamProjects(locale?)` | Projects with `displayMeetTheTeam: true` | Filtered + sorted by date |
 
 The `_collectionType` marker on combined posts is either `'events'` or `'projects'`, used to route to the correct detail page:
 
@@ -58,12 +68,12 @@ posts.forEach(post => {
 
 | Function | Returns | Notes |
 |----------|---------|-------|
-| `getTestimonialsSorted()` | `CollectionEntry<'testimonials'>[]` | Sorted by slug |
-| `getFacesOfBearsSorted()` | `CollectionEntry<'faces-of-bears'>[]` | Sorted by slug (numeric prefix) |
-| `getSponsorsByTier()` | `{ diamond, platinum, gold, silver, bronze }` | Grouped + sorted within each tier |
-| `getPageContent(id)` | `CollectionEntry<'page-text'> \| undefined` | Single entry by ID |
-| `getDocsBySection()` | `Record<string, CollectionEntry<'docs'>[]>` | Grouped by section folder |
-| `getLandingHeroSlides()` | `CollectionEntry<'hero-slides'>[]` | Sorted by numeric filename prefix |
+| `getTestimonialsSorted(locale?)` | `CollectionEntry<'testimonials'>[]` | Filtered by locale, sorted by slug |
+| `getFacesOfBearsSorted(locale?)` | `CollectionEntry<'faces-of-bears'>[]` | Filtered by locale, sorted by slug |
+| `getSponsorsByTier()` | `{ diamond, platinum, gold, silver, bronze }` | Grouped + sorted (not localized) |
+| `getPageContent(id, locale?)` | `CollectionEntry<'page-text'> \| undefined` | Single entry by ID and locale |
+| `getDocsBySection()` | `Record<string, CollectionEntry<'docs'>[]>` | Grouped by section folder (not localized) |
+| `getLandingHeroSlides()` | `CollectionEntry<'hero-slides'>[]` | Sorted by numeric prefix (not localized) |
 
 ## Sponsor Tier Grouping
 
@@ -77,14 +87,15 @@ The returned object has all five tiers, each sorted alphabetically by slug.
 
 ## Page Content
 
-`getPageContent(id)` fetches a single `page-text` entry by its ID path. The `.md` extension is auto-appended if not provided:
+`getPageContent(id, locale?)` fetches a single `page-text` entry by its ID path and locale. The `id` does **not** include the locale prefix &mdash; it is prepended automatically. Falls back to English if the translation is missing:
 
 ```typescript
-const content = await getPageContent('landing/what-is-bears');
-// Resolves to entry with id "landing/what-is-bears.md"
+const content = await getPageContent('landing/what-is-bears', 'de');
+// Tries "de/landing/what-is-bears.md" first
+// Falls back to "en/landing/what-is-bears.md" if not found
 ```
 
-A console warning is logged if the entry is not found.
+A console warning is logged if no entry is found in either locale.
 
 ## Docs Sections
 

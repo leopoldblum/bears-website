@@ -29,7 +29,9 @@ Run commands from the project root:
 ```
 src/
 ├── pages/          # File-based routing - each .astro or .md file becomes a route
+│   └── de/         # German locale wrappers (thin re-renders of root pages)
 ├── layouts/        # Layout components (BaseLayout.astro imports global styles)
+├── utils/          # Helpers (contentQueries.ts, i18n.ts, imageLoader, etc.)
 └── styles/         # global.css imports Tailwind
 ```
 
@@ -39,11 +41,36 @@ src/
 - Global styles: [src/styles/global.css](src/styles/global.css) - Single Tailwind import
 - Layout: [src/layouts/BaseLayout.astro](src/layouts/BaseLayout.astro) - Imports global.css
 
-### Routing
+### Routing & i18n
 Astro uses file-based routing. Files in `src/pages/` automatically become routes:
 - `src/pages/index.astro` → `/`
 - `src/pages/about.astro` → `/about`
 - `src/pages/blog/[slug].astro` → `/blog/:slug` (dynamic routes)
+
+**Locale routing:** The site supports English (default, no prefix) and German (`/de/` prefix). Astro's built-in i18n is configured in `astro.config.mjs` with `prefixDefaultLocale: false`.
+
+German pages live in `src/pages/de/` as thin wrappers that import and re-render the root page component:
+
+```astro
+---
+// src/pages/de/about-us.astro
+import Page from '../about-us.astro';
+---
+<Page />
+```
+
+For dynamic routes (`[slug].astro`), the wrapper re-exports `getStaticPaths`:
+
+```astro
+---
+// src/pages/de/events/[slug].astro
+import Page from '../../events/[slug].astro';
+export { getStaticPaths } from '../../events/[slug].astro';
+---
+<Page {...Astro.props} />
+```
+
+Root pages detect their locale via `getLocale(Astro.url)` from `src/utils/i18n.ts` and pass it down to components and content queries. This means the same component code serves both languages.
 
 ### Styling Pattern
 This project uses Tailwind CSS v4 with the Vite plugin. Global styles are imported via BaseLayout. Use Tailwind utility classes directly in Astro components.
@@ -175,20 +202,35 @@ See [Accordion.astro](src/components/mdx/Accordion.astro) for a complete example
 
 Static text in components and pages — such as headings, descriptions, and button labels — should be sourced from `.md` files in the `page-text` content collection (`src/content/page-text/`) rather than hardcoded, when useful and practical. This allows content creators to update copy without touching component code.
 
-**Subfolder conventions:**
+**Locale folder structure:**
+Content files are organized under `en/` and `de/` subfolders. Within each locale folder, the subfolder conventions are:
 - `landing/` — content for homepage sections (e.g., `landing/what-is-bears`)
 - Each page has its own subfolder (e.g., `about-us/`, `events/`, `sponsors/`)
 - Page hero title/subtitle files use a `-title` suffix (e.g., `events/events-title`)
 - Section-specific content goes alongside the title file (e.g., `about-us/our-mission`, `about-us/find-us`)
 
+```
+src/content/page-text/
+├── en/                  ← English (default)
+│   ├── landing/hero.md
+│   ├── about-us/our-mission.md
+│   └── ...
+└── de/                  ← German translations
+    ├── landing/hero.md
+    ├── about-us/our-mission.md
+    └── ...
+```
+
 **Querying content:**
-Use `getPageContent(id)` from `src/utils/contentQueries.ts` to fetch a page content entry by its ID:
+Use `getPageContent(id, locale)` from `src/utils/contentQueries.ts` to fetch a page content entry by its ID. The `id` does NOT include the locale prefix — the function prepends it automatically and falls back to English if the translation is missing:
 
 ```astro
 ---
 import { getPageContent } from '../utils/contentQueries';
+import { getLocale } from '../utils/i18n';
 
-const content = await getPageContent('events/events-title');
+const locale = getLocale(Astro.url);
+const content = await getPageContent('events/events-title', locale);
 ---
 
 <h2>{content.data.title}</h2>
@@ -196,6 +238,8 @@ const content = await getPageContent('events/events-title');
 ```
 
 **When to extract content:** Not every string needs to be pulled into a content file. Use this pattern for user-facing text that content creators are likely to want to edit (section headings, intro paragraphs, CTA labels). Internal labels, aria attributes, and structural text can stay hardcoded.
+
+**Adding translations:** When creating or editing page text, update both `en/` and `de/` versions. If a German translation is missing, the English version is shown automatically.
 
 ## Documentation
 

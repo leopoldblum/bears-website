@@ -4,6 +4,7 @@ import Header from "@layout/Header.astro";
 import Footer from "@layout/Footer.astro";
 import BackToTopButton from "@layout/BackToTopButton.astro";
 import { getPageContent } from "@utils/contentQueries";
+import { getLocale, getHreflangUrls } from "@utils/i18n";
 
 interface Props {
   title: string;
@@ -11,8 +12,10 @@ interface Props {
   ogImage?: string;
 }
 
-const siteMetadata = await getPageContent("site/metadata");
-const socialLinksContent = await getPageContent("site/social-links");
+const locale = getLocale(Astro.url);
+
+const siteMetadata = await getPageContent("site/metadata", locale);
+const socialLinksContent = await getPageContent("site/social-links", locale);
 
 const {
   title,
@@ -22,6 +25,7 @@ const {
 
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
 const siteOrigin = canonicalUrl.origin;
+const hreflangUrls = getHreflangUrls(Astro.url.pathname, siteOrigin);
 
 const organizationSchema = {
   "@context": "https://schema.org",
@@ -33,7 +37,7 @@ const organizationSchema = {
 ---
 
 <!DOCTYPE html>
-<html lang="en" class="scroll-smooth">
+<html lang={locale} class="scroll-smooth">
   <head>
     <meta charset="utf-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -42,6 +46,11 @@ const organizationSchema = {
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalUrl.href} />
 
+    <!-- Hreflang -->
+    <link rel="alternate" hreflang="en" href={hreflangUrls.en} />
+    <link rel="alternate" hreflang="de" href={hreflangUrls.de} />
+    <link rel="alternate" hreflang="x-default" href={hreflangUrls.en} />
+
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonicalUrl.href} />
@@ -49,6 +58,7 @@ const organizationSchema = {
     <meta property="og:description" content={description} />
     <meta property="og:image" content={new URL(ogImage, canonicalUrl.origin).href} />
     <meta property="og:site_name" content="BEARS e.V." />
+    <meta property="og:locale" content={locale === 'de' ? 'de_DE' : 'en_US'} />
 
     <!-- Twitter / X -->
     <meta name="twitter:card" content="summary_large_image" />
@@ -70,11 +80,11 @@ const organizationSchema = {
     </script>
   </head>
   <body class="flex flex-col min-h-screen">
-    <Header />
+    <Header locale={locale} />
     <main class="flex-1" data-pagefind-body>
       <slot />
     </main>
-    <Footer />
+    <Footer locale={locale} />
     <BackToTopButton />
     <script>
       if (window.__scrollTarget) {

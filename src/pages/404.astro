@@ -1,8 +1,10 @@
 ---
 import BaseLayout from "@layouts/BaseLayout.astro";
 import { getPageContent } from "@utils/contentQueries";
+import { getLocale } from "@utils/i18n";
 
-const content = await getPageContent('404/not-found');
+const locale = getLocale(Astro.url);
+const content = await getPageContent('404/not-found', locale);
 ---
 
 <BaseLayout title="404 - Page Not Found">

@@ -9,17 +9,19 @@ All website content is managed through [Astro content collections](https://docs.
 
 ## Collections Overview
 
-| Collection | Folder | Key Fields |
-|------------|--------|------------|
-| `events` | `src/content/events/` | title, description, date, categoryEvent, coverImage, isDraft |
-| `projects` | `src/content/projects/` | title, description, date, categoryProject, coverImage, isDraft, isProjectCompleted |
-| `testimonials` | `src/content/testimonials/` | quote, name, role, coverImage |
-| `sponsors` | `src/content/sponsors/<tier>/` | name, logo, url (tier from folder) |
-| `hero-slides` | `src/content/hero-slides/` | type (image\|video), media, shownText, alt |
-| `instagram` | `src/content/instagram/` | url, date, isDraft |
-| `faces-of-bears` | `src/content/faces-of-bears/` | name, role, coverImage |
-| `page-text` | `src/content/page-text/` | title, subtitle, description, ctas, items, socialLinks, navColumns, faqs |
-| `docs` | `src/content/docs/` | title, description, order, group |
+| Collection | Folder | Localized | Key Fields |
+|------------|--------|-----------|------------|
+| `events` | `src/content/events/{en,de}/` | Yes | title, description, date, categoryEvent, coverImage, isDraft |
+| `projects` | `src/content/projects/{en,de}/` | Yes | title, description, date, categoryProject, coverImage, isDraft, isProjectCompleted |
+| `testimonials` | `src/content/testimonials/{en,de}/` | Yes | quote, name, role, coverImage |
+| `faces-of-bears` | `src/content/faces-of-bears/{en,de}/` | Yes | name, role, coverImage |
+| `page-text` | `src/content/page-text/{en,de}/` | Yes | title, subtitle, description, ctas, items, socialLinks, navColumns, faqs |
+| `sponsors` | `src/content/sponsors/<tier>/` | No | name, logo, url (tier from folder) |
+| `hero-slides` | `src/content/hero-slides/` | No | type (image\|video), media, shownText, alt |
+| `instagram` | `src/content/instagram/` | No | url, date, isDraft |
+| `docs` | `src/content/docs/` | No | title, description, order, group |
+
+**Localized collections** use `en/` and `de/` subfolders with identical filenames in each. Content queries filter by locale and fall back to English if a German translation is missing.
 
 ## Image Validation
 
@@ -107,7 +109,7 @@ The `page-text` collection is the most flexible schema, supporting many optional
 
 1. Define the Zod schema in `src/content/config.ts`
 2. Add it to the `collections` export at the bottom of the file
-3. Create the content folder under `src/content/<name>/`
+3. Create the content folder under `src/content/<name>/` (use `en/` and `de/` subfolders if the content needs translation)
 4. If images are needed, create an asset folder in `src/assets/<name>/` and add a glob pattern in `src/utils/imageGlobs.ts`
-5. Add query functions in `src/utils/contentQueries.ts`
-6. If the collection has categories, add a Zod enum in `src/types/content.ts` and labels in `src/utils/categoryLabels.ts`
+5. Add query functions in `src/utils/contentQueries.ts` (use `filterByLocale()` for localized collections)
+6. If the collection has categories, add a Zod enum in `src/types/content.ts` and labels in `src/utils/i18n.ts` (`categoryLabels`)

@@ -9,8 +9,10 @@ import { loadAllImagesFromDirectory } from "@utils/imageLoader";
 import type { ImageMetadata } from "astro";
 import { mediaHeroImages } from "@utils/imageGlobs";
 import { getPageContent } from "@utils/contentQueries";
+import { getLocale } from "@utils/i18n";
 
-const pageContent = await getPageContent('media/media-title');
+const locale = getLocale(Astro.url);
+const pageContent = await getPageContent('media/media-title', locale);
 const loadedHeroImages = await loadAllImagesFromDirectory(mediaHeroImages);
 const heroImage = loadedHeroImages[0];
 

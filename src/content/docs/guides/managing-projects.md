@@ -5,11 +5,25 @@ order: 21
 group: "Content"
 ---
 
-Projects are stored in `src/content/projects/` as Markdown or MDX files.
+Projects are stored in `src/content/projects/` as Markdown or MDX files, organized by locale.
+
+## Folder Structure
+
+```
+src/content/projects/
+├── en/                                    ← English (default)
+│   ├── 2025 11 20 autonomous-rover.md
+│   └── ...
+└── de/                                    ← German translations
+    ├── 2025 11 20 autonomous-rover.md
+    └── ...
+```
+
+Both folders use identical filenames. If a German translation is missing, the English version is displayed on the `/de/` pages.
 
 ## Creating a Project
 
-Create a new file in `src/content/projects/` with the naming convention `YYYY MM DD title.mdx`:
+Create a new file in `src/content/projects/en/` (or `de/` for German) with the naming convention `YYYY MM DD title.mdx`:
 
 ```mdx
 ---

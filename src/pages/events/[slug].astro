@@ -2,14 +2,15 @@
 import PostLayout from "@layouts/PostLayout.astro";
 import { type CollectionEntry } from "astro:content";
 import { loadCoverImage } from "@utils/imageLoader";
-import { getPublishedEvents } from "@utils/contentQueries";
+import { getPublishedEvents, stripLocaleFromSlug } from "@utils/contentQueries";
+import { getLocale } from "@utils/i18n";
 
 
 export async function getStaticPaths() {
   const allEvents = await getPublishedEvents();
 
   return allEvents.map(entry => ({
-    params: { slug: entry.slug },
+    params: { slug: stripLocaleFromSlug(entry.slug) },
     props: { entry }
   }));
 }
@@ -18,7 +19,18 @@ interface Props {
   entry: CollectionEntry<'events'>;
 }
 
-const { entry } = Astro.props;
+const { entry: defaultEntry } = Astro.props;
+const locale = getLocale(Astro.url);
+
+// For non-default locale, try to find the locale-specific entry
+let entry = defaultEntry;
+if (locale !== 'en') {
+  const localeEvents = await getPublishedEvents(locale);
+  const bareSlug = stripLocaleFromSlug(defaultEntry.slug);
+  const localeEntry = localeEvents.find(e => stripLocaleFromSlug(e.slug) === bareSlug);
+  if (localeEntry) entry = localeEntry;
+}
+
 const { Content } = await entry.render();
 
 // Load cover image

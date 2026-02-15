@@ -2,8 +2,15 @@
 import Accordion from "@mdx/Accordion.astro";
 import GradientDivider from "@reusable/GradientDivider.astro";
 import { getPageContent } from "@utils/contentQueries";
+import { type Locale } from '@utils/i18n';
 
-const content = await getPageContent("about-us/faq");
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+
+const content = await getPageContent("about-us/faq", locale);
 
 const accordionItems = (content?.data.faqs ?? []).map((faq) => ({
   title: faq.question,

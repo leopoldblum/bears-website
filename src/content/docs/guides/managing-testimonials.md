@@ -5,11 +5,25 @@ order: 23
 group: "Content"
 ---
 
-Testimonials are stored in `src/content/testimonials/` as Markdown files.
+Testimonials are stored in `src/content/testimonials/` as Markdown files, organized by locale.
+
+## Folder Structure
+
+```
+src/content/testimonials/
+├── en/              ← English (default)
+│   ├── 01-member-4.md
+│   └── ...
+└── de/              ← German translations
+    ├── 01-member-4.md
+    └── ...
+```
+
+Both folders use identical filenames. If a German translation is missing, the English version is displayed on the `/de/` pages.
 
 ## Creating a Testimonial
 
-Create a new file with the naming convention `NN-name.md` (e.g., `04-jane-doe.md`). The numeric prefix controls the display order.
+Create a new file in `en/` (or `de/` for German) with the naming convention `NN-name.md` (e.g., `04-jane-doe.md`). The numeric prefix controls the display order.
 
 ```yaml
 ---

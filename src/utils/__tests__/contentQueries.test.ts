@@ -24,7 +24,7 @@ const mockedGetCollection = vi.mocked(getCollection);
 
 function makeEntry(overrides: { date?: Date; slug?: string; isDraft?: boolean; id?: string; displayMeetTheTeam?: boolean }) {
   return {
-    id: overrides.id ?? 'test.md',
+    id: overrides.id ?? 'en/test.md',
     slug: overrides.slug ?? 'test',
     data: {
       date: overrides.date ?? new Date('2024-01-01'),
@@ -243,8 +243,8 @@ describe('getPublishedEvents', () => {
 
   it('returns events sorted by date descending', async () => {
     mockedGetCollection.mockResolvedValue([
-      makeEntry({ date: new Date('2023-01-01'), slug: 'old' }),
-      makeEntry({ date: new Date('2024-06-01'), slug: 'new' }),
+      makeEntry({ id: 'en/old.mdx', date: new Date('2023-01-01'), slug: 'old' }),
+      makeEntry({ id: 'en/new.mdx', date: new Date('2024-06-01'), slug: 'new' }),
     ]);
     const result = await getPublishedEvents();
     expect(result[0].slug).toBe('new');
@@ -266,8 +266,8 @@ describe('getPublishedProjects', () => {
 
   it('returns projects sorted by date descending', async () => {
     mockedGetCollection.mockResolvedValue([
-      makeEntry({ date: new Date('2022-03-01'), slug: 'older' }),
-      makeEntry({ date: new Date('2024-09-01'), slug: 'newer' }),
+      makeEntry({ id: 'en/older.mdx', date: new Date('2022-03-01'), slug: 'older' }),
+      makeEntry({ id: 'en/newer.mdx', date: new Date('2024-09-01'), slug: 'newer' }),
     ]);
     const result = await getPublishedProjects();
     expect(result[0].slug).toBe('newer');
@@ -290,10 +290,10 @@ describe('getPublishedPosts', () => {
     // First call returns events, second returns projects
     mockedGetCollection
       .mockResolvedValueOnce([
-        makeEntry({ date: new Date('2024-01-01'), slug: 'event-1' }),
+        makeEntry({ id: 'en/event-1.mdx', date: new Date('2024-01-01'), slug: 'event-1' }),
       ])
       .mockResolvedValueOnce([
-        makeEntry({ date: new Date('2024-06-01'), slug: 'project-1' }),
+        makeEntry({ id: 'en/project-1.mdx', date: new Date('2024-06-01'), slug: 'project-1' }),
       ]);
 
     const result = await getPublishedPosts();
@@ -304,8 +304,8 @@ describe('getPublishedPosts', () => {
 
   it('adds _collectionType markers', async () => {
     mockedGetCollection
-      .mockResolvedValueOnce([makeEntry({ slug: 'e1' })])
-      .mockResolvedValueOnce([makeEntry({ slug: 'p1' })]);
+      .mockResolvedValueOnce([makeEntry({ id: 'en/e1.mdx', slug: 'e1' })])
+      .mockResolvedValueOnce([makeEntry({ id: 'en/p1.mdx', slug: 'p1' })]);
 
     const result = await getPublishedPosts();
     const event = result.find(p => p.slug === 'e1');
@@ -329,7 +329,7 @@ describe('getLatestPosts', () => {
 
   it('returns at most N posts', async () => {
     const entries = Array.from({ length: 10 }, (_, i) =>
-      makeEntry({ date: new Date(`2024-${String(i + 1).padStart(2, '0')}-01`), slug: `post-${i}` })
+      makeEntry({ id: `en/post-${i}.mdx`, date: new Date(`2024-${String(i + 1).padStart(2, '0')}-01`), slug: `post-${i}` })
     );
     mockedGetCollection.mockResolvedValue(entries);
 
@@ -339,7 +339,7 @@ describe('getLatestPosts', () => {
 
   it('defaults to 4 posts', async () => {
     const entries = Array.from({ length: 10 }, (_, i) =>
-      makeEntry({ date: new Date(`2024-${String(i + 1).padStart(2, '0')}-01`), slug: `post-${i}` })
+      makeEntry({ id: `en/post-${i}.mdx`, date: new Date(`2024-${String(i + 1).padStart(2, '0')}-01`), slug: `post-${i}` })
     );
     mockedGetCollection.mockResolvedValue(entries);
 
@@ -355,8 +355,8 @@ describe('getPageContent', () => {
 
   it('finds entry by id', async () => {
     mockedGetCollection.mockResolvedValue([
-      { id: 'landing/hero.md', slug: 'hero', data: { title: 'Hero' } },
-      { id: 'sub-pages/about.md', slug: 'about', data: { title: 'About' } },
+      { id: 'en/landing/hero.md', slug: 'hero', data: { title: 'Hero' } },
+      { id: 'en/sub-pages/about.md', slug: 'about', data: { title: 'About' } },
     ]);
     const result = await getPageContent('landing/hero');
     expect(result?.data.title).toBe('Hero');
@@ -364,7 +364,7 @@ describe('getPageContent', () => {
 
   it('appends .md extension if missing', async () => {
     mockedGetCollection.mockResolvedValue([
-      { id: 'landing/hero.md', slug: 'hero', data: { title: 'Hero' } },
+      { id: 'en/landing/hero.md', slug: 'hero', data: { title: 'Hero' } },
     ]);
     const result = await getPageContent('landing/hero');
     expect(result).toBeDefined();
@@ -372,7 +372,7 @@ describe('getPageContent', () => {
 
   it('does not double-append .md', async () => {
     mockedGetCollection.mockResolvedValue([
-      { id: 'landing/hero.md', slug: 'hero', data: { title: 'Hero' } },
+      { id: 'en/landing/hero.md', slug: 'hero', data: { title: 'Hero' } },
     ]);
     const result = await getPageContent('landing/hero.md');
     expect(result).toBeDefined();
@@ -380,7 +380,7 @@ describe('getPageContent', () => {
 
   it('returns undefined for non-existent id', async () => {
     mockedGetCollection.mockResolvedValue([
-      { id: 'landing/hero.md', slug: 'hero', data: { title: 'Hero' } },
+      { id: 'en/landing/hero.md', slug: 'hero', data: { title: 'Hero' } },
     ]);
     const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
     const result = await getPageContent('does-not-exist');
@@ -470,8 +470,8 @@ describe('getMeetTheTeamProjects', () => {
 
   it('returns projects sorted by date descending', async () => {
     mockedGetCollection.mockResolvedValue([
-      makeEntry({ date: new Date('2023-01-01'), slug: 'old-project', displayMeetTheTeam: true }),
-      makeEntry({ date: new Date('2024-06-01'), slug: 'new-project', displayMeetTheTeam: true }),
+      makeEntry({ id: 'en/old-project.mdx', date: new Date('2023-01-01'), slug: 'old-project', displayMeetTheTeam: true }),
+      makeEntry({ id: 'en/new-project.mdx', date: new Date('2024-06-01'), slug: 'new-project', displayMeetTheTeam: true }),
     ]);
     const result = await getMeetTheTeamProjects();
     expect(result[0].slug).toBe('new-project');
@@ -480,8 +480,8 @@ describe('getMeetTheTeamProjects', () => {
 
   it('filters out projects without displayMeetTheTeam', async () => {
     mockedGetCollection.mockResolvedValue([
-      makeEntry({ slug: 'team-project', displayMeetTheTeam: true }),
-      makeEntry({ slug: 'regular-project' }),
+      makeEntry({ id: 'en/team-project.mdx', slug: 'team-project', displayMeetTheTeam: true }),
+      makeEntry({ id: 'en/regular-project.mdx', slug: 'regular-project' }),
     ]);
     const result = await getMeetTheTeamProjects();
     expect(result).toHaveLength(1);
@@ -582,9 +582,9 @@ describe('getTestimonialsSorted', () => {
 
   it('returns testimonials sorted by slug', async () => {
     mockedGetCollection.mockResolvedValue([
-      makeEntry({ slug: 'charlie' }),
-      makeEntry({ slug: 'alpha' }),
-      makeEntry({ slug: 'bravo' }),
+      makeEntry({ id: 'en/charlie.md', slug: 'charlie' }),
+      makeEntry({ id: 'en/alpha.md', slug: 'alpha' }),
+      makeEntry({ id: 'en/bravo.md', slug: 'bravo' }),
     ]);
     const result = await getTestimonialsSorted();
     expect(result.map(t => t.slug)).toEqual(['alpha', 'bravo', 'charlie']);

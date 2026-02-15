@@ -8,8 +8,10 @@ import FAQ from "@components/about/FAQ.astro";
 import { aboutHeroImages } from "@utils/imageGlobs";
 import { loadAllImagesFromDirectory } from "@utils/imageLoader";
 import { getPageContent } from "@utils/contentQueries";
+import { getLocale } from "@utils/i18n";
 
-const pageContent = await getPageContent('about-us/about-us-title');
+const locale = getLocale(Astro.url);
+const pageContent = await getPageContent('about-us/about-us-title', locale);
 const loadedHeroImages = await loadAllImagesFromDirectory(aboutHeroImages);
 const aboutHeroImage = loadedHeroImages[0];
 ---
@@ -22,11 +24,11 @@ const aboutHeroImage = loadedHeroImages[0];
     subtitle={pageContent?.data.subtitle ?? ""}
   />
 
-  <OurMission />
+  <OurMission locale={locale} />
 
-  <FacesOfBears />
+  <FacesOfBears locale={locale} />
 
-  <FindUs />
+  <FindUs locale={locale} />
 
-  <FAQ />
+  <FAQ locale={locale} />
 </BaseLayout>

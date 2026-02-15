@@ -15,23 +15,30 @@ When a page loads, its component fetches the matching content file by ID and ren
 
 ## Folder Structure
 
-Files are organized by page. Each subfolder maps to a page or area of the website:
+Files are organized by **locale**, then by **page**. Each locale subfolder (`en/` and `de/`) has the same internal structure:
 
 ```
 src/content/page-text/
-├── landing/       — Homepage sections (hero, intro, testimonials, etc.)
-├── about-us/      — About Us page (mission, benefits, FAQ, etc.)
-├── events/        — Events page (header, intro, crosslinks)
-├── projects/      — Projects page (header, categories, crosslinks)
-├── sponsors/      — Sponsors page (header, tiers, CTA)
-├── contact/       — Contact page
-├── media/         — Media page
-├── footer/        — Footer (navigation, address, legal)
-├── site/          — Site-wide settings (metadata, social links)
-├── 404/           — Not Found page
-├── imprint/       — Imprint page
-└── datenschutz/   — Privacy policy page
+├── en/                ← English (default)
+│   ├── landing/       — Homepage sections (hero, intro, testimonials, etc.)
+│   ├── about-us/      — About Us page (mission, benefits, FAQ, etc.)
+│   ├── events/        — Events page (header, intro, crosslinks)
+│   ├── projects/      — Projects page (header, categories, crosslinks)
+│   ├── sponsors/      — Sponsors page (header, tiers, CTA)
+│   ├── contact/       — Contact page
+│   ├── media/         — Media page
+│   ├── footer/        — Footer (navigation, address, legal)
+│   ├── site/          — Site-wide settings (metadata, social links)
+│   ├── 404/           — Not Found page
+│   ├── imprint/       — Imprint page
+│   └── datenschutz/   — Privacy policy page
+└── de/                ← German translations (same structure as en/)
+    ├── landing/
+    ├── about-us/
+    └── ...
 ```
+
+Both `en/` and `de/` folders use identical filenames. If a German translation is missing, the English version is shown automatically on `/de/` pages.
 
 **Naming conventions:**
 - Page hero/header files end in `-title` (e.g., `events/events-title`, `about-us/about-us-title`)

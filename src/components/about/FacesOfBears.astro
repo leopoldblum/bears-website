@@ -4,10 +4,17 @@ import CarouselArrow from "@reusable/CarouselArrow.astro";
 import GradientDivider from "@reusable/GradientDivider.astro";
 import { getPageContent, getFacesOfBearsSorted } from "@utils/contentQueries";
 import { loadCollectionImages } from "@utils/imageLoader";
+import { type Locale } from '@utils/i18n';
 
-const content = await getPageContent("about-us/faces-of-bears");
+interface Props {
+  locale: Locale;
+}
 
-const sortedFaces = await getFacesOfBearsSorted();
+const { locale } = Astro.props;
+
+const content = await getPageContent("about-us/faces-of-bears", locale);
+
+const sortedFaces = await getFacesOfBearsSorted(locale);
 const facesWithImages = await loadCollectionImages(sortedFaces, "face");
 
 const faces = facesWithImages.map((face) => ({

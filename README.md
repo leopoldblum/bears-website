@@ -2,14 +2,14 @@
 
 > **TODO:** Add an `og-default.jpg` image (1200 x 630 px) to `/public/` for social media link previews (WhatsApp, LinkedIn, X, etc.). Without it, shared links will have text but no preview image.
 >
-> **TODO:** Write SEO meta descriptions (~150 characters each) in the `seoDescription` field of these content files:
-> - `src/content/page-text/landing/hero.md` (homepage)
-> - `src/content/page-text/about-us/about-us-title.md`
-> - `src/content/page-text/events/events-title.md`
-> - `src/content/page-text/projects/projects-title.md`
-> - `src/content/page-text/sponsors/sponsors-title.md`
-> - `src/content/page-text/media/media-title.md`
-> - `src/content/page-text/contact/contact-title.md`
+> **TODO:** Write SEO meta descriptions (~150 characters each) in the `seoDescription` field of these content files (in both `en/` and `de/` folders):
+> - `src/content/page-text/en/landing/hero.md` (homepage)
+> - `src/content/page-text/en/about-us/about-us-title.md`
+> - `src/content/page-text/en/events/events-title.md`
+> - `src/content/page-text/en/projects/projects-title.md`
+> - `src/content/page-text/en/sponsors/sponsors-title.md`
+> - `src/content/page-text/en/media/media-title.md`
+> - `src/content/page-text/en/contact/contact-title.md`
 >
 > **TODO:** Add benefits section to sponsors and link in footer, or remove entry in footer.
 
@@ -66,25 +66,38 @@ npm run dev
 │   ├── content/             # Astro content collections
 │   │   ├── docs/            # Documentation pages (guides/, dev/)
 │   │   ├── events/          # Event entries (.md/.mdx)
+│   │   │   ├── en/          #   English (default)
+│   │   │   └── de/          #   German translations
 │   │   ├── faces-of-bears/  # Team member profiles
+│   │   │   ├── en/          #   English (default)
+│   │   │   └── de/          #   German translations
 │   │   ├── hero-slides/     # Landing page hero carousel slides
 │   │   ├── instagram/       # Instagram feed entries
 │   │   ├── page-text/       # Editable page copy by section
-│   │   │   ├── landing/     #   Homepage sections
-│   │   │   ├── about-us/    #   About page
-│   │   │   ├── events/      #   Events page
-│   │   │   ├── projects/    #   Projects page
-│   │   │   ├── sponsors/    #   Sponsors page
-│   │   │   └── ...          #   404/, contact/, datenschutz/, footer/,
-│   │   │                    #   imprint/, media/, site/
+│   │   │   ├── en/          #   English (default)
+│   │   │   │   ├── landing/ #     Homepage sections
+│   │   │   │   ├── about-us/#     About page
+│   │   │   │   ├── events/  #     Events page
+│   │   │   │   ├── projects/#     Projects page
+│   │   │   │   ├── sponsors/#     Sponsors page
+│   │   │   │   └── ...      #     404/, contact/, footer/, site/, etc.
+│   │   │   └── de/          #   German translations (same structure)
 │   │   ├── projects/        # Project entries (.md/.mdx)
+│   │   │   ├── en/          #   English (default)
+│   │   │   └── de/          #   German translations
 │   │   ├── sponsors/        # Sponsor entries by tier (diamond/, gold/, etc.)
 │   │   ├── testimonials/    # Testimonial entries
+│   │   │   ├── en/          #   English (default)
+│   │   │   └── de/          #   German translations
 │   │   └── config.ts        # Collection schemas (Zod)
 │   │
 │   ├── layouts/             # Page layouts (BaseLayout, DocsLayout, PostLayout)
-│   ├── pages/               # File-based routing
-│   │   ├── docs/[...slug].astro   # Documentation pages
+│   ├── pages/               # File-based routing (English, default locale)
+│   │   ├── de/              # German locale wrappers (re-render root pages)
+│   │   │   ├── index.astro  #   Each file imports + renders the root page
+│   │   │   ├── events/[slug].astro
+│   │   │   └── ...          #   about-us, projects, sponsors, contact, etc.
+│   │   ├── docs/[...slug].astro   # Documentation pages (English only)
 │   │   ├── events/[slug].astro    # Dynamic event detail pages
 │   │   └── projects/[slug].astro  # Dynamic project detail pages
 │   ├── styles/              # Global CSS (Tailwind v4)
@@ -99,6 +112,17 @@ npm run dev
 ├── package.json
 └── tsconfig.json
 ```
+
+## Internationalization (i18n)
+
+The site supports two languages: **English** (default) and **German**.
+
+- English pages live at the root URL (e.g., `/about-us`)
+- German pages live under `/de/` (e.g., `/de/about-us`)
+
+Localized content collections (`events`, `projects`, `page-text`, `testimonials`, `faces-of-bears`) use `en/` and `de/` subfolders. Collections that are language-neutral (`sponsors`, `instagram`, `hero-slides`) stay flat. If a German translation is missing, the English version is shown as fallback.
+
+The language switcher in the header toggles between locales. Locale utilities live in `src/utils/i18n.ts`.
 
 ## Images
 

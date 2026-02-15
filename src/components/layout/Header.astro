@@ -1,9 +1,15 @@
 ---
 import { getPageContent } from '@utils/contentQueries';
+import { localizeUrl, stripLocalePrefix, getAlternateLocale, type Locale } from '@utils/i18n';
 
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
 const currentPath = Astro.url.pathname;
 
-const navContent = await getPageContent('header/navigation');
+const navContent = await getPageContent('header/navigation', locale);
 const navLinks = navContent?.data.navLinks ?? [
   { href: "/projects", label: "Projects" },
   { href: "/sponsors", label: "Sponsors" },
@@ -13,8 +19,16 @@ const navLinks = navContent?.data.navLinks ?? [
 ];
 
 function isActive(href: string): boolean {
-  return currentPath === href;
+  const cleanCurrent = stripLocalePrefix(currentPath);
+  return cleanCurrent === href;
 }
+
+// Language switcher
+const alternateLocale = getAlternateLocale(locale);
+const barePath = stripLocalePrefix(currentPath);
+const alternateUrl = localizeUrl(barePath, alternateLocale);
+const searchPlaceholder = locale === 'de' ? 'Suche...' : 'Search...';
+const noResultsText = locale === 'de' ? 'Keine Ergebnisse' : 'No results found';
 ---
 
 <header
@@ -142,7 +156,7 @@ function isActive(href: string): boolean {
 >
   <div class="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
     <div class="flex items-center justify-between">
-      <a href="/" class="text-2xl font-bold text-bears-accent shrink-0">BEARS</a>
+      <a href={localizeUrl('/', locale)} class="text-2xl font-bold text-bears-accent shrink-0">BEARS</a>
 
       <button
         x-on:click="mobileMenuOpen = !mobileMenuOpen"
@@ -184,7 +198,7 @@ function isActive(href: string): boolean {
               x-on:keydown.arrow-up.prevent="selectPrev()"
               x-on:keydown.enter.prevent="confirmSelection()"
               x-on:keydown.escape="closeSearch(); $refs.desktopSearch.blur()"
-              placeholder="Search..."
+              placeholder={searchPlaceholder}
               class="w-full bg-transparent text-sm text-bears-text-onDark placeholder-gray-400 focus:outline-none px-2 py-1.5"
               autocomplete="off"
             />
@@ -206,7 +220,7 @@ function isActive(href: string): boolean {
             <!-- No results -->
             <template x-if="searchResults.length === 0">
               <div class="px-4 py-6 text-center text-gray-400 text-sm">
-                No results found
+                {noResultsText}
               </div>
             </template>
 
@@ -241,7 +255,7 @@ function isActive(href: string): boolean {
         <nav class="flex items-center gap-8">
           {navLinks.map(({ href, label }) => (
             <a
-              href={href}
+              href={localizeUrl(href, locale)}
               class:list={[
                 "transition-colors",
                 isActive(href)
@@ -252,6 +266,13 @@ function isActive(href: string): boolean {
               {label}
             </a>
           ))}
+          <a
+            href={alternateUrl}
+            class="text-sm uppercase tracking-wider text-bears-text-onDark/60 hover:text-bears-accent transition-colors"
+            aria-label={locale === 'de' ? 'Switch to English' : 'Auf Deutsch wechseln'}
+          >
+            {alternateLocale.toUpperCase()}
+          </a>
         </nav>
       </div>
     </div>
@@ -290,7 +311,7 @@ function isActive(href: string): boolean {
               x-on:keydown.arrow-up.prevent="selectPrev()"
               x-on:keydown.enter.prevent="confirmSelection()"
               x-on:keydown.escape="closeSearch(); $refs.mobileSearch.blur()"
-              placeholder="Search..."
+              placeholder={searchPlaceholder}
               class="w-full bg-transparent text-sm text-bears-text-onDark placeholder-gray-400 focus:outline-none px-2 py-2.5"
               autocomplete="off"
             />
@@ -333,7 +354,7 @@ function isActive(href: string): boolean {
                 x-show="searchResults.length === 0 && window.__pagefind"
                 class="px-3 py-4 text-center text-gray-400 text-sm"
               >
-                No results found
+                {noResultsText}
               </div>
             </div>
           </div>
@@ -343,7 +364,7 @@ function isActive(href: string): boolean {
         <nav class="flex flex-col gap-1">
           {navLinks.map(({ href, label }, index) => (
             <a
-              href={href}
+              href={localizeUrl(href, locale)}
               class:list={[
                 "nav-link group flex items-center gap-3 px-3 py-2.5 rounded-md transition-all duration-150",
                 isActive(href)
@@ -361,6 +382,14 @@ function isActive(href: string): boolean {
               <span>{label}</span>
             </a>
           ))}
+          <a
+            href={alternateUrl}
+            class="nav-link group flex items-center gap-3 px-3 py-2.5 rounded-md transition-all duration-150 text-bears-text-onDark/90 hover:text-bears-text-onDark hover:bg-white/5 border-t border-white/5 mt-2 pt-3"
+            aria-label={locale === 'de' ? 'Switch to English' : 'Auf Deutsch wechseln'}
+          >
+            <span class="w-0.5 h-4 bg-bears-accent rounded-full transition-opacity duration-150 opacity-0 group-hover:opacity-100"></span>
+            <span class="text-sm uppercase tracking-wider">{locale === 'de' ? 'English' : 'Deutsch'}</span>
+          </a>
         </nav>
       </div>
     </div>

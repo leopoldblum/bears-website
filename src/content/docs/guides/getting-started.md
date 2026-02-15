@@ -6,6 +6,24 @@ order: 10
 
 This guide covers the basics of managing content on the BEARS website.
 
+## Languages
+
+The website supports **English** (default) and **German**. Most content collections use `en/` and `de/` subfolders:
+
+```
+src/content/events/
+├── en/    ← English (default)
+│   └── 2026 03 15 hackathon-2026.md
+└── de/    ← German translations
+    └── 2026 03 15 hackathon-2026.md
+```
+
+To add a translation, create a file with the **same filename** in the other locale folder. If a German translation is missing, the English version is shown automatically.
+
+**Collections with locale folders:** `events`, `projects`, `page-text`, `testimonials`, `faces-of-bears`
+
+**Collections without locale folders** (language-neutral): `sponsors`, `instagram`, `hero-slides`, `docs`
+
 ## How Content Files Work
 
 All website content is managed through Markdown files in `src/content/`. Each file has a **frontmatter** block at the top (between `---` delimiters) that defines metadata, followed by optional Markdown body content:

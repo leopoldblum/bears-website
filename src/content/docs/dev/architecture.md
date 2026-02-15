@@ -18,11 +18,13 @@ The BEARS website is built with Astro.js 5.x, Tailwind CSS v4, and Alpine.js.
 
 ```
 src/
-├── pages/           # File-based routing
+├── pages/           # File-based routing (English, default locale)
+│   └── de/          # German locale wrappers
 ├── layouts/         # Page layouts (BaseLayout, PostLayout, DocsLayout)
 ├── components/      # UI components organized by feature
 ├── content/         # Content collections (events, projects, docs, etc.)
-├── utils/           # Shared utilities and query functions
+│                    # Localized collections use en/ and de/ subfolders
+├── utils/           # Shared utilities (contentQueries, i18n, imageLoader, etc.)
 ├── styles/          # Global CSS and Tailwind theme
 ├── assets/          # Images and static assets (processed by Astro)
 └── types/           # Shared TypeScript types
@@ -32,6 +34,20 @@ src/
 
 Content is managed through Astro's content collections, defined in `src/content/config.ts`. Each collection has a Zod schema that validates frontmatter fields.
 
+Localized collections (`events`, `projects`, `page-text`, `testimonials`, `faces-of-bears`) use `en/` and `de/` subfolders. Language-neutral collections (`sponsors`, `instagram`, `hero-slides`, `docs`) stay flat.
+
+## Internationalization (i18n)
+
+The site supports English (default, no URL prefix) and German (`/de/` prefix). Configured via Astro's built-in i18n in `astro.config.mjs`.
+
+Key utilities in `src/utils/i18n.ts`:
+- `getLocale(url)` &mdash; derives locale from URL pathname
+- `localizeUrl(path, locale)` &mdash; adds/removes `/de/` prefix
+- `getCategoryLabel(key, locale)` &mdash; locale-aware category translations
+- `getHreflangUrls(pathname, origin)` &mdash; generates SEO hreflang URLs
+
+German pages in `src/pages/de/` are thin wrappers that import and re-render the root page component. The root page detects its locale via `getLocale(Astro.url)` and passes it to all components and content queries.
+
 ## Routing
 
 Astro uses file-based routing. Files in `src/pages/` map directly to URLs:
@@ -39,3 +55,5 @@ Astro uses file-based routing. Files in `src/pages/` map directly to URLs:
 - `src/pages/index.astro` &rarr; `/`
 - `src/pages/events.astro` &rarr; `/events`
 - `src/pages/events/[slug].astro` &rarr; `/events/:slug`
+- `src/pages/de/events.astro` &rarr; `/de/events` (German wrapper)
+- `src/pages/de/events/[slug].astro` &rarr; `/de/events/:slug`

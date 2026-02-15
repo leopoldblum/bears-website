@@ -14,6 +14,12 @@ import sitemap from '@astrojs/sitemap';
 export default defineConfig({
   site: 'https://bears-space.de',
 
+  i18n: {
+    defaultLocale: 'en',
+    locales: ['en', 'de'],
+    routing: { prefixDefaultLocale: false },
+  },
+
   vite: {
     plugins: [tailwindcss()]
   },

@@ -7,18 +7,21 @@ import BecomeSponsor from "@landing/BecomeSponsor.astro";
 import LatestNews from "@landing/LatestNews.astro";
 import Testimonials from "@landing/Testimonials.astro"
 import { getPageContent } from "@utils/contentQueries";
+import { getLocale } from "@utils/i18n";
+
+const locale = getLocale(Astro.url);
 
 // Fetch hero CTAs from content collection
-const heroContent = await getPageContent('landing/hero');
+const heroContent = await getPageContent('landing/hero', locale);
 const heroCTAs = heroContent?.data.ctas ?? [];
 const heroTagline = heroContent?.data.subtitle;
 ---
 
-<BaseLayout title="Home" description={heroContent?.data.seoDescription}>
-  <LandingHero ctas={heroCTAs} tagline={heroTagline} />
-  <WhatIsBears />
-  <MeetTheTeam />
-  <BecomeSponsor />
-  <LatestNews />
-  <Testimonials />
+<BaseLayout title={locale === 'de' ? 'Startseite' : 'Home'} description={heroContent?.data.seoDescription}>
+  <LandingHero ctas={heroCTAs} tagline={heroTagline} locale={locale} />
+  <WhatIsBears locale={locale} />
+  <MeetTheTeam locale={locale} />
+  <BecomeSponsor locale={locale} />
+  <LatestNews locale={locale} />
+  <Testimonials locale={locale} />
 </BaseLayout>

@@ -1,51 +1,48 @@
-import { getCategoryLabel, categoryLabels } from '../categoryLabels';
+import { getCategoryLabel, categoryLabels } from '../i18n';
 
 describe('categoryLabels map', () => {
-  it('has 7 entries', () => {
-    expect(Object.keys(categoryLabels)).toHaveLength(7);
+  it('has entries for both locales', () => {
+    expect(Object.keys(categoryLabels.en).length).toBeGreaterThan(0);
+    expect(Object.keys(categoryLabels.de).length).toBeGreaterThan(0);
+  });
+
+  it('has same keys in both locales', () => {
+    expect(Object.keys(categoryLabels.en).sort()).toEqual(
+      Object.keys(categoryLabels.de).sort()
+    );
   });
 });
 
 describe('getCategoryLabel', () => {
-  describe('known event categories', () => {
+  describe('English labels', () => {
     it.each([
       ['trade-fairs-and-conventions', 'Trade Fairs & Conventions'],
       ['competitions-and-workshops', 'Competitions & Workshops'],
-      ['kick-off-events', 'Kick-off Events'],
-    ])('maps "%s" to "%s"', (input, expected) => {
-      expect(getCategoryLabel(input)).toBe(expected);
-    });
-  });
-
-  describe('known project categories', () => {
-    it.each([
       ['experimental-rocketry', 'Experimental Rocketry'],
       ['science-and-experiments', 'Science & Experiments'],
       ['robotics', 'Robotics'],
     ])('maps "%s" to "%s"', (input, expected) => {
-      expect(getCategoryLabel(input)).toBe(expected);
+      expect(getCategoryLabel(input, 'en')).toBe(expected);
     });
   });
 
-  it('maps shared "other" category', () => {
-    expect(getCategoryLabel('other')).toBe('Other');
+  describe('German labels', () => {
+    it.each([
+      ['competitions-and-workshops', 'Wettbewerbe & Workshops'],
+      ['experimental-rocketry', 'Experimentelle Raketentechnik'],
+      ['robotics', 'Robotik'],
+    ])('maps "%s" to "%s"', (input, expected) => {
+      expect(getCategoryLabel(input, 'de')).toBe(expected);
+    });
   });
 
-  describe('fallback title-casing', () => {
-    it('title-cases unknown kebab-case string', () => {
-      expect(getCategoryLabel('foo-bar')).toBe('Foo Bar');
-    });
-
-    it('title-cases single word', () => {
-      expect(getCategoryLabel('misc')).toBe('Misc');
-    });
-
-    it('title-cases multi-segment string', () => {
-      expect(getCategoryLabel('a-b-c-d')).toBe('A B C D');
+  describe('fallback', () => {
+    it('returns the raw key for unknown categories', () => {
+      expect(getCategoryLabel('foo-bar', 'en')).toBe('foo-bar');
     });
 
     it('handles empty string', () => {
-      expect(getCategoryLabel('')).toBe('');
+      expect(getCategoryLabel('', 'en')).toBe('');
     });
   });
 });

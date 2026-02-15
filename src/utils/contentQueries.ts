@@ -1,5 +1,6 @@
 import { getCollection } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
+import { DEFAULT_LOCALE, type Locale } from './i18n';
 
 // ============================================================================
 // COMPOSABLE SORTING UTILITIES
@@ -8,12 +9,6 @@ import type { CollectionEntry } from 'astro:content';
 /**
  * Sorts collection entries by date in descending order (newest first).
  * Works with any collection that has a data.date property.
- *
- * @param entries - Array of collection entries with a date property
- * @returns New array sorted by date descending (does not mutate original)
- *
- * @example
- * const sortedPosts = sortByDateDesc(allPosts);
  */
 export function sortByDateDesc<T extends { data: { date: Date } }>(
   entries: T[]
@@ -26,12 +21,6 @@ export function sortByDateDesc<T extends { data: { date: Date } }>(
 /**
  * Sorts collection entries alphabetically by slug in ascending order.
  * Works with any collection entry that has a slug property.
- *
- * @param entries - Array of collection entries with a slug property
- * @returns New array sorted by slug ascending (does not mutate original)
- *
- * @example
- * const sortedSponsors = sortBySlug(goldSponsors);
  */
 export function sortBySlug<T extends { slug: string }>(
   entries: T[]
@@ -42,19 +31,27 @@ export function sortBySlug<T extends { slug: string }>(
 }
 
 // ============================================================================
-// COMPOSABLE FILTERING UTILITIES
+// LOCALE-AWARE FILTERING UTILITIES
 // ============================================================================
+
+/**
+ * Filters entries to only those belonging to the given locale.
+ * Entries are identified by their id prefix (e.g., "en/rocket-launch.mdx").
+ * Falls back to defaultLocale entries when no entries exist for the requested locale.
+ */
+function filterByLocale<T extends { id: string }>(
+  entries: T[],
+  locale: Locale
+): T[] {
+  const localeEntries = entries.filter(e => e.id.startsWith(`${locale}/`));
+  if (localeEntries.length > 0 || locale === DEFAULT_LOCALE) return localeEntries;
+  // Fallback to default locale
+  return entries.filter(e => e.id.startsWith(`${DEFAULT_LOCALE}/`));
+}
 
 /**
  * Filters out draft entries in production mode.
  * In DEV mode, all entries are returned (including drafts).
- * Works with any collection that has an isDraft property.
- *
- * @param entries - Array of collection entries with an isDraft property
- * @returns Filtered array (all entries in DEV, non-drafts in production)
- *
- * @example
- * const publishedPosts = filterDrafts(allPosts);
  */
 export function filterDrafts<T extends { data: { isDraft?: boolean } }>(
   entries: T[]
@@ -65,55 +62,45 @@ export function filterDrafts<T extends { data: { isDraft?: boolean } }>(
   return entries.filter(entry => !entry.data.isDraft);
 }
 
+/**
+ * Strips the locale prefix from a content entry slug.
+ * e.g., "en/rocket-launch" → "rocket-launch"
+ */
+export function stripLocaleFromSlug(slug: string): string {
+  return slug.replace(/^(en|de)\//, '');
+}
+
 
 // ============================================================================
 // PRE-COMPOSED QUERY FUNCTIONS FOR POSTS
 // ============================================================================
 
 /**
- * Gets all published events, sorted by date (newest first).
- * Filters out drafts in production mode.
- *
- * @returns Array of event posts sorted by date descending
- *
- * @example
- * const events = await getPublishedEvents();
+ * Gets all published events for a locale, sorted by date (newest first).
+ * Falls back to default locale if no entries exist for the requested locale.
  */
-export async function getPublishedEvents() {
+export async function getPublishedEvents(locale: Locale = DEFAULT_LOCALE) {
   const allEvents = await getCollection('events');
-  return sortByDateDesc(filterDrafts(allEvents));
+  return sortByDateDesc(filterDrafts(filterByLocale(allEvents, locale)));
 }
 
 /**
- * Gets all published projects, sorted by date (newest first).
- * Filters out drafts in production mode.
- *
- * @returns Array of project posts sorted by date descending
- *
- * @example
- * const projects = await getPublishedProjects();
+ * Gets all published projects for a locale, sorted by date (newest first).
+ * Falls back to default locale if no entries exist for the requested locale.
  */
-export async function getPublishedProjects() {
+export async function getPublishedProjects(locale: Locale = DEFAULT_LOCALE) {
   const allProjects = await getCollection('projects');
-  return sortByDateDesc(filterDrafts(allProjects));
+  return sortByDateDesc(filterDrafts(filterByLocale(allProjects, locale)));
 }
 
 /**
- * Gets all published posts (events + projects combined), sorted by date (newest first).
- * Filters out drafts in production mode.
+ * Gets all published posts (events + projects combined) for a locale, sorted by date.
  * Adds _collectionType marker to distinguish between events and projects.
- *
- * @returns Array of all posts sorted by date descending, with _collectionType property
- *
- * @example
- * const allPosts = await getPublishedPosts();
- * const events = allPosts.filter(p => p._collectionType === 'events');
  */
-export async function getPublishedPosts() {
-  const events = await getPublishedEvents();
-  const projects = await getPublishedProjects();
+export async function getPublishedPosts(locale: Locale = DEFAULT_LOCALE) {
+  const events = await getPublishedEvents(locale);
+  const projects = await getPublishedProjects(locale);
 
-  // Add collection type markers
   const eventsWithType = events.map(e => ({ ...e, _collectionType: 'events' as const }));
   const projectsWithType = projects.map(p => ({ ...p, _collectionType: 'projects' as const }));
 
@@ -124,33 +111,21 @@ export async function getPublishedPosts() {
 /**
  * Gets published projects for the "Meet the Team" section.
  * Only includes projects with displayMeetTheTeam: true.
- * Sorted by date (newest first).
- *
- * @returns Array of team-displayable projects sorted by date descending
- *
- * @example
- * const teamProjects = await getMeetTheTeamProjects();
  */
-export async function getMeetTheTeamProjects() {
+export async function getMeetTheTeamProjects(locale: Locale = DEFAULT_LOCALE) {
   const allProjects = await getCollection('projects');
-  const published = filterDrafts(allProjects).filter(
+  const localeProjects = filterByLocale(allProjects, locale);
+  const published = filterDrafts(localeProjects).filter(
     p => p.data.displayMeetTheTeam === true
   );
   return sortByDateDesc(published);
 }
 
 /**
- * Gets the latest N published posts (events + projects), sorted by date.
- * Useful for "Latest News" sections.
- *
- * @param limit - Maximum number of posts to return (default: 4)
- * @returns Array of latest posts sorted by date descending
- *
- * @example
- * const latestNews = await getLatestPosts(4);
+ * Gets the latest N published posts (events + projects) for a locale, sorted by date.
  */
-export async function getLatestPosts(limit: number = 4) {
-  const allPosts = await getPublishedPosts();
+export async function getLatestPosts(limit: number = 4, locale: Locale = DEFAULT_LOCALE) {
+  const allPosts = await getPublishedPosts(locale);
   return allPosts.slice(0, limit);
 }
 
@@ -160,12 +135,7 @@ export async function getLatestPosts(limit: number = 4) {
 
 /**
  * Gets all published Instagram posts, sorted by date (newest first).
- * Filters out drafts in production mode.
- *
- * @returns Array of Instagram posts sorted by date descending
- *
- * @example
- * const posts = await getPublishedInstagramPosts();
+ * Instagram posts are not locale-dependent.
  */
 export async function getPublishedInstagramPosts() {
   const allPosts = await getCollection('instagram');
@@ -174,13 +144,6 @@ export async function getPublishedInstagramPosts() {
 
 /**
  * Gets the latest N published Instagram posts, sorted by date.
- * Useful for the landing page Instagram section.
- *
- * @param limit - Maximum number of posts to return (default: 3)
- * @returns Array of latest Instagram posts sorted by date descending
- *
- * @example
- * const latestPosts = await getLatestInstagramPosts(3);
  */
 export async function getLatestInstagramPosts(limit: number = 3) {
   const allPosts = await getPublishedInstagramPosts();
@@ -192,39 +155,24 @@ export async function getLatestInstagramPosts(limit: number = 3) {
 // ============================================================================
 
 /**
- * Gets all testimonials sorted alphabetically by slug.
- *
- * @returns Array of testimonials sorted by slug
- *
- * @example
- * const testimonials = await getTestimonialsSorted();
+ * Gets all testimonials for a locale, sorted alphabetically by slug.
  */
-export async function getTestimonialsSorted() {
+export async function getTestimonialsSorted(locale: Locale = DEFAULT_LOCALE) {
   const allTestimonials = await getCollection('testimonials');
-  return sortBySlug(allTestimonials);
+  return sortBySlug(filterByLocale(allTestimonials, locale));
 }
 
 /**
- * Gets all faces of BEARS sorted alphabetically by slug.
- * Used by the "Faces of BEARS" section on the about page.
- *
- * @returns Array of faces sorted by slug (numeric prefix ordering)
- *
- * @example
- * const faces = await getFacesOfBearsSorted();
+ * Gets all faces of BEARS for a locale, sorted alphabetically by slug.
  */
-export async function getFacesOfBearsSorted() {
+export async function getFacesOfBearsSorted(locale: Locale = DEFAULT_LOCALE) {
   const allFaces = await getCollection('faces-of-bears');
-  return sortBySlug(allFaces);
+  return sortBySlug(filterByLocale(allFaces, locale));
 }
 
 /**
  * Gets all sponsors grouped by tier, sorted alphabetically within each tier.
- *
- * @returns Object with sponsors grouped by tier (gold, silver, bronze)
- *
- * @example
- * const { gold, silver, bronze } = await getSponsorsByTier();
+ * Sponsors are not locale-dependent (logos + names stay the same).
  */
 export async function getSponsorsByTier() {
   const allSponsors = await getCollection('sponsors');
@@ -254,22 +202,28 @@ export async function getSponsorsByTier() {
 }
 
 /**
- * Gets a single page content entry by its id.
- * Used for configurable page text (headings, descriptions, buttons).
+ * Gets a single page content entry by its id and locale.
+ * Falls back to default locale (English) if translation is missing.
  *
- * @param id - The entry id including subfolder (e.g., 'landing/what-is-bears')
- * @returns Single page content entry or undefined
- *
- * @example
- * const content = await getPageContent('landing/what-is-bears');
- * const title = content?.data.title;
+ * @param id - The entry id WITHOUT locale prefix (e.g., 'landing/what-is-bears')
+ * @param locale - The desired locale
  */
-export async function getPageContent(id: string) {
+export async function getPageContent(id: string, locale: Locale = DEFAULT_LOCALE) {
   const allContent = await getCollection('page-text');
-  const idWithExtension = id.endsWith('.md') ? id : `${id}.md`;
-  const entry = allContent.find(entry => entry.id === idWithExtension);
+  const cleanId = id.endsWith('.md') ? id.slice(0, -3) : id;
+
+  // Try requested locale
+  const localeId = `${locale}/${cleanId}.md`;
+  let entry = allContent.find(entry => entry.id === localeId);
+
+  // Fallback to default locale
+  if (!entry && locale !== DEFAULT_LOCALE) {
+    const fallbackId = `${DEFAULT_LOCALE}/${cleanId}.md`;
+    entry = allContent.find(entry => entry.id === fallbackId);
+  }
+
   if (!entry) {
-    console.warn(`[getPageContent] No entry found for id "${id}" (resolved to "${idWithExtension}")`);
+    console.warn(`[getPageContent] No entry found for id "${id}" (locale: ${locale})`);
   }
   return entry;
 }
@@ -280,13 +234,7 @@ export async function getPageContent(id: string) {
 
 /**
  * Gets all documentation pages grouped by section and sorted by order.
- * Section is derived from the folder path (e.g., 'guides/' or 'dev/').
- *
- * @returns Object with docs grouped by section, each sorted by order ascending
- *
- * @example
- * const sections = await getDocsBySection();
- * // { guides: [...], dev: [...] }
+ * Docs are not locale-dependent (English only for now).
  */
 export async function getDocsBySection() {
   const allDocs = await getCollection('docs');
@@ -312,12 +260,7 @@ export async function getDocsBySection() {
 
 /**
  * Gets all hero slides sorted by numeric filename prefix.
- * Files should be prefixed with numbers for ordering (e.g., 01-slide.md, 02-slide.md).
- *
- * @returns Array of hero slides sorted by numeric prefix
- *
- * @example
- * const slides = await getLandingHeroSlides();
+ * Hero slides are not locale-dependent.
  */
 export async function getLandingHeroSlides() {
   const slides = await getCollection('hero-slides');

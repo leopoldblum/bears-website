@@ -5,11 +5,25 @@ order: 20
 group: "Content"
 ---
 
-Events are stored in `src/content/events/` as Markdown or MDX files.
+Events are stored in `src/content/events/` as Markdown or MDX files, organized by locale.
+
+## Folder Structure
+
+```
+src/content/events/
+├── en/                              ← English (default)
+│   ├── 2026 03 15 hackathon-2026.md
+│   └── ...
+└── de/                              ← German translations
+    ├── 2026 03 15 hackathon-2026.md
+    └── ...
+```
+
+Both folders use identical filenames. If a German translation is missing, the English version is displayed on the `/de/` pages.
 
 ## Creating an Event
 
-Create a new file in `src/content/events/` with the naming convention `YYYY MM DD title.mdx`:
+Create a new file in `src/content/events/en/` (or `de/` for German) with the naming convention `YYYY MM DD title.mdx`:
 
 ```mdx
 ---

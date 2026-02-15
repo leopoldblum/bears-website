@@ -5,16 +5,23 @@ import Button from "@mdx/Button.astro";
 import type { PostType } from '@types';
 import { loadCollectionImages } from '@utils/imageLoader';
 import { getLatestPosts, sortByDateDesc, getPageContent, getLatestInstagramPosts } from '@utils/contentQueries';
+import { type Locale, localizeUrl } from '@utils/i18n';
 
-const content = await getPageContent('landing/latest-news');
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+
+const content = await getPageContent('landing/latest-news', locale);
 const instagramPosts = await getLatestInstagramPosts(3);
 
 // Derive Instagram URL from footer social links (single source of truth)
-const socialContent = await getPageContent('site/social-links');
+const socialContent = await getPageContent('site/social-links', locale);
 const instagramUrl = socialContent?.data.socialLinks?.find((l: { platform: string }) => l.platform === 'instagram')?.url;
 
 // Get latest 4 posts (filtered and sorted)
-const latestPosts = await getLatestPosts(4);
+const latestPosts = await getLatestPosts(4, locale);
 
 // Separate events and projects for batch image loading
 const events = latestPosts.filter(post => post._collectionType === 'events');
@@ -30,7 +37,7 @@ const allPostsWithImages = sortByDateDesc([...eventsWithImages, ...projectsWithI
 // Build news items for PostShowcase
 const newsItems = allPostsWithImages.map((post) => {
   const postType: PostType = post._collectionType;
-  const href = `/${postType}/${post.slug}`;
+  const href = localizeUrl(`/${postType}/${post.slug}`, locale);
 
   return {
     imageData: post.loadedImage,
@@ -73,7 +80,7 @@ const newsItems = allPostsWithImages.map((post) => {
   <!-- Learn More Button -->
   {content?.data.buttonText && content?.data.buttonHref && (
     <div>
-      <Button variant="primary" href={content.data.buttonHref}>{content.data.buttonText}</Button>
+      <Button variant="primary" href={localizeUrl(content.data.buttonHref, locale)}>{content.data.buttonText}</Button>
     </div>
   )}
 

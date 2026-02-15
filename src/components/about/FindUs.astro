@@ -1,8 +1,15 @@
 ---
 import GradientDivider from "@reusable/GradientDivider.astro";
 import { getPageContent } from "@utils/contentQueries";
+import { type Locale } from '@utils/i18n';
 
-const content = await getPageContent("about-us/find-us");
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+
+const content = await getPageContent("about-us/find-us", locale);
 
 // items[0] = room, items[1] = schedule
 const room = content?.data.items?.[0] ?? "H1001";
