@@ -1,7 +1,10 @@
 ---
+import { getPageContent } from '@utils/contentQueries';
+
 const currentPath = Astro.url.pathname;
 
-const navLinks = [
+const navContent = await getPageContent('header/navigation');
+const navLinks = navContent?.data.navLinks ?? [
   { href: "/projects", label: "Projects" },
   { href: "/sponsors", label: "Sponsors" },
   { href: "/events", label: "Events" },
