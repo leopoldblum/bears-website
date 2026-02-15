@@ -4,6 +4,7 @@ import SponsorTier from "@landing/SponsorTier.astro";
 import GradientDivider from "@reusable/GradientDivider.astro";
 import type { ImageMetadata } from "astro";
 import type { SponsorTier as SponsorTierType } from "@types";
+import { getLocale } from "@utils/i18n";
 
 interface SponsorData {
   name: string;
@@ -28,6 +29,7 @@ interface Props {
 }
 
 const { title, subtitle, description, tiers } = Astro.props;
+const locale = getLocale(Astro.url);
 const hasHeader = title || subtitle || description;
 
 // Filter to tiers that have sponsors
@@ -66,7 +68,9 @@ const allTierKeys = JSON.stringify(activeTiers.map(t => t.key));
 
         {description && (
           <p class="text-sm text-bears-text-onLight/40 mt-3">
-            {activeTiers.reduce((sum, t) => sum + t.sponsors.length, 0)} partners across {activeTiers.length} tiers
+            {locale === 'de'
+              ? `${activeTiers.reduce((sum, t) => sum + t.sponsors.length, 0)} Partner in ${activeTiers.length} Tiers`
+              : `${activeTiers.reduce((sum, t) => sum + t.sponsors.length, 0)} partners across ${activeTiers.length} tiers`}
           </p>
         )}
       </div>
