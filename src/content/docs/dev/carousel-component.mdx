@@ -1,0 +1,81 @@
+---
+title: "Carousel"
+description: "Slide-based image carousel with navigation controls and swipe support."
+order: 23
+group: "MDX Components"
+---
+
+The `Carousel` component cycles through slides with arrow buttons, dot indicators, and optional auto-scrolling. Each direct child becomes a slide. Supports touch/swipe navigation on mobile.
+
+## Import
+
+```astro
+import Carousel from '@mdx/Carousel.astro';
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `autoScroll` | `boolean` | `false` | Automatically cycle through slides |
+| `autoScrollInterval` | `number` | `5000` | Time between slides in ms (only when `autoScroll` is enabled) |
+| `showArrows` | `boolean` | `true` | Show prev/next arrow buttons |
+| `showDots` | `boolean` | `true` | Show dot navigation below slides |
+| `height` | `'sm' \| 'md' \| 'lg' \| 'xl' \| 'auto'` | `'md'` | Height preset |
+
+### Height Presets
+
+| Preset | Value |
+|--------|-------|
+| `sm` | 300px |
+| `md` | 400px |
+| `lg` | 500px |
+| `xl` | 600px |
+| `auto` | Content determines height |
+
+Children are passed as a slot. Each direct child becomes a slide.
+
+## Usage
+
+```mdx
+<Carousel>
+  <Img src={photo1} alt="First slide" />
+  <Img src={photo2} alt="Second slide" />
+  <Img src={photo3} alt="Third slide" />
+</Carousel>
+```
+
+Auto-scrolling with custom interval and large height:
+
+```mdx
+<Carousel autoScroll autoScrollInterval={3000} height="lg">
+  <Img src={photo1} alt="Slide 1" />
+  <Img src={photo2} alt="Slide 2" />
+</Carousel>
+```
+
+## Implementation Notes
+
+**Architecture:** Unlike most other MDX components (which use Alpine.js), the Carousel is a React component (`Carousel.tsx`) wrapped by an Astro file (`Carousel.astro`). It uses `client:load` for hydration.
+
+**Two layout modes:**
+- **Fixed height** (`sm`/`md`/`lg`/`xl`) &mdash; Slides are absolutely positioned and overlaid. Container has a fixed pixel height.
+- **Auto height** &mdash; Uses CSS grid stacking (`gridArea: '1 / 1'`) so the tallest slide determines container height.
+
+**Initialization flow:**
+1. Try to detect slides immediately from `<astro-slot>` children
+2. Fall back to `requestAnimationFrame` if not ready
+3. Final fallback: `MutationObserver` with a 5-second safety timeout
+4. Suppress transitions during initial positioning, then re-enable after a double `requestAnimationFrame`
+
+**Transitions:** 420ms opacity + transform with `cubic-bezier(0.4, 0, 0.2, 1)`. Inactive slides get a subtle `scale(0.97) translateY(4px)` depth effect. Active slides snap to `scale(1) translateY(0)`.
+
+**Touch/swipe:** Horizontal swipe detection with a 50px threshold. Only fires when horizontal distance exceeds vertical distance to avoid interfering with scrolling.
+
+**Auto-scroll:** Pauses on hover (`mouseenter`/`mouseleave`) and on touch. Uses `setInterval` internally.
+
+**Img compatibility:** Special handling for `.img-better` wrappers &mdash; centers images, constrains to container dimensions, uses `object-fit: contain` in fixed-height mode.
+
+**Initial flash prevention:** CSS utility classes hide non-first slides (`[&>*:not(:first-child)]:opacity-0`) before JavaScript initializes.
+
+**Source:** `src/components/mdx/Carousel.astro` and `src/components/mdx/Carousel.tsx`

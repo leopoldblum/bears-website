@@ -48,7 +48,7 @@ Events and projects schemas use a `.transform()` to derive a `coverImageType` fi
 })
 ```
 
-This discriminator is used by the image loader to decide whether to load a custom image or fall back to the default placeholder.
+This discriminator is used by the image loader to decide whether to load a custom image or fall back to the default placeholder. Since `coverImage` is a required field, `coverImageType` will always be `"CUSTOM"` in practice. The `"DEFAULT"` path exists as a safety fallback but won't trigger under normal validation.
 
 ### Conditional Validation (Projects)
 

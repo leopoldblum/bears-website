@@ -169,7 +169,7 @@ const processedItems = await Promise.all(
 ```
 
 **Reference Implementation:**
-See [Accordion.astro](src/components/reusable/Accordion.astro) for a complete example of Markdown support in a reusable component. It accepts content in Markdown format and processes it server-side for optimal performance.
+See [Accordion.astro](src/components/mdx/Accordion.astro) for a complete example of Markdown support in a reusable component. It accepts content in Markdown format and processes it server-side for optimal performance.
 
 ### Editable Page Content
 

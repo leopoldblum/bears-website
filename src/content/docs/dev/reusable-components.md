@@ -15,7 +15,7 @@ Components are organized by feature in subdirectories under `src/components/`. T
 
 Sticky navigation bar with mobile menu and full-site search.
 
-No external props &mdash; loads navigation links from the `site/navigation` page-text entry.
+No external props &mdash; navigation links are hardcoded in the component.
 
 **Alpine.js features:**
 - **Search** &mdash; Pagefind integration with 150ms debounce, keyboard navigation (arrows, Enter, Escape), and `Cmd/Ctrl+K` global hotkey

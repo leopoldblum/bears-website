@@ -48,7 +48,7 @@ export async function getStaticPaths() {
 }
 
 const { entry } = Astro.props;
-const coverImage = await loadCoverImage(entry.data.coverImage, "event", entry.slug);
+const coverImage = await loadCoverImage(entry.data.coverImage, "event", { itemTitle: entry.data.title, itemSlug: entry.slug });
 const { Content } = await entry.render();
 ---
 ```
