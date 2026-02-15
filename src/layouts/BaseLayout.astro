@@ -20,7 +20,7 @@ const socialLinksContent = await getPageContent("site/social-links", locale);
 const {
   title,
   description = siteMetadata?.data.description ?? "BEARS e.V. – Berlin Experimental Astronautics Research Student team at TU Berlin.",
-  ogImage = "/og-default.jpg",
+  ogImage = "/og-default.png",
 } = Astro.props;
 
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
@@ -40,7 +40,7 @@ const organizationSchema = {
 <html lang={locale} class="scroll-smooth">
   <head>
     <meta charset="utf-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
     <meta name="description" content={description} />
