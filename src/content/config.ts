@@ -213,6 +213,7 @@ const pageTextCollection = defineCollection({
       question: z.string(),
       answer: z.string(),
     })).optional(),
+    instagramButtonText: z.string().optional(),
   }),
 });
 
