@@ -8,6 +8,7 @@ import type { ImageWithAlt } from "@types";
 import CollapsibleImageGrid from "./CollapsibleImageGrid.astro";
 import GradientDivider from "./GradientDivider.astro";
 import ImageGrid from "./ImageGrid.astro";
+import { mediaUiStrings, type Locale } from "@utils/i18n";
 
 interface Props {
   /** Category title displayed at the top */
@@ -20,9 +21,12 @@ interface Props {
   cols?: 2 | 3 | 4 | 5 | 6;
   /** Gap between images (default: 'md') */
   gap?: "sm" | "md" | "lg";
+  /** Locale for translated UI strings */
+  locale?: Locale;
 }
 
-const { title, images, class: className, cols = 4, gap = "md" } = Astro.props;
+const { title, images, class: className, cols = 4, gap = "md", locale = "en" } = Astro.props;
+const thisIsLabel = mediaUiStrings[locale]['this-is'];
 const sectionId = `media-${title.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')}`;
 
 // Clamp cols to image count so images fill the width, but never below 3 on wide screens
@@ -43,7 +47,7 @@ const fitsInOneRow = images.length <= effectiveCols;
     {/* Static Header */}
     <div class="w-full px-4 sm:px-8 py-6 sm:py-8">
       <p class="text-xs sm:text-sm font-semibold uppercase tracking-widest text-bears-accent mb-1 sm:mb-2">
-        This is
+        {thisIsLabel}
       </p>
       <h3 id={`${sectionId}-title`} class="text-3xl sm:text-4xl lg:text-5xl font-bold text-bears-text-onDark scroll-mt-20">
         {title}
@@ -75,7 +79,7 @@ const fitsInOneRow = images.length <= effectiveCols;
         >
           <div>
             <p class="text-xs sm:text-sm font-semibold uppercase tracking-widest text-bears-accent mb-1 sm:mb-2">
-              This is
+              {thisIsLabel}
             </p>
             <h3 id={`${sectionId}-title`} class="text-3xl sm:text-4xl lg:text-5xl font-bold text-bears-text-onDark scroll-mt-20">
               {title}

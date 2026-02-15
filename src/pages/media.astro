@@ -1,71 +1,81 @@
 ---
 // Media Page - Displays all media organized by category in accordion format
-// Each category shows 2 rows of images as preview when closed, full grid when opened
+// Categories are configured via the page-text content collection (media-title.md)
 
 import BaseLayout from "@layouts/BaseLayout.astro";
 import MediaAccordion from "../components/reusable/MediaAccordion.astro";
 import PageHeroImage from "../components/reusable/PageHeroImage.astro";
 import { loadAllImagesFromDirectory } from "@utils/imageLoader";
 import type { ImageMetadata } from "astro";
-import { mediaHeroImages } from "@utils/imageGlobs";
+import {
+  mediaHeroImages,
+  eventImages,
+  projectImages,
+  teamImages,
+  testimonialImages,
+  whatIsBearsImages,
+  ourMissionImages,
+  faceImages,
+  allHeroImages,
+} from "@utils/imageGlobs";
+import type { ImageGlob } from "@utils/imageGlobs";
 import { getPageContent } from "@utils/contentQueries";
-import { getLocale } from "@utils/i18n";
+import { getLocale, mediaUiStrings } from "@utils/i18n";
 
 const locale = getLocale(Astro.url);
 const pageContent = await getPageContent('media/media-title', locale);
 const loadedHeroImages = await loadAllImagesFromDirectory(mediaHeroImages);
 const heroImage = loadedHeroImages[0];
 
-// Import all image globs statically
-const eventImagesGlob = import.meta.glob<{ default: ImageMetadata }>(
-  "/src/assets/events/*.{jpg,jpeg,png,webp}",
+// Static mapping from content id → image glob
+// To add a new media category, add a glob to imageGlobs.ts and map it here
+const globById: Record<string, ImageGlob> = {
+  'about-us': ourMissionImages,
+  'events': eventImages,
+  'faces-of-bears': faceImages,
+  'hero': allHeroImages,
+  'projects': projectImages,
+  'team-members': teamImages,
+  'testimonials': testimonialImages,
+  'what-is-bears': whatIsBearsImages,
+};
+
+// Read categories from content file (order and visibility controlled by content creators)
+const contentCategories = pageContent?.data.mediaCategories ?? [];
+
+// First pass: load all non-"all" categories
+const loadedCategories = await Promise.all(
+  contentCategories
+    .filter((cat: { id: string }) => cat.id !== 'all' && globById[cat.id])
+    .map(async (cat: { id: string; label: string }) => {
+      const images = await loadAllImagesFromDirectory(globById[cat.id]);
+      return { id: cat.id, label: cat.label, images };
+    }),
 );
-const projectImagesGlob = import.meta.glob<{ default: ImageMetadata }>(
-  "/src/assets/projects/*.{jpg,jpeg,png,webp}",
-);
-const whatIsBearsImagesGlob = import.meta.glob<{ default: ImageMetadata }>(
-  "/src/assets/whatIsBears/*.{jpg,jpeg,png,webp}",
-);
-const testimonialImagesGlob = import.meta.glob<{ default: ImageMetadata }>(
-  "/src/assets/testimonials/*.{jpg,jpeg,png,webp}",
-);
-// Define media categories with their pre-loaded image globs
-interface MediaCategory {
-  id: string;
-  title: string;
-  glob: Record<string, () => Promise<{ default: ImageMetadata }>>;
+
+// Filter out empty categories
+const categoriesWithImages = loadedCategories.filter((cat) => cat.images.length > 0);
+
+// Second pass: build the "all" entry if requested
+const allEntry = contentCategories.find((cat: { id: string }) => cat.id === 'all');
+const allImages = allEntry
+  ? categoriesWithImages.flatMap((cat) => cat.images)
+  : [];
+
+// Build final display list in content-defined order
+const displayCategories: { label: string; images: ImageMetadata[] }[] = [];
+for (const cat of contentCategories) {
+  if (cat.id === 'all') {
+    if (allImages.length > 0) {
+      displayCategories.push({ label: allEntry!.label, images: allImages });
+    }
+  } else {
+    const loaded = categoriesWithImages.find((c) => c.id === cat.id);
+    if (loaded) {
+      displayCategories.push({ label: loaded.label, images: loaded.images });
+    }
+  }
 }
-
-const mediaCategories: MediaCategory[] = [
-  { id: "events", title: "Events", glob: eventImagesGlob },
-  { id: "projects", title: "Projects", glob: projectImagesGlob },
-  { id: "what-is-bears", title: "What is BEARS", glob: whatIsBearsImagesGlob },
-  {
-    id: "testimonials",
-    title: "Team & Testimonials",
-    glob: testimonialImagesGlob,
-  },
-];
-
-// Load all images from each category directory
-const categoryImages = await Promise.all(
-  mediaCategories.map(async (category) => {
-    const images = await loadAllImagesFromDirectory(category.glob);
-    return {
-      id: category.id,
-      title: category.title,
-      images,
-    };
-  }),
-);
-
-// Filter out categories with no images
-const categoriesWithImages = categoryImages.filter(
-  (category) => category.images.length > 0,
-);
-
-// Combine all images for the "All" category
-const allImages = categoriesWithImages.flatMap((category) => category.images);
 ---
 
 <BaseLayout title={pageContent?.data.title ?? "Media"} description={pageContent?.data.seoDescription}>
@@ -78,19 +88,14 @@ const allImages = categoriesWithImages.flatMap((category) => category.images);
   <div class="container mx-auto px-4 py-6 sm:py-8 lg:py-12 sm:px-8 lg:px-16">
     {/* Media Categories Accordion */}
     <div class="flex flex-col gap-6 sm:gap-20">
-      {/* All Images Accordion */}
       {
-        allImages.length > 0 && (
-          <MediaAccordion title="All" images={allImages} cols={4} gap="md" />
-        )
-      }
-      {
-        categoriesWithImages.map((category) => (
+        displayCategories.map((category) => (
           <MediaAccordion
-            title={category.title}
+            title={category.label}
             images={category.images}
             cols={4}
             gap="md"
+            locale={locale}
           />
         ))
       }
@@ -98,7 +103,7 @@ const allImages = categoriesWithImages.flatMap((category) => category.images);
 
     {/* Empty State */}
     {
-      categoriesWithImages.length === 0 && (
+      displayCategories.length === 0 && (
         <div class="text-center py-16 sm:py-20">
           <svg
             class="w-16 h-16 mx-auto mb-4 text-bears-text-onDark/30"
@@ -114,7 +119,7 @@ const allImages = categoriesWithImages.flatMap((category) => category.images);
             />
           </svg>
           <p class="text-lg text-bears-text-onDark/60">
-            No media available at the moment.
+            {mediaUiStrings[locale]['no-media']}
           </p>
         </div>
       )

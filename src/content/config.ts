@@ -214,6 +214,10 @@ const pageTextCollection = defineCollection({
       answer: z.string(),
     })).optional(),
     instagramButtonText: z.string().optional(),
+    mediaCategories: z.array(z.object({
+      id: z.string(),
+      label: z.string(),
+    })).optional(),
   }),
 });
 

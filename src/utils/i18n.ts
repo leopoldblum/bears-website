@@ -82,3 +82,17 @@ export const categoryLabels: Record<Locale, Record<string, string>> = {
 export function getCategoryLabel(key: string, locale: Locale): string {
   return categoryLabels[locale]?.[key] ?? key;
 }
+
+/**
+ * Locale-aware UI strings for the media page.
+ */
+export const mediaUiStrings: Record<Locale, Record<string, string>> = {
+  en: {
+    'this-is': 'This is',
+    'no-media': 'No media available at the moment.',
+  },
+  de: {
+    'this-is': 'This is',
+    'no-media': 'Derzeit sind keine Medien verfügbar.',
+  },
+};

@@ -402,6 +402,56 @@ description: "Check back soon — we're always planning something new!"
 
 ---
 
+### Media Categories
+
+Controls which image categories appear on the Media page, their display order, and their labels. Each entry has an `id` (matching a known image directory) and a `label` (the displayed title).
+
+```yaml
+---
+title: "Media"
+subtitle: "Browse our photo gallery"
+seoDescription: "Photos from BEARS events, projects, and team activities."
+mediaCategories:
+  - id: all
+    label: "All"
+  - id: events
+    label: "Events"
+  - id: projects
+    label: "Projects"
+  - id: what-is-bears
+    label: "What is BEARS"
+---
+```
+
+**Where it appears:** The Media page. Each category becomes a collapsible accordion section showing images from that directory.
+
+**Available IDs:**
+
+| ID | Images from |
+|----|-------------|
+| `all` | Combined images from all other listed categories (special) |
+| `about-us` | About Us page images (`src/assets/about-us/our-mission/`) |
+| `events` | Event cover images (`src/assets/events/`) |
+| `faces-of-bears` | Faces of BEARS portraits (`src/assets/faces-of-bears/`) |
+| `hero` | All hero images across pages (`src/assets/hero/`) |
+| `projects` | Project cover images (`src/assets/projects/`) |
+| `team-members` | Team member portraits (`src/assets/projects/team-members/`) |
+| `testimonials` | Testimonial portraits (`src/assets/testimonials/`) |
+| `what-is-bears` | What is BEARS images (`src/assets/whatIsBears/`) |
+
+**Controlling the page:**
+- **Show/hide categories:** Add or remove entries from the list. Only listed categories appear.
+- **Reorder categories:** The display order matches the list order in the file.
+- **Rename categories:** Change the `label` to set the displayed title (this is translated per locale).
+- **"All" category:** When `all` is in the list, it combines images from all other listed categories. Remove it to hide the combined view.
+- Categories with no images are automatically hidden.
+
+**Fields used:** `title`, `subtitle`, `seoDescription`, `mediaCategories`
+
+**Files:** `media/media-title`
+
+---
+
 ### Category Descriptions (Projects)
 
 Each project category can have its own introductory text, shown on the Projects page below the category heading. The heading itself is derived automatically from the category enum label (via `getCategoryLabel` in `src/utils/i18n.ts`), so it does not need to be set here.

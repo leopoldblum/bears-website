@@ -86,6 +86,14 @@ export const faceImages: ImageGlob = import.meta.glob<{ default: ImageMetadata }
 );
 
 /**
+ * All hero images (across all sub-page hero folders)
+ * Used by: media.astro
+ */
+export const allHeroImages: ImageGlob = import.meta.glob<{ default: ImageMetadata }>(
+  "/src/assets/hero/**/*.{jpg,jpeg,png,webp}"
+);
+
+/**
  * Sub-page hero images
  * Used by: about-us.astro, events.astro, projects.astro, media.astro, sponsors.astro, contact.astro
  */

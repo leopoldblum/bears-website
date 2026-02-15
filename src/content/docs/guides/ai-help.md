@@ -114,6 +114,9 @@ Frontmatter (all fields optional, use only what the section needs):
   socialLinks: array — each: { platform, url, hoverColor? } — platforms: instagram, linkedin, youtube
   navLinks: array — each: { label, href }
   navColumns: array — each: { heading, href, links: [{ label, href }] }
+  mediaCategories: array — each: { id, label } — controls which categories appear on the Media page and in what order
+    Available ids: all (combined view), about-us, events, faces-of-bears, hero, projects, team-members, testimonials, what-is-bears
+    Remove an entry to hide that category; reorder entries to change display order.
 
 Page text folder structure:
   landing/        — homepage sections (hero, what-is-bears, latest-news, meet-the-team, testimonials, become-sponsor)
