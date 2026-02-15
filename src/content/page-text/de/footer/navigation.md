@@ -6,7 +6,7 @@ navColumns:
     links:
       - label: "Aktuelle Projekte"
         href: "/projects?status=ongoing#what-we-build"
-      - label: "Experimenteller Raketenbau"
+      - label: "Experimentelle Raketentechnik"
         href: "/projects?category=experimental-rocketry#what-we-build"
       - label: "Wissenschaft & Experimente"
         href: "/projects?category=science-and-experiments#what-we-build"
@@ -30,7 +30,7 @@ navColumns:
         href: "/events?date=upcoming#whats-happening"
       - label: "Wettbewerbe & Workshops"
         href: "/events?category=competitions-and-workshops#whats-happening"
-      - label: "Messen"
+      - label: "Messen & Konferenzen"
         href: "/events?category=trade-fairs-and-conventions#whats-happening"
       - label: "Vergangene Events"
         href: "/events?date=past#whats-happening"
