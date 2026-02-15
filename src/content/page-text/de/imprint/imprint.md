@@ -5,11 +5,11 @@ subtitle: "Angaben gemäß § 5 TMG"
 
 ### Dieses Impressum gilt für folgende Webauftritte:
 
-**Website**: https://bears-space.de
+**Website**: https://bears-space.de  
 
-**Instagram**:  bears.space — https://instagram.com/bears.space
-**LinkedIn**:   BEARS e.V. — https://www.linkedin.com/company/bears-ev
-**YouTube**:    BEARS-space — https://www.youtube.com/@BEARS-Space
+**Instagram**:  bears.space — https://instagram.com/bears.space  
+**LinkedIn**:   BEARS e.V. — https://www.linkedin.com/company/bears-ev  
+**YouTube**:    BEARS-space — https://www.youtube.com/@BEARS-Space  
 
 ---
 
@@ -24,9 +24,9 @@ Marchstraße 12-14
 
 Vertreten durch den Vorstand:
 
-Matti Keller (1. Sprecher)
-Dema Morad (2. Sprecherin)
-Gedeon Görg (Kassenwart)
-Akshat Goel (Öffentlichkeitsarbeit)
+Matti Keller (1. Sprecher)  
+Dema Morad (2. Sprecherin)  
+Gedeon Görg (Kassenwart)  
+Akshat Goel (Öffentlichkeitsarbeit)  
 
 Amtsgericht Charlottenburg, Register-Nr.: VR 40347 B
