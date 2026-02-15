@@ -2,8 +2,6 @@
 title: "Häufig gestellte Fragen"
 subtitle: "Fragen?"
 description: "Alles, was du über die Teilnahme und Mitgliedschaft bei BEARS e.V. wissen musst."
-buttonText: "Kontaktiere uns"
-buttonHref: "/contact"
 faqs:
   - question: "Wie kann ich bei BEARS e.V. mitmachen?"
     answer: "Komm einfach zu einem unserer wöchentlichen Treffen! Wir freuen uns über alle Studierenden der TU Berlin — unabhängig von Studiengang oder Erfahrung. Schau in den Abschnitt **Hier findest du uns** weiter oben für Uhrzeit und Ort."

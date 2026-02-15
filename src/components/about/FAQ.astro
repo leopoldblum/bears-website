@@ -1,8 +1,9 @@
 ---
 import Accordion from "@mdx/Accordion.astro";
+import CrosslinkBanner from "@reusable/CrosslinkBanner.astro";
 import GradientDivider from "@reusable/GradientDivider.astro";
 import { getPageContent } from "@utils/contentQueries";
-import { type Locale } from '@utils/i18n';
+import { type Locale, localizeUrl } from '@utils/i18n';
 
 interface Props {
   locale: Locale;
@@ -11,6 +12,7 @@ interface Props {
 const { locale } = Astro.props;
 
 const content = await getPageContent("about-us/faq", locale);
+const crosslink = await getPageContent("about-us/faq-crosslink", locale);
 
 const accordionItems = (content?.data.faqs ?? []).map((faq) => ({
   title: faq.question,
@@ -51,8 +53,10 @@ const accordionItems = (content?.data.faqs ?? []).map((faq) => ({
       />
     </div>
 
-    <p class="mt-8 sm:mt-10 text-sm sm:text-base text-bears-text-onDark/60">
-      Still have questions? <a href={content?.data.buttonHref ?? "/contact"} class="text-bears-accent hover:underline">{content?.data.buttonText ?? "Get in touch"} &rarr;</a>
-    </p>
+    <CrosslinkBanner
+      text={crosslink?.data.title ?? "Still have questions?"}
+      linkText={crosslink?.data.buttonText ?? "Get in touch"}
+      href={localizeUrl(crosslink?.data.buttonHref ?? "/contact", locale)}
+    />
   </section>
 )}

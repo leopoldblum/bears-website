@@ -2,8 +2,6 @@
 title: "Frequently Asked Questions"
 subtitle: "Got Questions?"
 description: "Everything you need to know about joining and participating in BEARS e.V."
-buttonText: "Get in touch"
-buttonHref: "/contact"
 faqs:
   - question: "How can I join BEARS e.V.?"
     answer: "Just show up to one of our weekly meetings! We welcome all TU Berlin students, regardless of their field of study or experience level. Check the **Find Us** section above for our meeting time and location."
