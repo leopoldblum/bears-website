@@ -4,7 +4,28 @@ description: "How to add and edit content on the BEARS website."
 order: 10
 ---
 
-This guide covers the basics of managing content on the BEARS website.
+This guide covers how to set up the project locally and the basics of managing content.
+
+## Prerequisites
+
+You need **Node.js** (v18 or later) and **npm** (bundled with Node.js).
+
+1. Download and install Node.js from [nodejs.org](https://nodejs.org/) (the LTS version is recommended).
+2. Verify the installation by opening a terminal and running:
+   ```sh
+   node -v
+   npm -v
+   ```
+   Both commands should print a version number.
+
+## Local Quickstart
+
+```sh
+npm install
+npm run dev
+```
+
+This starts a local development server at `localhost:4321`. Changes to content files are reflected immediately in the browser.
 
 ## Languages
 
