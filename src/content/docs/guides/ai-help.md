@@ -248,6 +248,9 @@ KEY CONVENTIONS
 - Sponsor tier is determined by folder name (diamond/, platinum/, gold/, silver/, bronze/), not frontmatter.
 - The seoDescription field sets a page's <meta name="description"> tag. Keep it ~150 characters.
 - For projects, if displayMeetTheTeam is true then both headOfProject and personImage must also be provided.
+- UI strings for events/projects pages (filter labels, sort options, status badges) are centralized in catalogUiStrings in src/utils/i18n.ts.
+- UI strings for the media page ("This is" label, empty state) are in mediaUiStrings in src/utils/i18n.ts.
+- Media page categories are configured via the mediaCategories field in the page-text content file (media/media-title). Category labels are set per locale in the content file, not in i18n.ts.
 ````
 
   </div>

@@ -45,6 +45,8 @@ Key utilities in `src/utils/i18n.ts`:
 - `localizeUrl(path, locale)` &mdash; adds/removes `/de/` prefix
 - `getCategoryLabel(key, locale)` &mdash; locale-aware category translations
 - `getHreflangUrls(pathname, origin)` &mdash; generates SEO hreflang URLs
+- `catalogUiStrings` &mdash; locale-aware UI labels for events/projects pages (filter, sort, status labels)
+- `mediaUiStrings` &mdash; locale-aware UI labels for the media page
 
 German pages in `src/pages/de/` are thin wrappers that import and re-render the root page component. The root page detects its locale via `getLocale(Astro.url)` and passes it to all components and content queries.
 
