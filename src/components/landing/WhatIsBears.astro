@@ -30,19 +30,21 @@ const content = await getPageContent('landing/what-is-bears', locale);
       {content?.data.title}
     </h2>
 
-    <!-- Explanation text -->
-    {content?.data.description && (
-      <p class="text-base sm:text-lg text-bears-text-onDark leading-relaxed">
-        {content.data.description}
-      </p>
-    )}
+    <div data-pagefind-ignore>
+      <!-- Explanation text -->
+      {content?.data.description && (
+        <p class="text-base sm:text-lg text-bears-text-onDark leading-relaxed">
+          {content.data.description}
+        </p>
+      )}
 
-    <!-- Button -->
-    {content?.data.buttonText && content?.data.buttonHref && (
-      <div class="mt-6 sm:mt-8">
-        <Button variant="primary" href={content.data.buttonHref}>{content.data.buttonText}</Button>
-      </div>
-    )}
+      <!-- Button -->
+      {content?.data.buttonText && content?.data.buttonHref && (
+        <div class="mt-6 sm:mt-8">
+          <Button variant="primary" href={content.data.buttonHref}>{content.data.buttonText}</Button>
+        </div>
+      )}
+    </div>
   </div>
 
   <div class="mt-16 sm:mt-20">

@@ -49,6 +49,7 @@ const eventsJson = JSON.stringify(events);
     x-show="nextEvent"
     x-cloak
     class="lg:col-start-1 lg:col-span-2 lg:row-start-1 relative rounded-lg border border-white/10 bg-white/[0.03] overflow-hidden"
+    data-pagefind-ignore
   >
     <div class="h-0.5 bg-gradient-to-r from-bears-accent via-bears-accent/80 to-transparent"></div>
     <div class="px-5 py-5 sm:px-6 sm:py-6">
@@ -99,7 +100,7 @@ const eventsJson = JSON.stringify(events);
   </div>
 
   <!-- Sort/Filter buttons + result count — second in DOM for mobile, col 3 on lg -->
-  <div class="flex flex-col items-end justify-end gap-2 lg:col-start-3 lg:row-start-1">
+  <div class="flex flex-col items-end justify-end gap-2 lg:col-start-3 lg:row-start-1" data-pagefind-ignore>
     <div class="flex items-center gap-2">
       <slot />
     </div>

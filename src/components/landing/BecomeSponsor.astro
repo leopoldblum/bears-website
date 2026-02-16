@@ -68,7 +68,8 @@ const [
       {content?.data.title}
     </h2>
 
-    <!-- Diamond Sponsors Tier -->
+    <!-- Sponsor logos — ignored by search to avoid duplicating sponsors page -->
+    <div data-pagefind-ignore>
     <SponsorTier sponsors={diamondSponsors} tier="diamond" />
 
     <!-- Divider: Diamond to other tiers -->
@@ -91,25 +92,28 @@ const [
 
     <!-- Gold Sponsors Tier -->
     <SponsorTier sponsors={goldSponsors} tier="gold" />
+    </div>
 
-    <!-- Description text below logos -->
-    {
-      content?.data.description && (
-        <p class="text-sm sm:text-base text-bears-text-onLight text-center opacity-70 max-w-2xl mx-auto mt-14 sm:mt-18 lg:mt-22 mb-6 sm:mb-8">
-          {content.data.description}
-        </p>
-      )
-    }
+    <div data-pagefind-ignore>
+      <!-- Description text below logos -->
+      {
+        content?.data.description && (
+          <p class="text-sm sm:text-base text-bears-text-onLight text-center opacity-70 max-w-2xl mx-auto mt-14 sm:mt-18 lg:mt-22 mb-6 sm:mb-8">
+            {content.data.description}
+          </p>
+        )
+      }
 
-    <!-- Learn more button -->
-    {
-      content?.data.buttonText && content?.data.buttonHref && (
-        <div class="flex justify-center">
-          <Button variant="inverse" size="large" href={content.data.buttonHref}>
-            {content.data.buttonText}
-          </Button>
-        </div>
-      )
-    }
+      <!-- Learn more button -->
+      {
+        content?.data.buttonText && content?.data.buttonHref && (
+          <div class="flex justify-center">
+            <Button variant="inverse" size="large" href={content.data.buttonHref}>
+              {content.data.buttonText}
+            </Button>
+          </div>
+        )
+      }
+    </div>
   </div>
 </section>

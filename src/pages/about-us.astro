@@ -22,6 +22,7 @@ const aboutHeroImage = loadedHeroImages[0];
     alt="BEARS team working together on aerospace projects"
     title={pageContent?.data.title ?? "Who are we?"}
     subtitle={pageContent?.data.subtitle ?? ""}
+    searchAliases={locale === 'de' ? ['Über Uns'] : ['About Us']}
   />
 
   <OurMission locale={locale} />

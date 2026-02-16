@@ -98,13 +98,13 @@ const structuredData = type === "event"
 
       <!-- Header -->
       <header class="post-header">
-        <h1 class="post-title">{title}</h1>
+        <h1 class="post-title" data-pagefind-weight="8">{title}</h1>
         <div class="header-divider"></div>
       </header>
 
       <!-- Content Layout: Prose + Metadata Sidebar -->
       <div class="content-layout">
-        <div class="prose-content">
+        <div class="prose-content" data-pagefind-ignore>
           <slot />
         </div>
         <aside class="metadata-sidebar">

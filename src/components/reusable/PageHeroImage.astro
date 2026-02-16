@@ -20,6 +20,8 @@ interface Props {
   class?: string;
   /** Loading strategy for the image - 'eager' for above-fold, 'lazy' for below-fold */
   loading?: "eager" | "lazy";
+  /** Hidden search terms that Pagefind indexes but users don't see (e.g. nav-label aliases) */
+  searchAliases?: string[];
 }
 
 const {
@@ -30,6 +32,7 @@ const {
   variant = "dark",
   class: className,
   loading = "eager",
+  searchAliases = [],
 } = Astro.props;
 
 const isLight = variant === "light";
@@ -94,9 +97,17 @@ const isLight = variant === "light";
         <h1
           id="page-title"
           class="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold text-bears-accent leading-tight scroll-mt-20"
+          data-pagefind-weight="10"
         >
           {title}
         </h1>
+
+        {/* Hidden search aliases for Pagefind — lets users find this page by alternative terms */}
+        {searchAliases.length > 0 && (
+          <span class="sr-only" data-pagefind-weight="10">
+            {searchAliases.join(' ')}
+          </span>
+        )}
 
         {/* Divider between title and subtitle */}
         <div
@@ -113,7 +124,7 @@ const isLight = variant === "light";
             <p class:list={[
               "text-lg sm:text-xl lg:text-2xl max-w-xl",
               isLight ? "text-bears-text-onLight/80" : "text-bears-text-onDark/80",
-            ]}>
+            ]} data-pagefind-weight="6">
               {subtitle}
             </p>
           )

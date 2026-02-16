@@ -50,6 +50,7 @@ const content = await getPageContent('landing/meet-the-team', locale);
 
   <!-- Responsive layout: flex-col for lg, grid for xl -->
   <div
+    data-pagefind-ignore
     class="flex flex-col gap-6 lg:gap-8 xl:grid xl:grid-cols-[120px_minmax(0,2fr)_minmax(0,1fr)]"
     x-data="{
       activeIndex: 0,

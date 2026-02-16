@@ -87,6 +87,7 @@ const projectsData = JSON.stringify(projectsWithImages.map((p, i) => ({
     alt="BEARS student working on satellite project"
     title={pageContent?.data.title ?? "Projects"}
     subtitle={pageContent?.data.subtitle ?? ""}
+    searchAliases={['Projekte', 'Projects']}
   />
 
   <div
@@ -363,6 +364,7 @@ const projectsData = JSON.stringify(projectsWithImages.map((p, i) => ({
       x-show="filteredIndices.length === 0"
       x-cloak
       class="flex flex-col items-center justify-center min-h-80 text-center"
+      data-pagefind-ignore
     >
       <svg class="w-12 h-12 text-bears-text-onDark/20 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
@@ -409,6 +411,7 @@ const projectsData = JSON.stringify(projectsWithImages.map((p, i) => ({
     <!-- Show More button -->
     <div
       x-cloak
+      data-pagefind-ignore
       class="grid w-full overflow-hidden"
       :style="hasMore && !_fading
         ? 'transition: opacity 300ms ease-in, grid-template-rows 300ms ease-out, margin 300ms ease-out'

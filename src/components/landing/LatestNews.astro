@@ -70,19 +70,21 @@ const newsItems = allPostsWithImages.map((post) => {
     {content?.data.title}
   </h2>
 
-  <!-- Description text -->
-  {content?.data.description && (
-    <p class="text-base sm:text-lg text-bears-text-onDark leading-relaxed max-w-3xl mb-10 sm:mb-14">
-      {content.data.description}
-    </p>
-  )}
+  <div data-pagefind-ignore>
+    <!-- Description text -->
+    {content?.data.description && (
+      <p class="text-base sm:text-lg text-bears-text-onDark leading-relaxed max-w-3xl mb-10 sm:mb-14">
+        {content.data.description}
+      </p>
+    )}
 
-  <!-- Learn More Button -->
-  {content?.data.buttonText && content?.data.buttonHref && (
-    <div>
-      <Button variant="primary" href={localizeUrl(content.data.buttonHref, locale)}>{content.data.buttonText}</Button>
-    </div>
-  )}
+    <!-- Learn More Button -->
+    {content?.data.buttonText && content?.data.buttonHref && (
+      <div>
+        <Button variant="primary" href={localizeUrl(content.data.buttonHref, locale)}>{content.data.buttonText}</Button>
+      </div>
+    )}
+  </div>
 
   <!-- News Preview Grid -->
   <div data-pagefind-ignore class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 my-10 sm:my-14 px-4 sm:px-0">
@@ -112,7 +114,7 @@ const newsItems = allPostsWithImages.map((post) => {
   </div>
 
   <!-- Show All / Show Less Button - Only visible on mobile -->
-  <div class="flex justify-center mt-8 lg:hidden">
+  <div data-pagefind-ignore class="flex justify-center mt-8 lg:hidden">
     <button
       x-show="!showAll"
       @click="showAll = true"
@@ -140,7 +142,7 @@ const newsItems = allPostsWithImages.map((post) => {
 
   <!-- Instagram Posts - newest post on mobile, 2 on lg, 3 on xl -->
   {instagramPosts.length > 0 && (
-    <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 items-center gap-6 lg:gap-8 mt-10 lg:mt-14">
+    <div data-pagefind-ignore class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 items-center gap-6 lg:gap-8 mt-10 lg:mt-14">
       {instagramPosts.map((post, index) => (
         <div class:list={["instagram-feed-card rounded-xl border border-white/10 bg-white/[0.03] backdrop-blur-sm shadow-[0_4px_12px_rgba(0,0,0,0.4)] overflow-hidden transition-all duration-300 lg:hover:border-bears-accent/30 lg:hover:shadow-[0_8px_24px_rgba(0,0,0,0.5),0_0_20px_rgba(197,14,31,0.15)] lg:hover:scale-[1.02]", { "hidden lg:block": index === 1 }, { "hidden xl:block": index === 2 }]}>
           <blockquote
@@ -167,7 +169,7 @@ const newsItems = allPostsWithImages.map((post) => {
 
   <!-- Instagram CTA Crosslink -->
   {instagramUrl && (
-    <div class="flex justify-center mt-10 lg:mt-14">
+    <div data-pagefind-ignore class="flex justify-center mt-10 lg:mt-14">
       <a
         href={instagramUrl}
         target="_blank"
