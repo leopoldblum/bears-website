@@ -1,10 +1,19 @@
 ---
 import BaseLayout from "@layouts/BaseLayout.astro";
 import { getPageContent } from "@utils/contentQueries";
-import { getLocale } from "@utils/i18n";
+import { getLocale, localizeUrl } from "@utils/i18n";
 
 const locale = getLocale(Astro.url);
 const content = await getPageContent('404/not-found', locale);
+
+const navContent = await getPageContent('header/navigation', locale);
+const navLinks = navContent?.data.navLinks ?? [
+  { href: "/projects", label: "Projects" },
+  { href: "/sponsors", label: "Sponsors" },
+  { href: "/events", label: "Events" },
+  { href: "/about-us", label: "About Us" },
+  { href: "/contact", label: "Contact" },
+];
 ---
 
 <BaseLayout title="404 - Page Not Found">
@@ -66,41 +75,19 @@ const content = await getPageContent('404/not-found', locale);
       </p>
 
       <nav class="flex items-center justify-center gap-4 sm:gap-6 mt-10 sm:mt-12">
-        <a
-          href="/projects"
-          class="text-sm text-bears-text-onDark/70 hover:text-bears-accent transition-colors"
-        >
-          Projects
-        </a>
-        <a
-          href="/events"
-          class="text-sm text-bears-text-onDark/70 hover:text-bears-accent transition-colors"
-        >
-          Events
-        </a>
-        <a
-          href="/sponsors"
-          class="text-sm text-bears-text-onDark/70 hover:text-bears-accent transition-colors"
-        >
-          Sponsors
-        </a>
-        <a
-          href="/about-us"
-          class="text-sm text-bears-text-onDark/70 hover:text-bears-accent transition-colors"
-        >
-          About Us
-        </a>
-        <a
-          href="/contact"
-          class="text-sm text-bears-text-onDark/70 hover:text-bears-accent transition-colors"
-        >
-          Contact
-        </a>
+        {navLinks.map((link: { href: string; label: string }) => (
+          <a
+            href={localizeUrl(link.href, locale)}
+            class="text-sm text-bears-text-onDark/70 hover:text-bears-accent transition-colors"
+          >
+            {link.label}
+          </a>
+        ))}
       </nav>
 
       <div class="mt-10 sm:mt-12">
         <a
-          href={content?.data.buttonHref ?? "/"}
+          href={localizeUrl(content?.data.buttonHref ?? "/", locale)}
           class="inline-flex items-center justify-center gap-2 bg-bears-accent text-bears-text-onDark rounded-full px-6 py-2.5 text-sm font-medium shadow-[0_2px_8px_rgba(0,0,0,0.25)] hover:bg-bears-accent/90 hover:shadow-[0_4px_12px_rgba(0,0,0,0.3),0_0_20px_rgba(197,14,31,0.25)] hover:scale-105 active:bg-bears-accent-muted active:scale-100 transition-all duration-300 ease-out cursor-pointer"
         >
           <svg
