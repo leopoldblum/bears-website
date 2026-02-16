@@ -208,4 +208,12 @@ const newsItems = allPostsWithImages.map((post) => {
   } else if (window.instgrm) {
     window.instgrm.Embeds.process();
   }
+
+  // Add title attributes to Instagram iframes for accessibility (Lighthouse)
+  new MutationObserver((_mutations, observer) => {
+    const iframes = document.querySelectorAll('.instagram-feed-card iframe:not([title])');
+    iframes.forEach((iframe) => {
+      iframe.setAttribute('title', 'Instagram post');
+    });
+  }).observe(document.getElementById('latest-news-section')!, { childList: true, subtree: true });
 </script>

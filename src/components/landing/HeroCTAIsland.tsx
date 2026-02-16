@@ -292,9 +292,9 @@ export default function HeroCTAIsland({ ctas }: HeroCTAIslandProps) {
               href={cta.href}
               className="group block cursor-pointer transition-all duration-300"
             >
-              <h3 className="text-lg sm:text-2xl lg:text-3xl font-bold text-bears-accent group-hover:text-white transition-colors duration-300">
+              <p className="text-lg sm:text-2xl lg:text-3xl font-bold text-bears-accent group-hover:text-white transition-colors duration-300">
                 {cta.title}
-              </h3>
+              </p>
               {/* Divider: right-col items flip gradient direction on mobile */}
               {isRightCol ? (
                 <>
