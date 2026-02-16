@@ -20,32 +20,32 @@ const { sponsors, tier } = Astro.props;
 // Define tier-specific styling configuration
 const tierConfig = {
   diamond: {
-    sizeClasses: "h-32 w-32 sm:h-40 sm:w-40 lg:h-48 lg:w-48",
+    sizeClasses: "h-20 sm:h-24 lg:h-28 w-auto",
     gapClasses: "gap-10 sm:gap-14 lg:gap-20",
     marginClasses: "mb-6 sm:mb-8",
     hoverClasses: "hover:scale-110 hover:drop-shadow-[0_0_12px_rgba(197,14,31,0.25)]",
     sizes: "(min-width: 1024px) 192px, (min-width: 640px) 160px, 128px",
   },
   platinum: {
-    sizeClasses: "h-28 w-28 sm:h-36 sm:w-36 lg:h-44 lg:w-44",
+    sizeClasses: "h-16 sm:h-20 lg:h-24 w-auto",
     gapClasses: "gap-9 sm:gap-12 lg:gap-18",
     marginClasses: "mb-6 sm:mb-8",
     sizes: "(min-width: 1024px) 176px, (min-width: 640px) 144px, 112px",
   },
   gold: {
-    sizeClasses: "h-24 w-24 sm:h-32 sm:w-32 lg:h-40 lg:w-40",
+    sizeClasses: "h-14 sm:h-16 lg:h-20 w-auto",
     gapClasses: "gap-8 sm:gap-10 lg:gap-12",
     marginClasses: "mb-6 sm:mb-8",
     sizes: "(min-width: 1024px) 160px, (min-width: 640px) 128px, 96px",
   },
   silver: {
-    sizeClasses: "h-20 w-20 sm:h-24 sm:w-24 lg:h-28 lg:w-28",
+    sizeClasses: "h-12 sm:h-14 lg:h-16 w-auto",
     gapClasses: "gap-6 sm:gap-8 lg:gap-10",
     marginClasses: "mb-6 sm:mb-8",
     sizes: "(min-width: 1024px) 112px, (min-width: 640px) 96px, 80px",
   },
   bronze: {
-    sizeClasses: "h-16 w-16 sm:h-20 sm:w-20 lg:h-24 lg:w-24",
+    sizeClasses: "h-10 sm:h-12 lg:h-14 w-auto",
     gapClasses: "gap-4 sm:gap-6 lg:gap-8",
     marginClasses: "mb-10 sm:mb-12 lg:mb-16",
     sizes: "(min-width: 1024px) 96px, (min-width: 640px) 80px, 64px",
@@ -66,7 +66,7 @@ const hoverClasses = config.hoverClasses ?? "hover:scale-110 hover:opacity-80";
           <Img
             src={sponsor.logo}
             alt={sponsor.name}
-            class={config.sizeClasses}
+            class={`${config.sizeClasses} rounded-none`}
             loading="lazy"
             sizes={config.sizes}
             enableClickToEnlarge={false}
