@@ -9,7 +9,7 @@ import ProjectCategories from "@components/projects/ProjectCategories.astro";
 import { loadCollectionImages } from "@utils/imageLoader";
 import { getPublishedProjects, getPageContent } from "@utils/contentQueries";
 import { CategoryProjectEnum } from "@types";
-import { getLocale, localizeUrl, getCategoryLabel } from "@utils/i18n";
+import { getLocale, localizeUrl, getCategoryLabel, catalogUiStrings } from "@utils/i18n";
 import { stripLocaleFromSlug } from "@utils/contentQueries";
 
 import CrosslinkBanner from "@reusable/CrosslinkBanner.astro";
@@ -19,16 +19,17 @@ import { loadAllImagesFromDirectory } from "@utils/imageLoader";
 const locale = getLocale(Astro.url);
 
 // Locale-aware UI strings for Alpine.js
-const showingText = locale === 'de' ? 'Zeige' : 'Showing';
-const ofText = locale === 'de' ? 'von' : 'of';
-const projectsWord = locale === 'de' ? 'Projekte' : 'projects';
-const showMoreText = locale === 'de' ? 'Mehr anzeigen' : 'Show more';
-const remainingText = locale === 'de' ? 'verbleibend' : 'remaining';
-const clearFiltersText = locale === 'de' ? 'Alle Filter zurücksetzen' : 'Clear all filters';
-const filterCategoryLabel = locale === 'de' ? 'Kategorie' : 'Category';
-const filterStatusLabel = locale === 'de' ? 'Status' : 'Status';
-const completedLabel = locale === 'de' ? 'Abgeschlossen' : 'Completed';
-const ongoingLabel = locale === 'de' ? 'Laufend' : 'Ongoing';
+const ui = catalogUiStrings[locale];
+const showingText = ui['showing'];
+const ofText = ui['of'];
+const projectsWord = ui['projects'];
+const showMoreText = ui['show-more'];
+const remainingText = ui['remaining'];
+const clearFiltersText = ui['clear-filters'];
+const filterCategoryLabel = ui['category'];
+const filterStatusLabel = ui['status'];
+const completedLabel = ui['completed'];
+const ongoingLabel = ui['ongoing'];
 const pageContent = await getPageContent('projects/projects-title', locale);
 const categoriesIntro = await getPageContent('projects/categories-intro', locale);
 const emptyState = await getPageContent('projects/projects-empty-state', locale);

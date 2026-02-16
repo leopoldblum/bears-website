@@ -84,6 +84,48 @@ export function getCategoryLabel(key: string, locale: Locale): string {
 }
 
 /**
+ * Locale-aware UI strings for events/projects catalog pages.
+ */
+export const catalogUiStrings: Record<Locale, Record<string, string>> = {
+  en: {
+    showing: 'Showing',
+    of: 'of',
+    'show-more': 'Show more',
+    remaining: 'remaining',
+    'clear-filters': 'Clear all filters',
+    category: 'Category',
+    // Events
+    events: 'events',
+    date: 'Date',
+    upcoming: 'Upcoming',
+    past: 'Past',
+    // Projects
+    projects: 'projects',
+    status: 'Status',
+    completed: 'Completed',
+    ongoing: 'Ongoing',
+  },
+  de: {
+    showing: 'Zeige',
+    of: 'von',
+    'show-more': 'Mehr anzeigen',
+    remaining: 'verbleibend',
+    'clear-filters': 'Alle Filter zurücksetzen',
+    category: 'Kategorie',
+    // Events
+    events: 'Events',
+    date: 'Datum',
+    upcoming: 'Bevorstehend',
+    past: 'Vergangen',
+    // Projects
+    projects: 'Projekte',
+    status: 'Status',
+    completed: 'Abgeschlossen',
+    ongoing: 'Laufend',
+  },
+};
+
+/**
  * Locale-aware UI strings for the media page.
  */
 export const mediaUiStrings: Record<Locale, Record<string, string>> = {
