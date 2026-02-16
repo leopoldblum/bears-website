@@ -106,8 +106,10 @@ Frontmatter (all fields optional, use only what the section needs):
   subtitle: string — secondary heading or label
   description: string — paragraph text
   seoDescription: string — meta description for search engines (~150 chars)
-  buttonText: string — button label (pair with buttonHref)
-  buttonHref: string — button URL (pair with buttonText)
+  buttonText: string — primary button label (pair with buttonHref)
+  buttonHref: string — primary button URL (pair with buttonText)
+  secondButtonText: string — secondary button label (pair with secondButtonHref)
+  secondButtonHref: string — secondary button URL (pair with secondButtonText)
   ctas: array (max 4) — each: { title, description, href }
   items: array of strings — plain list or "Title -> Description" format (arrow separator splits into title + description)
   faqs: array — each: { question, answer } — answers support Markdown (bold, links, lists)
@@ -140,7 +142,7 @@ Naming conventions:
 
 Special behaviors:
   {year} in footer/bottom-bar title is replaced with the current year at build time.
-  buttonText and buttonHref must both be provided for a button to appear.
+  buttonText and buttonHref must both be provided for a button to appear. Same for secondButtonText and secondButtonHref.
   items with " -> " separator are split into title + description; without it, the whole string is the title.
 
 ========================================

@@ -186,6 +186,8 @@ const pageTextCollection = defineCollection({
     seoDescription: z.string().optional(),
     buttonText: z.string().optional(),
     buttonHref: z.string().optional(),
+    secondButtonText: z.string().optional(),
+    secondButtonHref: z.string().optional(),
     ctas: z.array(z.object({
       title: z.string(),
       description: z.string(),

@@ -97,7 +97,8 @@ The `page-text` collection is the most flexible schema, supporting many optional
 | `subtitle` | string? | Secondary heading |
 | `description` | string? | Body copy |
 | `seoDescription` | string? | Meta description override |
-| `buttonText` / `buttonHref` | string? | Single CTA |
+| `buttonText` / `buttonHref` | string? | Primary CTA |
+| `secondButtonText` / `secondButtonHref` | string? | Secondary CTA |
 | `ctas` | array (max 4)? | Multiple CTAs with title, description, href |
 | `items` | string[]? | Simple list items |
 | `socialLinks` | array? | Platform + URL + optional hoverColor |

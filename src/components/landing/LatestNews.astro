@@ -78,10 +78,13 @@ const newsItems = allPostsWithImages.map((post) => {
       </p>
     )}
 
-    <!-- Learn More Button -->
+    <!-- Section Buttons -->
     {content?.data.buttonText && content?.data.buttonHref && (
-      <div>
+      <div class="flex flex-wrap gap-4">
         <Button variant="primary" href={localizeUrl(content.data.buttonHref, locale)}>{content.data.buttonText}</Button>
+        {content?.data.secondButtonText && content?.data.secondButtonHref && (
+          <Button variant="secondary" href={localizeUrl(content.data.secondButtonHref, locale)}>{content.data.secondButtonText}</Button>
+        )}
       </div>
     )}
   </div>

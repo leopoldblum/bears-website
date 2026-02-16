@@ -56,8 +56,10 @@ All fields are optional &mdash; each file uses only the fields its section needs
 | `subtitle` | string | Secondary heading, label, or tagline displayed above or below the title |
 | `description` | string | Paragraph text (intro copy, explanations) |
 | `seoDescription` | string | Meta description for search engines (~150 characters) |
-| `buttonText` | string | Button label (pair with `buttonHref`) |
-| `buttonHref` | string | Button link URL (pair with `buttonText`) |
+| `buttonText` | string | Primary button label (pair with `buttonHref`) |
+| `buttonHref` | string | Primary button link URL (pair with `buttonText`) |
+| `secondButtonText` | string | Secondary button label (pair with `secondButtonHref`) |
+| `secondButtonHref` | string | Secondary button link URL (pair with `secondButtonText`) |
 | `instagramButtonText` | string | Label for the "Follow us on Instagram" button |
 | `ctas` | array | Call-to-action cards (max 4), each with `title`, `description`, `href` |
 | `items` | array | List of strings (for addresses, benefits, tiers &mdash; see below) |
@@ -107,7 +109,7 @@ buttonHref: "/about-us"
 
 **Where it appears:** Standalone sections on the homepage, intro paragraphs on content pages, and crosslink banners at the bottom of pages ("Want to see our projects? &rarr;").
 
-**Fields used:** `title`, `description` (optional), `buttonText` + `buttonHref` (optional, always used as a pair), `instagramButtonText` (optional, only in `landing/latest-news`)
+**Fields used:** `title`, `description` (optional), `buttonText` + `buttonHref` (optional, always used as a pair), `secondButtonText` + `secondButtonHref` (optional second button, used in `landing/latest-news`), `instagramButtonText` (optional, only in `landing/latest-news`)
 
 **Files:** `landing/what-is-bears`, `landing/latest-news`, `landing/become-sponsor`, `events/events-intro`, `events/events-crosslink`, `projects/projects-crosslink`, `sponsors/sponsors-intro`, `sponsors/sponsors-crosslink`, `sponsors/become-sponsor-cta`
 
@@ -473,11 +475,11 @@ description: "From design to launch — building and testing real sounding rocke
 ## Tips
 
 - **All fields are optional.** You can safely leave out any field &mdash; the component will skip it or use a sensible default. Most sections use `title` as their heading, so it is typically provided.
-- **`buttonText` and `buttonHref` go together.** If you provide one without the other, the button will not appear.
+- **`buttonText` and `buttonHref` go together.** If you provide one without the other, the button will not appear. The same applies to `secondButtonText` and `secondButtonHref` for the optional secondary button.
 - **`seoDescription` matters for search engines.** Keep it around 150 characters. It appears in Google search results and social media previews. Only page header files (the `-title` files) typically need this field.
 - **FAQ answers support Markdown.** Use `**bold**`, `[link text](/path)`, and `- bullet items` to format answers.
 - **The ` -> ` separator in items is optional.** Without it, items render as simple strings. With it, the text splits into a title and description.
 - **The `{year}` placeholder** in the copyright text is the only dynamic template supported. It is replaced with the current year at build time.
 - **To find which file controls a section**, look at the page's subfolder. For example, all About Us content is in `about-us/`, all footer content is in `footer/`.
 - **Adding or removing CTA cards** on the hero automatically adjusts the grid layout (1–4 columns). You can also set `ctas` to an empty list to show no cards.
-- **All `href` values must be locale-neutral** &mdash; always write paths without a `/de/` prefix (e.g., `/projects`, `/about-us#find-us-section`). The website automatically adds the correct locale prefix when rendering the German version. This applies to `buttonHref`, `ctas[].href`, `navLinks[].href`, and `navColumns` links. Writing `/de/projects` would result in a broken double-prefix (`/de/de/projects`).
+- **All `href` values must be locale-neutral** &mdash; always write paths without a `/de/` prefix (e.g., `/projects`, `/about-us#find-us-section`). The website automatically adds the correct locale prefix when rendering the German version. This applies to `buttonHref`, `secondButtonHref`, `ctas[].href`, `navLinks[].href`, and `navColumns` links. Writing `/de/projects` would result in a broken double-prefix (`/de/de/projects`).
