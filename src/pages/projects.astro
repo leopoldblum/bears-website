@@ -355,7 +355,7 @@ const projectsData = JSON.stringify(projectsWithImages.map((p, i) => ({
       <p
         slot="result-count"
         :class="{ 'invisible': filteredIndices.length === 0 }"
-        class="text-sm text-bears-text-onDark/40"
+        class="text-sm text-bears-text-onDark/60"
         x-text={`\`${showingText} \${Math.min(visibleCount, filteredIndices.length)} ${ofText} \${filteredIndices.length} ${projectsWord}\``}
       ></p>
     </ProjectCategories>
@@ -371,12 +371,12 @@ const projectsData = JSON.stringify(projectsWithImages.map((p, i) => ({
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
           d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
       </svg>
-      <p class="text-bears-text-onDark/50 text-lg mb-1">{emptyState?.data.title ?? "No projects match your filters"}</p>
-      <p class="text-bears-text-onDark/30 text-sm mb-6">{emptyState?.data.description ?? "Try adjusting or clearing your filters"}</p>
+      <p class="text-bears-text-onDark/60 text-lg mb-1">{emptyState?.data.title ?? "No projects match your filters"}</p>
+      <p class="text-bears-text-onDark/50 text-sm mb-6">{emptyState?.data.description ?? "Try adjusting or clearing your filters"}</p>
       <button
         type="button"
         @click="clearFilters()"
-        class="text-sm text-bears-accent hover:text-bears-accent/80 transition-colors cursor-pointer"
+        class="text-sm text-bears-accent hover:text-white transition-colors cursor-pointer"
       >
         {clearFiltersText}
       </button>
@@ -429,7 +429,7 @@ const projectsData = JSON.stringify(projectsWithImages.map((p, i) => ({
         >
           <span>{showMoreText}</span>
           <span
-            class="text-bears-text-onDark/40"
+            class="text-bears-text-onDark/60"
             x-text={`\`(\${remainingCount} ${remainingText})\``}
           ></span>
           <svg class="w-4 h-4 transition-transform duration-200 group-hover:translate-y-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
