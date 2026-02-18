@@ -51,12 +51,14 @@ Children are passed as a slot. Each direct child becomes a marquee item.
 2. Measure the original content width
 3. Clone items repeatedly until content overflows the container
 4. Add one more complete set as seamless animation buffer
-5. Calculate CSS `--marquee-width` and `--marquee-duration` from the original width and speed
-6. Set `ready = true` to start the animation
+5. Check `prefers-reduced-motion` preference
+6. Start `requestAnimationFrame` loop
 
-**Animation:** Uses CSS `@keyframes marquee-scroll` with `translateX(calc(-1 * var(--marquee-width)))`. The duration is computed as `originalWidth / speed` seconds for consistent speed regardless of content size.
+**Animation:** Uses a `requestAnimationFrame` loop with delta-time calculation. Each frame advances `position` by `speed * deltaTime` pixels, then applies `transform: translateX(-position)` on the track element. Position wraps with modulo at `totalWidth` (one original item set width) for seamless looping. Delta-time is capped at 100ms to prevent jumps after tab switches.
 
-**Reduced motion:** Animation is completely disabled when `prefers-reduced-motion: reduce` is active.
+**Touch support:** The container sets `touch-action: pan-y pinch-zoom` so the browser handles vertical scrolling and pinch-zoom while JS handles horizontal dragging. On `touchstart`, the current position is recorded. During `touchmove`, the position updates based on finger delta (wrapping with modulo). On `touchend`, auto-scrolling resumes smoothly. Multi-touch aborts the drag to allow pinch-zoom.
+
+**Reduced motion:** Auto-scrolling is disabled when `prefers-reduced-motion: reduce` is active, but touch dragging still works.
 
 **Img compatibility:** Special CSS rules ensure `Img` wrapper divs (`.img-better`) fill height correctly within the marquee.
 

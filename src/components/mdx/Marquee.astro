@@ -1,6 +1,6 @@
 ---
 // Marquee - Seamless infinite horizontal scroll component
-// Uses CSS animation for smooth, performant scrolling
+// Uses requestAnimationFrame for smooth scrolling with touch-drag support
 // Works with any content including Img components
 
 interface Props {
@@ -31,14 +31,13 @@ const isReverse = direction === "right";
 
 <div
   class="not-prose marquee-better-container overflow-hidden"
-  style={`--marquee-gap: ${gap}; --marquee-height: ${heightValue};`}
+  style={`--marquee-gap: ${gap}; --marquee-height: ${heightValue}; touch-action: pan-y pinch-zoom;`}
   x-data={`{
     ready: false,
-    originalChildren: [],
-    originalWidth: 0,
 
     async init() {
       const content = this.$refs.content;
+      const track = this.$refs.track;
       const container = this.$el;
 
       // Wait for images to load before measuring (with 3s timeout fallback)
@@ -62,42 +61,139 @@ const isReverse = direction === "right";
       }
 
       // Store original children and measure original width
-      this.originalChildren = Array.from(content.children).map(child => child.cloneNode(true));
-      this.originalWidth = content.scrollWidth;
+      const originalChildren = Array.from(content.children).map(child => child.cloneNode(true));
+      const originalWidth = content.scrollWidth;
 
       // Get gap in pixels for width calculation
       const computedGap = parseFloat(getComputedStyle(content).gap) || 0;
-      const totalOriginalWidth = this.originalWidth + computedGap;
+
+      // Plain object for all animation state — bypasses Alpine's proxy entirely
+      const s = {
+        position: 0,
+        totalWidth: originalWidth + computedGap,
+        lastTime: performance.now(),
+        isPaused: false,
+        isDragging: false,
+        touchStartX: 0,
+        touchStartPosition: 0,
+        rafId: null,
+        reducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      };
+
+      const speed = ${speed};
+      const isReverse = ${isReverse};
+      const pauseOnHover = ${pauseOnHover};
 
       // Clone items until content overflows the container
       let safetyCounter = 0;
       while (content.scrollWidth <= container.clientWidth && safetyCounter < 100) {
-        this.originalChildren.forEach(child => {
+        originalChildren.forEach(child => {
           content.appendChild(child.cloneNode(true));
         });
         safetyCounter++;
       }
 
       // Add one more complete set for seamless animation buffer
-      this.originalChildren.forEach(child => {
+      originalChildren.forEach(child => {
         content.appendChild(child.cloneNode(true));
       });
 
-      // Set CSS variables for animation
-      this.$el.style.setProperty('--marquee-width', totalOriginalWidth + 'px');
-      this.$el.style.setProperty('--marquee-duration', (totalOriginalWidth / ${speed}) + 's');
+      // Force all cloned images to load eagerly (cloneNode inherits loading="lazy"
+      // from Astro's <Image>, but without a CSS animation compositor layer the
+      // browser won't pre-render off-screen lazy images)
+      content.querySelectorAll('img').forEach(img => { img.loading = 'eager'; });
+
+      // Wait for all images (including clones) to fully load before animating
+      const allImages = content.querySelectorAll('img');
+      if (allImages.length > 0) {
+        await Promise.race([
+          Promise.all(
+            Array.from(allImages).map(img =>
+              img.complete ? Promise.resolve() :
+              new Promise(r => {
+                img.addEventListener('load', r, { once: true });
+                img.addEventListener('error', r, { once: true });
+              })
+            )
+          ),
+          new Promise(r => setTimeout(r, 3000))
+        ]);
+      }
+
+      // Single closure — reused by rAF, no allocation per frame
+      const animate = (timestamp) => {
+        const deltaTime = Math.min((timestamp - s.lastTime) / 1000, 0.1);
+        s.lastTime = timestamp;
+
+        if (!s.isDragging && !s.isPaused && !s.reducedMotion) {
+          if (isReverse) {
+            s.position -= speed * deltaTime;
+            if (s.position < 0) s.position += s.totalWidth;
+          } else {
+            s.position += speed * deltaTime;
+            if (s.position >= s.totalWidth) s.position -= s.totalWidth;
+          }
+        }
+
+        track.style.transform = 'translateX(' + (-s.position) + 'px)';
+        s.rafId = requestAnimationFrame(animate);
+      };
+
+      // Event handlers as closures over plain state
+      this.handleTouchStart = (e) => {
+        if (e.touches.length !== 1) return;
+        s.isDragging = true;
+        s.touchStartX = e.touches[0].clientX;
+        s.touchStartPosition = s.position;
+      };
+
+      this.handleTouchMove = (e) => {
+        if (!s.isDragging) return;
+        if (e.touches.length !== 1) { s.isDragging = false; return; }
+        let newPosition = s.touchStartPosition - (e.touches[0].clientX - s.touchStartX);
+        newPosition = newPosition % s.totalWidth;
+        if (newPosition < 0) newPosition += s.totalWidth;
+        s.position = newPosition;
+        track.style.transform = 'translateX(' + (-s.position) + 'px)';
+      };
+
+      this.handleTouchEnd = () => {
+        if (!s.isDragging) return;
+        s.isDragging = false;
+        s.lastTime = performance.now();
+      };
+
+      this.handleMouseEnter = () => {
+        if (pauseOnHover) s.isPaused = true;
+      };
+
+      this.handleMouseLeave = () => {
+        if (pauseOnHover) {
+          s.isPaused = false;
+          s.lastTime = performance.now();
+        }
+      };
 
       this.ready = true;
+      s.lastTime = performance.now();
+      s.rafId = requestAnimationFrame(animate);
+      this._cleanup = () => cancelAnimationFrame(s.rafId);
+    },
+
+    destroy() {
+      if (this._cleanup) this._cleanup();
     }
   }`}
   x-bind:class="{ 'marquee-ready': ready }"
+  @touchstart="handleTouchStart($event)"
+  @touchmove="handleTouchMove($event)"
+  @touchend="handleTouchEnd()"
+  @touchcancel="handleTouchEnd()"
+  @mouseenter="handleMouseEnter()"
+  @mouseleave="handleMouseLeave()"
 >
   <div
-    class:list={[
-      "marquee-better-track",
-      { "marquee-reverse": isReverse },
-      { "marquee-pause-on-hover": pauseOnHover },
-    ]}
+    class="marquee-better-track"
     x-ref="track"
   >
     <div
@@ -113,26 +209,17 @@ const isReverse = direction === "right";
 <style>
   .marquee-better-container {
     width: 100%;
+    cursor: grab;
+  }
+
+  .marquee-better-container:active {
+    cursor: grabbing;
   }
 
   .marquee-better-track {
     display: flex;
     width: max-content;
     will-change: transform;
-  }
-
-  /* Only animate when ready */
-  .marquee-ready .marquee-better-track {
-    animation: marquee-scroll var(--marquee-duration, 20s) linear infinite;
-  }
-
-  /* Reverse direction */
-  .marquee-ready .marquee-better-track.marquee-reverse {
-    animation-direction: reverse;
-  }
-
-  .marquee-better-track.marquee-pause-on-hover:hover {
-    animation-play-state: paused;
   }
 
   .marquee-better-content {
@@ -168,20 +255,5 @@ const isReverse = direction === "right";
     height: 100%;
     width: auto;
     object-fit: cover;
-  }
-
-  @keyframes marquee-scroll {
-    0% {
-      transform: translateX(0);
-    }
-    100% {
-      transform: translateX(calc(-1 * var(--marquee-width)));
-    }
-  }
-
-  @media (prefers-reduced-motion: reduce) {
-    .marquee-ready .marquee-better-track {
-      animation: none;
-    }
   }
 </style>
