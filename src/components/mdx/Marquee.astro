@@ -77,6 +77,7 @@ const isReverse = direction === "right";
         touchStartX: 0,
         touchStartPosition: 0,
         rafId: null,
+        resumeTimer: null,
         reducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches
       };
 
@@ -142,7 +143,9 @@ const isReverse = direction === "right";
       // Event handlers as closures over plain state
       this.handleTouchStart = (e) => {
         if (e.touches.length !== 1) return;
+        clearTimeout(s.resumeTimer);
         s.isDragging = true;
+        s.isPaused = false;
         s.touchStartX = e.touches[0].clientX;
         s.touchStartPosition = s.position;
       };
@@ -160,7 +163,13 @@ const isReverse = direction === "right";
       this.handleTouchEnd = () => {
         if (!s.isDragging) return;
         s.isDragging = false;
+        s.isPaused = true;
         s.lastTime = performance.now();
+        clearTimeout(s.resumeTimer);
+        s.resumeTimer = setTimeout(() => {
+          s.isPaused = false;
+          s.lastTime = performance.now();
+        }, 1000);
       };
 
       this.handleMouseEnter = () => {
@@ -177,7 +186,7 @@ const isReverse = direction === "right";
       this.ready = true;
       s.lastTime = performance.now();
       s.rafId = requestAnimationFrame(animate);
-      this._cleanup = () => cancelAnimationFrame(s.rafId);
+      this._cleanup = () => { cancelAnimationFrame(s.rafId); clearTimeout(s.resumeTimer); };
     },
 
     destroy() {
