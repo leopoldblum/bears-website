@@ -274,43 +274,37 @@ export default function HeroCTAIsland({ ctas }: HeroCTAIslandProps) {
       {/* CTA Grid */}
       <div
         ref={gridRef}
-        className={`relative z-10 grid ${mobileGridCols} ${gridCols} gap-x-4 gap-y-5 sm:gap-6 lg:gap-8 max-w-6xl`}
+        className={`relative z-10 grid ${mobileGridCols} ${gridCols} gap-x-5 gap-y-3 sm:gap-6 lg:gap-8 max-w-6xl`}
         onMouseLeave={() => isLargeScreen && resetGradient()}
       >
-        {ctas.map((cta, index) => {
-          // In 2-col mobile grid, right column items (odd indices) get right-aligned text
-          const isRightCol = ctas.length >= 3 && index % 2 === 1;
-          return (
+        {ctas.map((cta, index) => (
           <div
             key={index}
             ref={(el) => { ctaRefs.current[index] = el; }}
             onMouseEnter={() => isLargeScreen && updateGradient(index)}
-            className={`relative z-10 transition-transform duration-300 ease-out ${activeIndex === index ? 'lg:scale-105' : 'lg:scale-100'
-              } ${isRightCol ? 'text-right sm:text-left' : ''}`}
+            className={`relative z-10 transition-all duration-300 ease-out
+              bg-white/5 backdrop-blur-sm border border-white/10 rounded-xl p-3 sm:p-4
+              lg:bg-transparent lg:backdrop-blur-none lg:border-0 lg:rounded-none lg:p-0
+              active:scale-[0.98] active:bg-white/10 lg:active:scale-100 lg:active:bg-transparent
+              ${activeIndex === index ? 'lg:scale-105' : 'lg:scale-100'}`}
           >
             <a
               href={cta.href}
               className="group block cursor-pointer transition-all duration-300"
             >
-              <p className="text-lg sm:text-2xl lg:text-3xl font-bold text-bears-accent group-hover:text-white transition-colors duration-300">
-                {cta.title}
-              </p>
-              {/* Divider: right-col items flip gradient direction on mobile */}
-              {isRightCol ? (
-                <>
-                  <div className="h-px bg-gradient-to-l from-white/50 from-30% via-white/20 via-70% to-transparent my-1.5 ml-4 rounded-full group-hover:from-white/70 group-hover:via-white/20 transition-all duration-300 sm:hidden" />
-                  <div className="hidden sm:block h-px lg:h-0.5 bg-gradient-to-r from-white/50 from-30% via-white/20 via-70% to-transparent sm:my-3 lg:my-4 mr-10 rounded-full group-hover:from-white/70 group-hover:via-white/20 transition-all duration-300" />
-                </>
-              ) : (
-                <div className="h-px lg:h-0.5 bg-gradient-to-r from-white/50 from-30% via-white/20 via-70% to-transparent my-1.5 sm:my-3 lg:my-4 mr-4 sm:mr-10 rounded-full group-hover:from-white/70 group-hover:via-white/20 transition-all duration-300" />
-              )}
-              <p className="hidden sm:block text-sm sm:text-base lg:text-lg text-bears-text-onDark leading-relaxed group-hover:text-white transition-colors duration-300">
+              <div className="flex items-center justify-between gap-2">
+                <p className="text-lg sm:text-2xl lg:text-3xl font-bold text-bears-accent group-hover:text-white transition-colors duration-300">
+                  {cta.title}
+                </p>
+                <span className="lg:hidden text-white/30 text-sm flex-shrink-0" aria-hidden="true">&rarr;</span>
+              </div>
+              <div className="h-px lg:h-0.5 bg-gradient-to-r from-white/50 from-30% via-white/20 via-70% to-transparent my-1.5 sm:my-3 lg:my-4 sm:mr-10 rounded-full group-hover:from-white/70 group-hover:via-white/20 transition-all duration-300" />
+              <p className="text-xs sm:text-base lg:text-lg text-bears-text-onDark leading-relaxed group-hover:text-white transition-colors duration-300">
                 {cta.description}
               </p>
             </a>
           </div>
-          );
-        })}
+        ))}
       </div>
     </div>
   );
