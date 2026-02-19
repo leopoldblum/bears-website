@@ -180,7 +180,7 @@ const docsCollection = defineCollection({
 const pageTextCollection = defineCollection({
   type: 'content',
   schema: z.object({
-    title: z.string().optional(),
+    title: z.string(),
     subtitle: z.string().optional(),
     description: z.string().optional(),
     seoDescription: z.string().optional(),
@@ -220,6 +220,18 @@ const pageTextCollection = defineCollection({
       id: z.string(),
       label: z.string(),
     })).optional(),
+  }).refine(d => !d.buttonText || d.buttonHref, {
+    message: 'buttonHref is required when buttonText is set',
+    path: ['buttonHref'],
+  }).refine(d => !d.buttonHref || d.buttonText, {
+    message: 'buttonText is required when buttonHref is set',
+    path: ['buttonText'],
+  }).refine(d => !d.secondButtonText || d.secondButtonHref, {
+    message: 'secondButtonHref is required when secondButtonText is set',
+    path: ['secondButtonHref'],
+  }).refine(d => !d.secondButtonHref || d.secondButtonText, {
+    message: 'secondButtonText is required when secondButtonHref is set',
+    path: ['secondButtonText'],
   }),
 });
 

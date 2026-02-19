@@ -359,8 +359,33 @@ describe('page-text schema', () => {
     expect(result.success).toBe(true);
   });
 
-  it('accepts missing title (optional)', () => {
+  it('rejects missing title (required)', () => {
     const result = schema.safeParse({});
+    expect(result.success).toBe(false);
+  });
+
+  it('rejects buttonText without buttonHref', () => {
+    const result = schema.safeParse({ ...validBase, buttonText: 'Click me' });
+    expect(result.success).toBe(false);
+  });
+
+  it('rejects buttonHref without buttonText', () => {
+    const result = schema.safeParse({ ...validBase, buttonHref: '/path' });
+    expect(result.success).toBe(false);
+  });
+
+  it('rejects secondButtonText without secondButtonHref', () => {
+    const result = schema.safeParse({ ...validBase, secondButtonText: 'More' });
+    expect(result.success).toBe(false);
+  });
+
+  it('rejects secondButtonHref without secondButtonText', () => {
+    const result = schema.safeParse({ ...validBase, secondButtonHref: '/more' });
+    expect(result.success).toBe(false);
+  });
+
+  it('accepts button pair together', () => {
+    const result = schema.safeParse({ ...validBase, buttonText: 'Click', buttonHref: '/go' });
     expect(result.success).toBe(true);
   });
 

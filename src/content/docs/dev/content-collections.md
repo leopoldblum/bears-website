@@ -89,16 +89,16 @@ The query function `getSponsorsByTier()` in `contentQueries.ts` groups entries b
 
 ### Page Text Flexible Schema
 
-The `page-text` collection is the most flexible schema, supporting many optional fields for different page sections:
+The `page-text` collection uses a flexible schema with `title` as the only required field. All other fields are optional, used by different page sections as needed:
 
 | Field | Type | Purpose |
 |-------|------|---------|
-| `title` | string? | Section heading |
+| `title` | **string** | Section heading (required) |
 | `subtitle` | string? | Secondary heading |
 | `description` | string? | Body copy |
 | `seoDescription` | string? | Meta description override |
-| `buttonText` / `buttonHref` | string? | Primary CTA |
-| `secondButtonText` / `secondButtonHref` | string? | Secondary CTA |
+| `buttonText` / `buttonHref` | string? | Primary CTA (must be set together) |
+| `secondButtonText` / `secondButtonHref` | string? | Secondary CTA (must be set together) |
 | `ctas` | array (max 4)? | Multiple CTAs with title, description, href |
 | `items` | string[]? | Simple list items |
 | `socialLinks` | array? | Platform + URL + optional hoverColor |
@@ -107,6 +107,8 @@ The `page-text` collection is the most flexible schema, supporting many optional
 | `faqs` | array? | Question + answer pairs |
 | `instagramButtonText` | string? | Instagram CTA button label |
 | `mediaCategories` | array? | Media page categories, each with `id` and `label` |
+
+The schema uses `.refine()` to enforce that button fields always come in pairs &mdash; setting `buttonText` without `buttonHref` (or vice versa) will fail validation at build time. The same applies to `secondButtonText` / `secondButtonHref`.
 
 ## Adding a New Collection
 

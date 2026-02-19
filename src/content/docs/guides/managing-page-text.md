@@ -48,11 +48,11 @@ Both `en/` and `de/` folders use identical filenames. If a German translation is
 
 ## Available Fields
 
-All fields are optional &mdash; each file uses only the fields its section needs. Most sections use `title` as their heading, so it is typically provided.
+Every file must have a `title`. All other fields are optional &mdash; each file uses only the fields its section needs.
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `title` | string | Section heading |
+| `title` | string **(required)** | Section heading |
 | `subtitle` | string | Secondary heading, label, or tagline displayed above or below the title |
 | `description` | string | Paragraph text (intro copy, explanations) |
 | `seoDescription` | string | Meta description for search engines (~150 characters) |
@@ -460,13 +460,14 @@ Each project category can have its own introductory text, shown on the Projects 
 
 ```yaml
 ---
+title: "Experimental Rocketry"
 description: "From design to launch — building and testing real sounding rockets, hybrid engines, and recovery systems."
 ---
 ```
 
-**Where it appears:** The Projects page category filter section, as a short description under each category heading.
+**Where it appears:** The Projects page category filter section, as a short description under each category heading. The `title` is required by the schema but not displayed &mdash; the visible heading is derived from the category enum label.
 
-**Fields used:** `description`
+**Fields used:** `title` (required, not displayed), `description`
 
 **Files:** `projects/category-experimental-rocketry`, `projects/category-science-and-experiments`, `projects/category-robotics`
 
@@ -474,8 +475,8 @@ description: "From design to launch — building and testing real sounding rocke
 
 ## Tips
 
-- **All fields are optional.** You can safely leave out any field &mdash; the component will skip it or use a sensible default. Most sections use `title` as their heading, so it is typically provided.
-- **`buttonText` and `buttonHref` go together.** If you provide one without the other, the button will not appear. The same applies to `secondButtonText` and `secondButtonHref` for the optional secondary button.
+- **`title` is required.** Every page-text file must have a `title` field. All other fields are optional &mdash; the component will skip missing fields or use a sensible default.
+- **`buttonText` and `buttonHref` go together.** If you provide one without the other, the build will fail with a validation error. The same applies to `secondButtonText` and `secondButtonHref` for the optional secondary button.
 - **`seoDescription` matters for search engines.** Keep it around 150 characters. It appears in Google search results and social media previews. Only page header files (the `-title` files) typically need this field.
 - **FAQ answers support Markdown.** Use `**bold**`, `[link text](/path)`, and `- bullet items` to format answers.
 - **The ` -> ` separator in items is optional.** Without it, items render as simple strings. With it, the text splits into a title and description.
