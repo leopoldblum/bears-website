@@ -42,14 +42,14 @@ const permalink = extractPermalink(url);
 ---
 
 <div
-  class:list={['not-prose instagram-embed-container rounded-xl border border-white/10 bg-white/[0.03] backdrop-blur-sm shadow-[0_4px_12px_rgba(0,0,0,0.4)] overflow-hidden px-5 pt-5 pb-2 sm:px-6 sm:pt-6 sm:pb-3 transition-all duration-300 lg:hover:border-bears-accent/30 lg:hover:shadow-[0_8px_24px_rgba(0,0,0,0.5),0_0_20px_rgba(197,14,31,0.15)] lg:hover:scale-[1.02]', className]}
+  class:list={['not-prose instagram-feed-card rounded-xl border border-white/10 bg-white/[0.03] backdrop-blur-sm shadow-[0_4px_12px_rgba(0,0,0,0.4)] overflow-hidden transition-all duration-300 lg:hover:border-bears-accent/30 lg:hover:shadow-[0_8px_24px_rgba(0,0,0,0.5),0_0_20px_rgba(197,14,31,0.15)] lg:hover:scale-[1.02]', className]}
   style={`max-width: ${maxWidth}; width: 100%;`}
 >
   <blockquote
     class="instagram-media"
     data-instgrm-permalink={permalink}
     data-instgrm-version="14"
-    style="margin: 0; padding: 0; width: 100%; min-width: 0;"
+    style="margin: 0; padding: 0; width: 100%;"
   >
     <div style="padding: 16px;">
       <a
@@ -64,10 +64,13 @@ const permalink = extractPermalink(url);
   </blockquote>
 </div>
 
-<style>
-  .instagram-embed-container iframe {
+<style is:global>
+  .instagram-feed-card iframe {
     margin: 0 !important;
     display: block;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    filter: brightness(0.96) saturate(0.95);
   }
 </style>
 
@@ -80,4 +83,13 @@ const permalink = extractPermalink(url);
   } else if (window.instgrm) {
     window.instgrm.Embeds.process();
   }
+
+  // Add title attributes to Instagram iframes for accessibility (Lighthouse)
+  document.querySelectorAll('.instagram-feed-card').forEach((container) => {
+    new MutationObserver(() => {
+      container.querySelectorAll('iframe:not([title])').forEach((iframe) => {
+        iframe.setAttribute('title', 'Instagram post');
+      });
+    }).observe(container, { childList: true, subtree: true });
+  });
 </script>
