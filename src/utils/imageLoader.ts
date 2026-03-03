@@ -12,6 +12,7 @@ import defaultProjectImage from '@assets/default-images/default-project.jpg';
 import defaultTestimonialImage from '@assets/default-images/default-testimonial.jpg';
 import defaultSponsorImage from '@assets/default-images/default-sponsor.jpg';
 import defaultFaceImage from '@assets/default-images/default-face.jpg';
+import { resolveGlobKey } from './imageConstants';
 
 // Export default images for components that need direct access
 export { defaultEventImage, defaultProjectImage, defaultTestimonialImage, defaultSponsorImage, defaultFaceImage };
@@ -49,10 +50,11 @@ interface LoadImageOptions {
 export async function loadImage(options: LoadImageOptions): Promise<ImageMetadata | null> {
   const { glob, imagePath, fallbackImage, context } = options;
 
-  // Check if image exists in glob
-  if (glob[imagePath]) {
+  // Check if image exists in glob (case-insensitive extension matching)
+  const resolvedKey = resolveGlobKey(glob, imagePath);
+  if (resolvedKey) {
     try {
-      const imageModule = await glob[imagePath]();
+      const imageModule = await glob[resolvedKey]();
       return imageModule.default;
     } catch (error) {
       // Log warning for failed load
@@ -184,10 +186,11 @@ export async function loadImagesForCollection<
         // Only try to load if coverImageType is CUSTOM and we have an image filename
         if (item.data.coverImageType === "CUSTOM" && imageFileName) {
           const imagePath = `${baseDir}/${imageFileName}`;
+          const resolvedKey = resolveGlobKey(glob, imagePath);
 
-          if (glob[imagePath]) {
+          if (resolvedKey) {
             try {
-              const imageModule = await glob[imagePath]();
+              const imageModule = await glob[resolvedKey]();
               loadedImage = imageModule.default;
             } catch (error) {
               imageLoadFailed = true;
@@ -218,10 +221,11 @@ export async function loadImagesForCollection<
       // For items without coverImageType field (testimonials)
       else if (imageFileName) {
         const imagePath = `${baseDir}/${imageFileName}`;
+        const resolvedKey = resolveGlobKey(glob, imagePath);
 
-        if (glob[imagePath]) {
+        if (resolvedKey) {
           try {
-            const imageModule = await glob[imagePath]();
+            const imageModule = await glob[resolvedKey]();
             loadedImage = imageModule.default;
           } catch (error) {
             imageLoadFailed = true;

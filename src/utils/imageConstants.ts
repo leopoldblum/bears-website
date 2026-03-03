@@ -46,7 +46,7 @@ export const VALID_EXTENSIONS_MESSAGE = VALID_IMAGE_EXTENSIONS
 /**
  * Generic glob result type — works for both image and string (video) imports
  */
-type GlobRecord = Record<string, () => Promise<unknown>>;
+export type GlobRecord = Record<string, () => Promise<unknown>>;
 
 /**
  * Filters a glob result to only include entries whose file extension
@@ -80,4 +80,39 @@ export function filterImageGlob<T extends GlobRecord>(glob: T): T {
  */
 export function filterMediaGlob<T extends GlobRecord>(glob: T): T {
   return filterByExtensions(glob, [...VALID_IMAGE_EXTENSIONS, ...VALID_VIDEO_EXTENSIONS]);
+}
+
+/**
+ * Resolve a glob key with case-insensitive extension matching.
+ *
+ * Tries an exact key lookup first (O(1)). If that misses, finds a key
+ * whose stem (everything before the last dot) matches exactly and whose
+ * extension differs only in case.
+ *
+ * @returns The matching key from the glob, or undefined if no match.
+ */
+export function resolveGlobKey<T extends GlobRecord>(
+  glob: T,
+  path: string,
+): (keyof T & string) | undefined {
+  if (path in glob) return path;
+
+  const lastDot = path.lastIndexOf('.');
+  if (lastDot === -1) return undefined;
+
+  const stem = path.substring(0, lastDot);
+  const extLower = path.substring(lastDot + 1).toLowerCase();
+
+  for (const key of Object.keys(glob)) {
+    const keyLastDot = key.lastIndexOf('.');
+    if (keyLastDot === -1) continue;
+
+    const keyStem = key.substring(0, keyLastDot);
+    if (keyStem !== stem) continue;
+
+    const keyExt = key.substring(keyLastDot + 1).toLowerCase();
+    if (keyExt === extLower) return key;
+  }
+
+  return undefined;
 }

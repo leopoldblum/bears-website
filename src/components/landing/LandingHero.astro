@@ -10,6 +10,7 @@ import HeroCTAIsland from './HeroCTAIsland';
 import CarouselArrow from '@reusable/CarouselArrow.astro';
 import { getLandingHeroSlides } from '@utils/contentQueries';
 import { heroImages, heroMedia, heroLogoImages } from '@utils/imageGlobs';
+import { resolveGlobKey } from '@utils/imageConstants';
 
 // Load the first image from src/assets/hero/landingpage/logo/
 const heroLogoEntry = Object.values(heroLogoImages)[0];
@@ -58,8 +59,9 @@ const media: MediaItem[] = await Promise.all(
 
     if (slide.data.type === 'video') {
       // Videos use the general media glob
-      if (heroMedia[mediaPath]) {
-        const module = await heroMedia[mediaPath]();
+      const videoKey = resolveGlobKey(heroMedia, mediaPath);
+      if (videoKey) {
+        const module = await heroMedia[videoKey]();
         src = module.default;
       } else {
         console.warn(`Hero video not found: ${mediaPath}`);
@@ -67,8 +69,9 @@ const media: MediaItem[] = await Promise.all(
       }
     } else {
       // Images use the typed image glob for Astro Image optimization
-      if (heroImages[mediaPath]) {
-        const imageModule = await heroImages[mediaPath]();
+      const imageKey = resolveGlobKey(heroImages, mediaPath);
+      if (imageKey) {
+        const imageModule = await heroImages[imageKey]();
         src = imageModule.default;
       } else {
         console.warn(`Hero image not found: ${mediaPath}`);

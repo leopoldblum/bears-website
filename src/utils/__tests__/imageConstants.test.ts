@@ -6,6 +6,7 @@ import {
   VALID_EXTENSIONS_MESSAGE,
   filterImageGlob,
   filterMediaGlob,
+  resolveGlobKey,
 } from '../imageConstants';
 
 describe('VALID_IMAGE_EXTENSIONS', () => {
@@ -158,5 +159,77 @@ describe('filterMediaGlob', () => {
 
   it('returns empty for empty input', () => {
     expect(Object.keys(filterMediaGlob({}))).toEqual([]);
+  });
+});
+
+describe('resolveGlobKey', () => {
+  it('returns the path on exact match', () => {
+    const glob = fakeGlob(['/a/photo.jpg']);
+    expect(resolveGlobKey(glob, '/a/photo.jpg')).toBe('/a/photo.jpg');
+  });
+
+  it('matches .JPG in glob when looking up .jpg', () => {
+    const glob = fakeGlob(['/a/photo.JPG']);
+    expect(resolveGlobKey(glob, '/a/photo.jpg')).toBe('/a/photo.JPG');
+  });
+
+  it('matches .jpg in glob when looking up .JPG', () => {
+    const glob = fakeGlob(['/a/photo.jpg']);
+    expect(resolveGlobKey(glob, '/a/photo.JPG')).toBe('/a/photo.jpg');
+  });
+
+  it('matches mixed-case extension (.Jpg -> .jpg)', () => {
+    const glob = fakeGlob(['/a/photo.Jpg']);
+    expect(resolveGlobKey(glob, '/a/photo.jpg')).toBe('/a/photo.Jpg');
+  });
+
+  it('matches .JPEG when looking up .jpeg', () => {
+    const glob = fakeGlob(['/a/img.JPEG']);
+    expect(resolveGlobKey(glob, '/a/img.jpeg')).toBe('/a/img.JPEG');
+  });
+
+  it('does NOT match when stem differs in case', () => {
+    const glob = fakeGlob(['/a/Photo.jpg']);
+    expect(resolveGlobKey(glob, '/a/photo.jpg')).toBeUndefined();
+  });
+
+  it('does NOT match when stem differs in case even if ext also differs', () => {
+    const glob = fakeGlob(['/a/Photo.JPG']);
+    expect(resolveGlobKey(glob, '/a/photo.jpg')).toBeUndefined();
+  });
+
+  it('returns undefined when glob is empty', () => {
+    expect(resolveGlobKey({}, '/a/photo.jpg')).toBeUndefined();
+  });
+
+  it('returns undefined when no key matches', () => {
+    const glob = fakeGlob(['/a/other.jpg']);
+    expect(resolveGlobKey(glob, '/a/photo.jpg')).toBeUndefined();
+  });
+
+  it('returns undefined when requested path has no dot', () => {
+    const glob = fakeGlob(['/a/photo.jpg']);
+    expect(resolveGlobKey(glob, '/a/photo')).toBeUndefined();
+  });
+
+  it('handles multiple dots in filename correctly', () => {
+    const glob = fakeGlob(['/a/photo.min.JPG']);
+    expect(resolveGlobKey(glob, '/a/photo.min.jpg')).toBe('/a/photo.min.JPG');
+  });
+
+  it('does not match different extensions', () => {
+    const glob = fakeGlob(['/a/photo.png']);
+    expect(resolveGlobKey(glob, '/a/photo.jpg')).toBeUndefined();
+  });
+
+  it('prefers exact match over case-insensitive match', () => {
+    const glob = fakeGlob(['/a/photo.jpg', '/a/photo.JPG']);
+    expect(resolveGlobKey(glob, '/a/photo.jpg')).toBe('/a/photo.jpg');
+  });
+
+  it('works with typical Astro asset paths', () => {
+    const glob = fakeGlob(['/src/assets/whatIsBears/carousel-7.JPG']);
+    expect(resolveGlobKey(glob, '/src/assets/whatIsBears/carousel-7.jpg'))
+      .toBe('/src/assets/whatIsBears/carousel-7.JPG');
   });
 });
