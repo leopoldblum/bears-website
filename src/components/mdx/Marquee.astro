@@ -27,6 +27,33 @@ const {
 const heightMap = { sm: "12rem", md: "16rem", lg: "20rem", xl: "24rem" };
 const heightValue = heightMap[height];
 const isReverse = direction === "right";
+
+// Render slot to HTML so we can post-process image sizes
+let slotHtml = await Astro.slots.render("default");
+
+// Auto-compute `sizes` for <img> tags based on marquee height and aspect ratio.
+// The marquee CSS sets images to fill the content height (minus 8px top + 8px bottom
+// padding), so the display width = (height - 16px) * (intrinsic width / intrinsic height).
+slotHtml = slotHtml.replace(
+  /<img\b([^>]*)>/gi,
+  (match, attrs: string) => {
+    const wMatch = attrs.match(/\bwidth="(\d+)"/);
+    const hMatch = attrs.match(/\bheight="(\d+)"/);
+    if (!wMatch || !hMatch) return match;
+
+    const aspectRatio = (Number(wMatch[1]) / Number(hMatch[1])).toFixed(4);
+    const computedSizes = `calc((${heightValue} - 16px) * ${aspectRatio})`;
+
+    // Replace existing sizes or append new one
+    if (/\bsizes="[^"]*"/.test(attrs)) {
+      attrs = attrs.replace(/\bsizes="[^"]*"/, `sizes="${computedSizes}"`);
+    } else {
+      attrs += ` sizes="${computedSizes}"`;
+    }
+
+    return `<img${attrs}>`;
+  }
+);
 ---
 
 <div
@@ -210,7 +237,7 @@ const isReverse = direction === "right";
       class="marquee-better-content"
       style={`gap: ${gap}; height: ${heightValue};`}
     >
-      <slot />
+      <Fragment set:html={slotHtml} />
     </div>
   </div>
 </div>
