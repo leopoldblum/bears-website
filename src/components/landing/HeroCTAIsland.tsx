@@ -288,7 +288,7 @@ export default function HeroCTAIsland({ ctas }: HeroCTAIslandProps) {
           >
             <a
               href={cta.href}
-              className="group block lg:[display:contents] cursor-pointer transition-all duration-300"
+              className="group block lg:grid lg:grid-rows-subgrid lg:row-span-3 cursor-pointer transition-all duration-300"
             >
               <div className="flex items-center justify-between gap-2">
                 <p className="text-lg sm:text-2xl lg:text-3xl font-bold text-bears-accent group-hover:text-white lg:group-hover:[text-shadow:0_0_20px_rgba(197,14,31,0.4)] transition-all duration-300">
