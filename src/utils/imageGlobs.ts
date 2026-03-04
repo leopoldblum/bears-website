@@ -124,6 +124,15 @@ export const headerLogoImages: ImageGlob = filterImageGlob(
 );
 
 /**
+ * Footer logo image
+ * Used by: Footer.astro
+ * Place a single image in this directory to use as the site footer logo.
+ */
+export const footerLogoImages: ImageGlob = filterImageGlob(
+  import.meta.glob<{ default: ImageMetadata }>("/src/assets/footer/*.*"),
+);
+
+/**
  * Landing hero logo image
  * Used by: LandingHero.astro
  * Place a single image in this directory to use as the landing page hero logo.
