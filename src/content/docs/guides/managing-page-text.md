@@ -27,6 +27,7 @@ src/content/page-text/
 │   ├── sponsors/      — Sponsors page (header, tiers, CTA)
 │   ├── contact/       — Contact page
 │   ├── media/         — Media page
+│   ├── header/        — Header (navigation links)
 │   ├── footer/        — Footer (navigation, address, legal)
 │   ├── site/          — Site-wide settings (metadata, social links)
 │   ├── 404/           — Not Found page
@@ -293,6 +294,37 @@ socialLinks:
 
 ---
 
+### Header Navigation
+
+Controls the top navigation bar links shown on every page. Each entry has a `label` (displayed text) and an `href` (link target).
+
+```yaml
+---
+title: "Header Navigation"
+navLinks:
+  - label: "Projects"
+    href: "/projects"
+  - label: "Sponsors"
+    href: "/sponsors"
+  - label: "Events"
+    href: "/events"
+  - label: "About Us"
+    href: "/about-us"
+  - label: "Contact"
+    href: "/contact"
+---
+```
+
+**Where it appears:** The main navigation bar at the top of every page (desktop menu and mobile hamburger menu).
+
+**Reordering or removing links:** The links appear in the order listed. Remove an entry to hide it from the nav, or rearrange entries to change the order.
+
+**Fields used:** `title` (not displayed), `navLinks` (each with `label` and `href`)
+
+**Files:** `header/navigation`
+
+---
+
 ### Footer Navigation (Multi-Column)
 
 Defines the footer's multi-column link layout. Each column has a heading (which is also a link), and a list of sub-links beneath it.
@@ -349,9 +381,9 @@ Controls the copyright text and legal page links at the very bottom of the foote
 ---
 title: "© {year} BEARS e.V. All rights reserved."
 navLinks:
-  - label: "Impressum"
+  - label: "Imprint"
     href: "/imprint"
-  - label: "Datenschutz"
+  - label: "Privacy Policy"
     href: "/datenschutz"
 ---
 ```

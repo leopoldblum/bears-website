@@ -21,6 +21,8 @@ BEARS WEBSITE CONTENT SYSTEM REFERENCE
 
 This is the content management system for the BEARS e.V. website, built with Astro.js. All content lives in src/content/ as Markdown (.md) or MDX (.mdx) files. Each file has YAML frontmatter between --- delimiters. Only events and projects support .mdx; everything else uses .md.
 
+The site supports English (default) and German (/de/ prefix). Content files in page-text are organized under en/ and de/ subfolders. The English version is shown automatically if a German translation is missing.
+
 ========================================
 CONTENT COLLECTIONS
 ========================================
@@ -56,7 +58,7 @@ Organized by tier folders: diamond/, platinum/, gold/, silver/, bronze/
 File naming within tier: "NN-name.md" (numeric prefix = display order)
 Frontmatter:
   name: string (required)
-  logo: string (required) — filename in src/assets/sponsors/, valid: .jpg .jpeg .png .webp
+  logo: string (required) — filename in src/assets/sponsors/{tier}/, valid: .jpg .jpeg .png .webp
   url: string (optional) — full website URL
 
 TESTIMONIALS (src/content/testimonials/)
@@ -100,16 +102,18 @@ Frontmatter:
 
 PAGE TEXT (src/content/page-text/)
 Editable headings, descriptions, buttons, and structured data for every page section.
+Files are organized under en/ and de/ locale subfolders.
 Only frontmatter is used — the body is ignored.
-Frontmatter (all fields optional, use only what the section needs):
-  title: string — section heading (most sections use this)
-  subtitle: string — secondary heading or label
-  description: string — paragraph text
-  seoDescription: string — meta description for search engines (~150 chars)
-  buttonText: string — primary button label (pair with buttonHref)
-  buttonHref: string — primary button URL (pair with buttonText)
-  secondButtonText: string — secondary button label (pair with secondButtonHref)
-  secondButtonHref: string — secondary button URL (pair with secondButtonText)
+Frontmatter fields:
+  title: string (required) — section heading
+  subtitle: string (optional) — secondary heading or label
+  description: string (optional) — paragraph text
+  seoDescription: string (optional) — meta description for search engines (~150 chars)
+  buttonText: string (optional) — primary button label (pair with buttonHref)
+  buttonHref: string (optional) — primary button URL (pair with buttonText)
+  secondButtonText: string (optional) — secondary button label (pair with secondButtonHref)
+  secondButtonHref: string (optional) — secondary button URL (pair with secondButtonText)
+  instagramButtonText: string (optional) — Instagram CTA button label (used in landing/latest-news)
   ctas: array (max 4) — each: { title, description, href }
   items: array of strings — plain list or "Title -> Description" format (arrow separator splits into title + description)
   faqs: array — each: { question, answer } — answers support Markdown (bold, links, lists)
@@ -120,19 +124,20 @@ Frontmatter (all fields optional, use only what the section needs):
     Available ids: all (combined view), about-us, events, faces-of-bears, hero, projects, team-members, testimonials, what-is-bears
     Remove an entry to hide that category; reorder entries to change display order.
 
-Page text folder structure:
+Page text folder structure (inside en/ and de/):
   landing/        — homepage sections (hero, what-is-bears, latest-news, meet-the-team, testimonials, become-sponsor)
-  about-us/       — about page (about-us-title, our-mission, whats-in-it, faq, find-us, faces-of-bears)
+  about-us/       — about page (about-us-title, our-mission, whats-in-it, faq, faq-crosslink, find-us, faces-of-bears)
   events/         — events page (events-title, events-intro, events-crosslink, events-empty-state)
-  projects/       — projects page (projects-title, categories-intro, category-*, projects-crosslink, projects-empty-state)
+  projects/       — projects page (projects-title, categories-intro, category-experimental-rocketry, category-science-and-experiments, category-robotics, projects-crosslink, projects-empty-state)
   sponsors/       — sponsors page (sponsors-title, sponsors-intro, sponsor-tiers, sponsors-crosslink, become-sponsor-cta)
   contact/        — contact page (contact-title, contact-info, contact-crosslink)
   media/          — media page (media-title)
-  footer/         — footer (navigation, footer-address, bottom-bar)
+  header/         — header navigation (navigation — uses navLinks)
+  footer/         — footer (navigation — uses navColumns, footer-address, bottom-bar)
   site/           — site-wide (metadata, social-links — social media links used across the site)
   404/            — 404 page (not-found)
-  imprint/        — imprint page
-  datenschutz/    — privacy policy page
+  imprint/        — imprint page (imprint)
+  datenschutz/    — privacy policy page (datenschutz)
 
 Naming conventions:
   -title suffix     — page hero header (e.g. events/events-title)
@@ -229,11 +234,14 @@ All images must be local files in src/assets/ subdirectories:
   src/assets/projects/team-members/ — project team lead portraits (for Meet the Team)
   src/assets/sponsors/{tier}/     — sponsor logos, organized by tier folder (diamond/, platinum/, gold/, silver/, bronze/)
   src/assets/testimonials/        — testimonial portraits
-  src/assets/faces-of-bears/         — Faces of BEARS portraits
-  src/assets/about-us/our-mission/    — about page mission section images
+  src/assets/faces-of-bears/      — Faces of BEARS portraits
+  src/assets/about-us/our-mission/ — about page mission section images
   src/assets/whatIsBears/         — What is BEARS carousel images
   src/assets/hero/landingpage/    — landing page hero slides (images and videos)
+  src/assets/hero/landingpage/logo/ — landing page hero logo
   src/assets/hero/{about-us,contact,events,media,projects,sponsors}/ — sub-page hero images
+  src/assets/header/              — header logo
+  src/assets/footer/              — footer logo
   src/assets/default-images/      — fallback images when no custom image is provided
 
 Valid image formats: .jpg, .jpeg, .png, .webp
@@ -245,14 +253,16 @@ KEY CONVENTIONS
 ========================================
 
 - isDraft: true hides events, projects, and Instagram posts in production (visible in dev).
-- Numeric prefixes (01-, 02-, etc.) control display order for hero slides, testimonials, sponsors, and team members. Hero slides sort numerically, not alphabetically.
+- Numeric prefixes (01-, 02-, etc.) control display order for hero slides, testimonials, sponsors, Faces of BEARS, and team members. Hero slides sort numerically, not alphabetically.
 - FAQ answers and Accordion content support Markdown: **bold**, [links](/path), - bullet lists.
-- Sponsor tier is determined by folder name (diamond/, platinum/, gold/, silver/, bronze/), not frontmatter.
+- Sponsor tier is determined by folder name (diamond/, platinum/, gold/, silver/, bronze/), not frontmatter. Sponsor logos go in the matching tier subfolder under src/assets/sponsors/.
 - The seoDescription field sets a page's <meta name="description"> tag. Keep it ~150 characters.
 - For projects, if displayMeetTheTeam is true then both headOfProject and personImage must also be provided.
 - UI strings for events/projects pages (filter labels, sort options, status badges) are centralized in catalogUiStrings in src/utils/i18n.ts.
 - UI strings for the media page ("This is" label, empty state) are in mediaUiStrings in src/utils/i18n.ts.
 - Media page categories are configured via the mediaCategories field in the page-text content file (media/media-title). Category labels are set per locale in the content file, not in i18n.ts.
+- Header navigation links are configured in the page-text file header/navigation (navLinks field).
+- Footer navigation columns are configured in the page-text file footer/navigation (navColumns field).
 ````
 
   </div>
