@@ -1,8 +1,8 @@
 ---
 title: "© {year} BEARS e.V. All rights reserved."
 navLinks:
-  - label: "Impressum"
+  - label: "Imprint"
     href: "/imprint"
-  - label: "Datenschutz"
+  - label: "Privacy Policy"
     href: "/datenschutz"
 ---

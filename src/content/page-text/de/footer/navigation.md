@@ -20,7 +20,7 @@ navColumns:
       - label: "Sponsor werden"
         href: "/sponsors#become-a-sponsor-title"
       - label: "Unsere Partner"
-        href: "/sponsors#diamond"
+        href: "/sponsors#sponsor-showcase"
       - label: "Vorteile"
         href: "/sponsors"
   - heading: "Events"
