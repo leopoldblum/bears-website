@@ -78,14 +78,14 @@ export default function HeroCTAIsland({ ctas }: HeroCTAIslandProps) {
   const mobileGridCols = ctas.length === 1 ? 'grid-cols-1' : 'grid-cols-2';
 
   return (
-    <div className="relative mt-auto pb-3 sm:pb-5 lg:pb-8">
+    <div className="relative mt-auto pb-3 sm:pb-5 lg:pb-12">
       <div
         ref={gridRef}
         className={`grid ${mobileGridCols} ${gridCols}
           rounded-xl overflow-hidden
           bg-black/20 backdrop-blur-md
           border border-white/[0.06]
-          max-w-6xl`}
+          max-w-6xl mx-auto`}
         onMouseLeave={handleMouseLeave}
       >
         {ctas.map((cta, index) => {
