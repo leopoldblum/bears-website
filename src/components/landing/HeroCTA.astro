@@ -57,19 +57,23 @@ function getBorderClasses(index: number): string {
       <a
         href={cta.href}
         class:list={[
-          'group/card block px-3 py-2.5 sm:p-4 lg:p-5',
+          'group/card relative block px-3.5 py-3 sm:p-4 lg:px-6 lg:py-5',
           'transition-all duration-300 ease-out',
+          'active:scale-[0.97] active:bg-white/[0.04]',
           'lg:group-hover/grid:opacity-50 lg:hover:!opacity-100',
           'lg:hover:bg-white/[0.05]',
           getBorderClasses(index),
         ]}
       >
-        <div class="flex items-baseline justify-between gap-2">
-          <p class="text-sm sm:text-base lg:text-xl font-semibold transition-colors duration-300 text-bears-accent lg:group-hover/card:text-white">
+        {/* Left accent bar */}
+        <span class="absolute left-0 top-2 bottom-2 lg:top-3 lg:bottom-3 w-[2px] rounded-full bg-bears-accent/60 transition-colors duration-300 lg:group-hover/card:bg-bears-accent" aria-hidden="true" />
+
+        <div class="flex items-center justify-between gap-2">
+          <p class="text-[0.9rem] sm:text-base lg:text-xl font-semibold tracking-tight transition-colors duration-300 text-white">
             {cta.title}
           </p>
           <span
-            class="text-white/40 text-xs flex-shrink-0 transition-all duration-300 lg:opacity-0 lg:-translate-x-1 lg:group-hover/card:opacity-100 lg:group-hover/card:translate-x-0"
+            class="flex items-center justify-center size-5 lg:size-7 rounded-full bg-white/[0.08] text-white/50 text-[0.65rem] lg:text-sm flex-shrink-0 transition-all duration-300 lg:opacity-0 lg:-translate-x-1 lg:group-hover/card:opacity-100 lg:group-hover/card:translate-x-0"
             aria-hidden="true"
           >
             &rarr;
