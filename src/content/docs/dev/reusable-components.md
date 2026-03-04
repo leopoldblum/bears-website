@@ -188,7 +188,7 @@ Subtle banner with text and arrow link, used below pagination to cross-link betw
 
 Full viewport hero with video/image carousel background. Loads media from `src/assets/hero/landingpage/`. Videos autoplay muted. Touch swipe support for mobile.
 
-The CTA grid is a React island (`HeroCTAIsland.tsx`) with a dynamic gradient underlay that tracks mouse position.
+The CTA grid (`HeroCTA.astro`) uses CSS-only hover effects — no client-side JS required.
 
 ---
 

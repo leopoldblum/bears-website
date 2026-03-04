@@ -1,12 +1,11 @@
 ---
 // Landing Hero Component - Main hero section with video/image carousel background
 // Media is loaded from the hero-slides content collection
-// HeroCTAs are rendered via a React island for better interactivity
 
 import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
 import Img from '@mdx/Img.astro';
-import HeroCTAIsland from './HeroCTAIsland';
+import HeroCTA from './HeroCTA.astro';
 import CarouselArrow from '@reusable/CarouselArrow.astro';
 import { getLandingHeroSlides } from '@utils/contentQueries';
 import { heroImages, heroMedia, heroLogoImages } from '@utils/imageGlobs';
@@ -308,9 +307,9 @@ const mediaJson = JSON.stringify(media.map((item, index) => ({
         ></div>
       </div>
 
-      <!-- Bottom Row: HeroCTAs (React Island for better interactivity) -->
+      <!-- Bottom Row: HeroCTAs -->
       {ctas.length > 0 && (
-        <HeroCTAIsland ctas={ctas} client:load />
+        <HeroCTA ctas={ctas} />
       )}
     </div>
   </div>
