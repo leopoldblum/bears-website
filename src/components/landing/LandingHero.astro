@@ -1,15 +1,15 @@
 ---
 // Landing Hero Component - Main hero section with video/image carousel background
 // Media is loaded from the hero-slides content collection
-// HeroCTAs are rendered via a React island for better interactivity
 
 import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
 import Img from '@mdx/Img.astro';
-import HeroCTAIsland from './HeroCTAIsland';
+import HeroCTA from './HeroCTA.astro';
 import CarouselArrow from '@reusable/CarouselArrow.astro';
 import { getLandingHeroSlides } from '@utils/contentQueries';
 import { heroImages, heroMedia, heroLogoImages } from '@utils/imageGlobs';
+import { resolveGlobKey } from '@utils/imageConstants';
 
 // Load the first image from src/assets/hero/landingpage/logo/
 const heroLogoEntry = Object.values(heroLogoImages)[0];
@@ -58,8 +58,9 @@ const media: MediaItem[] = await Promise.all(
 
     if (slide.data.type === 'video') {
       // Videos use the general media glob
-      if (heroMedia[mediaPath]) {
-        const module = await heroMedia[mediaPath]();
+      const videoKey = resolveGlobKey(heroMedia, mediaPath);
+      if (videoKey) {
+        const module = await heroMedia[videoKey]();
         src = module.default;
       } else {
         console.warn(`Hero video not found: ${mediaPath}`);
@@ -67,8 +68,9 @@ const media: MediaItem[] = await Promise.all(
       }
     } else {
       // Images use the typed image glob for Astro Image optimization
-      if (heroImages[mediaPath]) {
-        const imageModule = await heroImages[mediaPath]();
+      const imageKey = resolveGlobKey(heroImages, mediaPath);
+      if (imageKey) {
+        const imageModule = await heroImages[imageKey]();
         src = imageModule.default;
       } else {
         console.warn(`Hero image not found: ${mediaPath}`);
@@ -305,9 +307,9 @@ const mediaJson = JSON.stringify(media.map((item, index) => ({
         ></div>
       </div>
 
-      <!-- Bottom Row: HeroCTAs (React Island for better interactivity) -->
+      <!-- Bottom Row: HeroCTAs -->
       {ctas.length > 0 && (
-        <HeroCTAIsland ctas={ctas} client:load />
+        <HeroCTA ctas={ctas} />
       )}
     </div>
   </div>

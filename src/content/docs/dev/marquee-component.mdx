@@ -60,6 +60,8 @@ Children are passed as a slot. Each direct child becomes a marquee item.
 
 **Reduced motion:** Auto-scrolling is disabled when `prefers-reduced-motion: reduce` is active, but touch dragging still works.
 
+**Image sizing:** The Marquee automatically computes a `sizes` attribute for every `<img>` inside it at build time. It uses the selected height preset (minus 16px of vertical padding) and each image's intrinsic aspect ratio to calculate the exact display width: `calc((<height> - 16px) * <aspectRatio>)`. This means consumers never need to pass a manual `sizes` prop to `Img` components inside a `Marquee` — it is computed and injected automatically.
+
 **Img compatibility:** Special CSS rules ensure `Img` wrapper divs (`.img-better`) fill height correctly within the marquee.
 
 **Source:** `src/components/mdx/Marquee.astro`

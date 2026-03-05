@@ -1,7 +1,13 @@
 ---
+import { Image } from "astro:assets";
+import { footerLogoImages } from "@utils/imageGlobs";
 import { getPageContent } from "@utils/contentQueries";
 import { socialIcons } from "@utils/socialIcons";
 import { localizeUrl, type Locale } from "@utils/i18n";
+
+// Load the first image from src/assets/footer/
+const logoEntry = Object.values(footerLogoImages)[0];
+const footerLogo = logoEntry ? (await logoEntry()).default : null;
 
 interface Props {
   locale: Locale;
@@ -19,34 +25,59 @@ const addressLines = addressContent?.data.items ?? [];
 const navContent = await getPageContent("footer/navigation", locale);
 const navColumns = navContent?.data.navColumns ?? [
   {
-    heading: "Projects", href: "/projects",
+    heading: "Projects",
+    href: "/projects",
     links: [
-      { label: "Current Projects", href: "/projects?status=ongoing#what-we-build" },
-      { label: "Experimental Rocketry", href: "/projects?category=experimental-rocketry#what-we-build" },
-      { label: "Science & Experiments", href: "/projects?category=science-and-experiments#what-we-build" },
+      {
+        label: "Current Projects",
+        href: "/projects?status=ongoing#what-we-build",
+      },
+      {
+        label: "Experimental Rocketry",
+        href: "/projects?category=experimental-rocketry#what-we-build",
+      },
+      {
+        label: "Science & Experiments",
+        href: "/projects?category=science-and-experiments#what-we-build",
+      },
       { label: "Robotics", href: "/projects?category=robotics#what-we-build" },
-      { label: "Past Projects", href: "/projects?status=completed#what-we-build" },
+      {
+        label: "Past Projects",
+        href: "/projects?status=completed#what-we-build",
+      },
     ],
   },
   {
-    heading: "Sponsors", href: "/sponsors",
+    heading: "Sponsors",
+    href: "/sponsors",
     links: [
       { label: "Become a Sponsor", href: "/sponsors#become-a-sponsor-title" },
-      { label: "Our Partners", href: "/sponsors#diamond" },
+      { label: "Our Partners", href: "/sponsors#sponsor-showcase" },
       { label: "Benefits", href: "/sponsors" },
     ],
   },
   {
-    heading: "Events", href: "/events",
+    heading: "Events",
+    href: "/events",
     links: [
-      { label: "Upcoming Events", href: "/events?date=upcoming#whats-happening" },
-      { label: "Competitions & Workshops", href: "/events?category=competitions-and-workshops#whats-happening" },
-      { label: "Conventions", href: "/events?category=trade-fairs-and-conventions#whats-happening" },
+      {
+        label: "Upcoming Events",
+        href: "/events?date=upcoming#whats-happening",
+      },
+      {
+        label: "Competitions & Workshops",
+        href: "/events?category=competitions-and-workshops#whats-happening",
+      },
+      {
+        label: "Conventions",
+        href: "/events?category=trade-fairs-and-conventions#whats-happening",
+      },
       { label: "Past Events", href: "/events?date=past#whats-happening" },
     ],
   },
   {
-    heading: "About Us", href: "/about-us",
+    heading: "About Us",
+    href: "/about-us",
     links: [
       { label: "Our Team", href: "/about-us#faces-of-bears-title" },
       { label: "Media", href: "/media" },
@@ -57,12 +88,13 @@ const navColumns = navContent?.data.navColumns ?? [
 ];
 
 const bottomBarContent = await getPageContent("footer/bottom-bar", locale);
-const copyrightText = (bottomBarContent?.data.title ?? "© {year} BEARS e.V. All rights reserved.").replace("{year}", String(currentYear));
+const copyrightText = (
+  bottomBarContent?.data.title ?? "© {year} BEARS e.V. All rights reserved."
+).replace("{year}", String(currentYear));
 const legalLinks = bottomBarContent?.data.navLinks ?? [
   { label: "Impressum", href: "/imprint" },
   { label: "Datenschutz", href: "/datenschutz" },
 ];
-
 ---
 
 <footer class="bg-bears-bg-light">
@@ -78,19 +110,48 @@ const legalLinks = bottomBarContent?.data.navLinks ?? [
       class="flex flex-col lg:flex-row lg:justify-between lg:items-start gap-12 lg:gap-6 xl:gap-8"
     >
       <!-- Logo + Address -->
-      <div class="lg:order-first flex flex-col gap-4 items-center lg:items-start min-w-0">
-        <a
-          href={localizeUrl('/', locale)}
-          class="text-bears-accent text-2xl lg:text-3xl font-bold hover:text-bears-accent-muted transition-colors"
-        >
-          BEARS
-        </a>
+      <div
+        class="lg:order-first flex flex-col gap-4 items-center lg:items-start min-w-0"
+      >
+        {
+          footerLogo ? (
+            <Image
+              src={footerLogo}
+              alt="BEARS"
+              class="h-8 lg:h-10 w-auto"
+              width={400}
+              loading="lazy"
+            />
+          ) : (
+            <span class="text-bears-accent text-2xl lg:text-3xl font-bold">
+              BEARS
+            </span>
+          )
+        }
         <address
           class="not-italic text-sm text-bears-text-onLight/70 leading-relaxed text-center lg:text-left"
         >
-          {addressLines.length > 0
-            ? addressLines.map((line, i) => <>{line}{i < addressLines.length - 1 && <br />}</>)
-            : <>Berlin Experimental Astronautics<br />Research Student team e.V.<br />c/o TU Berlin - Institut für Luft- und Raumfahrt<br />Marchstraße 12-14<br />10587 Berlin</>
+          {
+            addressLines.length > 0 ? (
+              addressLines.map((line, i) => (
+                <>
+                  {line}
+                  {i < addressLines.length - 1 && <br />}
+                </>
+              ))
+            ) : (
+              <>
+                Berlin Experimental Astronautics
+                <br />
+                Research Student team e.V.
+                <br />
+                c/o TU Berlin - Institut für Luft- und Raumfahrt
+                <br />
+                Marchstraße 12-14
+                <br />
+                10587 Berlin
+              </>
+            )
           }
         </address>
       </div>
@@ -99,28 +160,28 @@ const legalLinks = bottomBarContent?.data.navLinks ?? [
       <nav
         class="grid grid-cols-2 gap-x-8 gap-y-10 lg:contents justify-items-center"
       >
-        {navColumns.map((column) => (
-          <div class="flex flex-col gap-2 text-center lg:text-left min-w-0">
-            <h3
-              class="text-sm lg:text-base font-semibold uppercase tracking-wider text-bears-text-onLight mb-3"
-            >
-              <a
-                href={localizeUrl(column.href, locale)}
-                class="hover:text-bears-accent transition-colors"
-              >
-                {column.heading}
-              </a>
-            </h3>
-            {column.links.map((link) => (
-              <a
-                href={localizeUrl(link.href, locale)}
-                class="text-sm text-bears-text-onLight/70 hover:text-bears-accent transition-colors"
-              >
-                {link.label}
-              </a>
-            ))}
-          </div>
-        ))}
+        {
+          navColumns.map((column) => (
+            <div class="flex flex-col gap-2 text-center lg:text-left min-w-0">
+              <h3 class="text-sm lg:text-base font-semibold uppercase tracking-wider text-bears-text-onLight mb-3">
+                <a
+                  href={localizeUrl(column.href, locale)}
+                  class="hover:text-bears-accent transition-colors"
+                >
+                  {column.heading}
+                </a>
+              </h3>
+              {column.links.map((link) => (
+                <a
+                  href={localizeUrl(link.href, locale)}
+                  class="text-sm text-bears-text-onLight/70 hover:text-bears-accent transition-colors"
+                >
+                  {link.label}
+                </a>
+              ))}
+            </div>
+          ))
+        }
       </nav>
 
       <!-- Social Media Icons -->
@@ -139,7 +200,11 @@ const legalLinks = bottomBarContent?.data.navLinks ?? [
                 x-data="{ hovered: false }"
                 x-on:mouseenter="hovered = true"
                 x-on:mouseleave="hovered = false"
-                x-bind:style={link.hoverColor ? `hovered ? 'background-color: ${link.hoverColor}' : ''` : undefined}
+                x-bind:style={
+                  link.hoverColor
+                    ? `hovered ? 'background-color: ${link.hoverColor}' : ''`
+                    : undefined
+                }
                 class:list={[
                   "group w-10 h-10 rounded-full bg-bears-text-onLight/10 flex items-center justify-center hover:scale-110 transition-all duration-200",
                   !link.hoverColor && "hover:bg-bears-accent",
@@ -172,14 +237,19 @@ const legalLinks = bottomBarContent?.data.navLinks ?? [
         {copyrightText}
       </p>
       <div class="flex items-center gap-4 text-xs text-bears-text-onLight/75">
-        {legalLinks.map((link, i) => (
-          <>
-            {i > 0 && <span class="text-bears-text-onLight/30">|</span>}
-            <a href={localizeUrl(link.href, locale)} class="hover:text-bears-accent transition-colors">
-              {link.label}
-            </a>
-          </>
-        ))}
+        {
+          legalLinks.map((link, i) => (
+            <>
+              {i > 0 && <span class="text-bears-text-onLight/30">|</span>}
+              <a
+                href={localizeUrl(link.href, locale)}
+                class="hover:text-bears-accent transition-colors"
+              >
+                {link.label}
+              </a>
+            </>
+          ))
+        }
       </div>
     </div>
   </div>

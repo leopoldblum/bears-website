@@ -146,6 +146,28 @@ describe('loadImage', () => {
     expect(warnSpy).not.toHaveBeenCalled();
   });
 
+  it('resolves image when extension case differs', async () => {
+    const img = makeImage('/events/photo.JPG');
+    const glob = makeGlob({ '/src/assets/events/photo.JPG': img });
+
+    const result = await loadImage({
+      glob,
+      imagePath: '/src/assets/events/photo.jpg',
+    });
+    expect(result).toEqual(img);
+  });
+
+  it('does not resolve image when stem case differs', async () => {
+    const img = makeImage('/events/Photo.jpg');
+    const glob = makeGlob({ '/src/assets/events/Photo.jpg': img });
+
+    const result = await loadImage({
+      glob,
+      imagePath: '/src/assets/events/photo.jpg',
+    });
+    expect(result).toBeNull();
+  });
+
   it('includes title and slug in warning message', async () => {
     await loadImage({
       glob: {},
@@ -410,6 +432,45 @@ describe('loadImagesForCollection', () => {
     });
   });
 
+  it('loads CUSTOM image when extension case differs', async () => {
+    const customImg = makeImage('/events/custom.JPG');
+    const glob = makeGlob({ '/src/assets/events/custom.JPG': customImg });
+    const collection = [{
+      data: { title: 'Case Test', coverImage: 'custom.jpg', coverImageType: 'CUSTOM' },
+      slug: 'case-test',
+    }];
+
+    const result = await loadImagesForCollection({
+      glob,
+      collection,
+      baseDir: '/src/assets/events',
+      imageField: 'coverImage',
+      fallbackImage: makeImage('/fb.jpg'),
+      postType: 'event',
+    });
+
+    expect(result[0].loadedImage).toEqual(customImg);
+  });
+
+  it('loads testimonial image when extension case differs', async () => {
+    const img = makeImage('/testimonials/person.JPG');
+    const glob = makeGlob({ '/src/assets/testimonials/person.JPG': img });
+    const collection = [{
+      data: { name: 'Jane', image: 'person.jpg' },
+      slug: 'jane',
+    }];
+
+    const result = await loadImagesForCollection({
+      glob,
+      collection,
+      baseDir: '/src/assets/testimonials',
+      imageField: 'image' as 'coverImage' | 'image',
+      fallbackImage: makeImage('/fb.jpg'),
+    });
+
+    expect(result[0].loadedImage).toEqual(img);
+  });
+
   it('capitalizes postType in warning messages', async () => {
     const collection = [{
       data: { title: 'Test', coverImage: undefined, coverImageType: 'DEFAULT' },
@@ -580,6 +641,14 @@ describe('loadCoverImage', () => {
   it('loads image when fileName is provided and exists', async () => {
     const img = makeImage('/events/cover.jpg');
     mockEventImages['/src/assets/events/cover.jpg'] = () => Promise.resolve({ default: img });
+
+    const result = await loadCoverImage('cover.jpg', 'event');
+    expect(result).toEqual(img);
+  });
+
+  it('loads image when extension case differs', async () => {
+    const img = makeImage('/events/cover.JPG');
+    mockEventImages['/src/assets/events/cover.JPG'] = () => Promise.resolve({ default: img });
 
     const result = await loadCoverImage('cover.jpg', 'event');
     expect(result).toEqual(img);

@@ -41,6 +41,8 @@ When `sizes` is not explicitly provided, it is automatically derived from the `w
 
 This tells the browser the expected display width so it can pick the optimal image from the generated srcset without downloading unnecessarily large files.
 
+> **Note:** When `Img` is used inside a `Marquee`, the Marquee component automatically overrides the `sizes` attribute based on its height preset and each image's aspect ratio. You do not need to pass `sizes` manually in that context.
+
 ## Usage
 
 ```mdx

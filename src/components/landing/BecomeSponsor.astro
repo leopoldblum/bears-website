@@ -16,10 +16,16 @@ const { locale } = Astro.props;
 const content = await getPageContent("landing/become-sponsor", locale);
 
 // Use the shared utility for grouping + sorting
-const { diamond, platinum, gold, silver, bronze } = await getSponsorsByTier();
+const allTiers = await getSponsorsByTier();
+
+// Show the top 3 non-empty tiers, sorted from most important to least
+const tierOrder = ['diamond', 'platinum', 'gold', 'silver', 'bronze'] as const;
+const activeTierNames = tierOrder
+  .filter(t => allTiers[t].length > 0)
+  .slice(0, 3);
 
 // Load images for a tier's sponsors
-async function loadTierImages(sponsors: typeof diamond) {
+async function loadTierImages(sponsors: typeof allTiers.diamond) {
   return Promise.all(
     sponsors.map(async (sponsor) => {
       const tier = sponsor.id.split("/")[0];
@@ -44,19 +50,12 @@ async function loadTierImages(sponsors: typeof diamond) {
   );
 }
 
-const [
-  diamondSponsors,
-  platinumSponsors,
-  goldSponsors,
-  silverSponsors,
-  bronzeSponsors,
-] = await Promise.all([
-  loadTierImages(diamond),
-  loadTierImages(platinum),
-  loadTierImages(gold),
-  loadTierImages(silver),
-  loadTierImages(bronze),
-]);
+const displayTiers = await Promise.all(
+  activeTierNames.map(async (tierName) => ({
+    name: tierName,
+    sponsors: await loadTierImages(allTiers[tierName]),
+  })),
+);
 ---
 
 <section id="our-sponsors-section" class="bg-bears-bg-light py-20 sm:py-24 lg:py-32 scroll-mt-20">
@@ -70,28 +69,14 @@ const [
 
     <!-- Sponsor logos — ignored by search to avoid duplicating sponsors page -->
     <div data-pagefind-ignore>
-    <SponsorTier sponsors={diamondSponsors} tier="diamond" />
-
-    <!-- Divider: Diamond to other tiers -->
-    {
-      diamondSponsors.length > 0 &&
-        (platinumSponsors.length > 0 || goldSponsors.length > 0) && (
+    {displayTiers.map((tier, i) => (
+      <>
+        {i > 0 && (
           <hr class="w-full max-w-3xl mx-auto border-t border-bears-text-onLight opacity-20 my-10 sm:my-12 lg:my-16" />
-        )
-    }
-
-    <!-- Platinum Sponsors Tier -->
-    <SponsorTier sponsors={platinumSponsors} tier="platinum" />
-
-    <!-- Divider: Platinum to other tiers -->
-    {
-      platinumSponsors.length > 0 && goldSponsors.length > 0 && (
-        <hr class="w-full max-w-3xl mx-auto border-t border-bears-text-onLight opacity-20 my-10 sm:my-12 lg:my-16" />
-      )
-    }
-
-    <!-- Gold Sponsors Tier -->
-    <SponsorTier sponsors={goldSponsors} tier="gold" />
+        )}
+        <SponsorTier sponsors={tier.sponsors} tier={tier.name} />
+      </>
+    ))}
     </div>
 
     <div data-pagefind-ignore>

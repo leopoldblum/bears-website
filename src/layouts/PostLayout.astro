@@ -1,6 +1,6 @@
 ---
 import BaseLayout from "./BaseLayout.astro";
-import { Image } from "astro:assets";
+import { Image, getImage } from "astro:assets";
 import type { ImageMetadata } from "astro";
 import ReadingProgress from "@post/ReadingProgress.astro";
 import MetadataCard from "@post/MetadataCard.astro";
@@ -33,7 +33,9 @@ const {
 const locale = getLocale(Astro.url);
 const siteOrigin = Astro.site!.origin;
 const pageUrl = `${siteOrigin}/${type === "event" ? "events" : "projects"}/${slug}`;
-const imageUrl = coverImage ? `${siteOrigin}${coverImage.src}` : undefined;
+const imageUrl = coverImage
+  ? `${siteOrigin}${(await getImage({ src: coverImage, format: 'webp', width: 1200 })).src}`
+  : undefined;
 
 const structuredData = type === "event"
   ? {
@@ -91,6 +93,7 @@ const structuredData = type === "event"
               alt={title}
               class="cover-image"
               loading="eager"
+              format="webp"
             />
           </div>
         )

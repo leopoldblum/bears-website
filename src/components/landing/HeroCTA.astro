@@ -1,0 +1,88 @@
+---
+interface HeroCTAItem {
+  title: string;
+  description: string;
+  href: string;
+}
+
+interface Props {
+  ctas: HeroCTAItem[];
+}
+
+const { ctas } = Astro.props;
+
+if (ctas.length === 0) return;
+
+const gridColsClass: Record<number, string> = {
+  1: 'lg:grid-cols-1',
+  2: 'lg:grid-cols-2',
+  3: 'lg:grid-cols-3',
+  4: 'lg:grid-cols-4',
+};
+const gridCols = gridColsClass[ctas.length] || 'lg:grid-cols-3';
+const mobileGridCols = ctas.length === 1 ? 'grid-cols-1' : 'grid-cols-2';
+
+function getBorderClasses(index: number): string {
+  if (ctas.length === 1) return '';
+
+  const classes: string[] = ['border-white/[0.06]'];
+  const total = ctas.length;
+  const isLeftCol = index % 2 === 0;
+  const row = Math.floor(index / 2);
+  const totalRows = Math.ceil(total / 2);
+  const hasRightNeighbor = isLeftCol && index + 1 < total;
+  const isLastRow = row === totalRows - 1;
+  const isLast = index === total - 1;
+
+  if (hasRightNeighbor) classes.push('border-r');
+  if (!isLastRow) classes.push('border-b');
+
+  classes.push('lg:border-b-0');
+  if (!hasRightNeighbor && !isLast) classes.push('lg:border-r');
+
+  return classes.join(' ');
+}
+---
+
+<div class="relative mt-auto pb-3 sm:pb-5 lg:pb-12">
+  <div
+    class:list={[
+      'grid',
+      mobileGridCols,
+      gridCols,
+      'group/grid rounded-xl overflow-hidden bg-black/20 backdrop-blur-md border border-white/[0.06] max-w-6xl mx-auto',
+    ]}
+  >
+    {ctas.map((cta, index) => (
+      <a
+        href={cta.href}
+        class:list={[
+          'group/card relative block px-3.5 py-3 sm:p-4 lg:px-6 lg:py-5',
+          'transition-all duration-300 ease-out',
+          'active:scale-[0.97] active:bg-white/[0.04]',
+          'lg:group-hover/grid:opacity-50 lg:hover:!opacity-100',
+          'lg:hover:bg-white/[0.05]',
+          getBorderClasses(index),
+        ]}
+      >
+        {/* Left accent bar */}
+        <span class="absolute left-0 top-2 bottom-2 lg:top-3 lg:bottom-3 w-[2px] rounded-full bg-bears-accent/60 transition-colors duration-300 lg:group-hover/card:bg-bears-accent" aria-hidden="true" />
+
+        <div class="flex items-center justify-between gap-2">
+          <p class="text-[0.9rem] sm:text-base lg:text-xl font-semibold tracking-tight transition-colors duration-300 text-white">
+            {cta.title}
+          </p>
+          <span
+            class="flex items-center justify-center size-5 lg:size-7 rounded-full bg-white/[0.08] text-white/50 text-[0.65rem] lg:text-sm flex-shrink-0 transition-all duration-300 lg:opacity-0 lg:-translate-x-1 lg:group-hover/card:opacity-100 lg:group-hover/card:translate-x-0"
+            aria-hidden="true"
+          >
+            &rarr;
+          </span>
+        </div>
+        <p class="hidden sm:block mt-1.5 text-sm leading-relaxed transition-colors duration-300 text-white/45 lg:group-hover/card:text-white/70">
+          {cta.description}
+        </p>
+      </a>
+    ))}
+  </div>
+</div>

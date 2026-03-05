@@ -102,5 +102,5 @@ export default defineConfig({
 | `tailwindcss()` | Tailwind CSS v4 via Vite plugin (not Astro integration) |
 | `alpinejs()` | Alpine.js for client-side interactivity |
 | `mdx()` | MDX support for content files with component imports |
-| `react()` | React JSX for interactive islands (Carousel, HeroCTAIsland) |
+| `react()` | React JSX for interactive islands (Carousel) |
 | `sitemap()` | Auto-generated sitemap, excluding `/docs/` pages |

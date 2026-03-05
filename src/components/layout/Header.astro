@@ -203,6 +203,8 @@ const noResultsText = locale === 'de' ? 'Keine Ergebnisse' : 'No results found';
             </svg>
             <input
               x-ref="desktopSearch"
+              id="desktop-search"
+              name="search"
               type="text"
               x-model="searchQuery"
               x-on:input="onSearchInput()"
@@ -322,6 +324,8 @@ const noResultsText = locale === 'de' ? 'Keine Ergebnisse' : 'No results found';
             </svg>
             <input
               x-ref="mobileSearch"
+              id="mobile-search"
+              name="search"
               type="text"
               x-model="searchQuery"
               x-on:input="onSearchInput()"
