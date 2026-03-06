@@ -35,7 +35,7 @@ describe('events schema', () => {
   });
 
   it('accepts valid image extensions', () => {
-    for (const ext of ['jpg', 'jpeg', 'png', 'webp']) {
+    for (const ext of ['jpg', 'jpeg', 'png', 'webp', 'svg']) {
       const result = schema.safeParse({ ...validBase, coverImage: `event.${ext}` });
       expect(result.success).toBe(true);
     }
@@ -115,7 +115,7 @@ describe('projects schema', () => {
   });
 
   it('accepts personImage with valid extensions', () => {
-    for (const ext of ['jpg', 'jpeg', 'png', 'webp']) {
+    for (const ext of ['jpg', 'jpeg', 'png', 'webp', 'svg']) {
       const result = schema.safeParse({ ...validBase, personImage: `person.${ext}` });
       expect(result.success).toBe(true);
     }
@@ -165,7 +165,7 @@ describe('hero-slides schema', () => {
   const schema = collections['hero-slides'].schema;
 
   it('accepts image extensions', () => {
-    for (const ext of ['jpg', 'jpeg', 'png', 'webp']) {
+    for (const ext of ['jpg', 'jpeg', 'png', 'webp', 'svg']) {
       const result = schema.safeParse({ type: 'image', media: `hero.${ext}`, alt: 'description' });
       expect(result.success).toBe(true);
     }
@@ -217,7 +217,7 @@ describe('testimonials schema', () => {
       quote: 'Great',
       name: 'John',
       role: 'Dev',
-      coverImage: 'john.svg',
+      coverImage: 'john.gif',
     });
     expect(result.success).toBe(false);
   });
@@ -250,7 +250,7 @@ describe('sponsors schema', () => {
   it('rejects invalid logo extension', () => {
     const result = schema.safeParse({
       name: 'Acme Corp',
-      logo: 'acme.svg',
+      logo: 'acme.gif',
     });
     expect(result.success).toBe(false);
   });

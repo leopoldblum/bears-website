@@ -11,7 +11,7 @@
  * Supported image file extensions
  * Used for both glob patterns and schema validation
  */
-export const VALID_IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp'] as const;
+export const VALID_IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp', 'svg'] as const;
 
 /**
  * Supported video file extensions

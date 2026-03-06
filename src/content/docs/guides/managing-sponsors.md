@@ -49,7 +49,7 @@ The body of sponsor files is not used &mdash; all content comes from the frontma
 
 ## Logos
 
-Place logo images in `src/assets/sponsors/`. Valid formats: `.jpg`, `.jpeg`, `.png`, `.webp`.
+Place logo images in `src/assets/sponsors/`. Valid formats: `.jpg`, `.jpeg`, `.png`, `.webp`, `.svg`.
 
 ## Display Order
 

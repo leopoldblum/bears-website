@@ -21,10 +21,10 @@ imageLoader.ts       →  Loading functions with fallback + dev warnings
 
 | Export | Value | Purpose |
 |--------|-------|---------|
-| `VALID_IMAGE_EXTENSIONS` | `['jpg', 'jpeg', 'png', 'webp']` | Source of truth for supported formats |
-| `IMAGE_GLOB_PATTERN` | `*.{jpg,jpeg,png,webp}` | For use in glob patterns |
-| `IMAGE_EXTENSION_REGEX` | `/\.(jpg\|jpeg\|png\|webp)$/i` | Schema validation |
-| `VALID_EXTENSIONS_MESSAGE` | `".jpg, .jpeg, .png, or .webp"` | Error messages |
+| `VALID_IMAGE_EXTENSIONS` | `['jpg', 'jpeg', 'png', 'webp', 'svg']` | Source of truth for supported formats |
+| `IMAGE_GLOB_PATTERN` | `*.{jpg,jpeg,png,webp,svg}` | For use in glob patterns |
+| `IMAGE_EXTENSION_REGEX` | `/\.(jpg\|jpeg\|png\|webp\|svg)$/i` | Schema validation |
+| `VALID_EXTENSIONS_MESSAGE` | `".jpg, .jpeg, .png, .webp, or .svg"` | Error messages |
 
 ## Glob Patterns
 
@@ -149,7 +149,7 @@ Events and projects have a `coverImageType` field (derived in the schema transfo
 3. Add a glob export in `src/utils/imageGlobs.ts`:
    ```typescript
    export const myImages: ImageGlob = import.meta.glob<{ default: ImageMetadata }>(
-     "/src/assets/<name>/*.{jpg,jpeg,png,webp}"
+     "/src/assets/<name>/*.{jpg,jpeg,png,webp,svg}"
    );
    ```
 4. Import the default image and add a type config to `loadCollectionImages()` in `src/utils/imageLoader.ts`

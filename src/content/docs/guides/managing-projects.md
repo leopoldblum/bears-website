@@ -75,7 +75,7 @@ obstacles and achieving mission objectives.
 
 ## Cover Images
 
-Place cover images in `src/assets/projects/`. Valid formats: `.jpg`, `.jpeg`, `.png`, `.webp`.
+Place cover images in `src/assets/projects/`. Valid formats: `.jpg`, `.jpeg`, `.png`, `.webp`, `.svg`.
 
 ## Meet the Team
 
@@ -83,4 +83,4 @@ If you set `displayMeetTheTeam: true`, you must also provide `headOfProject` and
 
 ### Person Images
 
-Place team member portrait images in `src/assets/projects/team-members/`. Valid formats: `.jpg`, `.jpeg`, `.png`, `.webp`. Use descriptive filenames matching the person's name (e.g., `emma-watson.jpg`).
+Place team member portrait images in `src/assets/projects/team-members/`. Valid formats: `.jpg`, `.jpeg`, `.png`, `.webp`, `.svg`. Use descriptive filenames matching the person's name (e.g., `emma-watson.jpg`).

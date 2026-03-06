@@ -67,4 +67,4 @@ smart agricultural systems, we want to see your creative solutions.
 
 ## Cover Images
 
-Place cover images in `src/assets/events/`. Valid formats: `.jpg`, `.jpeg`, `.png`, `.webp`.
+Place cover images in `src/assets/events/`. Valid formats: `.jpg`, `.jpeg`, `.png`, `.webp`, `.svg`.

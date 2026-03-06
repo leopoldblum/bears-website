@@ -19,7 +19,7 @@ The site uses three logo images in different locations. Each one is loaded from 
 
 1. Navigate to the directory for the logo you want to change (see table above).
 2. Delete the existing image file.
-3. Drop in your new image file. Use any supported format: `.jpg`, `.jpeg`, `.png`, or `.webp`.
+3. Drop in your new image file. Use any supported format: `.jpg`, `.jpeg`, `.png`, `.webp`, or `.svg`.
 4. The filename can be anything &mdash; the component picks the first image it finds.
 
 That's it. Astro optimizes the image automatically at build time.

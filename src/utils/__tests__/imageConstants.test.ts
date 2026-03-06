@@ -10,12 +10,12 @@ import {
 } from '../imageConstants';
 
 describe('VALID_IMAGE_EXTENSIONS', () => {
-  it('contains exactly jpg, jpeg, png, webp', () => {
-    expect(VALID_IMAGE_EXTENSIONS).toEqual(['jpg', 'jpeg', 'png', 'webp']);
+  it('contains exactly jpg, jpeg, png, webp, svg', () => {
+    expect(VALID_IMAGE_EXTENSIONS).toEqual(['jpg', 'jpeg', 'png', 'webp', 'svg']);
   });
 
-  it('has 4 entries', () => {
-    expect(VALID_IMAGE_EXTENSIONS).toHaveLength(4);
+  it('has 5 entries', () => {
+    expect(VALID_IMAGE_EXTENSIONS).toHaveLength(5);
   });
 });
 
@@ -34,7 +34,7 @@ describe('IMAGE_EXTENSION_REGEX', () => {
     }
   );
 
-  it.each(['icon.gif', 'logo.svg', 'photo.bmp', 'image.tiff', 'video.mp4'])(
+  it.each(['icon.gif', 'photo.bmp', 'image.tiff', 'video.mp4'])(
     'rejects invalid extension: %s',
     (filename) => {
       expect(IMAGE_EXTENSION_REGEX.test(filename)).toBe(false);
@@ -60,7 +60,7 @@ describe('IMAGE_EXTENSION_REGEX', () => {
 
 describe('IMAGE_GLOB_PATTERN', () => {
   it('produces the correct glob string', () => {
-    expect(IMAGE_GLOB_PATTERN).toBe('*.{jpg,jpeg,png,webp}');
+    expect(IMAGE_GLOB_PATTERN).toBe('*.{jpg,jpeg,png,webp,svg}');
   });
 });
 
@@ -72,11 +72,11 @@ describe('VALID_EXTENSIONS_MESSAGE', () => {
   });
 
   it('uses "or" before the last extension', () => {
-    expect(VALID_EXTENSIONS_MESSAGE).toContain('or .webp');
+    expect(VALID_EXTENSIONS_MESSAGE).toContain('or .svg');
   });
 
   it('formats as a comma-separated list', () => {
-    expect(VALID_EXTENSIONS_MESSAGE).toBe('.jpg, .jpeg, .png, or .webp');
+    expect(VALID_EXTENSIONS_MESSAGE).toBe('.jpg, .jpeg, .png, .webp, or .svg');
   });
 });
 
@@ -119,7 +119,7 @@ describe('filterImageGlob', () => {
 
   it('filters out non-image extensions', () => {
     const glob = fakeGlob(['/a/photo.jpg', '/a/video.mp4', '/a/doc.txt', '/a/logo.svg']);
-    expect(Object.keys(filterImageGlob(glob))).toEqual(['/a/photo.jpg']);
+    expect(Object.keys(filterImageGlob(glob))).toEqual(['/a/photo.jpg', '/a/logo.svg']);
   });
 
   it('filters out video extensions', () => {
@@ -154,7 +154,7 @@ describe('filterMediaGlob', () => {
 
   it('filters out non-media extensions', () => {
     const glob = fakeGlob(['/a/photo.jpg', '/a/video.mp4', '/a/doc.txt', '/a/logo.svg']);
-    expect(Object.keys(filterMediaGlob(glob))).toEqual(['/a/photo.jpg', '/a/video.mp4']);
+    expect(Object.keys(filterMediaGlob(glob))).toEqual(['/a/photo.jpg', '/a/video.mp4', '/a/logo.svg']);
   });
 
   it('returns empty for empty input', () => {

@@ -88,6 +88,6 @@ Each type of content has its own folder and schema. Click through for field refe
 
 **Drafts:** Events, projects, and Instagram posts support `isDraft: true` to hide content in production while keeping it visible during development.
 
-**Images:** All images must be local files in `src/assets/` subdirectories. Valid formats: `.jpg`, `.jpeg`, `.png`, `.webp`. Never use remote URLs.
+**Images:** All images must be local files in `src/assets/` subdirectories. Valid formats: `.jpg`, `.jpeg`, `.png`, `.webp`, `.svg`. Never use remote URLs.
 
 **File naming:** Conventions vary by content type &mdash; check the individual guide for details. Common patterns are date prefixes (`YYYY MM DD title.md`) and numeric prefixes (`NN-name.md`).

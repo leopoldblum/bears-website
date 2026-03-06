@@ -49,7 +49,7 @@ All fields are required:
 
 ## Images
 
-Place portrait images in `src/assets/testimonials/`. Valid formats: `.jpg`, `.jpeg`, `.png`, `.webp`.
+Place portrait images in `src/assets/testimonials/`. Valid formats: `.jpg`, `.jpeg`, `.png`, `.webp`, `.svg`.
 
 ## Display Order
 

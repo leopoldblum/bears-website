@@ -34,7 +34,7 @@ Frontmatter:
   description: string (required)
   date: YYYY-MM-DD (required)
   categoryEvent: one of "trade-fairs-and-conventions", "competitions-and-workshops", "kick-off-events", "other" (required)
-  coverImage: string (required) — filename in src/assets/events/, valid: .jpg .jpeg .png .webp
+  coverImage: string (required) — filename in src/assets/events/, valid: .jpg .jpeg .png .webp .svg
   isDraft: boolean (optional, default false) — hidden in production, visible in dev
 Body: Markdown or MDX content for the detail page.
 
@@ -45,12 +45,12 @@ Frontmatter:
   description: string (required)
   date: YYYY-MM-DD (required)
   categoryProject: one of "experimental-rocketry", "science-and-experiments", "robotics", "other" (required)
-  coverImage: string (required) — filename in src/assets/projects/, valid: .jpg .jpeg .png .webp
+  coverImage: string (required) — filename in src/assets/projects/, valid: .jpg .jpeg .png .webp .svg
   isProjectCompleted: boolean (required)
   isDraft: boolean (optional, default false)
   displayMeetTheTeam: boolean (optional) — shows a "Meet the Team" section
   headOfProject: string (optional) — REQUIRED when displayMeetTheTeam is true
-  personImage: string (optional) — REQUIRED when displayMeetTheTeam is true, filename in src/assets/projects/team-members/, valid: .jpg .jpeg .png .webp
+  personImage: string (optional) — REQUIRED when displayMeetTheTeam is true, filename in src/assets/projects/team-members/, valid: .jpg .jpeg .png .webp .svg
 Body: Markdown or MDX content for the detail page.
 
 SPONSORS (src/content/sponsors/)
@@ -58,7 +58,7 @@ Organized by tier folders: diamond/, platinum/, gold/, silver/, bronze/
 File naming within tier: "NN-name.md" (numeric prefix = display order)
 Frontmatter:
   name: string (required)
-  logo: string (required) — filename in src/assets/sponsors/{tier}/, valid: .jpg .jpeg .png .webp
+  logo: string (required) — filename in src/assets/sponsors/{tier}/, valid: .jpg .jpeg .png .webp .svg
   url: string (optional) — full website URL
 
 TESTIMONIALS (src/content/testimonials/)
@@ -67,7 +67,7 @@ Frontmatter:
   quote: string (required)
   name: string (required)
   role: string (required)
-  coverImage: string (required) — filename in src/assets/testimonials/, valid: .jpg .jpeg .png .webp
+  coverImage: string (required) — filename in src/assets/testimonials/, valid: .jpg .jpeg .png .webp .svg
 
 HERO SLIDES (src/content/hero-slides/)
 File naming: "NN-name.md" (numeric prefix = display order, sorted numerically not alphabetically)
@@ -98,7 +98,7 @@ File naming: "NN-name.md" (numeric prefix = display order)
 Frontmatter:
   name: string (required)
   role: string (required)
-  coverImage: string (required) — filename in src/assets/faces-of-bears/, valid: .jpg .jpeg .png .webp
+  coverImage: string (required) — filename in src/assets/faces-of-bears/, valid: .jpg .jpeg .png .webp .svg
 
 PAGE TEXT (src/content/page-text/)
 Editable headings, descriptions, buttons, and structured data for every page section.
@@ -244,7 +244,7 @@ All images must be local files in src/assets/ subdirectories:
   src/assets/footer/              — footer logo
   src/assets/default-images/      — fallback images when no custom image is provided
 
-Valid image formats: .jpg, .jpeg, .png, .webp
+Valid image formats: .jpg, .jpeg, .png, .webp, .svg
 Valid video formats (hero slides only): .mp4, .webm, .ogg
 Never use remote/external image URLs.
 

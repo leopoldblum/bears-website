@@ -47,7 +47,7 @@ All fields are required:
 
 ## Images
 
-Place portrait images in `src/assets/faces-of-bears/`. Valid formats: `.jpg`, `.jpeg`, `.png`, `.webp`.
+Place portrait images in `src/assets/faces-of-bears/`. Valid formats: `.jpg`, `.jpeg`, `.png`, `.webp`, `.svg`.
 
 ## Display Order
 

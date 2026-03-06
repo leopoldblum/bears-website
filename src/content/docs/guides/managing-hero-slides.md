@@ -52,7 +52,7 @@ The body of hero slide files is not used.
 
 Place all media files in `src/assets/hero/landingpage/`.
 
-- **Images:** `.jpg`, `.jpeg`, `.png`, `.webp`
+- **Images:** `.jpg`, `.jpeg`, `.png`, `.webp`, `.svg`
 - **Videos:** `.mp4`, `.webm`, `.ogg`
 
 ## Hero Logo

@@ -25,7 +25,7 @@ All website content is managed through [Astro content collections](https://docs.
 
 ## Image Validation
 
-All image filename fields (`coverImage`, `logo`, `personImage`) are validated against `IMAGE_EXTENSION_REGEX` from `src/utils/imageConstants.ts`. Only `.jpg`, `.jpeg`, `.png`, and `.webp` are accepted. The validation runs through a shared `validateImageExtension` helper in the config file.
+All image filename fields (`coverImage`, `logo`, `personImage`) are validated against `IMAGE_EXTENSION_REGEX` from `src/utils/imageConstants.ts`. Only `.jpg`, `.jpeg`, `.png`, `.webp`, and `.svg` are accepted. The validation runs through a shared `validateImageExtension` helper in the config file.
 
 ## Schema Patterns
 
