@@ -15,6 +15,7 @@ const mockDefaultEvent: ImageMetadata = { src: '/default-event.jpg', width: 100,
 const mockDefaultProject: ImageMetadata = { src: '/default-project.jpg', width: 100, height: 100, format: 'jpg' };
 const mockDefaultTestimonial: ImageMetadata = { src: '/default-testimonial.jpg', width: 100, height: 100, format: 'jpg' };
 const mockDefaultSponsor: ImageMetadata = { src: '/default-sponsor.jpg', width: 100, height: 100, format: 'jpg' };
+const mockDefaultFace: ImageMetadata = { src: '/default-face.jpg', width: 100, height: 100, format: 'jpg' };
 
 vi.mock('@assets/default-images/default-event.jpg', () => ({
   default: { src: '/default-event.jpg', width: 100, height: 100, format: 'jpg' },
@@ -28,16 +29,21 @@ vi.mock('@assets/default-images/default-testimonial.jpg', () => ({
 vi.mock('@assets/default-images/default-sponsor.jpg', () => ({
   default: { src: '/default-sponsor.jpg', width: 100, height: 100, format: 'jpg' },
 }));
+vi.mock('@assets/default-images/default-face.jpg', () => ({
+  default: { src: '/default-face.jpg', width: 100, height: 100, format: 'jpg' },
+}));
 
 // Mock imageGlobs for loadCollectionImages / loadCoverImage
 const mockEventImages: Record<string, () => Promise<{ default: ImageMetadata }>> = {};
 const mockProjectImages: Record<string, () => Promise<{ default: ImageMetadata }>> = {};
 const mockTestimonialImages: Record<string, () => Promise<{ default: ImageMetadata }>> = {};
+const mockFaceImages: Record<string, () => Promise<{ default: ImageMetadata }>> = {};
 
 vi.mock('../imageGlobs', () => ({
   get eventImages() { return mockEventImages; },
   get projectImages() { return mockProjectImages; },
   get testimonialImages() { return mockTestimonialImages; },
+  get faceImages() { return mockFaceImages; },
 }));
 
 // ---------------------------------------------------------------------------
@@ -547,6 +553,7 @@ describe('loadCollectionImages', () => {
     Object.keys(mockEventImages).forEach(k => delete mockEventImages[k]);
     Object.keys(mockProjectImages).forEach(k => delete mockProjectImages[k]);
     Object.keys(mockTestimonialImages).forEach(k => delete mockTestimonialImages[k]);
+    Object.keys(mockFaceImages).forEach(k => delete mockFaceImages[k]);
   });
 
   afterEach(() => {
@@ -654,11 +661,46 @@ describe('loadCoverImage', () => {
     expect(result).toEqual(img);
   });
 
+  it('loads face images using face config', async () => {
+    const img = makeImage('/faces/f1.jpg');
+    mockFaceImages['/src/assets/faces-of-bears/f1.jpg'] = () => Promise.resolve({ default: img });
+
+    const collection = [{
+      id: 'f1.md',
+      slug: 'f1',
+      collection: 'faces-of-bears' as const,
+      data: { name: 'Jane Doe', coverImage: 'f1.jpg', role: 'CEO' },
+    }];
+
+    const result = await loadCollectionImages(collection as any, 'face');
+    expect(result[0].loadedImage).toEqual(img);
+  });
+
+  it('uses default face image when face image missing', async () => {
+    const collection = [{
+      id: 'f1.md',
+      slug: 'f1',
+      collection: 'faces-of-bears' as const,
+      data: { name: 'No Photo', coverImage: 'nonexistent.jpg', role: 'Dev' },
+    }];
+
+    const result = await loadCollectionImages(collection as any, 'face');
+    expect(result[0].loadedImage).toEqual(mockDefaultFace);
+  });
+
   it('returns fallback when image fails to load', async () => {
     const result = await loadCoverImage('missing.jpg', 'event', {
       itemTitle: 'Test',
       itemSlug: 'test',
     });
     expect(result).toEqual(mockDefaultEvent);
+  });
+
+  it('returns default project image when project image missing', async () => {
+    const result = await loadCoverImage('nonexistent.jpg', 'project', {
+      itemTitle: 'Missing Project',
+      itemSlug: 'missing-project',
+    });
+    expect(result).toEqual(mockDefaultProject);
   });
 });

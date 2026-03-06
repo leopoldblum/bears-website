@@ -8,6 +8,7 @@ import {
   getPublishedPosts,
   getLatestPosts,
   getPageContent,
+  getDocsBySection,
   getLandingHeroSlides,
   getMeetTheTeamProjects,
   getSponsorsByTier,
@@ -661,5 +662,89 @@ describe('getLatestInstagramPosts', () => {
 
     const result = await getLatestInstagramPosts(3);
     expect(result).toHaveLength(1);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// getPageContent — locale fallback
+// ---------------------------------------------------------------------------
+
+describe('getPageContent locale fallback', () => {
+  beforeEach(() => {
+    mockedGetCollection.mockReset();
+  });
+
+  it('returns German entry when available', async () => {
+    mockedGetCollection.mockResolvedValue([
+      { id: 'en/landing/hero.md', slug: 'hero', data: { title: 'Hero EN' } },
+      { id: 'de/landing/hero.md', slug: 'hero', data: { title: 'Hero DE' } },
+    ]);
+    const result = await getPageContent('landing/hero', 'de');
+    expect(result?.data.title).toBe('Hero DE');
+  });
+
+  it('falls back to English when German entry is missing', async () => {
+    mockedGetCollection.mockResolvedValue([
+      { id: 'en/landing/hero.md', slug: 'hero', data: { title: 'Hero EN' } },
+    ]);
+    const result = await getPageContent('landing/hero', 'de');
+    expect(result?.data.title).toBe('Hero EN');
+  });
+
+  it('does not fall back when locale is en (default)', async () => {
+    mockedGetCollection.mockResolvedValue([
+      { id: 'de/landing/hero.md', slug: 'hero', data: { title: 'Hero DE' } },
+    ]);
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    const result = await getPageContent('landing/hero', 'en');
+    expect(result).toBeUndefined();
+    warnSpy.mockRestore();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// getDocsBySection
+// ---------------------------------------------------------------------------
+
+describe('getDocsBySection', () => {
+  beforeEach(() => {
+    mockedGetCollection.mockReset();
+  });
+
+  it('groups docs by section folder', async () => {
+    mockedGetCollection.mockResolvedValue([
+      { id: 'guides/getting-started.md', slug: 'getting-started', data: { title: 'Getting Started', order: 10 } },
+      { id: 'guides/advanced.md', slug: 'advanced', data: { title: 'Advanced', order: 20 } },
+      { id: 'dev/architecture.md', slug: 'architecture', data: { title: 'Architecture', order: 10 } },
+    ]);
+
+    const result = await getDocsBySection();
+    expect(Object.keys(result)).toContain('guides');
+    expect(Object.keys(result)).toContain('dev');
+    expect(result.guides).toHaveLength(2);
+    expect(result.dev).toHaveLength(1);
+  });
+
+  it('sorts docs within each section by order', async () => {
+    mockedGetCollection.mockResolvedValue([
+      { id: 'guides/z-last.md', slug: 'z-last', data: { title: 'Last', order: 30 } },
+      { id: 'guides/a-first.md', slug: 'a-first', data: { title: 'First', order: 10 } },
+      { id: 'guides/m-middle.md', slug: 'm-middle', data: { title: 'Middle', order: 20 } },
+    ]);
+
+    const result = await getDocsBySection();
+    expect(result.guides.map(d => d.data.order)).toEqual([10, 20, 30]);
+  });
+
+  it('returns empty object for empty collection', async () => {
+    mockedGetCollection.mockResolvedValue([]);
+    const result = await getDocsBySection();
+    expect(Object.keys(result)).toHaveLength(0);
+  });
+
+  it('calls getCollection with "docs"', async () => {
+    mockedGetCollection.mockResolvedValue([]);
+    await getDocsBySection();
+    expect(mockedGetCollection).toHaveBeenCalledWith('docs');
   });
 });

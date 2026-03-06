@@ -13,5 +13,11 @@ export default defineConfig({
   test: {
     globals: true,
     environment: 'node',
+    coverage: {
+      provider: 'v8',
+      reporter: ['text'],
+      include: ['src/utils/**', 'src/content/config.ts', 'src/types/**'],
+      reportOnFailure: true,
+    },
   },
 });
