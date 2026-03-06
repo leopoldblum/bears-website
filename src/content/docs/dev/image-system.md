@@ -142,30 +142,6 @@ Events and projects have a `coverImageType` field (derived in the schema transfo
 - **`DEFAULT`** &mdash; No custom image provided. Uses the fallback image. Logs `🔹` in dev console.
 - **`CUSTOM`** &mdash; Custom image specified. Attempts to load it. If it fails, logs `⚠️` and falls back.
 
-## Build-time Image Optimization
-
-**Script:** `scripts/optimize-images.mjs`
-
-A pre-build script automatically compresses oversized images so they stay within Cloudflare Workers' 25 MB per-file limit. It runs before every `astro build` via the `build` script in `package.json`.
-
-### How it works
-
-1. Scans `src/assets/` for images (`.jpg`, `.jpeg`, `.png`, `.webp`) larger than **10 MB**
-2. Converts all oversized images to **WebP** using a binary-search on quality (range 30&ndash;100) to find the highest quality that fits under ~9.9 MB
-3. When the file extension changes (e.g., `.jpg` &rarr; `.webp`), the script updates all references across `src/` &mdash; content files (`.md`, `.mdx`), components (`.astro`), and utilities (`.ts`, `.js`, etc.)
-4. Deletes the original file after the `.webp` replacement is written
-
-### Key details
-
-- **Idempotent** &mdash; images already under 10 MB are skipped on subsequent runs
-- **No resizing** &mdash; Astro's `srcset` handles responsive sizes at build time
-- **Quality floor** &mdash; never goes below quality 30 to prevent severe degradation
-- **Run standalone** &mdash; `node scripts/optimize-images.mjs` works outside of the full build
-
-### Adding very large images
-
-Content managers can add images of any size to `src/assets/`. The build will compress them automatically. After the first build, the optimized `.webp` file replaces the original on disk, and any frontmatter or import references are updated in place.
-
 ## Adding Images for a New Collection
 
 1. Create an asset directory: `src/assets/<name>/`
