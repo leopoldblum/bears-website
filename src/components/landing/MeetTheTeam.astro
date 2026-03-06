@@ -93,6 +93,7 @@ const content = await getPageContent('landing/meet-the-team', locale);
       };
       syncHeight();
       window.addEventListener('resize', syncHeight);
+      $cleanup(() => window.removeEventListener('resize', syncHeight));
 
       const p0 = $refs['teamPanel0'];
       if (p0) p0.style.height = 'auto';

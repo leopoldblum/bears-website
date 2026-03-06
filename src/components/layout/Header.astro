@@ -47,6 +47,7 @@ const noResultsText = locale === 'de' ? 'Keine Ergebnisse' : 'No results found';
     searchQuery: '',
     searchResults: [],
     searchActive: false,
+    _searchTimer: null,
     selectedIndex: -1,
     mobileResultsHeight: 0,
 
@@ -87,9 +88,9 @@ const noResultsText = locale === 'de' ? 'Keine Ergebnisse' : 'No results found';
     },
 
     onSearchInput() {
-      clearTimeout(window.__searchTimer);
+      clearTimeout(this._searchTimer);
       if (!this.searchQuery.trim()) { this.searchResults = []; this.selectedIndex = -1; this.mobileResultsHeight = 0; return; }
-      window.__searchTimer = setTimeout(() => this.doSearch(), 150);
+      this._searchTimer = setTimeout(() => this.doSearch(), 150);
     },
 
     closeSearch() {

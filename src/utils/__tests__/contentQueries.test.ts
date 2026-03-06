@@ -564,11 +564,19 @@ describe('getSponsorsByTier', () => {
     expect(mockedGetCollection).toHaveBeenCalledWith('sponsors');
   });
 
-  it('throws when sponsor has unknown tier prefix', async () => {
+  it('skips sponsors with unknown tier prefix and warns', async () => {
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
     mockedGetCollection.mockResolvedValue([
       makeSponsor({ id: 'unknown/corp', slug: 'corp' }),
     ]);
-    await expect(getSponsorsByTier()).rejects.toThrow();
+    const result = await getSponsorsByTier();
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('Unknown sponsor tier'));
+    expect(result.diamond).toHaveLength(0);
+    expect(result.platinum).toHaveLength(0);
+    expect(result.gold).toHaveLength(0);
+    expect(result.silver).toHaveLength(0);
+    expect(result.bronze).toHaveLength(0);
+    warnSpy.mockRestore();
   });
 });
 

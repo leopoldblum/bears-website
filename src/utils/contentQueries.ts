@@ -186,8 +186,14 @@ export async function getSponsorsByTier() {
   };
 
   // Group sponsors by tier (derived from folder structure)
+  const validTiers = ['diamond', 'platinum', 'gold', 'silver', 'bronze'] as const;
   allSponsors.forEach(sponsor => {
-    const tier = sponsor.id.split('/')[0] as 'bronze' | 'silver' | 'gold' | 'platinum' | 'diamond';
+    const tierRaw = sponsor.id.split('/')[0];
+    if (!validTiers.includes(tierRaw as (typeof validTiers)[number])) {
+      console.warn(`Unknown sponsor tier "${tierRaw}" in ${sponsor.id}, skipping`);
+      return;
+    }
+    const tier = tierRaw as (typeof validTiers)[number];
     groupedSponsors[tier].push(sponsor);
   });
 

@@ -57,8 +57,6 @@ export const categoryLabels: Record<Locale, Record<string, string>> = {
   en: {
     'competitions-and-workshops': 'Competitions & Workshops',
     'trade-fairs-and-conventions': 'Trade Fairs & Conventions',
-    'social-events': 'Social Events',
-    'guest-lectures': 'Guest Lectures',
     'kick-off-events': 'Kick-off Events',
     'experimental-rocketry': 'Experimental Rocketry',
     'science-and-experiments': 'Science & Experiments',
@@ -68,8 +66,6 @@ export const categoryLabels: Record<Locale, Record<string, string>> = {
   de: {
     'competitions-and-workshops': 'Wettbewerbe & Workshops',
     'trade-fairs-and-conventions': 'Messen & Konferenzen',
-    'social-events': 'Soziale Events',
-    'guest-lectures': 'Gastvorträge',
     'kick-off-events': 'Kick-off Events',
     'experimental-rocketry': 'Experimentelle Raketentechnik',
     'science-and-experiments': 'Wissenschaft & Experimente',
