@@ -3,7 +3,7 @@ title: "Campus-Nachhaltigkeits-Dashboard"
 description: "Ein IoT-basiertes Monitoring-System zur Verfolgung von Energieverbrauch, Abfallmanagement und Umweltkennzahlen in Campusgebäuden."
 date: 2025-10-05
 categoryProject: "science-and-experiments"
-coverImage: "project-9.png"
+coverImage: "project-9.webp"
 isDraft: false
 displayMeetTheTeam: true
 headOfProject: "Julia Anderson"

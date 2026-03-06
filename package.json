@@ -4,7 +4,7 @@
   "version": "0.0.1",
   "scripts": {
     "dev": "astro dev",
-    "build": "(vitest run || echo '[WARNING] Content validation tests failed – check output above. Continuing build...') && astro build && pagefind --site dist && node -e \"require('fs').cpSync('dist/pagefind','public/pagefind',{recursive:true})\"",
+    "build": "node scripts/optimize-images.mjs && (vitest run || echo '[WARNING] Content validation tests failed – check output above. Continuing build...') && astro build && pagefind --site dist && node -e \"require('fs').cpSync('dist/pagefind','public/pagefind',{recursive:true})\"",
     "preview": "astro preview",
     "astro": "astro",
     "test": "vitest run",
