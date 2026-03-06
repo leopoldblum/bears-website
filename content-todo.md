@@ -431,3 +431,55 @@ Files link to real Instagram URLs — verify these are the posts you want embedd
 | Legal pages                 | 2     |
 | 404 page                    | 3     |
 | **Total**                   | **~179** |
+
+---
+
+## 19. CI / GitHub Actions — Test Strategy
+
+When deploying via GitHub Pages, split tests into two tiers:
+
+### Hard gate (blocks deployment)
+- **Unit tests** (`i18n.ts`, `contentQueries.ts`, `imageLoader.ts`, `socialIcons.ts`) — if these fail, the site is broken
+- **Content checks that would crash the build** (missing referenced images, invalid frontmatter that Astro's Zod schemas reject)
+
+### Soft gate (warns but deploys)
+- **Content quality checks** that don't break the build (e.g., locale parity — a missing German translation falls back to English)
+- **Redundancy checks** (e.g., hero slide `type` vs file extension mismatch)
+
+### Implementation
+
+Split the test suite into two npm scripts:
+
+```json
+{
+  "test:ci": "vitest run --reporter=verbose",
+  "test:content-lint": "vitest run --reporter=verbose -- contentValidation"
+}
+```
+
+GitHub Actions workflow:
+
+```yaml
+jobs:
+  build:
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+      - run: npm ci
+
+      # Hard gate — blocks deployment
+      - name: Unit tests
+        run: npm run test:ci -- --exclude '**/contentValidation*'
+
+      # Soft gate — warns in PR, doesn't block
+      - name: Content validation
+        run: npm run test:ci -- -- contentValidation
+        continue-on-error: true
+
+      - run: npm run build
+      # ... deploy step
+```
+
+`continue-on-error: true` shows a yellow warning on the PR check without blocking merge/deploy.
+
+**Future improvement:** Add a separate job that posts a PR comment summarizing content issues (e.g., "3 sponsor logos are `.gif` — convert to `.png` or `.svg`") so content creators get actionable feedback without digging through CI logs.
