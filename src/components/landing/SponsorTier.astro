@@ -11,6 +11,7 @@ interface Props {
     url?: string;
     tier: SponsorTier;
     slug: string;
+    bgColor?: string;
   }>;
   tier: SponsorTier;
 }
@@ -18,42 +19,48 @@ interface Props {
 const { sponsors, tier } = Astro.props;
 
 // Define tier-specific styling configuration
+// Each tier gets proportionally sized white card containers for logo display
 const tierConfig = {
   diamond: {
-    sizeClasses: "h-20 sm:h-24 lg:h-28 w-auto",
-    gapClasses: "gap-10 sm:gap-14 lg:gap-20",
+    imgClasses: "h-20 sm:h-24 lg:h-28 w-auto",
+    cardClasses: "px-8 py-6 sm:px-10 sm:py-7 lg:px-12 lg:py-8 rounded-2xl",
+    gapClasses: "gap-6 sm:gap-8 lg:gap-10",
     marginClasses: "mb-6 sm:mb-8",
-    hoverClasses: "hover:scale-110 hover:drop-shadow-[0_0_12px_rgba(197,14,31,0.25)]",
+    hoverClasses: "hover:scale-[1.04] hover:shadow-[0_8px_30px_rgba(0,0,0,0.08),0_0_0_1px_rgba(197,14,31,0.08)]",
     sizes: "(min-width: 1024px) 720px, (min-width: 640px) 580px, 440px",
   },
   platinum: {
-    sizeClasses: "h-16 sm:h-20 lg:h-24 w-auto",
-    gapClasses: "gap-9 sm:gap-12 lg:gap-18",
+    imgClasses: "h-16 sm:h-20 lg:h-24 w-auto",
+    cardClasses: "px-7 py-5 sm:px-9 sm:py-6 lg:px-10 lg:py-7 rounded-2xl",
+    gapClasses: "gap-5 sm:gap-7 lg:gap-8",
     marginClasses: "mb-6 sm:mb-8",
     sizes: "(min-width: 1024px) 600px, (min-width: 640px) 480px, 360px",
   },
   gold: {
-    sizeClasses: "h-14 sm:h-16 lg:h-20 w-auto",
-    gapClasses: "gap-8 sm:gap-10 lg:gap-12",
+    imgClasses: "h-14 sm:h-16 lg:h-20 w-auto",
+    cardClasses: "px-6 py-4 sm:px-7 sm:py-5 lg:px-8 lg:py-6 rounded-xl",
+    gapClasses: "gap-4 sm:gap-6 lg:gap-7",
     marginClasses: "mb-6 sm:mb-8",
     sizes: "(min-width: 1024px) 520px, (min-width: 640px) 400px, 300px",
   },
   silver: {
-    sizeClasses: "h-12 sm:h-14 lg:h-16 w-auto",
-    gapClasses: "gap-6 sm:gap-8 lg:gap-10",
+    imgClasses: "h-12 sm:h-14 lg:h-16 w-auto",
+    cardClasses: "px-5 py-3.5 sm:px-6 sm:py-4 lg:px-7 lg:py-5 rounded-xl",
+    gapClasses: "gap-3 sm:gap-5 lg:gap-6",
     marginClasses: "mb-6 sm:mb-8",
     sizes: "(min-width: 1024px) 420px, (min-width: 640px) 340px, 260px",
   },
   bronze: {
-    sizeClasses: "h-10 sm:h-12 lg:h-14 w-auto",
-    gapClasses: "gap-4 sm:gap-6 lg:gap-8",
+    imgClasses: "h-10 sm:h-12 lg:h-14 w-auto",
+    cardClasses: "px-4 py-3 sm:px-5 sm:py-3.5 lg:px-6 lg:py-4 rounded-lg",
+    gapClasses: "gap-3 sm:gap-4 lg:gap-5",
     marginClasses: "mb-10 sm:mb-12 lg:mb-16",
     sizes: "(min-width: 1024px) 360px, (min-width: 640px) 280px, 200px",
   },
 };
 
 const config = tierConfig[tier] || tierConfig.bronze;
-const hoverClasses = config.hoverClasses ?? "hover:scale-110 hover:opacity-80";
+const hoverClasses = config.hoverClasses ?? "hover:scale-[1.04] hover:shadow-[0_8px_30px_rgba(0,0,0,0.08)]";
 ---
 
 {
@@ -62,11 +69,14 @@ const hoverClasses = config.hoverClasses ?? "hover:scale-110 hover:opacity-80";
       class={`flex flex-wrap justify-center items-center ${config.gapClasses} ${config.marginClasses}`}
     >
       {sponsors.map((sponsor, sponsorIndex) => {
+        const bg = sponsor.bgColor || '#ffffff';
+        const cardBase = `sponsor-card ${config.cardClasses} shadow-[0_1px_3px_rgba(0,0,0,0.04),0_1px_2px_rgba(0,0,0,0.02)] overflow-hidden flex items-center justify-center transition-all duration-300 ease-out`;
+        const cardStyle = `background-color: ${bg}; animation-delay: ${sponsorIndex * 60}ms`;
         const content = (
           <Img
             src={sponsor.logo}
             alt={sponsor.name}
-            class={`${config.sizeClasses} rounded-none`}
+            class={`${config.imgClasses} rounded-none`}
             loading="lazy"
             sizes={config.sizes}
             enableClickToEnlarge={false}
@@ -76,8 +86,8 @@ const hoverClasses = config.hoverClasses ?? "hover:scale-110 hover:opacity-80";
         return sponsor.url ? (
           <a
             href={sponsor.url}
-            class={`sponsor-card inline-block ${hoverClasses} transition-all duration-300`}
-            style={`animation-delay: ${sponsorIndex * 60}ms`}
+            class={`${cardBase} ${hoverClasses}`}
+            style={cardStyle}
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -85,8 +95,8 @@ const hoverClasses = config.hoverClasses ?? "hover:scale-110 hover:opacity-80";
           </a>
         ) : (
           <div
-            class="sponsor-card inline-block"
-            style={`animation-delay: ${sponsorIndex * 60}ms`}
+            class={cardBase}
+            style={cardStyle}
           >
             {content}
           </div>

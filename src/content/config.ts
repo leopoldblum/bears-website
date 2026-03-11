@@ -33,6 +33,7 @@ const sponsorsCollection = defineCollection({
       { message: `logo must have a valid image extension: ${VALID_EXTENSIONS_MESSAGE}` }
     ),
     url: z.string().url().optional(),
+    bgColor: z.string().default('#ffffff'),
     // tier is automatically derived from folder structure (bronze/, silver/, gold/)
     // and does not need to be specified in frontmatter
   }),

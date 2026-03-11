@@ -43,13 +43,31 @@ The body of sponsor files is not used &mdash; all content comes from the frontma
 
 ## Optional Fields
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `url` | string | Link to the sponsor's website (must be a full URL) |
+| Field | Type | Default | Description |
+|-------|------|---------|-------------|
+| `url` | string | — | Link to the sponsor's website (must be a full URL) |
+| `bgColor` | string | `#ffffff` | Background color of the logo card. Use this when a sponsor's corporate identity requires a specific background (e.g. `#e20025` for a red brand). |
+
+## Logo Cards & Background Color
+
+Each sponsor logo is displayed inside a white card container with rounded corners and a soft shadow. This ensures logos look clean against the page background and satisfies corporate identity requirements for logos that must appear on a white surface.
+
+If a sponsor's brand guidelines require a different background color, set the `bgColor` field in frontmatter:
+
+```yaml
+---
+name: "Hetzner"
+logo: "Hetzner-Logo-slogan_white_space-red.jpg"
+url: "https://hetzner.com"
+bgColor: "#e20025"
+---
+```
+
+Any valid CSS color value works (`#hex`, `rgb()`, named colors). When omitted, the card defaults to white (`#ffffff`).
 
 ## Logos
 
-Place logo images in `src/assets/sponsors/`. Valid formats: `.jpg`, `.jpeg`, `.png`, `.webp`, `.svg`.
+Place logo images in `src/assets/sponsors/<tier>/` (matching the sponsor's tier folder). Valid formats: `.jpg`, `.jpeg`, `.png`, `.webp`, `.svg`.
 
 ## Display Order
 

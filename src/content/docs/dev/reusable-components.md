@@ -175,6 +175,30 @@ Subtle banner with text and arrow link, used below pagination to cross-link betw
 
 **Directory:** `src/components/landing/`
 
+### SponsorTier
+
+| Prop | Type | Description |
+|------|------|-------------|
+| `sponsors` | `SponsorData[]` | Array of sponsor objects |
+| `tier` | `SponsorTier` | Tier key for size styling |
+
+Each sponsor object: `{ name, logo (ImageMetadata), url?, tier, slug, bgColor? }`.
+
+Renders sponsor logos in a flex-wrap row with tier-proportional sizing. Each logo sits inside a white card container with soft shadow, rounded corners, and padding that scales with the tier (larger cards for higher tiers). The card background color defaults to `#ffffff` but can be overridden per sponsor via the `bgColor` frontmatter field to meet corporate identity requirements.
+
+Used by both `BecomeSponsor` (landing page) and `SponsorShowcase` (dedicated sponsors page).
+
+### SponsorShowcase
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `title` | `string?` | &mdash; | Section heading |
+| `subtitle` | `string?` | &mdash; | Accent label above heading |
+| `description` | `string?` | &mdash; | Intro paragraph |
+| `tiers` | `TierGroup[]` | &mdash; | Tier groups with sponsors |
+
+Light-background section with accordion-style tier groups (all open by default). Each tier header is a clickable button with height animation. Uses `SponsorTier` internally for logo display.
+
 ### LandingHero
 
 | Prop | Type | Default | Description |

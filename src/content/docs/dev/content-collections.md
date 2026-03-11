@@ -16,7 +16,7 @@ All website content is managed through [Astro content collections](https://docs.
 | `testimonials` | `src/content/testimonials/{en,de}/` | Yes | quote, name, role, coverImage |
 | `faces-of-bears` | `src/content/faces-of-bears/{en,de}/` | Yes | name, role, coverImage |
 | `page-text` | `src/content/page-text/{en,de}/` | Yes | title, subtitle, description, ctas, items, socialLinks, navColumns, faqs, instagramButtonText, mediaCategories |
-| `sponsors` | `src/content/sponsors/<tier>/` | No | name, logo, url (tier from folder) |
+| `sponsors` | `src/content/sponsors/<tier>/` | No | name, logo, url, bgColor (tier from folder) |
 | `hero-slides` | `src/content/hero-slides/` | No | type (image\|video), media, shownText, alt |
 | `instagram` | `src/content/instagram/` | No | url, date, isDraft |
 | `docs` | `src/content/docs/` | No | title, description, order, group |
