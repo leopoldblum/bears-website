@@ -348,6 +348,12 @@ const structuredData = type === "event"
     );
   }
 
+  /* Consistent vertical spacing for images and image wrappers */
+  .prose-content :global(.img-better) {
+    margin-top: 1.25rem;
+    margin-bottom: 1.25rem;
+  }
+
   /* Prevent child elements from causing overflow */
   /* Exclude images inside .not-prose containers */
   .prose-content :global(img:not(.not-prose img)) {
