@@ -159,7 +159,7 @@ const allTierKeys = JSON.stringify(activeTiers.map(t => t.key));
                 x-ref={`tierPanel_${tier.key}`}
                 class="overflow-hidden"
               >
-                <div class="px-2 pb-6 sm:pb-8">
+                <div class="px-2">
                   {/* Tier description */}
                   {tier.description && (
                     <p class="text-sm sm:text-base text-bears-text-onLight/60 leading-relaxed mb-6 sm:mb-8">
@@ -168,14 +168,16 @@ const allTierKeys = JSON.stringify(activeTiers.map(t => t.key));
                   )}
 
                   {/* Sponsor logos */}
-                  <SponsorTier sponsors={tier.sponsors} tier={tier.key} />
+                  <div class="py-4 sm:py-6">
+                    <SponsorTier sponsors={tier.sponsors} tier={tier.key} />
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* Divider between tiers */}
             {!isLast && (
-              <GradientDivider variant="light" class="max-w-3xl mx-auto my-6 sm:my-8" />
+              <GradientDivider variant="light" class="max-w-3xl mx-auto my-3 sm:my-4" />
             )}
           </div>
         );
