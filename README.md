@@ -30,6 +30,25 @@ npm install
 npm run dev
 ```
 
+## Adding New Content
+
+When adding or editing content (events, projects, sponsors, page text, etc.), **always work on a new branch** — never commit directly to `main`.
+
+1. Create a new branch before making changes:
+   ```sh
+   git checkout -b my-content-update
+   ```
+2. Make your changes, then commit them:
+   ```sh
+   git add .
+   git commit -m "Add new event: Spring Workshop 2026"
+   ```
+3. Push your branch:
+   ```sh
+   git push -u origin my-content-update
+   ```
+4. *(Optional)* If you're comfortable with GitHub, you can open a **Pull Request** on GitHub to have your changes reviewed before they go live.
+
 ## Project Structure
 
 ```text
