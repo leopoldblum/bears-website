@@ -67,25 +67,9 @@ slotHtml = slotHtml.replace(
       const track = this.$refs.track;
       const container = this.$el;
 
-      // Wait for images to load before measuring (with 3s timeout fallback)
-      const images = content.querySelectorAll('img');
-      if (images.length > 0) {
-        await Promise.race([
-          Promise.all(
-            Array.from(images).map(img => {
-              return new Promise((resolve) => {
-                if (img.complete) {
-                  resolve();
-                } else {
-                  img.addEventListener('load', resolve, { once: true });
-                  img.addEventListener('error', resolve, { once: true });
-                }
-              });
-            })
-          ),
-          new Promise(resolve => setTimeout(resolve, 3000))
-        ]);
-      }
+      // No need to await image pixel data: Astro's <Image> sets width/height
+      // attributes, so the browser reserves correct layout boxes via intrinsic
+      // aspect-ratio and scrollWidth is accurate before images finish decoding.
 
       // Store original children and measure original width
       const originalChildren = Array.from(content.children).map(child => child.cloneNode(true));
@@ -125,28 +109,6 @@ slotHtml = slotHtml.replace(
       originalChildren.forEach(child => {
         content.appendChild(child.cloneNode(true));
       });
-
-      // Force all cloned images to load eagerly (cloneNode inherits loading="lazy"
-      // from Astro's <Image>, but without a CSS animation compositor layer the
-      // browser won't pre-render off-screen lazy images)
-      content.querySelectorAll('img').forEach(img => { img.loading = 'eager'; });
-
-      // Wait for all images (including clones) to fully load before animating
-      const allImages = content.querySelectorAll('img');
-      if (allImages.length > 0) {
-        await Promise.race([
-          Promise.all(
-            Array.from(allImages).map(img =>
-              img.complete ? Promise.resolve() :
-              new Promise(r => {
-                img.addEventListener('load', r, { once: true });
-                img.addEventListener('error', r, { once: true });
-              })
-            )
-          ),
-          new Promise(r => setTimeout(r, 3000))
-        ]);
-      }
 
       // Single closure — reused by rAF, no allocation per frame
       const animate = (timestamp) => {
