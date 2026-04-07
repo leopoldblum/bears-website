@@ -21,6 +21,8 @@ navColumns:
         href: "/sponsors#become-a-sponsor-title"
       - label: "Our Partners"
         href: "/sponsors#sponsor-showcase"
+      - label: "Donate"
+        href: "/sponsors#donate-title"
       - label: "Benefits"
         href: "/sponsors"
   - heading: "Events"

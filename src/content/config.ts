@@ -221,6 +221,13 @@ const pageTextCollection = defineCollection({
       id: z.string(),
       label: z.string(),
     })).optional(),
+    bankName: z.string().optional(),
+    accountHolder: z.string().optional(),
+    iban: z.string().optional(),
+    bic: z.string().optional(),
+    reference: z.string().optional(),
+    paypalUrl: z.string().url().optional(),
+    paypalButtonText: z.string().optional(),
   }).refine(d => !d.buttonText || d.buttonHref, {
     message: 'buttonHref is required when buttonText is set',
     path: ['buttonHref'],
