@@ -4,90 +4,73 @@ description: "How to add and edit content on the BEARS website."
 order: 10
 ---
 
-This guide covers how to set up the project locally and the basics of managing content.
+This guide gets the site running locally so you can start editing content. It assumes you have **Git** and a code editor (we recommend **VS Code**) installed.
 
-## Prerequisites
+## Step 1: Install Node.js
 
-You need **Node.js** (v18 or later) and **npm** (bundled with Node.js).
+You need **Node.js v18 or later** (`npm` comes bundled with it). Install the **LTS version** from [nodejs.org](https://nodejs.org/), then verify:
 
-1. Download and install Node.js from [nodejs.org](https://nodejs.org/) (the LTS version is recommended).
-2. Verify the installation by opening a terminal and running:
-   ```sh
-   node -v
-   npm -v
-   ```
-   Both commands should print a version number.
+```sh
+node -v
+npm -v
+```
 
-## Local Quickstart
+Both commands should print a version number.
+
+## Step 2: Clone the Repo
+
+```sh
+git clone https://github.com/leopoldblum/bears-website.git
+cd bears-website
+code .
+```
+
+## Step 3: Install Dependencies
 
 ```sh
 npm install
+```
+
+Only needed once, and again whenever dependencies change after a `git pull`.
+
+## Step 4: Start the Dev Server
+
+```sh
 npm run dev
 ```
 
-This starts a local development server at `localhost:4321`. Changes to content files are reflected immediately in the browser.
+Open [http://localhost:4321](http://localhost:4321). Changes to content files are reflected live in the browser.
 
-## Languages
-
-The website supports **English** (default) and **German**. Most content collections use `en/` and `de/` subfolders:
-
-```
-src/content/events/
-├── en/    ← English (default)
-│   └── 2026 03 15 hackathon-2026.md
-└── de/    ← German translations
-    └── 2026 03 15 hackathon-2026.md
-```
-
-To add a translation, create a file with the **same filename** in the other locale folder. If a German translation is missing, the English version is shown automatically.
-
-**Collections with locale folders:** `events`, `projects`, `page-text`, `testimonials`, `faces-of-bears`
-
-**Collections without locale folders** (language-neutral): `sponsors`, `instagram`, `hero-slides`, `docs`
-
-## How Content Files Work
-
-All website content is managed through Markdown files in `src/content/`. Each file has a **frontmatter** block at the top (between `---` delimiters) that defines metadata, followed by optional Markdown body content:
-
-```yaml
----
-title: "My Event Title"
-description: "A short description."
-date: 2026-01-15
 ---
 
-Body content goes here — this becomes the detail page text.
-```
+## Stuck? Ask an AI
 
-Most files use `.md` (Markdown). Event and project posts can use `.mdx` instead, which allows importing interactive components like accordions, carousels, and image galleries into the page body. Other content types (sponsors, testimonials, page text, etc.) only use `.md`.
+Open the [Ask AI for Help](/docs/guides/ai-help/) page, copy the AI context prompt, and paste it into ChatGPT or Claude along with your question. You'll get accurate answers about the content system without having to read every guide.
 
-## MDX Components
+---
 
-When writing an event or project post as `.mdx`, paste the following import line at the top of the file (right after the frontmatter closing `---`). This gives you access to every available component:
+## Next Steps
+
+Dive into the guide for whatever you're working on:
+
+- **[Managing Page Text](/docs/guides/managing-page-text/)** &mdash; headings, descriptions, buttons, and other site-wide copy
+- **[Managing Events](/docs/guides/managing-events/)** &mdash; workshops, talks, and competitions
+- **[Managing Projects](/docs/guides/managing-projects/)** &mdash; ongoing and completed team projects
+- **[Managing Sponsors](/docs/guides/managing-sponsors/)** &mdash; sponsors organized by tier
+- **[Managing Testimonials](/docs/guides/managing-testimonials/)**, **[Hero Slides](/docs/guides/managing-hero-slides/)**, **[Instagram Posts](/docs/guides/managing-instagram-posts/)**, **[Faces of BEARS](/docs/guides/managing-faces-of-bears/)**
+
+### Quick reference
+
+**Languages:** The site has English (default) and German. Most collections (`events`, `projects`, `page-text`, `testimonials`, `faces-of-bears`) use `en/` and `de/` subfolders with matching filenames. If a German translation is missing, the English version is shown automatically. Language-neutral collections: `sponsors`, `instagram`, `hero-slides`, `docs`.
+
+**Content files:** Every file in `src/content/` has a YAML **frontmatter** block at the top (between `---` delimiters), followed by optional Markdown body content. Most files use `.md`; event and project posts can also use `.mdx` to embed interactive components.
+
+**MDX components:** At the top of any `.mdx` event or project file, paste this once to import every available component (unused ones are stripped at build time):
 
 ```mdx
 import { Accordion, Button, Callout, Carousel, Center, Img, Instagram, Marquee, YouTube, SideBySide, Left, Right } from '@mdx';
 ```
 
-Unused imports are automatically removed during the build, so there is no performance cost to importing everything upfront. This way you can simply use any component and never worry about missing an import. See the **MDX Components** section in the sidebar for guides on each component.
-
-## Content Types
-
-Each type of content has its own folder and schema. Click through for field references and examples:
-
-- **[Events](/docs/guides/managing-events/)** &mdash; workshops, talks, and competitions
-- **[Projects](/docs/guides/managing-projects/)** &mdash; ongoing and completed team projects
-- **[Sponsors](/docs/guides/managing-sponsors/)** &mdash; company sponsors organized by tier
-- **[Testimonials](/docs/guides/managing-testimonials/)** &mdash; quotes from members and partners
-- **[Hero Slides](/docs/guides/managing-hero-slides/)** &mdash; landing page background slideshow
-- **[Instagram Posts](/docs/guides/managing-instagram-posts/)** &mdash; embedded Instagram posts
-- **[Faces of BEARS](/docs/guides/managing-faces-of-bears/)** &mdash; team member profiles on About Us
-- **[Page Text](/docs/guides/managing-page-text/)** &mdash; editable headings, descriptions, and CTAs
-
-## Common Patterns
-
-**Drafts:** Events, projects, and Instagram posts support `isDraft: true` to hide content in production while keeping it visible during development.
+**Drafts:** Set `isDraft: true` on events, projects, and Instagram posts to hide them in production while keeping them visible locally.
 
 **Images:** All images must be local files in `src/assets/` subdirectories. Valid formats: `.jpg`, `.jpeg`, `.png`, `.webp`, `.svg`. Never use remote URLs.
-
-**File naming:** Conventions vary by content type &mdash; check the individual guide for details. Common patterns are date prefixes (`YYYY MM DD title.md`) and numeric prefixes (`NN-name.md`).
