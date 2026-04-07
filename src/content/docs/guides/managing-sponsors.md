@@ -72,3 +72,9 @@ Place logo images in `src/assets/sponsors/<tier>/` (matching the sponsor's tier 
 ## Display Order
 
 Within each tier, sponsors are sorted alphabetically by slug (the filename). Use numeric prefixes like `01-`, `02-`, `03-` to control the order.
+
+## Donations
+
+The Sponsors page also has a direct-donations card below the sponsor CTA, with bank transfer details and a PayPal button. Its copy, bank details, and PayPal URL are edited in the page-text file `src/content/page-text/{en,de}/sponsors/donate.md` — not in this `src/content/sponsors/` folder.
+
+See the "Donate Card" section in [Managing Page Text](/docs/guides/managing-page-text#donate-card) for the full field reference and an example.

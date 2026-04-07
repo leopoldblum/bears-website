@@ -123,13 +123,20 @@ Frontmatter fields:
   mediaCategories: array — each: { id, label } — controls which categories appear on the Media page and in what order
     Available ids: all (combined view), about-us, events, faces-of-bears, hero, projects, team-members, testimonials, what-is-bears
     Remove an entry to hide that category; reorder entries to change display order.
+  accountHolder: string — donation: account holder name (donate card on sponsors page)
+  bankName: string — donation: bank name
+  iban: string — donation: IBAN for bank transfers
+  bic: string — donation: BIC/SWIFT code
+  reference: string — donation: suggested transfer reference
+  paypalUrl: string — donation: full PayPal donation URL (must be paired with paypalButtonText)
+  paypalButtonText: string — donation: PayPal button label (must be paired with paypalUrl)
 
 Page text folder structure (inside en/ and de/):
   landing/        — homepage sections (hero, what-is-bears, latest-news, meet-the-team, testimonials, become-sponsor)
   about-us/       — about page (about-us-title, our-mission, whats-in-it, faq, faq-crosslink, find-us, faces-of-bears)
   events/         — events page (events-title, events-intro, events-crosslink, events-empty-state)
   projects/       — projects page (projects-title, categories-intro, category-experimental-rocketry, category-science-and-experiments, category-robotics, projects-crosslink, projects-empty-state)
-  sponsors/       — sponsors page (sponsors-title, sponsors-intro, sponsor-tiers, sponsors-crosslink, become-sponsor-cta)
+  sponsors/       — sponsors page (sponsors-title, sponsors-intro, sponsor-tiers, sponsors-crosslink, become-sponsor-cta, donate)
   contact/        — contact page (contact-title, contact-info, contact-crosslink)
   media/          — media page (media-title)
   header/         — header navigation (navigation — uses navLinks)
@@ -148,7 +155,9 @@ Naming conventions:
 Special behaviors:
   {year} in footer/bottom-bar title is replaced with the current year at build time.
   buttonText and buttonHref must both be provided for a button to appear. Same for secondButtonText and secondButtonHref.
+  paypalUrl and paypalButtonText must both be provided for the PayPal donate button to appear (same pairing rule).
   items with " -> " separator are split into title + description; without it, the whole string is the title.
+  sponsors/donate is the direct-donations card on the Sponsors page (below the sponsor CTA, bridged by an "OR" divider). Bank block renders if any of accountHolder/bankName/iban/bic is set; each row only appears if its field is present. The items array renders as a value-props row with icons (icons hardcoded, labels editable).
 
 ========================================
 MDX COMPONENTS (for .mdx event/project posts)

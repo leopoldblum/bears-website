@@ -24,7 +24,7 @@ src/content/page-text/
 │   ├── about-us/      — About Us page (mission, benefits, FAQ, etc.)
 │   ├── events/        — Events page (header, intro, crosslinks)
 │   ├── projects/      — Projects page (header, categories, crosslinks)
-│   ├── sponsors/      — Sponsors page (header, tiers, CTA)
+│   ├── sponsors/      — Sponsors page (header, tiers, CTA, donate)
 │   ├── contact/       — Contact page
 │   ├── media/         — Media page
 │   ├── header/        — Header (navigation links)
@@ -68,6 +68,13 @@ Every file must have a `title`. All other fields are optional &mdash; each file 
 | `socialLinks` | array | Social media links, each with `platform`, `url`, optional `hoverColor` |
 | `navLinks` | array | Simple navigation links, each with `label` and `href` |
 | `navColumns` | array | Multi-column navigation, each with `heading`, `href`, and nested `links` |
+| `accountHolder` | string | Donation: account holder name (donate card) |
+| `bankName` | string | Donation: bank name |
+| `iban` | string | Donation: IBAN for bank transfers |
+| `bic` | string | Donation: BIC / SWIFT code |
+| `reference` | string | Donation: suggested transfer reference |
+| `paypalUrl` | string | Donation: full PayPal donation URL (pair with `paypalButtonText`) |
+| `paypalButtonText` | string | Donation: PayPal button label (pair with `paypalUrl`) |
 
 ## Patterns &amp; Examples
 
@@ -259,6 +266,50 @@ ctas:
 **Fields used:** `title` (not displayed, used internally), `subtitle` (hero tagline), `seoDescription` (homepage meta description), `ctas` (each with `title`, `description`, `href`)
 
 **Files:** `landing/hero`
+
+---
+
+### Donate Card
+
+The direct-donations block on the Sponsors page, shown below the "Partner with BEARS" sponsor CTA and separated from it by an "OR" divider. It's a secondary path for individuals who want to support BEARS directly, while sponsorship stays the primary call.
+
+```yaml
+---
+title: "Support us directly"
+description: "Help us build and launch real rockets. Every contribution funds student-built aerospace projects — from first prototype to competition launch."
+items:
+  - "Rocket hardware"
+  - "Lab equipment"
+  - "Competition travel"
+accountHolder: "BEARS e.V."
+bankName: "Your bank name"
+iban: "DEXX XXXX XXXX XXXX XXXX XX"
+bic: "XXXXXXXXXXX"
+reference: "Donation"
+paypalUrl: "https://www.paypal.com/donate/?hosted_button_id=..."
+paypalButtonText: "Donate via PayPal"
+---
+```
+
+**Where it appears:** The Sponsors page, directly below the "Partner with BEARS" sponsor CTA. A subtle gradient "OR" divider visually bridges the two cards. The donate card is narrower and quieter than the sponsor card above it, intentionally secondary in the visual hierarchy.
+
+**Card structure (top to bottom):**
+1. A small heading (uses `title`)
+2. A short description (`description`)
+3. A row of three value labels with icons (from `items` — icons are hardcoded in the page template, labels are editable here)
+4. Two buttons side-by-side: "Donate via PayPal" (primary) and "Bank transfer details" (secondary, expands the bank block)
+5. An expandable bank transfer details panel (only shown when the button is clicked)
+
+**Partial fields are fine:**
+- The bank details block only renders if at least one of `accountHolder`, `bankName`, `iban`, `bic` is present. Each row inside the block is only shown if its field is set.
+- The PayPal button only renders if **both** `paypalUrl` and `paypalButtonText` are provided — same pairing rule as `buttonText`/`buttonHref`.
+- The value trio (`items`) only renders if the array has at least one entry. You can have fewer or more than three items.
+
+**Fields used:** `title`, `description`, `items`, `accountHolder`, `bankName`, `iban`, `bic`, `reference`, `paypalUrl`, `paypalButtonText`
+
+**Files:** `sponsors/donate`
+
+**Jump target:** The donate card has a stable anchor `#donate-title`, used by the "Donate" link in the footer's Sponsors column.
 
 ---
 

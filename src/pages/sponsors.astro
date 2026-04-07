@@ -103,7 +103,7 @@ const tiers = [
         {ctaContent.data.title}
       </h2>
 
-      <div class="max-w-2xl mx-auto bg-white/[0.03] border border-white/10 rounded-2xl p-6 sm:p-8 lg:p-10 text-center">
+      <div class="max-w-2xl mx-auto bg-white/[0.04] border border-white/15 rounded-2xl p-6 sm:p-8 lg:p-10 text-center shadow-[0_8px_32px_rgba(0,0,0,0.35)]">
         {ctaContent.data.description && (
           <p class="text-sm sm:text-base lg:text-lg text-bears-text-onDark/70 leading-relaxed mb-8 sm:mb-10">
             {ctaContent.data.description}
@@ -117,18 +117,20 @@ const tiers = [
         )}
       </div>
 
-    </section>
-  )}
+      {/* Visual bridge: "OR" divider connecting to direct donations */}
+      {donateContent && (
+        <div class="max-w-xl mx-auto flex items-center gap-4 my-10 sm:my-14" aria-hidden="true">
+          <div class="flex-1 h-px bg-gradient-to-r from-transparent to-white/15"></div>
+          <span class="text-xs font-bold uppercase tracking-[0.2em] text-bears-text-onDark/40">Or</span>
+          <div class="flex-1 h-px bg-gradient-to-l from-transparent to-white/15"></div>
+        </div>
+      )}
 
-  {/* Direct donations section */}
-  {donateContent && (
-    <section class="container mx-auto px-4 sm:px-8 lg:px-16 pb-20 sm:pb-28 lg:pb-36">
-      <h2 id="donate-title" class="text-3xl sm:text-4xl lg:text-5xl font-bold text-bears-text-onDark text-center mb-8 sm:mb-10 lg:mb-14 scroll-mt-20">
-        {donateContent.data.title}
-      </h2>
-
+      {/* Direct donations — secondary, compact */}
+      {donateContent && (
       <div
-        class="max-w-2xl mx-auto bg-white/[0.03] border border-white/10 rounded-2xl p-6 sm:p-8 lg:p-10 shadow-[0_4px_24px_rgba(0,0,0,0.2)]"
+        id="donate-title"
+        class="max-w-xl mx-auto bg-white/[0.02] border border-white/10 rounded-2xl p-5 sm:p-6 lg:p-8 scroll-mt-20"
         x-data={`{
           bankOpen: false,
           _reducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
@@ -162,6 +164,10 @@ const tiers = [
           }
         }`}
       >
+        <h3 class="text-xl sm:text-2xl font-bold text-bears-text-onDark text-center mb-3">
+          {donateContent.data.title}
+        </h3>
+
         {donateContent.data.description && (
           <p class="text-sm sm:text-base text-bears-text-onDark/70 text-center mb-6">
             {donateContent.data.description}
@@ -261,6 +267,7 @@ const tiers = [
           </div>
         )}
       </div>
+      )}
     </section>
   )}
 
