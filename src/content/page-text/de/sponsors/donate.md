@@ -2,7 +2,7 @@
 title: "Einfach spenden"
 description: "Hilf uns, echte Raketen zu bauen und zu starten. Jeder Beitrag unterstützt studentische Aerospace-Projekte — vom ersten Prototyp bis zum Wettbewerbsstart."
 items:
-  - "Raketen-Hardware"
+  - "Projekt-Hardware"
   - "Laborausrüstung"
   - "Wettbewerbsreisen"
 accountHolder: "BEARS e.V."

@@ -2,7 +2,7 @@
 title: "Support us directly"
 description: "Help us build and launch real rockets. Every contribution funds student-built aerospace projects — from first prototype to competition launch."
 items:
-  - "Rocket hardware"
+  - "Project hardware"
   - "Lab equipment"
   - "Competition travel"
 accountHolder: "BEARS e.V."
