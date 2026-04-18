@@ -73,7 +73,7 @@ After any schema edit, run `npm test`. The suite at `src/utils/__tests__/keystat
 
 #### Keystatic collection mapping
 
-The 9 Astro collections fan out into ~30 Keystatic collections + singletons (split per locale, per tier, or per shape for page-text):
+The 9 Astro collections fan out into ~90 Keystatic collections + singletons (split per locale, per tier, and per file for page-text):
 
 | Astro collection | Keystatic items |
 |---|---|
@@ -82,12 +82,12 @@ The 9 Astro collections fan out into ~30 Keystatic collections + singletons (spl
 | `events` | `eventsEn`, `eventsDe` |
 | `projects` | `projectsEn`, `projectsDe` |
 | `hero-slides` | `heroSlides` |
-| `page-text` | `pageTextEn`/`De` (common section entries), `pageTextNavLinksEn`/`De` (collection), plus per-locale singletons: `pageTextHeroEn`/`De`, `pageTextFaqEn`/`De`, `pageTextMediaCategoriesEn`/`De`, `pageTextNavColumnsEn`/`De`, `pageTextSocialEn`/`De`, `pageTextDonateEn`/`De` |
+| `page-text` | One Keystatic singleton per `.mdx` file, scoped to a "shape" schema that only exposes the fields that file uses (page header, section, section-with-button, crosslink, list section, title-only, latest-news, legal page). See the singleton names in [keystatic.config.ts](keystatic.config.ts). Plus `pageTextNavLinksEn`/`De` (collection for the two nav-link list entries). |
 | `instagram` | `instagram` |
 | `faces-of-bears` | `facesOfBearsEn`, `facesOfBearsDe` |
 | `docs` | `docsGuides`, `docsDev` |
 
-The bilingual split is purely organisational — both Keystatic collections write to the existing `en/`/`de/` subfolders. The sponsor tier split reflects the folder structure (`src/content/sponsors/{tier}/`). For page-text, outlier shapes (hero, FAQ, donate, social, media-categories, footer nav columns, nav-link lists) are extracted into dedicated Keystatic singletons/collections so each editor form only shows the fields relevant to that shape. The main `pageTextEn`/`De` collection is restricted to section/list entries via a brace-expanded folder glob.
+The bilingual split is purely organisational — both Keystatic collections write to the existing `en/`/`de/` subfolders. The sponsor tier split reflects the folder structure (`src/content/sponsors/{tier}/`). For page-text, every file has its own singleton with a tight schema — this keeps each editor form minimal (e.g. a crosslink file only shows title/button text/button link). The singletons are grouped in the admin navigation by page (Landing, About us, Contact, Events, Projects, Sponsors, Legal, Site-wide) so editors find content by the page it lives on.
 
 #### MDX component registry
 

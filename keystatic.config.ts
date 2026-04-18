@@ -140,7 +140,7 @@ function sponsorsCollection(tier: 'diamond' | 'platinum' | 'gold' | 'silver' | '
       }),
       order: fields.integer({
         label: 'Order',
-        description: 'Sort order within this tier (lower = shown first). Ties fall back to the sponsor name.',
+        description: 'Sort order within this tier (lower = shown first). Ties fall back to the sponsor name. Note: the landing page\'s "Become a Sponsor" section only shows the top 3 non-empty tiers (diamond → bronze priority) — sponsors in lower tiers still appear on the dedicated Sponsors page.',
         defaultValue: 0,
         validation: { isRequired: true },
       }),
@@ -249,39 +249,16 @@ function projectsCollection(locale: 'en' | 'de') {
   });
 }
 
-// Page-text content is split across many Keystatic collections/singletons so
-// each editing form only surfaces the fields relevant to its shape. The Astro
-// Zod schema in src/content/config.ts stays permissive (all fields optional)
+// Page-text content is fully split into per-file Keystatic singletons so each
+// editor form shows only the fields the file actually uses. The Astro Zod
+// schema in src/content/config.ts stays permissive (all fields optional)
 // since entries from every shape live in one `page-text` collection.
 //
 // Layout on disk:
-//   src/content/page-text/<locale>/<section>/<entry>.md   — common "section"
-//                                                           entries, handled
-//                                                           by pageTextCollection
-//   src/content/page-text/<locale>/hero.md                — singleton
-//   src/content/page-text/<locale>/faq.md                 — singleton
-//   src/content/page-text/<locale>/media-categories.md    — singleton
-//   src/content/page-text/<locale>/nav-columns.md         — singleton (footer nav)
-//   src/content/page-text/<locale>/social.md              — singleton
-//   src/content/page-text/<locale>/donate.md              — singleton
-//   src/content/page-text/<locale>/site/metadata.md       — singleton
-//   src/content/page-text/<locale>/footer/footer-address.md — singleton
-//   src/content/page-text/<locale>/nav-links/*.md         — collection (2 entries)
-//
-// The main collection's path uses brace expansion to enumerate the common
-// folders, which keeps the outlier files out of its glob.
-
-const PAGE_TEXT_COMMON_FOLDERS = [
-  '404',
-  'about-us',
-  'contact',
-  'datenschutz',
-  'events',
-  'imprint',
-  'landing',
-  'projects',
-  'sponsors',
-].join(',');
+//   src/content/page-text/<locale>/<section>/<entry>.mdx — per-file singleton
+//   src/content/page-text/<locale>/hero.mdx              — singleton
+//   src/content/page-text/<locale>/faq.mdx               — singleton
+//   ...etc. Each singleton picks one of the shape helpers below for its schema.
 
 function pageTextCtasField() {
   return fields.array(
@@ -391,30 +368,127 @@ function pageTextMediaCategoriesField() {
   );
 }
 
-function pageTextCollection(locale: 'en' | 'de') {
-  return collection({
-    label: `Page Text (${locale.toUpperCase()})`,
-    slugField: 'title',
-    path: `src/content/page-text/${locale}/{${PAGE_TEXT_COMMON_FOLDERS}}/**`,
-    format: { contentField: 'body' },
-    entryLayout: 'form',
+// ---- Per-file singleton shape helpers ------------------------------------
+//
+// Each section file in src/content/page-text/<locale>/<section>/ gets its own
+// Keystatic singleton, scoped to one of these shapes. Editors only see the
+// fields the file actually uses.
+
+type Locale = 'en' | 'de';
+
+function baseSingletonMeta(locale: Locale, pathSuffix: string, label: string) {
+  return {
+    label: `${label} (${locale.toUpperCase()})`,
+    path: `src/content/page-text/${locale}/${pathSuffix}`,
+    format: { contentField: 'body' as const },
+    entryLayout: 'form' as const,
+  };
+}
+
+function pageHeaderSingleton(locale: Locale, pathSuffix: string, label: string) {
+  return singleton({
+    ...baseSingletonMeta(locale, pathSuffix, label),
     schema: {
-      title: fields.slug({
-        name: { label: 'Title', validation: { isRequired: true } },
+      title: fields.text({ label: 'Title', validation: { isRequired: true } }),
+      subtitle: fields.text({ label: 'Subtitle' }),
+      seoDescription: fields.text({
+        label: 'SEO description',
+        description: 'Shown as the <meta name="description"> for this page (~150 characters).',
+        multiline: true,
       }),
+      body: fields.emptyContent({ extension: 'mdx' }),
+    },
+  });
+}
+
+function sectionSingleton(locale: Locale, pathSuffix: string, label: string) {
+  return singleton({
+    ...baseSingletonMeta(locale, pathSuffix, label),
+    schema: {
+      title: fields.text({ label: 'Title', validation: { isRequired: true } }),
       subtitle: fields.text({ label: 'Subtitle' }),
       description: fields.text({ label: 'Description', multiline: true }),
-      seoDescription: fields.text({ label: 'SEO description', multiline: true }),
-      buttonText: fields.text({ label: 'Primary button text' }),
-      buttonHref: fields.text({ label: 'Primary button link' }),
-      secondButtonText: fields.text({ label: 'Secondary button text' }),
-      secondButtonHref: fields.text({ label: 'Secondary button link' }),
-      instagramButtonText: fields.text({ label: 'Instagram button text' }),
+      body: fields.emptyContent({ extension: 'mdx' }),
+    },
+  });
+}
+
+function sectionWithButtonSingleton(locale: Locale, pathSuffix: string, label: string) {
+  return singleton({
+    ...baseSingletonMeta(locale, pathSuffix, label),
+    schema: {
+      title: fields.text({ label: 'Title', validation: { isRequired: true } }),
+      subtitle: fields.text({ label: 'Subtitle' }),
+      description: fields.text({ label: 'Description', multiline: true }),
+      buttonText: fields.text({ label: 'Button text' }),
+      buttonHref: fields.text({ label: 'Button link' }),
+      body: fields.emptyContent({ extension: 'mdx' }),
+    },
+  });
+}
+
+function crosslinkSingleton(locale: Locale, pathSuffix: string, label: string) {
+  return singleton({
+    ...baseSingletonMeta(locale, pathSuffix, label),
+    schema: {
+      title: fields.text({ label: 'Title', validation: { isRequired: true } }),
+      buttonText: fields.text({ label: 'Button text', validation: { isRequired: true } }),
+      buttonHref: fields.text({ label: 'Button link', validation: { isRequired: true } }),
+      body: fields.emptyContent({ extension: 'mdx' }),
+    },
+  });
+}
+
+function listSectionSingleton(locale: Locale, pathSuffix: string, label: string) {
+  return singleton({
+    ...baseSingletonMeta(locale, pathSuffix, label),
+    schema: {
+      title: fields.text({ label: 'Title', validation: { isRequired: true } }),
+      subtitle: fields.text({ label: 'Subtitle' }),
+      description: fields.text({ label: 'Description', multiline: true }),
       items: pageTextItemsField(),
       body: fields.emptyContent({ extension: 'mdx' }),
     },
   });
 }
+
+function latestNewsSingleton(locale: Locale, pathSuffix: string, label: string) {
+  return singleton({
+    ...baseSingletonMeta(locale, pathSuffix, label),
+    schema: {
+      title: fields.text({ label: 'Title', validation: { isRequired: true } }),
+      description: fields.text({ label: 'Description', multiline: true }),
+      buttonText: fields.text({ label: 'Primary button text' }),
+      buttonHref: fields.text({ label: 'Primary button link' }),
+      secondButtonText: fields.text({ label: 'Secondary button text' }),
+      secondButtonHref: fields.text({ label: 'Secondary button link' }),
+      instagramButtonText: fields.text({ label: 'Instagram button text' }),
+      body: fields.emptyContent({ extension: 'mdx' }),
+    },
+  });
+}
+
+function titleOnlySingleton(locale: Locale, pathSuffix: string, label: string) {
+  return singleton({
+    ...baseSingletonMeta(locale, pathSuffix, label),
+    schema: {
+      title: fields.text({ label: 'Title', validation: { isRequired: true } }),
+      body: fields.emptyContent({ extension: 'mdx' }),
+    },
+  });
+}
+
+function legalPageSingleton(locale: Locale, pathSuffix: string, label: string) {
+  return singleton({
+    ...baseSingletonMeta(locale, pathSuffix, label),
+    schema: {
+      title: fields.text({ label: 'Title', validation: { isRequired: true } }),
+      subtitle: fields.text({ label: 'Subtitle' }),
+      body: mdxBody(),
+    },
+  });
+}
+
 
 function pageTextHeroSingleton(locale: 'en' | 'de') {
   return singleton({
@@ -698,38 +772,74 @@ export default config({
   ui: {
     brand: { name: 'BEARS' },
     navigation: {
-      'Landing page content': ['heroSlides', 'pageTextHeroEn', 'pageTextHeroDe', 'instagram'],
+      // --- Main content (no page-text mingled in) ---------------------------
+      'Hero slides': ['heroSlides'],
       'Events': ['eventsEn', 'eventsDe'],
       'Projects': ['projectsEn', 'projectsDe'],
-      'Sponsors': [
-        'sponsorsDiamond',
-        'sponsorsPlatinum',
-        'sponsorsGold',
-        'sponsorsSilver',
-        'sponsorsBronze',
-      ],
+      'Sponsors': ['sponsorsDiamond', 'sponsorsPlatinum', 'sponsorsGold', 'sponsorsSilver', 'sponsorsBronze'],
       'Testimonials': ['testimonialsEn', 'testimonialsDe'],
       'Faces of BEARS': ['facesOfBearsEn', 'facesOfBearsDe'],
-      'Static website text': [
-        'pageTextEn',
-        'pageTextDe',
-        'pageTextNavLinksEn',
-        'pageTextNavLinksDe',
-        'pageTextSiteMetadataEn',
-        'pageTextSiteMetadataDe',
-        'pageTextFooterAddressEn',
-        'pageTextFooterAddressDe',
-        'pageTextFaqEn',
-        'pageTextFaqDe',
-        'pageTextMediaCategoriesEn',
-        'pageTextMediaCategoriesDe',
-        'pageTextNavColumnsEn',
-        'pageTextNavColumnsDe',
-        'pageTextSocialEn',
-        'pageTextSocialDe',
-        'pageTextDonateEn',
-        'pageTextDonateDe',
+      'Instagram': ['instagram'],
+      // --- Page text (per-page sub-groups, clustered by "Page text — " prefix)
+      'Static Page Text - Landing': [
+        'pageTextHeroEn', 'pageTextHeroDe',
+        'pageTextLandingWhatIsBearsEn', 'pageTextLandingWhatIsBearsDe',
+        'pageTextLandingMeetTheTeamEn', 'pageTextLandingMeetTheTeamDe',
+        'pageTextLandingTestimonialsEn', 'pageTextLandingTestimonialsDe',
+        'pageTextLandingLatestNewsEn', 'pageTextLandingLatestNewsDe',
+        'pageTextLandingBecomeSponsorEn', 'pageTextLandingBecomeSponsorDe',
       ],
+      'Static Page Text - About us': [
+        'pageTextAboutUsTitleEn', 'pageTextAboutUsTitleDe',
+        'pageTextAboutUsOurMissionEn', 'pageTextAboutUsOurMissionDe',
+        'pageTextAboutUsWhatsInItEn', 'pageTextAboutUsWhatsInItDe',
+        'pageTextAboutUsFindUsEn', 'pageTextAboutUsFindUsDe',
+        'pageTextAboutUsFacesOfBearsEn', 'pageTextAboutUsFacesOfBearsDe',
+        'pageTextFaqEn', 'pageTextFaqDe',
+        'pageTextAboutUsFaqCrosslinkEn', 'pageTextAboutUsFaqCrosslinkDe',
+      ],
+      'Static Page Text - Events': [
+        'pageTextEventsTitleEn', 'pageTextEventsTitleDe',
+        'pageTextEventsIntroEn', 'pageTextEventsIntroDe',
+        'pageTextEventsEmptyStateEn', 'pageTextEventsEmptyStateDe',
+        'pageTextEventsCrosslinkEn', 'pageTextEventsCrosslinkDe',
+      ],
+      'Static Page Text - Projects': [
+        'pageTextProjectsTitleEn', 'pageTextProjectsTitleDe',
+        'pageTextProjectsCategoriesIntroEn', 'pageTextProjectsCategoriesIntroDe',
+        'pageTextProjectsCategoryRocketryEn', 'pageTextProjectsCategoryRocketryDe',
+        'pageTextProjectsCategoryRoboticsEn', 'pageTextProjectsCategoryRoboticsDe',
+        'pageTextProjectsCategoryScienceEn', 'pageTextProjectsCategoryScienceDe',
+        'pageTextProjectsEmptyStateEn', 'pageTextProjectsEmptyStateDe',
+        'pageTextProjectsCrosslinkEn', 'pageTextProjectsCrosslinkDe',
+      ],
+      'Static Page Text - Sponsors': [
+        'pageTextSponsorsTitleEn', 'pageTextSponsorsTitleDe',
+        'pageTextSponsorsIntroEn', 'pageTextSponsorsIntroDe',
+        'pageTextSponsorsTiersEn', 'pageTextSponsorsTiersDe',
+        'pageTextSponsorsBecomeSponsorCtaEn', 'pageTextSponsorsBecomeSponsorCtaDe',
+        'pageTextSponsorsCrosslinkEn', 'pageTextSponsorsCrosslinkDe',
+      ],
+      'Static Page Text - Contact': [
+        'pageTextContactTitleEn', 'pageTextContactTitleDe',
+        'pageTextContactInfoEn', 'pageTextContactInfoDe',
+        'pageTextContactCrosslinkEn', 'pageTextContactCrosslinkDe',
+        'pageTextDonateEn', 'pageTextDonateDe',
+      ],
+      'Static Page Text - Media': ['pageTextMediaCategoriesEn', 'pageTextMediaCategoriesDe'],
+      'Static Page Text - Legal & utility pages': [
+        'pageTextImprintEn', 'pageTextImprintDe',
+        'pageTextDatenschutzEn', 'pageTextDatenschutzDe',
+        'pageText404En', 'pageText404De',
+      ],
+      'Static Page Text - Site-wide (nav, footer, meta)': [
+        'pageTextNavLinksEn', 'pageTextNavLinksDe',
+        'pageTextNavColumnsEn', 'pageTextNavColumnsDe',
+        'pageTextFooterAddressEn', 'pageTextFooterAddressDe',
+        'pageTextSocialEn', 'pageTextSocialDe',
+        'pageTextSiteMetadataEn', 'pageTextSiteMetadataDe',
+      ],
+      // --- Docs -------------------------------------------------------------
       'Docs': ['docsGuides', 'docsDev'],
     },
   },
@@ -741,8 +851,6 @@ export default config({
     eventsDe: eventsCollection('de'),
     projectsEn: projectsCollection('en'),
     projectsDe: projectsCollection('de'),
-    pageTextEn: pageTextCollection('en'),
-    pageTextDe: pageTextCollection('de'),
     pageTextNavLinksEn: pageTextNavLinksCollection('en'),
     pageTextNavLinksDe: pageTextNavLinksCollection('de'),
     facesOfBearsEn: facesOfBearsCollection('en'),
@@ -761,6 +869,7 @@ export default config({
     instagram,
   },
   singletons: {
+    // Site-wide
     pageTextHeroEn: pageTextHeroSingleton('en'),
     pageTextHeroDe: pageTextHeroSingleton('de'),
     pageTextSiteMetadataEn: pageTextSiteMetadataSingleton('en'),
@@ -777,5 +886,78 @@ export default config({
     pageTextSocialDe: pageTextSocialSingleton('de'),
     pageTextDonateEn: pageTextDonateSingleton('en'),
     pageTextDonateDe: pageTextDonateSingleton('de'),
+    // Landing page sections
+    pageTextLandingWhatIsBearsEn: sectionWithButtonSingleton('en', 'landing/what-is-bears', 'Landing — What is BEARS?'),
+    pageTextLandingWhatIsBearsDe: sectionWithButtonSingleton('de', 'landing/what-is-bears', 'Landing — What is BEARS?'),
+    pageTextLandingMeetTheTeamEn: titleOnlySingleton('en', 'landing/meet-the-team', 'Landing — Meet the team heading'),
+    pageTextLandingMeetTheTeamDe: titleOnlySingleton('de', 'landing/meet-the-team', 'Landing — Meet the team heading'),
+    pageTextLandingTestimonialsEn: titleOnlySingleton('en', 'landing/testimonials', 'Landing — Testimonials heading'),
+    pageTextLandingTestimonialsDe: titleOnlySingleton('de', 'landing/testimonials', 'Landing — Testimonials heading'),
+    pageTextLandingLatestNewsEn: latestNewsSingleton('en', 'landing/latest-news', 'Landing — Latest news'),
+    pageTextLandingLatestNewsDe: latestNewsSingleton('de', 'landing/latest-news', 'Landing — Latest news'),
+    pageTextLandingBecomeSponsorEn: sectionWithButtonSingleton('en', 'landing/become-sponsor', 'Landing — Become a sponsor'),
+    pageTextLandingBecomeSponsorDe: sectionWithButtonSingleton('de', 'landing/become-sponsor', 'Landing — Become a sponsor'),
+    // About us page sections
+    pageTextAboutUsTitleEn: pageHeaderSingleton('en', 'about-us/about-us-title', 'About us — page header'),
+    pageTextAboutUsTitleDe: pageHeaderSingleton('de', 'about-us/about-us-title', 'About us — page header'),
+    pageTextAboutUsOurMissionEn: sectionSingleton('en', 'about-us/our-mission', 'About us — Our mission'),
+    pageTextAboutUsOurMissionDe: sectionSingleton('de', 'about-us/our-mission', 'About us — Our mission'),
+    pageTextAboutUsWhatsInItEn: listSectionSingleton('en', 'about-us/whats-in-it', "About us — What's in it for you"),
+    pageTextAboutUsWhatsInItDe: listSectionSingleton('de', 'about-us/whats-in-it', "About us — What's in it for you"),
+    pageTextAboutUsFindUsEn: listSectionSingleton('en', 'about-us/find-us', 'About us — When/where to find us'),
+    pageTextAboutUsFindUsDe: listSectionSingleton('de', 'about-us/find-us', 'About us — When/where to find us'),
+    pageTextAboutUsFacesOfBearsEn: sectionSingleton('en', 'about-us/faces-of-bears', 'About us — Faces of BEARS heading'),
+    pageTextAboutUsFacesOfBearsDe: sectionSingleton('de', 'about-us/faces-of-bears', 'About us — Faces of BEARS heading'),
+    pageTextAboutUsFaqCrosslinkEn: crosslinkSingleton('en', 'about-us/faq-crosslink', 'About us — FAQ crosslink'),
+    pageTextAboutUsFaqCrosslinkDe: crosslinkSingleton('de', 'about-us/faq-crosslink', 'About us — FAQ crosslink'),
+    // Contact page sections
+    pageTextContactTitleEn: pageHeaderSingleton('en', 'contact/contact-title', 'Contact — page header'),
+    pageTextContactTitleDe: pageHeaderSingleton('de', 'contact/contact-title', 'Contact — page header'),
+    pageTextContactInfoEn: listSectionSingleton('en', 'contact/contact-info', 'Contact — Reach out info'),
+    pageTextContactInfoDe: listSectionSingleton('de', 'contact/contact-info', 'Contact — Reach out info'),
+    pageTextContactCrosslinkEn: crosslinkSingleton('en', 'contact/contact-crosslink', 'Contact — Join crosslink'),
+    pageTextContactCrosslinkDe: crosslinkSingleton('de', 'contact/contact-crosslink', 'Contact — Join crosslink'),
+    // Events page sections
+    pageTextEventsTitleEn: pageHeaderSingleton('en', 'events/events-title', 'Events — page header'),
+    pageTextEventsTitleDe: pageHeaderSingleton('de', 'events/events-title', 'Events — page header'),
+    pageTextEventsIntroEn: sectionSingleton('en', 'events/events-intro', 'Events — Intro'),
+    pageTextEventsIntroDe: sectionSingleton('de', 'events/events-intro', 'Events — Intro'),
+    pageTextEventsEmptyStateEn: sectionSingleton('en', 'events/events-empty-state', 'Events — Empty state'),
+    pageTextEventsEmptyStateDe: sectionSingleton('de', 'events/events-empty-state', 'Events — Empty state'),
+    pageTextEventsCrosslinkEn: crosslinkSingleton('en', 'events/events-crosslink', 'Events — Projects crosslink'),
+    pageTextEventsCrosslinkDe: crosslinkSingleton('de', 'events/events-crosslink', 'Events — Projects crosslink'),
+    // Projects page sections
+    pageTextProjectsTitleEn: pageHeaderSingleton('en', 'projects/projects-title', 'Projects — page header'),
+    pageTextProjectsTitleDe: pageHeaderSingleton('de', 'projects/projects-title', 'Projects — page header'),
+    pageTextProjectsCategoriesIntroEn: sectionSingleton('en', 'projects/categories-intro', 'Projects — Categories intro'),
+    pageTextProjectsCategoriesIntroDe: sectionSingleton('de', 'projects/categories-intro', 'Projects — Categories intro'),
+    pageTextProjectsCategoryRocketryEn: sectionSingleton('en', 'projects/category-experimental-rocketry', 'Projects — Category: experimental rocketry'),
+    pageTextProjectsCategoryRocketryDe: sectionSingleton('de', 'projects/category-experimental-rocketry', 'Projects — Category: experimental rocketry'),
+    pageTextProjectsCategoryRoboticsEn: sectionSingleton('en', 'projects/category-robotics', 'Projects — Category: robotics'),
+    pageTextProjectsCategoryRoboticsDe: sectionSingleton('de', 'projects/category-robotics', 'Projects — Category: robotics'),
+    pageTextProjectsCategoryScienceEn: sectionSingleton('en', 'projects/category-science-and-experiments', 'Projects — Category: science & experiments'),
+    pageTextProjectsCategoryScienceDe: sectionSingleton('de', 'projects/category-science-and-experiments', 'Projects — Category: science & experiments'),
+    pageTextProjectsEmptyStateEn: sectionSingleton('en', 'projects/projects-empty-state', 'Projects — Empty state'),
+    pageTextProjectsEmptyStateDe: sectionSingleton('de', 'projects/projects-empty-state', 'Projects — Empty state'),
+    pageTextProjectsCrosslinkEn: crosslinkSingleton('en', 'projects/projects-crosslink', 'Projects — Events crosslink'),
+    pageTextProjectsCrosslinkDe: crosslinkSingleton('de', 'projects/projects-crosslink', 'Projects — Events crosslink'),
+    // Sponsors page sections
+    pageTextSponsorsTitleEn: pageHeaderSingleton('en', 'sponsors/sponsors-title', 'Sponsors — page header'),
+    pageTextSponsorsTitleDe: pageHeaderSingleton('de', 'sponsors/sponsors-title', 'Sponsors — page header'),
+    pageTextSponsorsIntroEn: sectionSingleton('en', 'sponsors/sponsors-intro', 'Sponsors — Intro'),
+    pageTextSponsorsIntroDe: sectionSingleton('de', 'sponsors/sponsors-intro', 'Sponsors — Intro'),
+    pageTextSponsorsTiersEn: listSectionSingleton('en', 'sponsors/sponsor-tiers', 'Sponsors — Tier descriptions'),
+    pageTextSponsorsTiersDe: listSectionSingleton('de', 'sponsors/sponsor-tiers', 'Sponsors — Tier descriptions'),
+    pageTextSponsorsBecomeSponsorCtaEn: sectionWithButtonSingleton('en', 'sponsors/become-sponsor-cta', 'Sponsors — Become a sponsor CTA'),
+    pageTextSponsorsBecomeSponsorCtaDe: sectionWithButtonSingleton('de', 'sponsors/become-sponsor-cta', 'Sponsors — Become a sponsor CTA'),
+    pageTextSponsorsCrosslinkEn: crosslinkSingleton('en', 'sponsors/sponsors-crosslink', 'Sponsors — Projects crosslink'),
+    pageTextSponsorsCrosslinkDe: crosslinkSingleton('de', 'sponsors/sponsors-crosslink', 'Sponsors — Projects crosslink'),
+    // Legal & utility pages
+    pageText404En: sectionWithButtonSingleton('en', '404/not-found', '404 — Not found'),
+    pageText404De: sectionWithButtonSingleton('de', '404/not-found', '404 — Not found'),
+    pageTextDatenschutzEn: legalPageSingleton('en', 'datenschutz/datenschutz', 'Privacy policy'),
+    pageTextDatenschutzDe: legalPageSingleton('de', 'datenschutz/datenschutz', 'Privacy policy'),
+    pageTextImprintEn: legalPageSingleton('en', 'imprint/imprint', 'Imprint'),
+    pageTextImprintDe: legalPageSingleton('de', 'imprint/imprint', 'Imprint'),
   },
 });
