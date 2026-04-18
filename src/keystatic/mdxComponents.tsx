@@ -62,6 +62,29 @@ function makeImgBlock(imageRoot?: string) {
         alt: fields.text({ label: 'Alt text', validation: { isRequired: true } }),
         width: fields.text({ label: 'Width (CSS, default 100%)', defaultValue: '100%' }),
         sizes: fields.text({ label: 'sizes attribute (optional)' }),
+        enableClickToEnlarge: fields.checkbox({
+          label: 'Click to enlarge',
+          description: 'When on, clicking the image opens a full-resolution modal.',
+          defaultValue: true,
+        }),
+        loading: fields.select({
+          label: 'Loading',
+          description: 'Use "eager" only for above-the-fold images.',
+          options: [
+            { label: 'Lazy (default)', value: 'lazy' },
+            { label: 'Eager', value: 'eager' },
+          ],
+          defaultValue: 'lazy',
+        }),
+        fetchpriority: fields.select({
+          label: 'Fetch priority',
+          options: [
+            { label: 'Auto (default)', value: 'auto' },
+            { label: 'High', value: 'high' },
+            { label: 'Low', value: 'low' },
+          ],
+          defaultValue: 'auto',
+        }),
       },
       ContentView: ({ value }) => (
         <div style={box}>
@@ -93,6 +116,29 @@ function makeImgBlock(imageRoot?: string) {
       alt: fields.text({ label: 'Alt text', validation: { isRequired: true } }),
       width: fields.text({ label: 'Width (CSS, default 100%)', defaultValue: '100%' }),
       sizes: fields.text({ label: 'sizes attribute (optional)' }),
+      enableClickToEnlarge: fields.checkbox({
+        label: 'Click to enlarge',
+        description: 'When on, clicking the image opens a full-resolution modal.',
+        defaultValue: true,
+      }),
+      loading: fields.select({
+        label: 'Loading',
+        description: 'Use "eager" only for above-the-fold images.',
+        options: [
+          { label: 'Lazy (default)', value: 'lazy' },
+          { label: 'Eager', value: 'eager' },
+        ],
+        defaultValue: 'lazy',
+      }),
+      fetchpriority: fields.select({
+        label: 'Fetch priority',
+        options: [
+          { label: 'Auto (default)', value: 'auto' },
+          { label: 'High', value: 'high' },
+          { label: 'Low', value: 'low' },
+        ],
+        defaultValue: 'auto',
+      }),
     },
     ContentView: ({ value }) => {
       // fields.image form state is { data, extension, filename } during
@@ -380,7 +426,7 @@ const sharedBlocks = {
           itemLabel: (p) => p.fields.alt.value || p.fields.src.value || 'Image',
         },
       ),
-      heightPreset: fields.select({
+      height: fields.select({
         label: 'Height',
         options: [
           { label: 'Small', value: 'sm' },
@@ -391,15 +437,16 @@ const sharedBlocks = {
         ],
         defaultValue: 'md',
       }),
-      autoplay: fields.checkbox({ label: 'Autoplay', defaultValue: false }),
-      interval: fields.integer({ label: 'Autoplay interval (ms)', defaultValue: 5000 }),
+      autoScroll: fields.checkbox({ label: 'Auto-scroll', defaultValue: false }),
+      autoScrollInterval: fields.integer({ label: 'Auto-scroll interval (ms)', defaultValue: 5000 }),
+      showArrows: fields.checkbox({ label: 'Show arrow buttons', defaultValue: true }),
       showDots: fields.checkbox({ label: 'Show dot indicators', defaultValue: true }),
     },
     ContentView: ({ value }) => (
       <div style={box}>
         <div style={label}>Carousel</div>
         <NotEditable>
-          <span>{value.images.length} image{value.images.length === 1 ? '' : 's'} · height: {value.heightPreset}</span>
+          <span>{value.images.length} image{value.images.length === 1 ? '' : 's'} · height: {value.height}</span>
         </NotEditable>
       </div>
     ),
