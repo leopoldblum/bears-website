@@ -615,7 +615,12 @@ function pageTextFooterAddressSingleton(locale: 'en' | 'de') {
     entryLayout: 'form',
     schema: {
       title: fields.text({ label: 'Heading', validation: { isRequired: true } }),
-      items: pageTextItemsField(),
+      address: fields.text({
+        label: 'Address',
+        description: 'One line per row. Press Enter to start a new line.',
+        multiline: true,
+        validation: { isRequired: true, length: { min: 1 } },
+      }),
       body: fields.emptyContent({ extension: 'mdx' }),
     },
   });

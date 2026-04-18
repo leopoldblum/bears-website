@@ -20,7 +20,11 @@ const socialContent = await getPageContent("social", locale);
 const socialLinks = socialContent?.data.socialLinks ?? [];
 
 const addressContent = await getPageContent("footer/footer-address", locale);
-const addressLines = addressContent?.data.items ?? [];
+const addressLines =
+  addressContent?.data.address
+    ?.split("\n")
+    .map((l) => l.trim())
+    .filter(Boolean) ?? [];
 
 const navContent = await getPageContent("nav-columns", locale);
 const navColumns = navContent?.data.navColumns ?? [

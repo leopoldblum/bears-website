@@ -151,27 +151,48 @@ description: "We bridge the gap between the classroom and the launchpad. At BEAR
 
 ---
 
-### Items List (Simple Strings)
+### Multi-line Address Block
 
-A plain list of strings, useful for addresses, short content blocks, or any ordered set of text lines.
+A heading plus a free-form multi-line text block, rendered line-for-line. Used for the footer address.
 
 ```yaml
 ---
 title: "BEARS"
-items:
-  - "Berlin Experimental Astronautics"
-  - "Research Student team e.V."
-  - "c/o TU Berlin - Institut für Luft- und Raumfahrt"
-  - "Marchstraße 12-14"
-  - "10587 Berlin"
+address: |-
+  Berlin Experimental Astronautics
+  Research Student team e.V.
+  c/o TU Berlin - Institut für Luft- und Raumfahrt
+  Marchstraße 12-14
+  10587 Berlin
 ---
 ```
 
-**Where it appears:** The footer address block and contact information. Each item is rendered as a separate line.
+**Where it appears:** The footer address block. Each line in the `address` field renders as a separate line.
+
+**Fields used:** `title`, `address`
+
+**Files:** `footer/footer-address`
+
+---
+
+### Items List (Simple Strings)
+
+A plain list of strings, useful for short content blocks or any ordered set of text lines.
+
+```yaml
+---
+title: "Reach us directly"
+items:
+  - "Email: contact@bears-space.de"
+  - "Phone: +49 30 000 0000"
+---
+```
+
+**Where it appears:** Contact information block. Each item is rendered as a separate line.
 
 **Fields used:** `title`, `items`
 
-**Files:** `footer/footer-address`, `contact/contact-info`
+**Files:** `contact/contact-info`
 
 ---
 
