@@ -107,7 +107,7 @@ interface LoadImagesForCollectionOptions<T> {
   baseDir: string;
   imageField: 'coverImage' | 'image';
   fallbackImage?: ImageMetadata;
-  postType?: 'event' | 'project' | 'testimonial';
+  postType?: 'event' | 'project' | 'testimonial' | 'face';
 }
 
 /**
@@ -378,9 +378,10 @@ export async function loadCollectionImages(
   // Type assertion needed: CollectionEntry types from Zod transforms don't
   // structurally match the generic constraint, but the overload signatures
   // above guarantee callers always pass the correct collection type.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return loadImagesForCollection({
     glob,
-    collection: collection as Parameters<typeof loadImagesForCollection>[0]['collection'],
+    collection: collection as any,
     baseDir: typeConfig.baseDir,
     imageField: 'coverImage',
     fallbackImage: typeConfig.fallbackImage,

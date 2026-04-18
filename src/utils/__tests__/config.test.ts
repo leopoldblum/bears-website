@@ -1,11 +1,22 @@
 import { collections } from '../../content/config';
 
+// Astro types `defineCollection`'s `schema` as a union of a Zod schema and a
+// context-aware callback — our collections all use the plain form, so this
+// helper narrows the union so tests can call `.safeParse` directly.
+import type { z } from 'zod';
+function getSchema(collection: { schema?: unknown }): z.ZodTypeAny {
+  const s = collection.schema;
+  if (!s) throw new Error('collection.schema is undefined');
+  if (typeof s === 'function') throw new Error('context-aware schema callbacks are not used in this project');
+  return s as z.ZodTypeAny;
+}
+
 // ---------------------------------------------------------------------------
 // Events schema
 // ---------------------------------------------------------------------------
 
 describe('events schema', () => {
-  const schema = collections.events.schema;
+  const schema = getSchema(collections.events);
 
   const validBase = {
     title: 'Test Event',
@@ -70,7 +81,7 @@ describe('events schema', () => {
 // ---------------------------------------------------------------------------
 
 describe('projects schema', () => {
-  const schema = collections.projects.schema;
+  const schema = getSchema(collections.projects);
 
   const validBase = {
     title: 'Test Project',
@@ -162,7 +173,7 @@ describe('projects schema', () => {
 // ---------------------------------------------------------------------------
 
 describe('hero-slides schema', () => {
-  const schema = collections['hero-slides'].schema;
+  const schema = getSchema(collections['hero-slides']);
 
   it('accepts image extensions', () => {
     for (const ext of ['jpg', 'jpeg', 'png', 'webp', 'svg']) {
@@ -205,7 +216,7 @@ describe('hero-slides schema', () => {
 // ---------------------------------------------------------------------------
 
 describe('testimonials schema', () => {
-  const schema = collections.testimonials.schema;
+  const schema = getSchema(collections.testimonials);
 
   it('accepts valid data', () => {
     const result = schema.safeParse({
@@ -245,7 +256,7 @@ describe('testimonials schema', () => {
 // ---------------------------------------------------------------------------
 
 describe('sponsors schema', () => {
-  const schema = collections.sponsors.schema;
+  const schema = getSchema(collections.sponsors);
 
   it('accepts valid data with optional url', () => {
     const result = schema.safeParse({
@@ -299,7 +310,7 @@ describe('sponsors schema', () => {
 // ---------------------------------------------------------------------------
 
 describe('instagram schema', () => {
-  const schema = collections.instagram.schema;
+  const schema = getSchema(collections.instagram);
 
   const validBase = {
     url: 'https://www.instagram.com/p/abc123/',
@@ -345,7 +356,7 @@ describe('instagram schema', () => {
 // ---------------------------------------------------------------------------
 
 describe('page-text schema', () => {
-  const schema = collections['page-text'].schema;
+  const schema = getSchema(collections['page-text']);
 
   const validBase = { title: 'Test Page Title' };
 

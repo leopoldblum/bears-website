@@ -1,3 +1,4 @@
+import type { MockedFunction } from 'vitest';
 import { getCollection } from 'astro:content';
 import {
   sortByDateDesc,
@@ -17,7 +18,14 @@ import {
   getLatestInstagramPosts,
 } from '../contentQueries';
 
-const mockedGetCollection = vi.mocked(getCollection);
+// `astro:content` is aliased to a loose local mock at runtime (vitest.config.ts)
+// but tsconfig resolves it to the real Astro types — so `vi.mocked(getCollection)`
+// inherits the full `CollectionEntry` union, rejecting the minimal shapes
+// `makeEntry` builds below. Re-typing relaxes the argument shape without
+// affecting the rest of the test file.
+const mockedGetCollection = vi.mocked(getCollection) as unknown as MockedFunction<
+  (collection: string) => Promise<Array<Record<string, unknown>>>
+>;
 
 // ---------------------------------------------------------------------------
 // Helpers for creating mock entries
