@@ -29,7 +29,7 @@ Create a new file in `en/` (or `de/` for German) with the naming convention `NN-
 ---
 name: "Jane Doe"
 role: "Propulsion Lead / WS 2025"
-coverImage: "jane-doe.jpg"
+coverImage: /17-jane-doe/jane-doe.jpg
 ---
 ```
 
@@ -43,11 +43,11 @@ All fields are required:
 |-------|------|-------------|
 | `name` | string | Team member's name |
 | `role` | string | Their role, year, or team |
-| `coverImage` | string | Filename of portrait image in `src/assets/faces-of-bears/` |
+| `coverImage` | string | Path to portrait image under `src/assets/faces-of-bears/<slug>/`, written as `/<slug>/<filename>` |
 
 ## Images
 
-Place portrait images in `src/assets/faces-of-bears/`. Valid formats: `.jpg`, `.jpeg`, `.png`, `.webp`, `.svg`.
+Each profile has its own asset subfolder under `src/assets/faces-of-bears/<slug>/`, where `<slug>` matches the filename (without extension). Place the portrait there and reference it as `/<slug>/<filename>`. Valid formats: `.jpg`, `.jpeg`, `.png`, `.webp`, `.svg`.
 
 ## Display Order
 
