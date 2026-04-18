@@ -2,6 +2,9 @@ import { defineCollection, z } from 'astro:content';
 import { CoverImageType, CategoryEventEnum, CategoryProjectEnum } from '@types';
 import { IMAGE_EXTENSION_REGEX, VALID_EXTENSIONS_MESSAGE } from '@utils/imageConstants';
 
+/** Social-link icons are SVGs uploaded via Keystatic into src/assets/social-icons/. */
+const validateSvgExtension = (value: string) => /\.svg$/i.test(value);
+
 /**
  * Helper for validating image file extensions
  * Ensures image filenames have valid extensions matching supported glob patterns
@@ -202,6 +205,10 @@ const pageTextCollection = defineCollection({
     address: z.string().optional(),
     socialLinks: z.array(z.object({
       platform: z.string(),
+      iconFile: z.string().refine(
+        validateSvgExtension,
+        { message: 'iconFile must be an SVG (.svg)' }
+      ),
       url: z.string().url(),
       hoverColor: z.string().optional(),
     })).optional(),

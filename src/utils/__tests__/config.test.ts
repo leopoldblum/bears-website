@@ -378,7 +378,7 @@ describe('page-text schema', () => {
       ],
       items: ['Item 1', 'Item 2'],
       socialLinks: [
-        { platform: 'github', url: 'https://github.com/bears', hoverColor: '#333' },
+        { platform: 'linkedin', iconFile: 'linkedin.svg', url: 'https://linkedin.com/bears', hoverColor: '#333' },
       ],
       navLinks: [
         { label: 'Impressum', href: '/imprint' },
@@ -452,7 +452,23 @@ describe('page-text schema', () => {
   it('rejects invalid socialLinks url', () => {
     const result = schema.safeParse({
       ...validBase,
-      socialLinks: [{ platform: 'x', url: 'not-a-url' }],
+      socialLinks: [{ platform: 'x', iconFile: 'x.svg', url: 'not-a-url' }],
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it('rejects socialLinks missing iconFile', () => {
+    const result = schema.safeParse({
+      ...validBase,
+      socialLinks: [{ platform: 'instagram', url: 'https://instagram.com' }],
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it('rejects socialLinks with non-svg iconFile', () => {
+    const result = schema.safeParse({
+      ...validBase,
+      socialLinks: [{ platform: 'x', iconFile: 'x.png', url: 'https://x.com' }],
     });
     expect(result.success).toBe(false);
   });
@@ -476,7 +492,7 @@ describe('page-text schema', () => {
   it('accepts socialLinks without optional hoverColor', () => {
     const result = schema.safeParse({
       ...validBase,
-      socialLinks: [{ platform: 'github', url: 'https://github.com' }],
+      socialLinks: [{ platform: 'youtube', iconFile: 'youtube.svg', url: 'https://youtube.com' }],
     });
     expect(result.success).toBe(true);
   });

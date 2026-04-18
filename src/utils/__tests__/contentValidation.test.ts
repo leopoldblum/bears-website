@@ -1084,6 +1084,26 @@ describe('Page-text frontmatter edge cases', () => {
           `    url: "https://github.com/bears-team"`,
         );
       });
+
+      it(`${label} — every socialLink must reference an .svg "iconFile"`, () => {
+        const invalid = (frontmatter.socialLinks as Record<string, unknown>[]).filter(
+          (link) => typeof link.iconFile !== 'string' || !/\.svg$/i.test(link.iconFile as string),
+        );
+
+        expectWithMessage(
+          invalid.length === 0,
+          `File "${label}" has social links with a missing or non-SVG "iconFile":\n` +
+          invalid
+            .map((link) => `  - platform: "${link.platform}", iconFile: "${link.iconFile ?? ''}"`)
+            .join('\n') +
+          `\n\nEvery entry needs an "iconFile" pointing to an SVG uploaded into src/assets/social-icons/.\n\n` +
+          `To fix via the CMS: upload an SVG in the Social links editor (Icon (SVG) field).\n` +
+          `To fix by hand, drop the .svg into src/assets/social-icons/ and reference its filename:\n` +
+          `  - platform: "instagram"\n` +
+          `    iconFile: "instagram.svg"\n` +
+          `    url: "https://instagram.com/..."`,
+        );
+      });
     }
   }
 });

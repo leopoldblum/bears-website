@@ -114,7 +114,7 @@ Frontmatter fields:
   ctas: array (max 4) — each: { title, description, href }
   items: array of strings — plain list or "Title -> Description" format (arrow separator splits into title + description)
   faqs: array — each: { question, answer } — answers support Markdown (bold, links, lists)
-  socialLinks: array — each: { platform, url, hoverColor? } — platforms: instagram, linkedin, youtube
+  socialLinks: array — each: { platform, iconFile, url, hoverColor? } — iconFile must be an .svg filename under src/assets/social-icons/ (upload a new SVG via the Social links editor to add a new platform; icons render as silhouettes via CSS mask)
   navLinks: array — each: { label, href }
   navColumns: array — each: { heading, href, links: [{ label, href }] }
   mediaCategories: array — each: { id, label } — controls which categories appear on the Media page and in what order

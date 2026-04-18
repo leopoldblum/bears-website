@@ -163,6 +163,17 @@ export const allAssetImages: ImageGlob = filterImageGlob(
 );
 
 /**
+ * Social-link SVG icons uploaded via Keystatic.
+ * Used by: Footer.astro, ContactInfo.astro
+ * Imported as URLs (not optimised) because icons render via CSS mask-image,
+ * which operates on the SVG silhouette rather than its path data.
+ */
+export const socialIconFiles = import.meta.glob<string>(
+  "/src/assets/social-icons/**/*.svg",
+  { query: '?url', import: 'default' },
+);
+
+/**
  * Type for media glob results (images and videos)
  */
 export type MediaGlob = Record<string, () => Promise<{ default: string }>>;

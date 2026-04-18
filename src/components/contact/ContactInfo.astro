@@ -1,6 +1,7 @@
 ---
 import { getPageContent } from "@utils/contentQueries";
-import { socialIcons } from "@utils/socialIcons";
+import { socialIconFiles } from "@utils/imageGlobs";
+import { resolveImagePath } from "@utils/imageLoader";
 import { type Locale } from '@utils/i18n';
 
 interface Props {
@@ -15,6 +16,18 @@ const socialContent = await getPageContent("social", locale);
 const email = content?.data.items?.[0] ?? "info@bears-space.de";
 const addressLines = content?.data.items?.slice(1) ?? [];
 const socialLinks = socialContent?.data.socialLinks ?? [];
+
+// Resolve each uploaded SVG into a built URL so the icon can render via a
+// CSS mask — keeps the fill-on-hover animation working regardless of what
+// fill is inside the uploaded file. See Footer.astro for the same pattern.
+const socialLinksWithIcons = await Promise.all(
+  socialLinks.map(async (link: { platform: string; iconFile: string; url: string; hoverColor?: string }) => {
+    const key = resolveImagePath('/src/assets/social-icons', link.iconFile);
+    const loader = socialIconFiles[key];
+    const iconUrl = loader ? await loader() : null;
+    return { ...link, iconUrl };
+  })
+);
 ---
 
 <section id="contact-info" class="container mx-auto px-4 sm:px-8 lg:px-16 py-16 sm:py-20 lg:py-24 scroll-mt-20">
@@ -70,9 +83,10 @@ const socialLinks = socialContent?.data.socialLinks ?? [];
         </div>
         <div class="flex-1 flex items-center">
           <div class="flex gap-4">
-            {socialLinks.map((link) => {
-              const icon = socialIcons[link.platform];
-              if (!icon) return null;
+            {socialLinksWithIcons.map((link) => {
+              if (!link.iconUrl) return null;
+              // See Footer.astro for why we wrap url(...) in double quotes.
+              const maskStyle = `-webkit-mask: url("${link.iconUrl}") center/contain no-repeat; mask: url("${link.iconUrl}") center/contain no-repeat;`;
               return (
                 <a
                   href={link.url}
@@ -85,7 +99,7 @@ const socialLinks = socialContent?.data.socialLinks ?? [];
                     "group/social flex flex-col items-center gap-2",
                     !link.hoverColor && "[&:hover_.social-icon]:bg-bears-accent",
                   ]}
-                  aria-label={icon.label}
+                  aria-label={link.platform}
                 >
                   <div
                     x-bind:style={link.hoverColor ? `hovered ? 'background-color: ${link.hoverColor}' : ''` : undefined}
@@ -93,17 +107,14 @@ const socialLinks = socialContent?.data.socialLinks ?? [];
                       "social-icon w-11 h-11 rounded-full bg-white/10 flex items-center justify-center hover:scale-110 transition-all duration-200",
                     ]}
                   >
-                    <svg
-                      width="18"
-                      height="18"
-                      viewBox="0 0 24 24"
-                      class="fill-bears-text-onDark group-hover/social:fill-white transition-colors duration-200"
-                    >
-                      <path d={icon.path} />
-                    </svg>
+                    <span
+                      class="w-[18px] h-[18px] bg-bears-text-onDark group-hover/social:bg-white transition-colors duration-200"
+                      style={maskStyle}
+                      aria-hidden="true"
+                    />
                   </div>
-                  <span class="text-[11px] text-bears-text-onDark/40 group-hover/social:text-bears-text-onDark/70 transition-colors duration-200">
-                    {icon.label}
+                  <span class="text-[11px] text-bears-text-onDark/40 group-hover/social:text-bears-text-onDark/70 transition-colors duration-200 capitalize">
+                    {link.platform}
                   </span>
                 </a>
               );

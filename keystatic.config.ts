@@ -302,6 +302,13 @@ function pageTextSocialLinksField() {
   return fields.array(
     fields.object({
       platform: fields.text({ label: 'Platform', validation: { isRequired: true } }),
+      iconFile: fields.file({
+        label: 'Icon (SVG)',
+        description: 'Upload a single-color SVG icon (24×24 viewBox, any fill). The icon is rendered as a silhouette via CSS mask so the hover color can be applied — colors inside the SVG are ignored. Same icon can be reused across entries by uploading once and then typing the filename into other entries.',
+        directory: 'src/assets/social-icons',
+        publicPath: '',
+        validation: { isRequired: true },
+      }),
       url: fields.url({ label: 'URL', validation: { isRequired: true } }),
       hoverColor: fields.text({ label: 'Hover color (hex)' }),
     }),
