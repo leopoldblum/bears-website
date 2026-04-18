@@ -269,7 +269,7 @@ function pageTextCtasField() {
     }),
     {
       label: 'Call to Action buttons',
-      description: 'Up to 4 CTA buttons shown below the hero headline.',
+      description: 'Up to 4 CTA buttons shown below the hero headline. Drag the handle on the left of each item to reorder them.',
       itemLabel: (p) => p.fields.title.value || 'Untitled',
       validation: { length: { max: 4 } },
     },
@@ -279,6 +279,7 @@ function pageTextCtasField() {
 function pageTextItemsField() {
   return fields.array(fields.text({ label: 'Item' }), {
     label: 'Items',
+    description: 'Drag the handle on the left of each item to reorder them.',
     itemLabel: (p) => p.value || 'Empty',
   });
 }
@@ -291,6 +292,7 @@ function pageTextFaqsField() {
     }),
     {
       label: 'FAQs',
+      description: 'Drag the handle on the left of each item to reorder them.',
       itemLabel: (p) => p.fields.question.value || 'Untitled',
     },
   );
@@ -305,6 +307,7 @@ function pageTextSocialLinksField() {
     }),
     {
       label: 'Social links',
+      description: 'Drag the handle on the left of each item to reorder them.',
       itemLabel: (p) => p.fields.platform.value || 'Untitled',
     },
   );
@@ -318,6 +321,7 @@ function pageTextNavLinksField() {
     }),
     {
       label: 'Nav links',
+      description: 'Drag the handle on the left of each item to reorder them.',
       itemLabel: (p) => p.fields.label.value || 'Untitled',
     },
   );
@@ -334,13 +338,15 @@ function pageTextNavColumnsField() {
           href: fields.text({ label: 'Link', validation: { isRequired: true } }),
         }),
         {
-          label: 'Links',
+          label: 'Sub-headings',
+          description: 'Drag the handle on the left of each item to reorder them.',
           itemLabel: (p) => p.fields.label.value || 'Untitled',
         },
       ),
     }),
     {
-      label: 'Nav columns',
+      label: 'Navigation columns',
+      description: 'Drag the handle on the left of each column to reorder them.',
       itemLabel: (p) => p.fields.heading.value || 'Untitled',
     },
   );
@@ -363,6 +369,7 @@ function pageTextMediaCategoriesField() {
     }),
     {
       label: 'Media categories',
+      description: 'Drag the handle on the left of each item to reorder them.',
       itemLabel: (p) => p.fields.label.value || 'Untitled',
     },
   );
