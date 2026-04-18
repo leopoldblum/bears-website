@@ -167,6 +167,18 @@ function eventsCollection(locale: 'en' | 'de') {
     schema: {
       title: fields.slug({
         name: { label: 'Title', validation: { isRequired: true } },
+        slug: {
+          label: 'URL slug',
+          description:
+            "Do not change after publishing — this appears in the event's public URL (/events/…). Renaming breaks inbound links, SEO, and shared bookmarks.",
+          validation: {
+            length: { min: 3, max: 80 },
+            pattern: {
+              regex: /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
+              message: 'Lowercase letters, digits, and single hyphens only.',
+            },
+          },
+        },
       }),
       description: fields.text({
         label: 'Short description',
@@ -201,6 +213,18 @@ function projectsCollection(locale: 'en' | 'de') {
     schema: {
       title: fields.slug({
         name: { label: 'Title', validation: { isRequired: true } },
+        slug: {
+          label: 'URL slug',
+          description:
+            "Do not change after publishing — this appears in the project's public URL (/projects/…). Renaming breaks inbound links, SEO, and shared bookmarks.",
+          validation: {
+            length: { min: 3, max: 80 },
+            pattern: {
+              regex: /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
+              message: 'Lowercase letters, digits, and single hyphens only.',
+            },
+          },
+        },
       }),
       description: fields.text({
         label: 'Short description',
@@ -650,6 +674,18 @@ function pageTextNavLinksCollection(locale: 'en' | 'de') {
     schema: {
       title: fields.slug({
         name: { label: 'Title', validation: { isRequired: true } },
+        slug: {
+          label: 'ID',
+          description:
+            'Do not rename — these IDs (e.g. "header", "footer-bottom") are referenced directly from code. Renaming silently replaces the content with hardcoded English defaults.',
+          validation: {
+            length: { min: 3, max: 80 },
+            pattern: {
+              regex: /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
+              message: 'Lowercase letters, digits, and single hyphens only.',
+            },
+          },
+        },
       }),
       navLinks: pageTextNavLinksField(),
       body: fields.emptyContent({ extension: 'mdx' }),
@@ -694,6 +730,18 @@ function docsCollection(section: 'guides' | 'dev') {
     schema: {
       title: fields.slug({
         name: { label: 'Title', validation: { isRequired: true } },
+        slug: {
+          label: 'URL slug',
+          description:
+            "Do not change after publishing — this appears in the doc's public URL (/docs/…). Renaming breaks inbound links, SEO, and shared bookmarks.",
+          validation: {
+            length: { min: 3, max: 80 },
+            pattern: {
+              regex: /^[a-z0-9]+(?:-[a-z0-9]+)*$/,
+              message: 'Lowercase letters, digits, and single hyphens only.',
+            },
+          },
+        },
       }),
       description: fields.text({ label: 'Description', multiline: true }),
       order: fields.integer({
