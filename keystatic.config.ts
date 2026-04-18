@@ -490,6 +490,28 @@ function listSectionSingleton(locale: Locale, pathSuffix: string, label: string)
   });
 }
 
+function sponsorTiersSingleton(locale: Locale, pathSuffix: string, label: string) {
+  return singleton({
+    ...baseSingletonMeta(locale, pathSuffix, label),
+    schema: {
+      title: fields.text({ label: 'Title', validation: { isRequired: true } }),
+      subtitle: fields.text({ label: 'Subtitle' }),
+      description: fields.text({ label: 'Description', multiline: true }),
+      tierDescriptions: fields.object(
+        {
+          diamond: fields.text({ label: 'Diamond' }),
+          platinum: fields.text({ label: 'Platinum' }),
+          gold: fields.text({ label: 'Gold' }),
+          silver: fields.text({ label: 'Silver' }),
+          bronze: fields.text({ label: 'Bronze' }),
+        },
+        { label: 'Tier descriptions' },
+      ),
+      body: fields.emptyContent({ extension: 'mdx' }),
+    },
+  });
+}
+
 function latestNewsSingleton(locale: Locale, pathSuffix: string, label: string) {
   return singleton({
     ...baseSingletonMeta(locale, pathSuffix, label),
@@ -1013,8 +1035,8 @@ export default config({
     pageTextSponsorsTitleDe: pageHeaderSingleton('de', 'sponsors/sponsors-title', 'Sponsors — page header'),
     pageTextSponsorsIntroEn: sectionSingleton('en', 'sponsors/sponsors-intro', 'Sponsors — Intro'),
     pageTextSponsorsIntroDe: sectionSingleton('de', 'sponsors/sponsors-intro', 'Sponsors — Intro'),
-    pageTextSponsorsTiersEn: listSectionSingleton('en', 'sponsors/sponsor-tiers', 'Sponsors — Tier descriptions'),
-    pageTextSponsorsTiersDe: listSectionSingleton('de', 'sponsors/sponsor-tiers', 'Sponsors — Tier descriptions'),
+    pageTextSponsorsTiersEn: sponsorTiersSingleton('en', 'sponsors/sponsor-tiers', 'Sponsors — Tier descriptions'),
+    pageTextSponsorsTiersDe: sponsorTiersSingleton('de', 'sponsors/sponsor-tiers', 'Sponsors — Tier descriptions'),
     pageTextSponsorsBecomeSponsorCtaEn: sectionWithButtonSingleton('en', 'sponsors/become-sponsor-cta', 'Sponsors — Become a sponsor CTA'),
     pageTextSponsorsBecomeSponsorCtaDe: sectionWithButtonSingleton('de', 'sponsors/become-sponsor-cta', 'Sponsors — Become a sponsor CTA'),
     pageTextSponsorsCrosslinkEn: crosslinkSingleton('en', 'sponsors/sponsors-crosslink', 'Sponsors — Projects crosslink'),

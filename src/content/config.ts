@@ -240,6 +240,13 @@ const pageTextCollection = defineCollection({
     reference: z.string().optional(),
     paypalUrl: z.string().url().optional(),
     paypalButtonText: z.string().optional(),
+    tierDescriptions: z.object({
+      diamond: z.string().optional(),
+      platinum: z.string().optional(),
+      gold: z.string().optional(),
+      silver: z.string().optional(),
+      bronze: z.string().optional(),
+    }).optional(),
   }).refine(d => !d.buttonText || d.buttonHref, {
     message: 'buttonHref is required when buttonText is set',
     path: ['buttonHref'],

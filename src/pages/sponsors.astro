@@ -61,15 +61,14 @@ const [diamondSponsors, platinumSponsors, goldSponsors, silverSponsors, bronzeSp
     loadTierImages(bronze),
   ]);
 
-// Tier descriptions from items array: [0]=Diamond, [1]=Platinum, [2]=Gold, [3]=Silver, [4]=Bronze
-const tierDescriptions = tiersContent?.data.items ?? [];
+const tierDescriptions = tiersContent?.data.tierDescriptions;
 
 const tiers = [
-  { name: "Diamond", key: "diamond" as const, sponsors: diamondSponsors, description: tierDescriptions[0] },
-  { name: "Platinum", key: "platinum" as const, sponsors: platinumSponsors, description: tierDescriptions[1] },
-  { name: "Gold", key: "gold" as const, sponsors: goldSponsors, description: tierDescriptions[2] },
-  { name: "Silver", key: "silver" as const, sponsors: silverSponsors, description: tierDescriptions[3] },
-  { name: "Bronze", key: "bronze" as const, sponsors: bronzeSponsors, description: tierDescriptions[4] },
+  { name: "Diamond", key: "diamond" as const, sponsors: diamondSponsors, description: tierDescriptions?.diamond },
+  { name: "Platinum", key: "platinum" as const, sponsors: platinumSponsors, description: tierDescriptions?.platinum },
+  { name: "Gold", key: "gold" as const, sponsors: goldSponsors, description: tierDescriptions?.gold },
+  { name: "Silver", key: "silver" as const, sponsors: silverSponsors, description: tierDescriptions?.silver },
+  { name: "Bronze", key: "bronze" as const, sponsors: bronzeSponsors, description: tierDescriptions?.bronze },
 ];
 ---
 
