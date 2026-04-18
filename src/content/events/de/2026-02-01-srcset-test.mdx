@@ -7,31 +7,21 @@ coverImage: "event-1.jpg"
 isDraft: false
 ---
 
-import Img from '@mdx/Img.astro';
-import Marquee from '@mdx/Marquee.astro';
-import Carousel from '@mdx/Carousel.astro';
-import testImage from '@assets/projects/project-1.jpg';
-import testImage2 from '@assets/projects/project-2.jpg';
-import testImage3 from '@assets/projects/project-3.jpg';
-import testImage4 from '@assets/projects/project-4.jpg';
-import testImage5 from '@assets/projects/project-5.jpg';
-import testImage6 from '@assets/projects/project-6.jpg';
-
 ## Img-Komponente - Verschiedene Breitenwerte
 
 Dieser Abschnitt testet die responsive Bildgenerierung der Img-Komponente. Jedes Bild unten verwendet die gleiche Quelle, aber unterschiedliche width-Props. Klicke auf ein beliebiges Bild, um es in einem Modal zu vergrößern.
 
 ### Kleine Breite (400px)
-<Img src={testImage} alt="Test bei 400px Breite" width="400px" />
+<Img src="/src/assets/projects/project-1.jpg" alt="Test bei 400px Breite" width="400px" />
 
 ### Mittlere Breite (800px)
-<Img src={testImage} alt="Test bei 800px Breite" width="800px" />
+<Img src="/src/assets/projects/project-1.jpg" alt="Test bei 800px Breite" width="800px" />
 
 ### Prozentuale Breite (50%)
-<Img src={testImage} alt="Test bei 50% Breite" width="50%" />
+<Img src="/src/assets/projects/project-1.jpg" alt="Test bei 50% Breite" width="50%" />
 
 ### Standard (keine Breite angegeben)
-<Img src={testImage} alt="Test mit voller Standardbreite" />
+<Img src="/src/assets/projects/project-1.jpg" alt="Test mit voller Standardbreite" />
 
 ---
 
@@ -40,12 +30,12 @@ Dieser Abschnitt testet die responsive Bildgenerierung der Img-Komponente. Jedes
 Dieses Marquee demonstriert Img in einem kontinuierlich scrollenden Carousel. Das erste Bild hat Klick-zum-Vergrößern aktiviert, während die anderen es für eine reibungslose Scroll-Interaktion deaktivieren.
 
 <Marquee speed={100} gap="1rem" height="xl" direction="left">
-  <Img src={testImage} alt="Marquee-Bild 1" enableClickToEnlarge={true} />
-  <Img src={testImage2} alt="Marquee-Bild 2" enableClickToEnlarge={false} />
-  <Img src={testImage3} alt="Marquee-Bild 3" enableClickToEnlarge={false} />
-  <Img src={testImage4} alt="Marquee-Bild 4" enableClickToEnlarge={false} />
-  <Img src={testImage5} alt="Marquee-Bild 5" enableClickToEnlarge={false} />
-  <Img src={testImage6} alt="Marquee-Bild 6" enableClickToEnlarge={false} />
+  <Img src="/src/assets/projects/project-1.jpg" alt="Marquee-Bild 1" enableClickToEnlarge={true} />
+  <Img src="/src/assets/projects/project-2.jpg" alt="Marquee-Bild 2" enableClickToEnlarge={false} />
+  <Img src="/src/assets/projects/project-3.jpg" alt="Marquee-Bild 3" enableClickToEnlarge={false} />
+  <Img src="/src/assets/projects/project-4.jpg" alt="Marquee-Bild 4" enableClickToEnlarge={false} />
+  <Img src="/src/assets/projects/project-5.jpg" alt="Marquee-Bild 5" enableClickToEnlarge={false} />
+  <Img src="/src/assets/projects/project-6.jpg" alt="Marquee-Bild 6" enableClickToEnlarge={false} />
 </Marquee>
 
 ---
@@ -56,22 +46,22 @@ Dieses Carousel zeigt Img in einem Slideshow-Format mit nativer Seitenverhältni
 
 <Carousel autoScroll={true} autoScrollInterval={4000} showArrows={true} showDots={true} height="lg">
   <div class="w-full h-full flex items-center justify-center p-4">
-    <Img src={testImage} alt="Carousel-Folie 1" class="rounded-lg" />
+    <Img src="/src/assets/projects/project-1.jpg" alt="Carousel-Folie 1" class="rounded-lg" />
   </div>
   <div class="w-full h-full flex items-center justify-center p-4">
-    <Img src={testImage2} alt="Carousel-Folie 2" class="rounded-lg" />
+    <Img src="/src/assets/projects/project-2.jpg" alt="Carousel-Folie 2" class="rounded-lg" />
   </div>
   <div class="w-full h-full flex items-center justify-center p-4">
-    <Img src={testImage3} alt="Carousel-Folie 3" class="rounded-lg" />
+    <Img src="/src/assets/projects/project-3.jpg" alt="Carousel-Folie 3" class="rounded-lg" />
   </div>
   <div class="w-full h-full flex items-center justify-center p-4">
-    <Img src={testImage4} alt="Carousel-Folie 4" class="rounded-lg" />
+    <Img src="/src/assets/projects/project-4.jpg" alt="Carousel-Folie 4" class="rounded-lg" />
   </div>
   <div class="w-full h-full flex items-center justify-center p-4">
-    <Img src={testImage5} alt="Carousel-Folie 5" class="rounded-lg" />
+    <Img src="/src/assets/projects/project-5.jpg" alt="Carousel-Folie 5" class="rounded-lg" />
   </div>
   <div class="w-full h-full flex items-center justify-center p-4">
-    <Img src={testImage6} alt="Carousel-Folie 6" class="rounded-lg" />
+    <Img src="/src/assets/projects/project-6.jpg" alt="Carousel-Folie 6" class="rounded-lg" />
   </div>
 </Carousel>
 

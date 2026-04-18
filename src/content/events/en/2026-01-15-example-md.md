@@ -3,7 +3,7 @@ title: "EXAMPLE FOR MARKDOWN"
 description: "Join us for our semester kickoff workshop where we'll introduce new projects, meet the team, and plan our exciting initiatives for the upcoming semester."
 date: 2026-01-15
 categoryEvent: "kick-off-events"
-coverImage: "event-8.jpg"
+coverImage: /2026-01-15-example-md/event-8.jpg
 isDraft: true
 ---
 
