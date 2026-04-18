@@ -15,7 +15,7 @@ interface Props {
 const locale = getLocale(Astro.url);
 
 const siteMetadata = await getPageContent("site/metadata", locale);
-const socialLinksContent = await getPageContent("site/social-links", locale);
+const socialLinksContent = await getPageContent("social", locale);
 
 const {
   title,

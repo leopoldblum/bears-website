@@ -153,11 +153,11 @@ Naming conventions:
   category- prefix  — project category description (e.g. projects/category-robotics)
 
 Special behaviors:
-  {year} in footer/bottom-bar title is replaced with the current year at build time.
+  {year} in nav-links/footer-bottom title is replaced with the current year at build time.
   buttonText and buttonHref must both be provided for a button to appear. Same for secondButtonText and secondButtonHref.
   paypalUrl and paypalButtonText must both be provided for the PayPal donate button to appear (same pairing rule).
   items with " -> " separator are split into title + description; without it, the whole string is the title.
-  sponsors/donate is the direct-donations card on the Sponsors page (below the sponsor CTA, bridged by an "OR" divider). Bank block renders if any of accountHolder/bankName/iban/bic is set; each row only appears if its field is present. The items array renders as a value-props row with icons (icons hardcoded, labels editable).
+  donate (at the locale root, edited as a Keystatic singleton) is the direct-donations card on the Sponsors page (below the sponsor CTA, bridged by an "OR" divider). Bank block renders if any of accountHolder/bankName/iban/bic is set; each row only appears if its field is present. The items array renders as a value-props row with icons (icons hardcoded, labels editable).
 
 ========================================
 MDX COMPONENTS (for .mdx event/project posts)
@@ -269,9 +269,9 @@ KEY CONVENTIONS
 - For projects, if displayMeetTheTeam is true then both headOfProject and personImage must also be provided.
 - UI strings for events/projects pages (filter labels, sort options, status badges) are centralized in catalogUiStrings in src/utils/i18n.ts.
 - UI strings for the media page ("This is" label, empty state) are in mediaUiStrings in src/utils/i18n.ts.
-- Media page categories are configured via the mediaCategories field in the page-text content file (media/media-title). Category labels are set per locale in the content file, not in i18n.ts.
-- Header navigation links are configured in the page-text file header/navigation (navLinks field).
-- Footer navigation columns are configured in the page-text file footer/navigation (navColumns field).
+- Media page categories are configured via the mediaCategories field in the page-text file media-categories.md (edited in the CMS as the Media categories singleton). Category labels are set per locale in the content file, not in i18n.ts.
+- Header navigation links are configured in the page-text file nav-links/header.md (navLinks field, edited as part of the Nav link lists collection in the CMS).
+- Footer navigation columns are configured in the page-text file nav-columns.md (navColumns field, edited as the Footer navigation singleton in the CMS).
 ````
 
   </div>

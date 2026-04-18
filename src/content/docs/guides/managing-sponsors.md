@@ -77,6 +77,6 @@ Within each tier, sponsors are sorted in ascending order of the `order` field. T
 
 ## Donations
 
-The Sponsors page also has a direct-donations card below the sponsor CTA, with bank transfer details and a PayPal button. Its copy, bank details, and PayPal URL are edited in the page-text file `src/content/page-text/{en,de}/sponsors/donate.md` — not in this `src/content/sponsors/` folder.
+The Sponsors page also has a direct-donations card below the sponsor CTA, with bank transfer details and a PayPal button. Its copy, bank details, and PayPal URL are edited in the page-text file `src/content/page-text/{en,de}/donate.md` — not in this `src/content/sponsors/` folder. In the CMS, it shows up as the **Donate** singleton under *Page text*.
 
 See the "Donate Card" section in [Managing Page Text](/docs/guides/managing-page-text#donate-card) for the full field reference and an example.

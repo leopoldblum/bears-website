@@ -27,10 +27,10 @@ No external props &mdash; navigation links are hardcoded in the component.
 Site-wide footer with navigation columns, social links, and legal info.
 
 No external props &mdash; loads content from multiple page-text entries:
-- `site/social-links` &mdash; Social media icons with custom hover colors
+- `social` &mdash; Social media icons with custom hover colors
 - `footer/footer-address` &mdash; Address lines
-- `footer/navigation` &mdash; Navigation columns
-- `footer/bottom-bar` &mdash; Copyright and legal links
+- `nav-columns` &mdash; Navigation columns
+- `nav-links/footer-bottom` &mdash; Copyright and legal links
 
 ### BackToTopButton
 

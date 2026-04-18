@@ -15,7 +15,7 @@ interface Props {
 const { locale } = Astro.props;
 const currentPath = Astro.url.pathname;
 
-const navContent = await getPageContent('header/navigation', locale);
+const navContent = await getPageContent('nav-links/header', locale);
 const navLinks = navContent?.data.navLinks ?? [
   { href: "/projects", label: "Projects" },
   { href: "/sponsors", label: "Sponsors" },

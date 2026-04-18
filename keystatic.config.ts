@@ -1,4 +1,4 @@
-import { config, collection, fields } from '@keystatic/core';
+import { config, collection, fields, singleton } from '@keystatic/core';
 import { buildMdxComponents } from './src/keystatic/mdxComponents';
 
 // ============================================================================
@@ -244,11 +244,143 @@ function projectsCollection(locale: 'en' | 'de') {
   });
 }
 
+// Page-text content is split across many Keystatic collections/singletons so
+// each editing form only surfaces the fields relevant to its shape. The Astro
+// Zod schema in src/content/config.ts stays permissive (all fields optional)
+// since entries from every shape live in one `page-text` collection.
+//
+// Layout on disk:
+//   src/content/page-text/<locale>/<section>/<entry>.md   — common "section"
+//                                                           entries, handled
+//                                                           by pageTextCollection
+//   src/content/page-text/<locale>/hero.md                — singleton
+//   src/content/page-text/<locale>/faq.md                 — singleton
+//   src/content/page-text/<locale>/media-categories.md    — singleton
+//   src/content/page-text/<locale>/nav-columns.md         — singleton (footer nav)
+//   src/content/page-text/<locale>/social.md              — singleton
+//   src/content/page-text/<locale>/donate.md              — singleton
+//   src/content/page-text/<locale>/nav-links/*.md         — collection (2 entries)
+//
+// The main collection's path uses brace expansion to enumerate the common
+// folders, which keeps the outlier files out of its glob.
+
+const PAGE_TEXT_COMMON_FOLDERS = [
+  '404',
+  'about-us',
+  'contact',
+  'datenschutz',
+  'events',
+  'footer',
+  'imprint',
+  'landing',
+  'projects',
+  'site',
+  'sponsors',
+].join(',');
+
+function pageTextCtasField() {
+  return fields.array(
+    fields.object({
+      title: fields.text({ label: 'Title', validation: { isRequired: true } }),
+      description: fields.text({ label: 'Description', validation: { isRequired: true } }),
+      href: fields.text({ label: 'Link', validation: { isRequired: true } }),
+    }),
+    {
+      label: 'CTAs',
+      itemLabel: (p) => p.fields.title.value || 'Untitled',
+      validation: { length: { max: 4 } },
+    },
+  );
+}
+
+function pageTextItemsField() {
+  return fields.array(fields.text({ label: 'Item' }), {
+    label: 'Items',
+    itemLabel: (p) => p.value || 'Empty',
+  });
+}
+
+function pageTextFaqsField() {
+  return fields.array(
+    fields.object({
+      question: fields.text({ label: 'Question', validation: { isRequired: true } }),
+      answer: fields.text({ label: 'Answer', multiline: true, validation: { isRequired: true } }),
+    }),
+    {
+      label: 'FAQs',
+      itemLabel: (p) => p.fields.question.value || 'Untitled',
+    },
+  );
+}
+
+function pageTextSocialLinksField() {
+  return fields.array(
+    fields.object({
+      platform: fields.text({ label: 'Platform', validation: { isRequired: true } }),
+      url: fields.url({ label: 'URL', validation: { isRequired: true } }),
+      hoverColor: fields.text({ label: 'Hover color (hex)' }),
+    }),
+    {
+      label: 'Social links',
+      itemLabel: (p) => p.fields.platform.value || 'Untitled',
+    },
+  );
+}
+
+function pageTextNavLinksField() {
+  return fields.array(
+    fields.object({
+      label: fields.text({ label: 'Label', validation: { isRequired: true } }),
+      href: fields.text({ label: 'Link', validation: { isRequired: true } }),
+    }),
+    {
+      label: 'Nav links',
+      itemLabel: (p) => p.fields.label.value || 'Untitled',
+    },
+  );
+}
+
+function pageTextNavColumnsField() {
+  return fields.array(
+    fields.object({
+      heading: fields.text({ label: 'Heading', validation: { isRequired: true } }),
+      href: fields.text({ label: 'Heading link', validation: { isRequired: true } }),
+      links: fields.array(
+        fields.object({
+          label: fields.text({ label: 'Label', validation: { isRequired: true } }),
+          href: fields.text({ label: 'Link', validation: { isRequired: true } }),
+        }),
+        {
+          label: 'Links',
+          itemLabel: (p) => p.fields.label.value || 'Untitled',
+        },
+      ),
+    }),
+    {
+      label: 'Nav columns',
+      itemLabel: (p) => p.fields.heading.value || 'Untitled',
+    },
+  );
+}
+
+function pageTextMediaCategoriesField() {
+  return fields.array(
+    fields.object({
+      id: fields.text({ label: 'ID', validation: { isRequired: true } }),
+      label: fields.text({ label: 'Label', validation: { isRequired: true } }),
+    }),
+    {
+      label: 'Media categories',
+      itemLabel: (p) => p.fields.label.value || 'Untitled',
+    },
+  );
+}
+
 function pageTextCollection(locale: 'en' | 'de') {
   return collection({
     label: `Page Text (${locale.toUpperCase()})`,
     slugField: 'title',
-    path: `src/content/page-text/${locale}/**`,
+    path: `src/content/page-text/${locale}/{${PAGE_TEXT_COMMON_FOLDERS}}/**`,
     format: { contentField: 'body' },
     entryLayout: 'form',
     schema: {
@@ -262,91 +394,123 @@ function pageTextCollection(locale: 'en' | 'de') {
       buttonHref: fields.text({ label: 'Primary button link' }),
       secondButtonText: fields.text({ label: 'Secondary button text' }),
       secondButtonHref: fields.text({ label: 'Secondary button link' }),
-      ctas: fields.array(
-        fields.object({
-          title: fields.text({ label: 'Title', validation: { isRequired: true } }),
-          description: fields.text({ label: 'Description', validation: { isRequired: true } }),
-          href: fields.text({ label: 'Link', validation: { isRequired: true } }),
-        }),
-        {
-          label: 'CTAs',
-          itemLabel: (p) => p.fields.title.value || 'Untitled',
-          validation: { length: { max: 4 } },
-        },
-      ),
-      items: fields.array(fields.text({ label: 'Item' }), {
-        label: 'Items',
-        itemLabel: (p) => p.value || 'Empty',
-      }),
-      socialLinks: fields.array(
-        fields.object({
-          platform: fields.text({ label: 'Platform', validation: { isRequired: true } }),
-          url: fields.url({ label: 'URL', validation: { isRequired: true } }),
-          hoverColor: fields.text({ label: 'Hover color (hex)' }),
-        }),
-        {
-          label: 'Social links',
-          itemLabel: (p) => p.fields.platform.value || 'Untitled',
-        },
-      ),
-      navLinks: fields.array(
-        fields.object({
-          label: fields.text({ label: 'Label', validation: { isRequired: true } }),
-          href: fields.text({ label: 'Link', validation: { isRequired: true } }),
-        }),
-        {
-          label: 'Nav links',
-          itemLabel: (p) => p.fields.label.value || 'Untitled',
-        },
-      ),
-      navColumns: fields.array(
-        fields.object({
-          heading: fields.text({ label: 'Heading', validation: { isRequired: true } }),
-          href: fields.text({ label: 'Heading link', validation: { isRequired: true } }),
-          links: fields.array(
-            fields.object({
-              label: fields.text({ label: 'Label', validation: { isRequired: true } }),
-              href: fields.text({ label: 'Link', validation: { isRequired: true } }),
-            }),
-            {
-              label: 'Links',
-              itemLabel: (p) => p.fields.label.value || 'Untitled',
-            },
-          ),
-        }),
-        {
-          label: 'Nav columns',
-          itemLabel: (p) => p.fields.heading.value || 'Untitled',
-        },
-      ),
-      faqs: fields.array(
-        fields.object({
-          question: fields.text({ label: 'Question', validation: { isRequired: true } }),
-          answer: fields.text({ label: 'Answer', multiline: true, validation: { isRequired: true } }),
-        }),
-        {
-          label: 'FAQs',
-          itemLabel: (p) => p.fields.question.value || 'Untitled',
-        },
-      ),
       instagramButtonText: fields.text({ label: 'Instagram button text' }),
-      mediaCategories: fields.array(
-        fields.object({
-          id: fields.text({ label: 'ID', validation: { isRequired: true } }),
-          label: fields.text({ label: 'Label', validation: { isRequired: true } }),
-        }),
-        {
-          label: 'Media categories',
-          itemLabel: (p) => p.fields.label.value || 'Untitled',
-        },
-      ),
-      bankName: fields.text({ label: 'Bank name' }),
+      items: pageTextItemsField(),
+      body: mdBody(),
+    },
+  });
+}
+
+function pageTextHeroSingleton(locale: 'en' | 'de') {
+  return singleton({
+    label: `Landing hero (${locale.toUpperCase()})`,
+    path: `src/content/page-text/${locale}/hero`,
+    format: { contentField: 'body' },
+    entryLayout: 'form',
+    schema: {
+      title: fields.text({ label: 'Title', validation: { isRequired: true } }),
+      subtitle: fields.text({ label: 'Subtitle' }),
+      seoDescription: fields.text({ label: 'SEO description', multiline: true }),
+      ctas: pageTextCtasField(),
+      body: mdBody(),
+    },
+  });
+}
+
+function pageTextFaqSingleton(locale: 'en' | 'de') {
+  return singleton({
+    label: `FAQ (${locale.toUpperCase()})`,
+    path: `src/content/page-text/${locale}/faq`,
+    format: { contentField: 'body' },
+    entryLayout: 'form',
+    schema: {
+      title: fields.text({ label: 'Title', validation: { isRequired: true } }),
+      subtitle: fields.text({ label: 'Subtitle' }),
+      description: fields.text({ label: 'Description', multiline: true }),
+      faqs: pageTextFaqsField(),
+      body: mdBody(),
+    },
+  });
+}
+
+function pageTextMediaCategoriesSingleton(locale: 'en' | 'de') {
+  return singleton({
+    label: `Media categories (${locale.toUpperCase()})`,
+    path: `src/content/page-text/${locale}/media-categories`,
+    format: { contentField: 'body' },
+    entryLayout: 'form',
+    schema: {
+      title: fields.text({ label: 'Title', validation: { isRequired: true } }),
+      subtitle: fields.text({ label: 'Subtitle' }),
+      seoDescription: fields.text({ label: 'SEO description', multiline: true }),
+      mediaCategories: pageTextMediaCategoriesField(),
+      body: mdBody(),
+    },
+  });
+}
+
+function pageTextNavColumnsSingleton(locale: 'en' | 'de') {
+  return singleton({
+    label: `Footer navigation (${locale.toUpperCase()})`,
+    path: `src/content/page-text/${locale}/nav-columns`,
+    format: { contentField: 'body' },
+    entryLayout: 'form',
+    schema: {
+      title: fields.text({ label: 'Title', validation: { isRequired: true } }),
+      navColumns: pageTextNavColumnsField(),
+      body: mdBody(),
+    },
+  });
+}
+
+function pageTextSocialSingleton(locale: 'en' | 'de') {
+  return singleton({
+    label: `Social links (${locale.toUpperCase()})`,
+    path: `src/content/page-text/${locale}/social`,
+    format: { contentField: 'body' },
+    entryLayout: 'form',
+    schema: {
+      title: fields.text({ label: 'Title', validation: { isRequired: true } }),
+      socialLinks: pageTextSocialLinksField(),
+      body: mdBody(),
+    },
+  });
+}
+
+function pageTextDonateSingleton(locale: 'en' | 'de') {
+  return singleton({
+    label: `Donate (${locale.toUpperCase()})`,
+    path: `src/content/page-text/${locale}/donate`,
+    format: { contentField: 'body' },
+    entryLayout: 'form',
+    schema: {
+      title: fields.text({ label: 'Title', validation: { isRequired: true } }),
+      description: fields.text({ label: 'Description', multiline: true }),
+      items: pageTextItemsField(),
       accountHolder: fields.text({ label: 'Account holder' }),
+      bankName: fields.text({ label: 'Bank name' }),
       iban: fields.text({ label: 'IBAN' }),
       bic: fields.text({ label: 'BIC' }),
       reference: fields.text({ label: 'Transfer reference' }),
       paypalUrl: fields.url({ label: 'PayPal URL' }),
       paypalButtonText: fields.text({ label: 'PayPal button text' }),
+      body: mdBody(),
+    },
+  });
+}
+
+function pageTextNavLinksCollection(locale: 'en' | 'de') {
+  return collection({
+    label: `Nav link lists (${locale.toUpperCase()})`,
+    slugField: 'title',
+    path: `src/content/page-text/${locale}/nav-links/*`,
+    format: { contentField: 'body' },
+    entryLayout: 'form',
+    schema: {
+      title: fields.slug({
+        name: { label: 'Title', validation: { isRequired: true } },
+      }),
+      navLinks: pageTextNavLinksField(),
       body: mdBody(),
     },
   });
@@ -488,7 +652,24 @@ export default config({
       ],
       'Testimonials': ['testimonialsEn', 'testimonialsDe'],
       'Faces of BEARS': ['facesOfBearsEn', 'facesOfBearsDe'],
-      'Page text': ['pageTextEn', 'pageTextDe'],
+      'Page text': [
+        'pageTextEn',
+        'pageTextDe',
+        'pageTextNavLinksEn',
+        'pageTextNavLinksDe',
+        'pageTextHeroEn',
+        'pageTextHeroDe',
+        'pageTextFaqEn',
+        'pageTextFaqDe',
+        'pageTextMediaCategoriesEn',
+        'pageTextMediaCategoriesDe',
+        'pageTextNavColumnsEn',
+        'pageTextNavColumnsDe',
+        'pageTextSocialEn',
+        'pageTextSocialDe',
+        'pageTextDonateEn',
+        'pageTextDonateDe',
+      ],
       'Docs': ['docsGuides', 'docsDev'],
     },
   },
@@ -502,6 +683,8 @@ export default config({
     projectsDe: projectsCollection('de'),
     pageTextEn: pageTextCollection('en'),
     pageTextDe: pageTextCollection('de'),
+    pageTextNavLinksEn: pageTextNavLinksCollection('en'),
+    pageTextNavLinksDe: pageTextNavLinksCollection('de'),
     facesOfBearsEn: facesOfBearsCollection('en'),
     facesOfBearsDe: facesOfBearsCollection('de'),
     // Tier-split sponsors
@@ -516,5 +699,19 @@ export default config({
     // Flat
     heroSlides,
     instagram,
+  },
+  singletons: {
+    pageTextHeroEn: pageTextHeroSingleton('en'),
+    pageTextHeroDe: pageTextHeroSingleton('de'),
+    pageTextFaqEn: pageTextFaqSingleton('en'),
+    pageTextFaqDe: pageTextFaqSingleton('de'),
+    pageTextMediaCategoriesEn: pageTextMediaCategoriesSingleton('en'),
+    pageTextMediaCategoriesDe: pageTextMediaCategoriesSingleton('de'),
+    pageTextNavColumnsEn: pageTextNavColumnsSingleton('en'),
+    pageTextNavColumnsDe: pageTextNavColumnsSingleton('de'),
+    pageTextSocialEn: pageTextSocialSingleton('en'),
+    pageTextSocialDe: pageTextSocialSingleton('de'),
+    pageTextDonateEn: pageTextDonateSingleton('en'),
+    pageTextDonateDe: pageTextDonateSingleton('de'),
   },
 });

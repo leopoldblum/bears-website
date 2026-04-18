@@ -23,7 +23,7 @@ import { getPageContent } from "@utils/contentQueries";
 import { getLocale, mediaUiStrings } from "@utils/i18n";
 
 const locale = getLocale(Astro.url);
-const pageContent = await getPageContent('media/media-title', locale);
+const pageContent = await getPageContent('media-categories', locale);
 const loadedHeroImages = await loadAllImagesFromDirectory(mediaHeroImages);
 const heroImage = loadedHeroImages[0];
 

@@ -17,7 +17,7 @@ const content = await getPageContent('landing/latest-news', locale);
 const instagramPosts = await getLatestInstagramPosts(3);
 
 // Derive Instagram URL from footer social links (single source of truth)
-const socialContent = await getPageContent('site/social-links', locale);
+const socialContent = await getPageContent('social', locale);
 const instagramUrl = socialContent?.data.socialLinks?.find((l: { platform: string }) => l.platform === 'instagram')?.url;
 
 // Get latest 4 posts (filtered and sorted)

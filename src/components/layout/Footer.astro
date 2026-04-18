@@ -16,13 +16,13 @@ interface Props {
 const { locale } = Astro.props;
 const currentYear = new Date().getFullYear();
 
-const socialContent = await getPageContent("site/social-links", locale);
+const socialContent = await getPageContent("social", locale);
 const socialLinks = socialContent?.data.socialLinks ?? [];
 
 const addressContent = await getPageContent("footer/footer-address", locale);
 const addressLines = addressContent?.data.items ?? [];
 
-const navContent = await getPageContent("footer/navigation", locale);
+const navContent = await getPageContent("nav-columns", locale);
 const navColumns = navContent?.data.navColumns ?? [
   {
     heading: "Projects",
@@ -87,7 +87,7 @@ const navColumns = navContent?.data.navColumns ?? [
   },
 ];
 
-const bottomBarContent = await getPageContent("footer/bottom-bar", locale);
+const bottomBarContent = await getPageContent("nav-links/footer-bottom", locale);
 const copyrightText = (
   bottomBarContent?.data.title ?? "© {year} BEARS e.V. All rights reserved."
 ).replace("{year}", String(currentYear));

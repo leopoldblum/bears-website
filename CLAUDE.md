@@ -73,21 +73,21 @@ After any schema edit, run `npm test`. The suite at `src/utils/__tests__/keystat
 
 #### Keystatic collection mapping
 
-The 9 Astro collections map to 18 Keystatic collections (split per locale or per tier):
+The 9 Astro collections fan out into ~30 Keystatic collections + singletons (split per locale, per tier, or per shape for page-text):
 
-| Astro collection | Keystatic collection(s) |
+| Astro collection | Keystatic items |
 |---|---|
 | `testimonials` | `testimonialsEn`, `testimonialsDe` |
 | `sponsors` | `sponsorsDiamond`, `sponsorsPlatinum`, `sponsorsGold`, `sponsorsSilver`, `sponsorsBronze` |
 | `events` | `eventsEn`, `eventsDe` |
 | `projects` | `projectsEn`, `projectsDe` |
 | `hero-slides` | `heroSlides` |
-| `page-text` | `pageTextEn`, `pageTextDe` |
+| `page-text` | `pageTextEn`/`De` (common section entries), `pageTextNavLinksEn`/`De` (collection), plus per-locale singletons: `pageTextHeroEn`/`De`, `pageTextFaqEn`/`De`, `pageTextMediaCategoriesEn`/`De`, `pageTextNavColumnsEn`/`De`, `pageTextSocialEn`/`De`, `pageTextDonateEn`/`De` |
 | `instagram` | `instagram` |
 | `faces-of-bears` | `facesOfBearsEn`, `facesOfBearsDe` |
 | `docs` | `docsGuides`, `docsDev` |
 
-The bilingual split is purely organisational — both Keystatic collections write to the existing `en/`/`de/` subfolders. The sponsor tier split reflects the folder structure (`src/content/sponsors/{tier}/`).
+The bilingual split is purely organisational — both Keystatic collections write to the existing `en/`/`de/` subfolders. The sponsor tier split reflects the folder structure (`src/content/sponsors/{tier}/`). For page-text, outlier shapes (hero, FAQ, donate, social, media-categories, footer nav columns, nav-link lists) are extracted into dedicated Keystatic singletons/collections so each editor form only shows the fields relevant to that shape. The main `pageTextEn`/`De` collection is restricted to section/list entries via a brace-expanded folder glob.
 
 #### MDX component registry
 
@@ -277,14 +277,17 @@ Content files are organized under `en/` and `de/` subfolders. Within each locale
 ```
 src/content/page-text/
 ├── en/                  ← English (default)
-│   ├── landing/hero.md
 │   ├── about-us/our-mission.md
+│   ├── landing/what-is-bears.md
+│   ├── hero.md                 ← outlier singletons at locale root
+│   ├── faq.md
+│   ├── nav-links/header.md     ← multi-entry outlier collection
 │   └── ...
 └── de/                  ← German translations
-    ├── landing/hero.md
-    ├── about-us/our-mission.md
-    └── ...
+    └── ... (same structure as en/)
 ```
+
+Outlier shapes (hero, FAQ, nav-columns, social, donate, media-categories, nav-links) live as dedicated `.md` files at the locale root (or under `nav-links/`) so Keystatic can surface each through a dedicated editor form instead of one giant flat schema. See `keystatic.config.ts` for the full mapping.
 
 **Querying content:**
 Use `getPageContent(id, locale)` from `src/utils/contentQueries.ts` to fetch a page content entry by its ID. The `id` does NOT include the locale prefix — the function prepends it automatically and falls back to English if the translation is missing:

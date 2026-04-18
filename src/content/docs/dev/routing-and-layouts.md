@@ -135,7 +135,7 @@ Provides the HTML shell for all public pages:
 
 - **Locale detection** &mdash; derives locale from URL via `getLocale()`, sets `<html lang>`, generates hreflang `<link>` tags
 - **SEO meta tags** &mdash; canonical URL, Open Graph, Twitter Card, `og:locale`
-- **Structured data** &mdash; Organization schema with social links (loaded from `site/social-links` page-text)
+- **Structured data** &mdash; Organization schema with social links (loaded from the `social` page-text entry)
 - **Hash scroll handling** &mdash; intercepts hash before browser's native scroll, then smooth-scrolls after Alpine initializes (with a `load` event fallback for non-Alpine pages)
 - **Global layout** &mdash; Header (with language switcher) + main content slot + Footer + BackToTopButton
 

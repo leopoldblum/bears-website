@@ -19,33 +19,41 @@ Files are organized by **locale**, then by **page**. Each locale subfolder (`en/
 
 ```
 src/content/page-text/
-├── en/                ← English (default)
-│   ├── landing/       — Homepage sections (hero, intro, testimonials, etc.)
-│   ├── about-us/      — About Us page (mission, benefits, FAQ, etc.)
-│   ├── events/        — Events page (header, intro, crosslinks)
-│   ├── projects/      — Projects page (header, categories, crosslinks)
-│   ├── sponsors/      — Sponsors page (header, tiers, CTA, donate)
-│   ├── contact/       — Contact page
-│   ├── media/         — Media page
-│   ├── header/        — Header (navigation links)
-│   ├── footer/        — Footer (navigation, address, legal)
-│   ├── site/          — Site-wide settings (metadata, social links)
-│   ├── 404/           — Not Found page
-│   ├── imprint/       — Imprint page
-│   └── datenschutz/   — Privacy policy page
-└── de/                ← German translations (same structure as en/)
+├── en/                      ← English (default)
+│   ├── landing/             — Homepage sections (intro, testimonials, etc.)
+│   ├── about-us/            — About Us page (mission, benefits, etc.)
+│   ├── events/              — Events page (header, intro, crosslinks)
+│   ├── projects/            — Projects page (header, categories, crosslinks)
+│   ├── sponsors/            — Sponsors page (header, tiers, CTAs)
+│   ├── contact/             — Contact page
+│   ├── footer/              — Footer (address)
+│   ├── site/                — Site metadata (title, description)
+│   ├── 404/                 — Not Found page
+│   ├── imprint/             — Imprint page
+│   ├── datenschutz/         — Privacy policy page
+│   ├── hero.md              — Landing hero (CTAs)
+│   ├── faq.md               — About Us FAQ
+│   ├── media-categories.md  — Media page categories
+│   ├── nav-columns.md       — Footer multi-column navigation
+│   ├── social.md            — Social media links (site-wide)
+│   ├── donate.md            — Sponsors page donate card
+│   └── nav-links/           — Flat navigation link lists
+│       ├── header.md        — Header nav
+│       └── footer-bottom.md — Footer bottom bar
+└── de/                      ← German translations (same structure as en/)
     ├── landing/
     ├── about-us/
     └── ...
 ```
 
-Both `en/` and `de/` folders use identical filenames. If a German translation is missing, the English version is shown automatically on `/de/` pages.
+Both `en/` and `de/` folders use identical structure. If a German translation is missing, the English version is shown automatically on `/de/` pages.
 
 **Naming conventions:**
 - Page hero/header files end in `-title` (e.g., `events/events-title`, `about-us/about-us-title`)
 - Crosslink sections end in `-crosslink` (e.g., `events/events-crosslink`, `projects/projects-crosslink`)
 - Empty-state messages end in `-empty-state` (e.g., `events/events-empty-state`)
-- Other files are named after the section they control (e.g., `about-us/our-mission`, `about-us/faq`)
+- Regular section files are named after the section they control (e.g., `about-us/our-mission`)
+- "Outlier" shapes (FAQ, hero, social, donate, etc.) live as single files at the locale root so the CMS can surface them through dedicated editor forms
 
 ## Available Fields
 
@@ -98,7 +106,7 @@ seoDescription: "Upcoming BEARS events and workshops at TU Berlin."
 
 **Fields used:** `title`, `subtitle`, `seoDescription`
 
-**Files:** `events/events-title`, `projects/projects-title`, `sponsors/sponsors-title`, `about-us/about-us-title`, `media/media-title`, `contact/contact-title`
+**Files:** `events/events-title`, `projects/projects-title`, `sponsors/sponsors-title`, `about-us/about-us-title`, `contact/contact-title`. The media page's header is combined with its category list — see the **Media Page Categories** section below.
 
 ---
 
@@ -228,7 +236,7 @@ faqs:
 
 **Fields used:** `title`, `subtitle` (optional label above heading), `description` (optional intro text), `buttonText` + `buttonHref` (optional CTA link), `faqs`
 
-**Files:** `about-us/faq`
+**File:** `faq.md` (at the locale root). Edited in the CMS via the **FAQ** singleton.
 
 ---
 
@@ -265,7 +273,7 @@ ctas:
 
 **Fields used:** `title` (not displayed, used internally), `subtitle` (hero tagline), `seoDescription` (homepage meta description), `ctas` (each with `title`, `description`, `href`)
 
-**Files:** `landing/hero`
+**File:** `hero.md` (at the locale root). Edited in the CMS via the **Landing hero** singleton.
 
 ---
 
@@ -307,7 +315,7 @@ paypalButtonText: "Donate via PayPal"
 
 **Fields used:** `title`, `description`, `items`, `accountHolder`, `bankName`, `iban`, `bic`, `reference`, `paypalUrl`, `paypalButtonText`
 
-**Files:** `sponsors/donate`
+**File:** `donate.md` (at the locale root). Edited in the CMS via the **Donate** singleton.
 
 **Jump target:** The donate card has a stable anchor `#donate-title`, used by the "Donate" link in the footer's Sponsors column.
 
@@ -341,7 +349,7 @@ socialLinks:
 
 **Fields used:** `title` (not displayed), `socialLinks`
 
-**Files:** `site/social-links`
+**File:** `social.md` (at the locale root). Edited in the CMS via the **Social links** singleton.
 
 ---
 
@@ -372,7 +380,7 @@ navLinks:
 
 **Fields used:** `title` (not displayed), `navLinks` (each with `label` and `href`)
 
-**Files:** `header/navigation`
+**File:** `nav-links/header.md`. Edited in the CMS via the **Nav link lists** collection.
 
 ---
 
@@ -420,7 +428,7 @@ navColumns:
 
 **Fields used:** `title` (not displayed), `navColumns` (each with `heading`, `href`, and `links` array of `label` + `href`)
 
-**Files:** `footer/navigation`
+**File:** `nav-columns.md` (at the locale root). Edited in the CMS via the **Footer navigation** singleton.
 
 ---
 
@@ -445,7 +453,7 @@ navLinks:
 
 **Fields used:** `title` (copyright text with optional `{year}` placeholder), `navLinks` (legal page links)
 
-**Files:** `footer/bottom-bar`
+**File:** `nav-links/footer-bottom.md`. Edited in the CMS via the **Nav link lists** collection.
 
 ---
 
@@ -487,7 +495,7 @@ description: "Check back soon — we're always planning something new!"
 
 ---
 
-### Media Categories
+### Media Page Categories
 
 Controls which image categories appear on the Media page, their display order, and their labels. Each entry has an `id` (matching a known image directory) and a `label` (the displayed title).
 
@@ -533,7 +541,7 @@ mediaCategories:
 
 **Fields used:** `title`, `subtitle`, `seoDescription`, `mediaCategories`
 
-**Files:** `media/media-title`
+**File:** `media-categories.md` (at the locale root). Edited in the CMS via the **Media categories** singleton.
 
 ---
 

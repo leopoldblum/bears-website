@@ -12,7 +12,7 @@ import { getLocale, localizeUrl } from "@utils/i18n";
 const locale = getLocale(Astro.url);
 
 // Fetch hero CTAs from content collection
-const heroContent = await getPageContent('landing/hero', locale);
+const heroContent = await getPageContent('hero', locale);
 const heroCTAs = (heroContent?.data.ctas ?? []).map(cta => ({
   ...cta,
   href: localizeUrl(cta.href, locale),

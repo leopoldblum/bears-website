@@ -11,7 +11,7 @@ interface Props {
 
 const { locale } = Astro.props;
 
-const content = await getPageContent("about-us/faq", locale);
+const content = await getPageContent("faq", locale);
 const crosslink = await getPageContent("about-us/faq-crosslink", locale);
 
 const accordionItems = (content?.data.faqs ?? []).map((faq) => ({

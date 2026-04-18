@@ -1,12 +1,12 @@
 # Astro.js Website for BEARS
 >
 > **TODO:** Write SEO meta descriptions (~150 characters each) in the `seoDescription` field of these content files (in both `en/` and `de/` folders):
-> - `src/content/page-text/en/landing/hero.md` (homepage)
+> - `src/content/page-text/en/hero.md` (homepage)
 > - `src/content/page-text/en/about-us/about-us-title.md`
 > - `src/content/page-text/en/events/events-title.md`
 > - `src/content/page-text/en/projects/projects-title.md`
 > - `src/content/page-text/en/sponsors/sponsors-title.md`
-> - `src/content/page-text/en/media/media-title.md`
+> - `src/content/page-text/en/media-categories.md`
 > - `src/content/page-text/en/contact/contact-title.md`
 >
 > **TODO:** Add benefits section to sponsors and link in footer, or remove entry in footer.

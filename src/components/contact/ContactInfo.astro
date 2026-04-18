@@ -10,7 +10,7 @@ interface Props {
 const { locale } = Astro.props;
 
 const content = await getPageContent("contact/contact-info", locale);
-const socialContent = await getPageContent("site/social-links", locale);
+const socialContent = await getPageContent("social", locale);
 
 const email = content?.data.items?.[0] ?? "info@bears-space.de";
 const addressLines = content?.data.items?.slice(1) ?? [];
