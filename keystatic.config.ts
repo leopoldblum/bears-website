@@ -85,12 +85,18 @@ function testimonialsCollection(locale: 'en' | 'de') {
     label: `Testimonials (${locale.toUpperCase()})`,
     slugField: 'name',
     path: `src/content/testimonials/${locale}/*`,
-    columns: ['role'],
+    columns: ['order', 'role'],
     format: { contentField: 'body' },
     entryLayout: 'form',
     schema: {
       name: fields.slug({
         name: { label: 'Name', validation: { isRequired: true } },
+      }),
+      order: fields.integer({
+        label: 'Order',
+        description: 'Sort order (lower = shown first). Ties fall back to the slug.',
+        defaultValue: 0,
+        validation: { isRequired: true },
       }),
       role: fields.text({ label: 'Role', validation: { isRequired: true } }),
       quote: fields.text({ label: 'Quote', multiline: true, validation: { isRequired: true } }),

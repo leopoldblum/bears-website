@@ -23,7 +23,7 @@ const mockedGetCollection = vi.mocked(getCollection);
 // Helpers for creating mock entries
 // ---------------------------------------------------------------------------
 
-function makeEntry(overrides: { date?: Date; slug?: string; isDraft?: boolean; id?: string; displayMeetTheTeam?: boolean }) {
+function makeEntry(overrides: { date?: Date; slug?: string; isDraft?: boolean; id?: string; displayMeetTheTeam?: boolean; order?: number }) {
   return {
     id: overrides.id ?? 'en/test.mdx',
     slug: overrides.slug ?? 'test',
@@ -31,6 +31,7 @@ function makeEntry(overrides: { date?: Date; slug?: string; isDraft?: boolean; i
       date: overrides.date ?? new Date('2024-01-01'),
       isDraft: overrides.isDraft,
       displayMeetTheTeam: overrides.displayMeetTheTeam,
+      order: overrides.order,
     },
   };
 }
@@ -587,11 +588,21 @@ describe('getTestimonialsSorted', () => {
     mockedGetCollection.mockReset();
   });
 
-  it('returns testimonials sorted by slug', async () => {
+  it('returns testimonials sorted by order (ascending), slug tiebreak', async () => {
     mockedGetCollection.mockResolvedValue([
-      makeEntry({ id: 'en/charlie.mdx', slug: 'charlie' }),
-      makeEntry({ id: 'en/alpha.mdx', slug: 'alpha' }),
-      makeEntry({ id: 'en/bravo.mdx', slug: 'bravo' }),
+      makeEntry({ id: 'en/charlie.mdx', slug: 'charlie', order: 3 }),
+      makeEntry({ id: 'en/alpha.mdx', slug: 'alpha', order: 1 }),
+      makeEntry({ id: 'en/bravo.mdx', slug: 'bravo', order: 2 }),
+    ]);
+    const result = await getTestimonialsSorted();
+    expect(result.map(t => t.slug)).toEqual(['alpha', 'bravo', 'charlie']);
+  });
+
+  it('breaks order ties alphabetically by slug', async () => {
+    mockedGetCollection.mockResolvedValue([
+      makeEntry({ id: 'en/charlie.mdx', slug: 'charlie', order: 0 }),
+      makeEntry({ id: 'en/alpha.mdx', slug: 'alpha', order: 0 }),
+      makeEntry({ id: 'en/bravo.mdx', slug: 'bravo', order: 0 }),
     ]);
     const result = await getTestimonialsSorted();
     expect(result.map(t => t.slug)).toEqual(['alpha', 'bravo', 'charlie']);

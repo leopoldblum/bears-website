@@ -68,7 +68,7 @@ posts.forEach(post => {
 
 | Function | Returns | Notes |
 |----------|---------|-------|
-| `getTestimonialsSorted(locale?)` | `CollectionEntry<'testimonials'>[]` | Filtered by locale, sorted by slug |
+| `getTestimonialsSorted(locale?)` | `CollectionEntry<'testimonials'>[]` | Filtered by locale, sorted by `order` (ascending), ties on slug |
 | `getFacesOfBearsSorted(locale?)` | `CollectionEntry<'faces-of-bears'>[]` | Filtered by locale, sorted by slug |
 | `getSponsorsByTier()` | `{ diamond, platinum, gold, silver, bronze }` | Grouped by tier, sorted by `order`, ties on slug (not localized) |
 | `getPageContent(id, locale?)` | `CollectionEntry<'page-text'> \| undefined` | Single entry by ID and locale |

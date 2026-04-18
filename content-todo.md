@@ -317,9 +317,9 @@ Each needs: real **name**, real **role + year**, and a **portrait photo**.
 
 Each needs: real **name**, **role**, **quote**, and **photo**.
 
-- [ ] `01-member-4.md` — name: "Fourth Member", role: "Title / Year / Group", quote: generic placeholder, image: `placeholder-5.jpg`
-- [ ] `02-member-5.md` — name: "Fifth Member", role: "Engineering Lead / 2025", image: `placeholder-4.jpg`
-- [ ] `03-member-6.md` — name: "Sixth Member", role: "Project Manager / 2024", image: `placeholder-6.jpg`
+- [ ] `member-4.md` — name: "Fourth Member", role: "Title / Year / Group", quote: generic placeholder, image: `placeholder-5.jpg`
+- [ ] `member-5.md` — name: "Fifth Member", role: "Engineering Lead / 2025", image: `placeholder-4.jpg`
+- [ ] `member-6.md` — name: "Sixth Member", role: "Project Manager / 2024", image: `placeholder-6.jpg`
 
 ---
 

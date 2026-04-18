@@ -155,11 +155,17 @@ export async function getLatestInstagramPosts(limit: number = 3) {
 // ============================================================================
 
 /**
- * Gets all testimonials for a locale, sorted alphabetically by slug.
+ * Gets all testimonials for a locale, sorted by the `order` frontmatter field
+ * (ascending). Ties break on slug for deterministic output.
  */
 export async function getTestimonialsSorted(locale: Locale = DEFAULT_LOCALE) {
   const allTestimonials = await getCollection('testimonials');
-  return sortBySlug(filterByLocale(allTestimonials, locale));
+  const localeEntries = filterByLocale(allTestimonials, locale);
+  return [...localeEntries].sort((a, b) => {
+    const orderDiff = a.data.order - b.data.order;
+    if (orderDiff !== 0) return orderDiff;
+    return a.slug.localeCompare(b.slug);
+  });
 }
 
 /**

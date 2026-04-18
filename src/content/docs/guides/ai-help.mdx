@@ -64,11 +64,12 @@ Frontmatter:
   bgColor: string (optional, default #ffffff) — logo card background color
 
 TESTIMONIALS (src/content/testimonials/{en,de}/)
-File naming: "NN-name.mdx" (numeric prefix controls sort order; testimonials are sorted alphabetically by slug)
+File naming: "name.mdx" (slug based on the person's name; testimonials are sorted by the `order` frontmatter field)
 Frontmatter:
   quote: string (required)
   name: string (required)
   role: string (required)
+  order: number (required) — display order (lower = shown first). Ties fall back to the slug.
   coverImage: string (required) — path under src/assets/testimonials/<slug>/, written as "/<slug>/<filename>", valid: .jpg .jpeg .png .webp .svg
 
 HERO SLIDES (src/content/hero-slides/)
@@ -266,7 +267,7 @@ KEY CONVENTIONS
 ========================================
 
 - isDraft: true hides events, projects, and Instagram posts in production (visible in dev).
-- Sort order is controlled differently per collection: events/projects/instagram sort by the `date` frontmatter field; sponsors/hero-slides sort by the `order` frontmatter field; testimonials/faces-of-bears sort alphabetically by slug (use numeric prefixes like 01-, 02- in the filename to control order).
+- Sort order is controlled differently per collection: events/projects/instagram sort by the `date` frontmatter field; sponsors/hero-slides/testimonials sort by the `order` frontmatter field; faces-of-bears sorts alphabetically by slug (use numeric prefixes like 01-, 02- in the filename to control order).
 - FAQ answers and Accordion content support Markdown: **bold**, [links](/path), - bullet lists.
 - Sponsor tier is determined by folder name (diamond/, platinum/, gold/, silver/, bronze/), not frontmatter. Sponsor logos live under src/assets/sponsors/<tier>/<slug>/ — one folder per sponsor.
 - The seoDescription field sets a page's <meta name="description"> tag. Keep it ~150 characters.

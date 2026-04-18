@@ -17,6 +17,7 @@ const testimonialsCollection = defineCollection({
     quote: z.string(),
     name: z.string(),
     role: z.string(),
+    order: z.number(),
     coverImage: z.string().refine(
       validateImageExtension,
       { message: `coverImage must have a valid image extension: ${VALID_EXTENSIONS_MESSAGE}` }

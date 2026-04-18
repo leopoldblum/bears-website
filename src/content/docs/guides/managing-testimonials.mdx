@@ -12,10 +12,10 @@ Testimonials are stored in `src/content/testimonials/` as Markdown files, organi
 ```
 src/content/testimonials/
 ├── en/              ← English (default)
-│   ├── 01-member-4.md
+│   ├── member-4.md
 │   └── ...
 └── de/              ← German translations
-    ├── 01-member-4.md
+    ├── member-4.md
     └── ...
 ```
 
@@ -23,14 +23,15 @@ Both folders use identical filenames. If a German translation is missing, the En
 
 ## Creating a Testimonial
 
-Create a new file in `en/` (or `de/` for German) with the naming convention `NN-name.md` (e.g., `04-jane-doe.md`). The numeric prefix controls the display order.
+Create a new file in `en/` (or `de/` for German) named after the person (e.g., `jane-doe.md`). The `order` frontmatter field controls display order — the filename is just a slug.
 
 ```yaml
 ---
 quote: "Working at BEARS taught me more about rocket propulsion than any textbook."
 name: "Jane Doe"
 role: "Propulsion Lead / WS 2025"
-coverImage: /04-jane-doe/jane-doe.jpg
+order: 4
+coverImage: /jane-doe/jane-doe.jpg
 ---
 ```
 
@@ -45,6 +46,7 @@ All fields are required:
 | `quote` | string | The testimonial text |
 | `name` | string | Person's name |
 | `role` | string | Their role, year, or team (e.g., "Project Lead / WS 2025") |
+| `order` | number | Sort order (lower = shown first). Ties fall back to the slug. |
 | `coverImage` | string | Path to portrait image under `src/assets/testimonials/<slug>/`, written as `/<slug>/<filename>` |
 
 ## Images
@@ -53,4 +55,4 @@ Each testimonial has its own asset subfolder under `src/assets/testimonials/<slu
 
 ## Display Order
 
-Testimonials are sorted alphabetically by slug. Use numeric prefixes like `01-`, `02-`, `03-` to control the order.
+Testimonials are sorted ascending by the `order` frontmatter field; ties break on the filename. Lower `order` values are shown first.

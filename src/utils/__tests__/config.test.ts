@@ -212,6 +212,7 @@ describe('testimonials schema', () => {
       quote: 'Great experience',
       name: 'John Doe',
       role: 'Engineer',
+      order: 1,
       coverImage: 'john.jpg',
     });
     expect(result.success).toBe(true);
@@ -222,7 +223,18 @@ describe('testimonials schema', () => {
       quote: 'Great',
       name: 'John',
       role: 'Dev',
+      order: 1,
       coverImage: 'john.gif',
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it('rejects missing order', () => {
+    const result = schema.safeParse({
+      quote: 'Great',
+      name: 'John',
+      role: 'Dev',
+      coverImage: 'john.jpg',
     });
     expect(result.success).toBe(false);
   });
