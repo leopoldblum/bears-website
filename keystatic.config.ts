@@ -380,7 +380,7 @@ function pageTextCollection(locale: 'en' | 'de') {
       secondButtonHref: fields.text({ label: 'Secondary button link' }),
       instagramButtonText: fields.text({ label: 'Instagram button text' }),
       items: pageTextItemsField(),
-      body: mdxBody(),
+      body: fields.emptyContent({ extension: 'mdx' }),
     },
   });
 }
@@ -396,7 +396,7 @@ function pageTextHeroSingleton(locale: 'en' | 'de') {
       subtitle: fields.text({ label: 'Subtitle' }),
       seoDescription: fields.text({ label: 'SEO description', multiline: true }),
       ctas: pageTextCtasField(),
-      body: mdxBody(),
+      body: fields.emptyContent({ extension: 'mdx' }),
     },
   });
 }
@@ -412,7 +412,7 @@ function pageTextFaqSingleton(locale: 'en' | 'de') {
       subtitle: fields.text({ label: 'Subtitle' }),
       description: fields.text({ label: 'Description', multiline: true }),
       faqs: pageTextFaqsField(),
-      body: mdxBody(),
+      body: fields.emptyContent({ extension: 'mdx' }),
     },
   });
 }
@@ -428,7 +428,7 @@ function pageTextMediaCategoriesSingleton(locale: 'en' | 'de') {
       subtitle: fields.text({ label: 'Subtitle' }),
       seoDescription: fields.text({ label: 'SEO description', multiline: true }),
       mediaCategories: pageTextMediaCategoriesField(),
-      body: mdxBody(),
+      body: fields.emptyContent({ extension: 'mdx' }),
     },
   });
 }
@@ -442,7 +442,7 @@ function pageTextNavColumnsSingleton(locale: 'en' | 'de') {
     schema: {
       title: fields.text({ label: 'Title', validation: { isRequired: true } }),
       navColumns: pageTextNavColumnsField(),
-      body: mdxBody(),
+      body: fields.emptyContent({ extension: 'mdx' }),
     },
   });
 }
@@ -456,7 +456,7 @@ function pageTextSocialSingleton(locale: 'en' | 'de') {
     schema: {
       title: fields.text({ label: 'Title', validation: { isRequired: true } }),
       socialLinks: pageTextSocialLinksField(),
-      body: mdxBody(),
+      body: fields.emptyContent({ extension: 'mdx' }),
     },
   });
 }
@@ -478,7 +478,7 @@ function pageTextDonateSingleton(locale: 'en' | 'de') {
       reference: fields.text({ label: 'Transfer reference' }),
       paypalUrl: fields.url({ label: 'PayPal URL' }),
       paypalButtonText: fields.text({ label: 'PayPal button text' }),
-      body: mdxBody(),
+      body: fields.emptyContent({ extension: 'mdx' }),
     },
   });
 }
@@ -495,7 +495,7 @@ function pageTextNavLinksCollection(locale: 'en' | 'de') {
         name: { label: 'Title', validation: { isRequired: true } },
       }),
       navLinks: pageTextNavLinksField(),
-      body: mdxBody(),
+      body: fields.emptyContent({ extension: 'mdx' }),
     },
   });
 }
