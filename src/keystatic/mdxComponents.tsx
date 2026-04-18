@@ -62,6 +62,10 @@ function makeImgBlock(imageRoot?: string) {
         alt: fields.text({ label: 'Alt text', validation: { isRequired: true } }),
         width: fields.text({ label: 'Width (CSS, default 100%)', defaultValue: '100%' }),
         sizes: fields.text({ label: 'sizes attribute (optional)' }),
+        class: fields.text({
+          label: 'Extra classes (optional)',
+          description: 'Tailwind classes appended to the image (e.g. "rounded-lg").',
+        }),
         enableClickToEnlarge: fields.checkbox({
           label: 'Click to enlarge',
           description: 'When on, clicking the image opens a full-resolution modal.',
@@ -116,6 +120,10 @@ function makeImgBlock(imageRoot?: string) {
       alt: fields.text({ label: 'Alt text', validation: { isRequired: true } }),
       width: fields.text({ label: 'Width (CSS, default 100%)', defaultValue: '100%' }),
       sizes: fields.text({ label: 'sizes attribute (optional)' }),
+      class: fields.text({
+        label: 'Extra classes (optional)',
+        description: 'Tailwind classes appended to the image (e.g. "rounded-lg").',
+      }),
       enableClickToEnlarge: fields.checkbox({
         label: 'Click to enlarge',
         description: 'When on, clicking the image opens a full-resolution modal.',
@@ -447,20 +455,11 @@ const sharedBlocks = {
     ),
   }),
 
-  Carousel: block({
+  Carousel: wrapper({
     label: 'Carousel',
-    description: 'Image carousel. The actual slides are defined by image URLs in the component props.',
+    description:
+      'Slideshow with arrows, dots, and optional auto-scroll. Insert Img (or other) components as children — each direct child becomes a slide.',
     schema: {
-      images: fields.array(
-        fields.object({
-          src: fields.text({ label: 'Image path (relative or absolute)' }),
-          alt: fields.text({ label: 'Alt text' }),
-        }),
-        {
-          label: 'Images',
-          itemLabel: (p) => p.fields.alt.value || p.fields.src.value || 'Image',
-        },
-      ),
       height: fields.select({
         label: 'Height',
         options: [
@@ -477,12 +476,13 @@ const sharedBlocks = {
       showArrows: fields.checkbox({ label: 'Show arrow buttons', defaultValue: true }),
       showDots: fields.checkbox({ label: 'Show dot indicators', defaultValue: true }),
     },
-    ContentView: ({ value }) => (
+    ContentView: ({ value, children }) => (
       <div style={box}>
-        <div style={label}>Carousel</div>
-        <NotEditable>
-          <span>{value.images.length} image{value.images.length === 1 ? '' : 's'} · height: {value.height}</span>
-        </NotEditable>
+        <div style={label}>
+          Carousel — height: {value.height}
+          {value.autoScroll ? ` · auto-scroll ${value.autoScrollInterval}ms` : ''}
+        </div>
+        <div>{children}</div>
       </div>
     ),
   }),
@@ -495,6 +495,66 @@ const sharedBlocks = {
       <div style={{ ...box, textAlign: 'center' }}>
         <div style={label}>Center</div>
         <div>{children}</div>
+      </div>
+    ),
+  }),
+
+  ImageGrid: block({
+    label: 'Image grid',
+    description:
+      'Responsive grid of images. Choose number of columns and whether tiles are cropped to squares or keep their native aspect ratio.',
+    schema: {
+      images: fields.array(
+        fields.object({
+          image: fields.text({ label: 'Image path', validation: { isRequired: true } }),
+          alt: fields.text({ label: 'Alt text', validation: { isRequired: true } }),
+        }),
+        {
+          label: 'Images',
+          itemLabel: (p) => p.fields.alt.value || p.fields.image.value || 'Image',
+        },
+      ),
+      cols: fields.integer({
+        label: 'Columns (desktop)',
+        description: 'Number of columns on desktop. Supported: 2–6.',
+        defaultValue: 4,
+      }),
+      gap: fields.select({
+        label: 'Gap',
+        options: [
+          { label: 'Small', value: 'sm' },
+          { label: 'Medium', value: 'md' },
+          { label: 'Large', value: 'lg' },
+        ],
+        defaultValue: 'md',
+      }),
+      aspectRatio: fields.select({
+        label: 'Aspect ratio',
+        description: '"Square" crops to 1:1 tiles. "Native" uses a masonry column layout.',
+        options: [
+          { label: 'Square', value: 'square' },
+          { label: 'Native', value: 'native' },
+        ],
+        defaultValue: 'square',
+      }),
+      enableClickToEnlarge: fields.checkbox({
+        label: 'Click to enlarge',
+        defaultValue: true,
+      }),
+      class: fields.text({
+        label: 'Extra classes (optional)',
+      }),
+    },
+    ContentView: ({ value }) => (
+      <div style={box}>
+        <div style={label}>
+          Image grid — {value.cols} cols · {value.aspectRatio}
+        </div>
+        <NotEditable>
+          <span>
+            {value.images.length} image{value.images.length === 1 ? '' : 's'}
+          </span>
+        </NotEditable>
       </div>
     ),
   }),
