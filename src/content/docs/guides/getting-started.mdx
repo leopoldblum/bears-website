@@ -1,0 +1,78 @@
+---
+title: "Getting Started"
+description: "How to add and edit content on the BEARS website."
+order: 10
+---
+
+This guide gets the site running locally so you can start editing content. It assumes you have **Git** and a code editor (we recommend **VS Code**) installed.
+
+## Step 1: Install Node.js
+
+You need **Node.js v18 or later** (`npm` comes bundled with it). Install the **LTS version** from [nodejs.org](https://nodejs.org/), then verify:
+
+```sh
+node -v
+npm -v
+```
+
+Both commands should print a version number.
+
+## Step 2: Clone the Repo
+
+```sh
+git clone https://github.com/leopoldblum/bears-website.git
+cd bears-website
+code .
+```
+
+## Step 3: Install Dependencies
+
+```sh
+npm install
+```
+
+Only needed once, and again whenever dependencies change after a `git pull`.
+
+## Step 4: Start the Dev Server
+
+```sh
+npm run dev
+```
+
+Open [http://localhost:4321](http://localhost:4321). Changes to content files are reflected live in the browser.
+
+---
+
+## Stuck? Ask an AI
+
+Open the [Ask AI for Help](/docs/guides/ai-help/) page, copy the AI context prompt, and paste it into ChatGPT or Claude along with your question. You'll get accurate answers about the content system without having to read every guide.
+
+---
+
+## Next Steps
+
+Dive into the guide for whatever you're working on:
+
+- **[Managing Page Text](/docs/guides/managing-page-text/)** &mdash; headings, descriptions, buttons, and other site-wide copy
+- **[Managing Events](/docs/guides/managing-events/)** &mdash; workshops, talks, and competitions
+- **[Managing Projects](/docs/guides/managing-projects/)** &mdash; ongoing and completed team projects
+- **[Managing Sponsors](/docs/guides/managing-sponsors/)** &mdash; sponsors organized by tier
+- **[Managing Testimonials](/docs/guides/managing-testimonials/)**, **[Hero Slides](/docs/guides/managing-hero-slides/)**, **[Instagram Posts](/docs/guides/managing-instagram-posts/)**, **[Faces of BEARS](/docs/guides/managing-faces-of-bears/)**
+
+### Quick reference
+
+**Languages:** The site has English (default) and German. Most collections (`events`, `projects`, `page-text`, `testimonials`, `faces-of-bears`) use `en/` and `de/` subfolders with matching filenames. If a German translation is missing, the English version is shown automatically. Language-neutral collections: `sponsors`, `instagram`, `hero-slides`, `docs`.
+
+**Content files:** Every file in `src/content/` has a YAML **frontmatter** block at the top (between `---` delimiters), followed by optional Markdown body content. Most files use `.md`; event and project posts can also use `.mdx` to embed interactive components.
+
+**MDX components:** At the top of any `.mdx` event or project file, paste this once to import every available component (unused ones are stripped at build time):
+
+```mdx
+import { Accordion, Button, Callout, Carousel, Center, Img, Instagram, Marquee, YouTube, SideBySide, Left, Right } from '@mdx';
+```
+
+**Drafts:** Set `isDraft: true` on events, projects, and Instagram posts to hide them in production while keeping them visible locally.
+
+**Images:** All images must be local files in `src/assets/` subdirectories. Valid formats: `.jpg`, `.jpeg`, `.png`, `.webp`, `.svg`. Never use remote URLs.
+
+**Uploading images through the admin UI:** larger files (>2 MB) will freeze the tab during upload &mdash; just let it run and it will go through after a while. Smaller files are preferred; shrink images first at [squoosh.app](https://squoosh.app/) when you can. This is a Keystatic limitation, not something we can configure away. For hero-slide **videos**, compress with HandBrake or ffmpeg if the file is large &mdash; or skip the video slide entirely if an image will do.

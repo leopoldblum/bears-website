@@ -1,0 +1,32 @@
+---
+title: "Imprint"
+subtitle: "According to § 5 TMG"
+---
+
+### This imprint is valid for the following websites:
+
+**Website**: https://bears-space.de
+
+**Instagram**:  bears.space — https://instagram.com/bears.space  
+**LinkedIn**:   BEARS e.V. — https://www.linkedin.com/company/bears-ev  
+**YouTube**:    BEARS-space — https://www.youtube.com/@BEARS-Space  
+
+--- 
+
+### According to § 5 TMG
+
+Berlin Experimental Astronautics Research Student team e.V.  
+c/o TU Berlin - Institut für Luft- und Raumfahrt  
+Marchstraße 12-14  
+10587 Berlin  
+
+**Mail:** info@bears-space.de
+
+Represented by the board:
+
+Matti Keller (1st Speaker)  
+Dema Morad (2nd Speaker)  
+Gedeon Görg (Treasurer)  
+Akshat Goel (Public Relations Manager)  
+
+Amtsgericht Charlottenburg, Register-Nr.: VR 40347 B
