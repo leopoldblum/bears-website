@@ -394,7 +394,7 @@ function baseSingletonMeta(locale: Locale, pathSuffix: string, label: string) {
 
 function pageHeaderSingleton(locale: Locale, pathSuffix: string, label: string) {
   return singleton({
-    ...baseSingletonMeta(locale, pathSuffix, label),
+    ...baseSingletonMeta(locale, pathSuffix, `${label} + SEO`),
     schema: {
       title: fields.text({ label: 'Title', validation: { isRequired: true } }),
       subtitle: fields.text({ label: 'Subtitle' }),
@@ -499,7 +499,7 @@ function legalPageSingleton(locale: Locale, pathSuffix: string, label: string) {
 
 function pageTextHeroSingleton(locale: 'en' | 'de') {
   return singleton({
-    label: `Landing hero (${locale.toUpperCase()})`,
+    label: `Landing hero + SEO (${locale.toUpperCase()})`,
     path: `src/content/page-text/${locale}/hero`,
     format: { contentField: 'body' },
     entryLayout: 'form',
@@ -531,7 +531,7 @@ function pageTextFaqSingleton(locale: 'en' | 'de') {
 
 function pageTextMediaCategoriesSingleton(locale: 'en' | 'de') {
   return singleton({
-    label: `Media categories (${locale.toUpperCase()})`,
+    label: `Media categories + SEO (${locale.toUpperCase()})`,
     path: `src/content/page-text/${locale}/media-categories`,
     format: { contentField: 'body' },
     entryLayout: 'form',
