@@ -1,5 +1,5 @@
 import { config, collection, fields } from '@keystatic/core';
-import { mdxComponents } from './src/keystatic/mdxComponents';
+import { buildMdxComponents } from './src/keystatic/mdxComponents';
 
 // ============================================================================
 // STORAGE — local in dev, GitHub in production
@@ -60,17 +60,22 @@ function imageField(label: string, directory: string, _publicPath: string) {
 // Keystatic when opened (mdxjsEsm nodes are unsupported). See README → Future
 // work for the migration plan that removes imports.
 
-const mdBodyField = fields.mdx({
-  label: 'Body',
-  extension: 'md',
-  components: mdxComponents,
-});
+// `components` must bind `fields.image` to a specific collection asset root,
+// so body fields are built per-collection. Callers without an imageRoot get
+// the legacy text-input Img block.
+const mdBody = (imageRoot?: string) =>
+  fields.mdx({
+    label: 'Body',
+    extension: 'md',
+    components: buildMdxComponents({ imageRoot }),
+  });
 
-const mdxBodyField = fields.mdx({
-  label: 'Body',
-  extension: 'mdx',
-  components: mdxComponents,
-});
+const mdxBody = (imageRoot?: string) =>
+  fields.mdx({
+    label: 'Body',
+    extension: 'mdx',
+    components: buildMdxComponents({ imageRoot }),
+  });
 
 const EVENT_CATEGORIES = [
   { label: 'Trade Fairs & Conventions', value: 'trade-fairs-and-conventions' },
@@ -96,6 +101,7 @@ function testimonialsCollection(locale: 'en' | 'de') {
     label: `Testimonials (${locale.toUpperCase()})`,
     slugField: 'name',
     path: `src/content/testimonials/${locale}/*`,
+    columns: ['role'],
     format: { contentField: 'body' },
     entryLayout: 'form',
     schema: {
@@ -105,7 +111,11 @@ function testimonialsCollection(locale: 'en' | 'de') {
       role: fields.text({ label: 'Role', validation: { isRequired: true } }),
       quote: fields.text({ label: 'Quote', multiline: true, validation: { isRequired: true } }),
       coverImage: imageField('Portrait image', 'src/assets/testimonials', '/src/assets/testimonials/'),
-      body: mdBodyField,
+      // Testimonials have no rendered body — quote/name/role/coverImage are
+      // the only fields consumed by TestimonialCard.astro. emptyContent
+      // satisfies Keystatic's requirement that format.contentField map to a
+      // ContentFormField, while rendering no body editor in the admin UI.
+      body: fields.emptyContent({ extension: 'md' }),
     },
   });
 }
@@ -116,6 +126,7 @@ function sponsorsCollection(tier: 'diamond' | 'platinum' | 'gold' | 'silver' | '
     label: `Sponsors – ${tierLabel}`,
     slugField: 'name',
     path: `src/content/sponsors/${tier}/*`,
+    columns: ['url'],
     format: { contentField: 'body' },
     entryLayout: 'form',
     schema: {
@@ -129,7 +140,7 @@ function sponsorsCollection(tier: 'diamond' | 'platinum' | 'gold' | 'silver' | '
         description: 'Applied behind the logo. Default #ffffff.',
         defaultValue: '#ffffff',
       }),
-      body: mdBodyField,
+      body: fields.emptyContent({ extension: 'md' }),
     },
   });
 }
@@ -139,6 +150,7 @@ function eventsCollection(locale: 'en' | 'de') {
     label: `Events (${locale.toUpperCase()})`,
     slugField: 'title',
     path: `src/content/events/${locale}/*`,
+    columns: ['date', 'categoryEvent', 'isDraft'],
     format: { contentField: 'body' },
     entryLayout: 'content',
     schema: {
@@ -162,7 +174,7 @@ function eventsCollection(locale: 'en' | 'de') {
         description: 'Drafts are hidden in production but visible in dev.',
         defaultValue: false,
       }),
-      body: mdxBodyField,
+      body: mdxBody('src/assets/events'),
     },
   });
 }
@@ -172,6 +184,7 @@ function projectsCollection(locale: 'en' | 'de') {
     label: `Projects (${locale.toUpperCase()})`,
     slugField: 'title',
     path: `src/content/projects/${locale}/*`,
+    columns: ['date', 'categoryProject', 'isDraft', 'isProjectCompleted'],
     format: { contentField: 'body' },
     entryLayout: 'content',
     schema: {
@@ -200,27 +213,27 @@ function projectsCollection(locale: 'en' | 'de') {
         description: 'Marks the project as completed (vs ongoing).',
         defaultValue: false,
       }),
-      meetTheTeam: fields.conditional(
-        fields.checkbox({
-          label: 'Show this project in the "Meet the Team" section',
-          defaultValue: false,
-        }),
-        {
-          true: fields.object({
-            headOfProject: fields.text({
-              label: 'Head of project',
-              validation: { isRequired: true },
-            }),
-            personImage: imageField(
-              'Head of project portrait',
-              'src/assets/projects/team-members',
-              '/src/assets/projects/team-members/',
-            ),
-          }),
-          false: fields.empty(),
-        },
-      ),
-      body: mdBodyField,
+      // Flat trio matching the Astro Zod schema in src/content/config.ts.
+      // Keystatic's fields.conditional would nest these under a discriminant,
+      // which diverges from the flat frontmatter the site code reads. Leaving
+      // them flat + optional keeps both sides in sync. The Astro schema's
+      // .refine() enforces "headOfProject + personImage are required when
+      // displayMeetTheTeam is true" at build time.
+      displayMeetTheTeam: fields.checkbox({
+        label: 'Show this project in the "Meet the Team" section',
+        defaultValue: false,
+      }),
+      headOfProject: fields.text({
+        label: 'Head of project',
+        description: 'Required when "Show in Meet the Team" is on.',
+      }),
+      personImage: fields.image({
+        label: 'Head of project portrait',
+        directory: 'src/assets/projects/team-members',
+        publicPath: '',
+        description: `Required when "Show in Meet the Team" is on. ${IMAGE_SIZE_HINT}`,
+      }),
+      body: mdBody('src/assets/projects'),
     },
   });
 }
@@ -328,7 +341,7 @@ function pageTextCollection(locale: 'en' | 'de') {
       reference: fields.text({ label: 'Transfer reference' }),
       paypalUrl: fields.url({ label: 'PayPal URL' }),
       paypalButtonText: fields.text({ label: 'PayPal button text' }),
-      body: mdBodyField,
+      body: mdBody(),
     },
   });
 }
@@ -338,6 +351,7 @@ function facesOfBearsCollection(locale: 'en' | 'de') {
     label: `Faces of BEARS (${locale.toUpperCase()})`,
     slugField: 'name',
     path: `src/content/faces-of-bears/${locale}/*`,
+    columns: ['role'],
     format: { contentField: 'body' },
     entryLayout: 'form',
     schema: {
@@ -346,7 +360,7 @@ function facesOfBearsCollection(locale: 'en' | 'de') {
       }),
       role: fields.text({ label: 'Role', validation: { isRequired: true } }),
       coverImage: imageField('Portrait image', 'src/assets/faces-of-bears', '/src/assets/faces-of-bears/'),
-      body: mdBodyField,
+      body: fields.emptyContent({ extension: 'md' }),
     },
   });
 }
@@ -357,6 +371,7 @@ function docsCollection(section: 'guides' | 'dev') {
     label: `Docs – ${sectionLabel}`,
     slugField: 'title',
     path: `src/content/docs/${section}/*`,
+    columns: ['order', 'group'],
     format: { contentField: 'body' },
     entryLayout: 'content',
     schema: {
@@ -371,7 +386,7 @@ function docsCollection(section: 'guides' | 'dev') {
         validation: { isRequired: true },
       }),
       group: fields.text({ label: 'Group (optional)' }),
-      body: mdBodyField,
+      body: mdBody(`src/assets/docs/${section}`),
     },
   });
 }
@@ -384,6 +399,7 @@ const heroSlides = collection({
   label: 'Hero Slides',
   slugField: 'alt',
   path: 'src/content/hero-slides/*',
+  columns: ['type', 'shownText'],
   format: { contentField: 'body' },
   entryLayout: 'form',
   schema: {
@@ -411,7 +427,7 @@ const heroSlides = collection({
       validation: { isRequired: true },
     }),
     shownText: fields.text({ label: 'Overlay text (optional)' }),
-    body: mdBodyField,
+    body: fields.emptyContent({ extension: 'md' }),
   },
 });
 
@@ -419,6 +435,7 @@ const instagram = collection({
   label: 'Instagram Posts',
   slugField: 'url',
   path: 'src/content/instagram/*',
+  columns: ['date', 'isDraft'],
   format: { contentField: 'body' },
   entryLayout: 'form',
   schema: {
@@ -435,7 +452,7 @@ const instagram = collection({
       description: 'Drafts are hidden in production but visible in dev.',
       defaultValue: false,
     }),
-    body: mdBodyField,
+    body: fields.emptyContent({ extension: 'md' }),
   },
 });
 

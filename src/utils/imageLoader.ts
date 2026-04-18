@@ -26,7 +26,7 @@ export { defaultEventImage, defaultProjectImage, defaultTestimonialImage, defaul
  *  - Keystatic per-slug subfolder, leading slash:  `/test/coverImage.png`
  *  - Keystatic with non-empty publicPath:     `/src/assets/.../file.jpg`
  */
-function resolveImagePath(baseDir: string, fileName: string): string {
+export function resolveImagePath(baseDir: string, fileName: string): string {
   // Already a full asset path (older publicPath config wrote these)
   if (fileName.startsWith('/src/')) return fileName;
   // Strip any leading slashes so `${baseDir}/${fileName}` doesn't double up

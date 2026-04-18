@@ -154,6 +154,15 @@ export const heroImages: ImageGlob = filterImageGlob(
 );
 
 /**
+ * Flat glob across every asset subtree. Used by Img.astro to resolve string
+ * srcs coming from Keystatic uploads (e.g. "/src/assets/events/<slug>/foo.jpg")
+ * without having to know which collection the Img sits in.
+ */
+export const allAssetImages: ImageGlob = filterImageGlob(
+  import.meta.glob<{ default: ImageMetadata }>("/src/assets/**/*.*"),
+);
+
+/**
  * Type for media glob results (images and videos)
  */
 export type MediaGlob = Record<string, () => Promise<{ default: string }>>;

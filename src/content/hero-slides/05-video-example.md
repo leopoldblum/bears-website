@@ -1,5 +1,6 @@
 ---
 type: "video"
 media: "sample-video.webm"
+alt: "Decorative video background"
 shownText: "Video Background Example"
 ---

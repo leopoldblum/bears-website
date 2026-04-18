@@ -43,10 +43,93 @@ const label: React.CSSProperties = {
 };
 
 // ============================================================================
+// IMG BLOCK FACTORY
+//
+// `fields.image` requires a static `directory`, so to let every body-field
+// write uploads into its own collection's asset folder we build the Img
+// block per-collection via `buildMdxComponents({ imageRoot })`. Callers
+// without an imageRoot (page-text, hero-slides, instagram) get the legacy
+// text-input variant so bodies written against the old schema keep loading.
+// ============================================================================
+
+function makeImgBlock(imageRoot?: string) {
+  if (!imageRoot) {
+    return block({
+      label: 'Image',
+      description: 'Responsive image. Pass a path relative to /src/assets/ or a public URL.',
+      schema: {
+        src: fields.text({ label: 'Image path', validation: { isRequired: true } }),
+        alt: fields.text({ label: 'Alt text', validation: { isRequired: true } }),
+        width: fields.text({ label: 'Width (CSS, default 100%)', defaultValue: '100%' }),
+        sizes: fields.text({ label: 'sizes attribute (optional)' }),
+      },
+      ContentView: ({ value }) => (
+        <div style={box}>
+          <div style={label}>Image</div>
+          <NotEditable>
+            <code style={{ fontSize: 12 }}>{value.src || '(no src)'}</code>
+            <div style={{ opacity: 0.7, fontSize: 12 }}>{value.alt}</div>
+          </NotEditable>
+        </div>
+      ),
+    });
+  }
+
+  return block({
+    label: 'Image',
+    description: "Upload an image — it's saved into this entry's own asset folder.",
+    schema: {
+      src: fields.image({
+        label: 'Image',
+        directory: imageRoot,
+        // Keystatic's getSrcPrefix(publicPath, slug) stores the full path in
+        // the MDX (e.g. `/src/assets/events/<slug>/foo.jpg`), which Img.astro
+        // resolves against the `allAssetImages` glob.
+        publicPath: `/${imageRoot}/`,
+        validation: { isRequired: true },
+        description:
+          'Large images (>2 MB) freeze the tab during upload — pre-resize with squoosh.app first.',
+      }),
+      alt: fields.text({ label: 'Alt text', validation: { isRequired: true } }),
+      width: fields.text({ label: 'Width (CSS, default 100%)', defaultValue: '100%' }),
+      sizes: fields.text({ label: 'sizes attribute (optional)' }),
+    },
+    ContentView: ({ value }) => {
+      // fields.image form state is { data, extension, filename } during
+      // upload; the persisted reader value is the string path.
+      const displaySrc =
+        typeof value.src === 'string'
+          ? value.src
+          : value.src?.filename
+            ? `${value.src.filename} (uploading)`
+            : '(no src)';
+      return (
+        <div style={box}>
+          <div style={label}>Image</div>
+          <NotEditable>
+            <code style={{ fontSize: 12 }}>{displaySrc}</code>
+            <div style={{ opacity: 0.7, fontSize: 12 }}>{value.alt}</div>
+          </NotEditable>
+        </div>
+      );
+    },
+  });
+}
+
+// ============================================================================
 // COMPONENT REGISTRY
 // ============================================================================
 
-export const mdxComponents = {
+type MdxComponentsOptions = {
+  /**
+   * Collection asset root (e.g. `src/assets/events`). When set, the Img
+   * block offers an upload widget that writes into `<imageRoot>/<slug>/`.
+   * Omit to keep the legacy text-based Img.
+   */
+  imageRoot?: string;
+};
+
+const sharedBlocks = {
   Accordion: block({
     label: 'Accordion',
     description:
@@ -334,26 +417,6 @@ export const mdxComponents = {
     ),
   }),
 
-  Img: block({
-    label: 'Image',
-    description: 'Responsive image. Pass a path relative to /src/assets/ or a public URL.',
-    schema: {
-      src: fields.text({ label: 'Image path', validation: { isRequired: true } }),
-      alt: fields.text({ label: 'Alt text', validation: { isRequired: true } }),
-      width: fields.text({ label: 'Width (CSS, default 100%)', defaultValue: '100%' }),
-      sizes: fields.text({ label: 'sizes attribute (optional)' }),
-    },
-    ContentView: ({ value }) => (
-      <div style={box}>
-        <div style={label}>Image</div>
-        <NotEditable>
-          <code style={{ fontSize: 12 }}>{value.src || '(no src)'}</code>
-          <div style={{ opacity: 0.7, fontSize: 12 }}>{value.alt}</div>
-        </NotEditable>
-      </div>
-    ),
-  }),
-
   Instagram: block({
     label: 'Instagram embed',
     description: 'Embeds an Instagram post by URL.',
@@ -496,6 +559,16 @@ export const mdxComponents = {
     ),
   }),
 };
+
+export function buildMdxComponents(opts: MdxComponentsOptions = {}) {
+  return {
+    ...sharedBlocks,
+    Img: makeImgBlock(opts.imageRoot),
+  };
+}
+
+// Back-compat default: text-based Img, same as before the factory landed.
+export const mdxComponents = buildMdxComponents();
 
 // Silence unused-import warning for `mark` — kept in the import list in case
 // future components need it.
