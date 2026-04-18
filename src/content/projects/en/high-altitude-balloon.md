@@ -3,7 +3,7 @@ title: "High-Altitude Balloon Research"
 description: "Stratospheric balloon launches for atmospheric research, carrying scientific payloads to altitudes above 100,000 feet to study weather patterns and cosmic radiation."
 date: 2026-01-15
 categoryProject: "experimental-rocketry"
-coverImage: /2026-01-15-high-altitude-balloon/project-1.jpg
+coverImage: /high-altitude-balloon/project-1.jpg
 isDraft: false
 displayMeetTheTeam: true
 headOfProject: "Marcus Chen"

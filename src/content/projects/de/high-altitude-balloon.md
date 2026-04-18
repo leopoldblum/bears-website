@@ -3,7 +3,7 @@ title: "Höhenforschungsballon"
 description: "Stratosphärenballonstarts für atmosphärische Forschung, mit wissenschaftlichen Nutzlasten in Höhen über 30.000 Metern zur Untersuchung von Wettermustern und kosmischer Strahlung."
 date: 2026-01-15
 categoryProject: "experimental-rocketry"
-coverImage: /2026-01-15-high-altitude-balloon/project-1.jpg
+coverImage: /high-altitude-balloon/project-1.jpg
 isDraft: false
 displayMeetTheTeam: true
 headOfProject: "Marcus Chen"
