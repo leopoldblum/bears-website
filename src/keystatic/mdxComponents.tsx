@@ -209,6 +209,23 @@ const sharedBlocks = {
         },
       ),
       width: fields.text({ label: 'Width (CSS)', defaultValue: '100%' }),
+      // Legacy props — kept so old MDX content using the pre-`mode` API still
+      // validates. The Accordion Astro component still honours these when
+      // `mode` is unset. New content should use `mode` instead.
+      defaultOpen: fields.integer({
+        label: 'Default open (legacy)',
+        description: 'Deprecated — use “Display mode” instead. Index of the item that starts expanded.',
+      }),
+      allowCloseAll: fields.checkbox({
+        label: 'Allow close all (legacy)',
+        description: 'Deprecated — use “Display mode” instead.',
+        defaultValue: true,
+      }),
+      allowMultiple: fields.checkbox({
+        label: 'Allow multiple (legacy)',
+        description: 'Deprecated — use “Display mode” instead.',
+        defaultValue: false,
+      }),
     },
     ContentView: ({ value }) => {
       const MODE_DESCRIPTIONS: Record<string, string> = {
@@ -308,6 +325,24 @@ const sharedBlocks = {
         </div>
       );
     },
+  }),
+
+  AiPromptBlock: wrapper({
+    label: 'AI prompt block',
+    description:
+      'Collapsible container with Copy and Expand/Collapse buttons — wraps a code block for the AI help guide.',
+    schema: {
+      label: fields.text({
+        label: 'Header label',
+        defaultValue: 'AI Context Prompt',
+      }),
+    },
+    ContentView: ({ value, children }) => (
+      <div style={box}>
+        <div style={label}>{value.label || 'AI Context Prompt'}</div>
+        <div>{children}</div>
+      </div>
+    ),
   }),
 
   Button: inline({
@@ -558,6 +593,37 @@ const sharedBlocks = {
         <NotEditable>
           <code style={{ fontSize: 12 }}>{value.id || '(no id)'}</code>
         </NotEditable>
+      </div>
+    ),
+  }),
+
+  Preview: wrapper({
+    label: 'Preview',
+    description:
+      'Live rendering of one or more components, without prose styling. Used in docs to show what a component looks like next to its code example.',
+    schema: {
+      layout: fields.select({
+        label: 'Layout',
+        options: [
+          { label: 'Stack (default)', value: 'stack' },
+          { label: 'Row', value: 'row' },
+          { label: 'Row — center-aligned', value: 'row-center' },
+        ],
+        defaultValue: 'stack',
+      }),
+      spacing: fields.select({
+        label: 'Spacing',
+        options: [
+          { label: 'Compact (mb-4)', value: 'compact' },
+          { label: 'Normal (my-6)', value: 'normal' },
+        ],
+        defaultValue: 'compact',
+      }),
+    },
+    ContentView: ({ children }) => (
+      <div style={{ ...box, borderStyle: 'solid', opacity: 0.9 }}>
+        <div style={label}>Preview</div>
+        <div>{children}</div>
       </div>
     ),
   }),

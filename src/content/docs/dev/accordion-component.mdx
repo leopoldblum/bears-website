@@ -28,17 +28,17 @@ import Accordion from '@mdx/Accordion.astro';
 
 ### Default (all closed)
 
-<div class="not-prose my-6">
+<Preview spacing="normal">
   <Accordion items={[
     { title: "First Section", content: "Content of the **first** section with Markdown support." },
     { title: "Second Section", content: "Content with a [link](/) and `inline code`." },
     { title: "Third Section", content: "- List item one\n- List item two\n- List item three" }
   ]} />
-</div>
+</Preview>
 
 ### With default open and subtitle
 
-<div class="not-prose my-6">
+<Preview spacing="normal">
   <Accordion
     items={[
       { title: "Open by default", subtitle: "Subtitle text", content: "This item starts open." },
@@ -46,7 +46,7 @@ import Accordion from '@mdx/Accordion.astro';
     ]}
     defaultOpen={0}
   />
-</div>
+</Preview>
 
 ## Implementation Notes
 
