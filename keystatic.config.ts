@@ -54,11 +54,11 @@ function imageField(label: string, directory: string, _publicPath: string) {
 // `components` must bind `fields.image` to a specific collection asset root,
 // so body fields are built per-collection. Callers without an imageRoot get
 // the legacy text-input Img block.
-const mdxBody = (imageRoot?: string) =>
+const mdxBody = (imageRoot?: string, opts: { includePreview?: boolean } = {}) =>
   fields.mdx({
     label: 'Body',
     extension: 'mdx',
-    components: buildMdxComponents({ imageRoot }),
+    components: buildMdxComponents({ imageRoot, includePreview: opts.includePreview }),
   });
 
 const EVENT_CATEGORIES = [
@@ -773,7 +773,7 @@ function docsCollection(section: 'guides' | 'dev') {
         validation: { isRequired: true },
       }),
       group: fields.text({ label: 'Group (optional)' }),
-      body: mdxBody(`src/assets/docs/${section}`),
+      body: mdxBody(`src/assets/docs/${section}`, { includePreview: true }),
     },
   });
 }

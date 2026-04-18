@@ -225,6 +225,13 @@ type MdxComponentsOptions = {
    * `<imageRoot>/<slug>/`. Omit to keep the legacy text-based variants.
    */
   imageRoot?: string;
+  /**
+   * Whether to expose the Preview block in the editor's insert menu.
+   * Preview is only meaningful inside docs pages (it renders components
+   * without prose styling for side-by-side code-example displays), so we
+   * keep it hidden everywhere else to reduce noise for content editors.
+   */
+  includePreview?: boolean;
 };
 
 const sharedBlocks = {
@@ -261,23 +268,6 @@ const sharedBlocks = {
         },
       ),
       width: fields.text({ label: 'Width (CSS)', defaultValue: '100%' }),
-      // Legacy props — kept so old MDX content using the pre-`mode` API still
-      // validates. The Accordion Astro component still honours these when
-      // `mode` is unset. New content should use `mode` instead.
-      defaultOpen: fields.integer({
-        label: 'Default open (legacy)',
-        description: 'Deprecated — use “Display mode” instead. Index of the item that starts expanded.',
-      }),
-      allowCloseAll: fields.checkbox({
-        label: 'Allow close all (legacy)',
-        description: 'Deprecated — use “Display mode” instead.',
-        defaultValue: true,
-      }),
-      allowMultiple: fields.checkbox({
-        label: 'Allow multiple (legacy)',
-        description: 'Deprecated — use “Display mode” instead.',
-        defaultValue: false,
-      }),
     },
     ContentView: ({ value }) => {
       const MODE_DESCRIPTIONS: Record<string, string> = {
@@ -576,7 +566,8 @@ const sharedBlocks = {
 
   Marquee: wrapper({
     label: 'Media — Marquee',
-    description: 'Horizontally scrolling row of content (logos, images, etc).',
+    description:
+      'Horizontally scrolling row of content. Insert Img (or other) components as children — each direct child becomes a marquee item.',
     schema: {
       height: fields.select({
         label: 'Height',
@@ -630,6 +621,14 @@ const sharedBlocks = {
       id: fields.text({ label: 'YouTube video ID or URL', validation: { isRequired: true } }),
       title: fields.text({ label: 'Title (accessibility)', defaultValue: 'YouTube video' }),
       width: fields.text({ label: 'Width (CSS)', defaultValue: '100%' }),
+      start: fields.integer({
+        label: 'Start time (seconds, optional)',
+        description: 'If set, the video starts playback at this many seconds in.',
+      }),
+      class: fields.text({
+        label: 'Extra classes (optional)',
+        description: 'Tailwind classes appended to the outer container.',
+      }),
     },
     ContentView: ({ value }) => (
       <div style={box}>
@@ -637,37 +636,6 @@ const sharedBlocks = {
         <NotEditable>
           <code style={{ fontSize: 12 }}>{value.id || '(no id)'}</code>
         </NotEditable>
-      </div>
-    ),
-  }),
-
-  Preview: wrapper({
-    label: 'Layout — Preview',
-    description:
-      'Live rendering of one or more components, without prose styling. Used in docs to show what a component looks like next to its code example.',
-    schema: {
-      layout: fields.select({
-        label: 'Layout',
-        options: [
-          { label: 'Stack (default)', value: 'stack' },
-          { label: 'Row', value: 'row' },
-          { label: 'Row — center-aligned', value: 'row-center' },
-        ],
-        defaultValue: 'stack',
-      }),
-      spacing: fields.select({
-        label: 'Spacing',
-        options: [
-          { label: 'Compact (mb-4)', value: 'compact' },
-          { label: 'Normal (my-6)', value: 'normal' },
-        ],
-        defaultValue: 'compact',
-      }),
-    },
-    ContentView: ({ children }) => (
-      <div style={{ ...box, borderStyle: 'solid', opacity: 0.9 }}>
-        <div style={label}>Preview</div>
-        <div>{children}</div>
       </div>
     ),
   }),
@@ -719,11 +687,46 @@ const sharedBlocks = {
   }),
 };
 
+// Preview is docs-only — kept out of `sharedBlocks` so it doesn't clutter the
+// insert menu for content editors working on events/projects/page-text. It's
+// spliced back in by `buildMdxComponents` when `includePreview` is true.
+const previewBlock = wrapper({
+  label: 'Layout — Preview',
+  description:
+    'Live rendering of one or more components, without prose styling. Used in docs to show what a component looks like next to its code example.',
+  schema: {
+    layout: fields.select({
+      label: 'Layout',
+      options: [
+        { label: 'Stack (default)', value: 'stack' },
+        { label: 'Row', value: 'row' },
+        { label: 'Row — center-aligned', value: 'row-center' },
+      ],
+      defaultValue: 'stack',
+    }),
+    spacing: fields.select({
+      label: 'Spacing',
+      options: [
+        { label: 'Compact (mb-4)', value: 'compact' },
+        { label: 'Normal (my-6)', value: 'normal' },
+      ],
+      defaultValue: 'compact',
+    }),
+  },
+  ContentView: ({ children }) => (
+    <div style={{ ...box, borderStyle: 'solid', opacity: 0.9 }}>
+      <div style={label}>Preview</div>
+      <div>{children}</div>
+    </div>
+  ),
+});
+
 export function buildMdxComponents(opts: MdxComponentsOptions = {}) {
   return {
     ...sharedBlocks,
     Img: makeImgBlock(opts.imageRoot),
     ImageGrid: makeImageGridBlock(opts.imageRoot),
+    ...(opts.includePreview ? { Preview: previewBlock } : {}),
   };
 }
 
