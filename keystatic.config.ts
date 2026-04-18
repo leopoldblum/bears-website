@@ -568,10 +568,16 @@ function facesOfBearsCollection(locale: 'en' | 'de') {
     label: `Faces of BEARS (${locale.toUpperCase()})`,
     slugField: 'name',
     path: `src/content/faces-of-bears/${locale}/*`,
-    columns: ['role'],
+    columns: ['order', 'role'],
     format: { contentField: 'body' },
     entryLayout: 'form',
     schema: {
+      order: fields.integer({
+        label: 'Order',
+        description: 'Faces are shown in ascending order of this number. Ties fall back to filename. Tip: click the Order column header in the list view to sort entries by this.',
+        defaultValue: 0,
+        validation: { isRequired: true },
+      }),
       name: fields.slug({
         name: { label: 'Name', validation: { isRequired: true } },
       }),

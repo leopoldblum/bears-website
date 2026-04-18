@@ -162,6 +162,7 @@ const instagramCollection = defineCollection({
 const facesOfBearsCollection = defineCollection({
   type: 'content',
   schema: z.object({
+    order: z.number(),
     name: z.string(),
     role: z.string(),
     coverImage: z.string().refine(

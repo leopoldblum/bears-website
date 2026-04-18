@@ -169,11 +169,16 @@ export async function getTestimonialsSorted(locale: Locale = DEFAULT_LOCALE) {
 }
 
 /**
- * Gets all faces of BEARS for a locale, sorted alphabetically by slug.
+ * Gets all faces of BEARS for a locale, sorted by the `order` frontmatter
+ * field (ascending). Ties break on slug for deterministic output.
  */
 export async function getFacesOfBearsSorted(locale: Locale = DEFAULT_LOCALE) {
-  const allFaces = await getCollection('faces-of-bears');
-  return sortBySlug(filterByLocale(allFaces, locale));
+  const faces = filterByLocale(await getCollection('faces-of-bears'), locale);
+  return [...faces].sort((a, b) => {
+    const orderDiff = a.data.order - b.data.order;
+    if (orderDiff !== 0) return orderDiff;
+    return a.slug.localeCompare(b.slug);
+  });
 }
 
 /**
