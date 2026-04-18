@@ -291,7 +291,8 @@ function pageTextCtasField() {
       href: fields.text({ label: 'Link', validation: { isRequired: true } }),
     }),
     {
-      label: 'CTAs',
+      label: 'Call to Action buttons',
+      description: 'Up to 4 CTA buttons shown below the hero headline.',
       itemLabel: (p) => p.fields.title.value || 'Untitled',
       validation: { length: { max: 4 } },
     },
@@ -674,7 +675,11 @@ const instagram = collection({
         validation: { isRequired: true },
       },
     }),
-    date: fields.date({ label: 'Date', validation: { isRequired: true } }),
+    date: fields.date({
+      label: 'Date',
+      description: 'Posts are sorted newest first. Only the 3 most recent posts are shown on the homepage.',
+      validation: { isRequired: true },
+    }),
     isDraft: fields.checkbox({
       label: 'Draft',
       description: 'Drafts are hidden in production but visible in dev.',
