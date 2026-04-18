@@ -63,7 +63,7 @@ Wir kooperieren mit:
 
 - test
 
-<Button variant="primary" size="large" href="/contact">Experimentvorschlag einreichen</Button>
+<Button variant="primary" size="large" href="/contact" content="Experimentvorschlag einreichen" />
 
 </Center>
 
@@ -77,25 +77,16 @@ Wir kooperieren mit:
     {
       title: "Materialwissenschaft",
       subtitle: "Dr. Sarah Williams - Leitende Forscherin",
-      content: `
-- Kristallwachstum in Schwerelosigkeit
-- Metallurgische Erstarrungsprozesse
-- Polymerverhalten ohne Gravitationseinfluss
-- Phasentrennung in Legierungen
-      `
+      content: "- Kristallwachstum in Schwerelosigkeit\n- Metallurgische Erstarrungsprozesse\n- Polymerverhalten ohne Gravitationseinfluss\n- Phasentrennung in Legierungen"
     },
     {
       title: "Fluiddynamik",
-      content: `
-- Oberflächenspannungseffekte
-- Kapillarströmung bei reduzierter Gravitation
-- Zweiphasenströmungsverhalten
-- Tropfendynamik und Koaleszenz
-      `
-    },
+      subtitle: "",
+      content: "- Oberflächenspannungseffekte\n- Kapillarströmung bei reduzierter Gravitation\n- Zweiphasenströmungsverhalten\n- Tropfendynamik und Koaleszenz"
+    }
   ]}
-  allowMultiple={true}
-  width='100%'
+  mode="multi"
+  width="100%"
   />
 </Center>
   </Left>
@@ -116,7 +107,7 @@ Wir kooperieren mit:
 So einfach ist die neue Img-Komponente zu verwenden:
 
 <Center>
-  <Img src="/src/assets/projects/high-altitude-balloon/project-1.jpg" alt="Aufbau eines Schwerelosigkeitsexperiments" width="30%" loading="eager" />
+  <Img src="/src/assets/projects/high-altitude-balloon/project-1.jpg" alt="Aufbau eines Schwerelosigkeitsexperiments" width="30%" />
 </Center>
 ### Galerie der Forschungshighlights
 

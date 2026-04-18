@@ -63,7 +63,7 @@ We partner with:
 
 - test
 
-<Button variant="primary" size="large" href="/contact">Submit Experiment Proposal</Button>
+<Button variant="primary" size="large" href="/contact" content="Submit Experiment Proposal" />
 
 </Center>
 
@@ -77,25 +77,16 @@ We partner with:
     {
       title: "Materials Science",
       subtitle: "Dr. Sarah Williams - Lead Researcher",
-      content: `
-- Crystal growth in microgravity
-- Metallurgical solidification processes
-- Polymer behavior without gravitational influence
-- Phase separation in alloys
-      `
+      content: "- Crystal growth in microgravity\n- Metallurgical solidification processes\n- Polymer behavior without gravitational influence\n- Phase separation in alloys"
     },
     {
       title: "Fluid Dynamics",
-      content: `
-- Surface tension effects
-- Capillary flow in reduced gravity
-- Two-phase flow behavior
-- Droplet dynamics and coalescence
-      `
-    },
+      subtitle: "",
+      content: "- Surface tension effects\n- Capillary flow in reduced gravity\n- Two-phase flow behavior\n- Droplet dynamics and coalescence"
+    }
   ]}
-  allowMultiple={true}
-  width='100%'
+  mode="multi"
+  width="100%"
   />
 </Center>
   </Left>
@@ -116,7 +107,7 @@ We partner with:
 Here's how easy the new Img component is to use:
 
 <Center>
-  <Img src="/src/assets/projects/high-altitude-balloon/project-1.jpg" alt="Microgravity experiment setup" width="30%" loading="eager" />
+  <Img src="/src/assets/projects/high-altitude-balloon/project-1.jpg" alt="Microgravity experiment setup" width="30%" />
 </Center>
 ### Research Highlights Gallery
 

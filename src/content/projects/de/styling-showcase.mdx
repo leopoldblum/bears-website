@@ -100,21 +100,21 @@ Buttons gibt es in mehreren Varianten und Größen für verschiedene Anwendungsf
 <Center>
 ### Primäre Buttons
 
-<Button variant="primary" size="standard" href="#buttons">Standard Primär</Button>
+<Button variant="primary" size="standard" href="#buttons" content="Standard Primär" />
 
-<Button variant="primary" size="large">Großer Primärer Button</Button>
+<Button variant="primary" size="large" content="Großer Primärer Button" />
 
 ### Sekundäre Buttons
 
-<Button variant="secondary" size="standard">Standard Sekundär</Button>
+<Button variant="secondary" size="standard" content="Standard Sekundär" />
 
-<Button variant="secondary" size="large">Großer Sekundärer Button</Button>
+<Button variant="secondary" size="large" content="Großer Sekundärer Button" />
 
 ### Inverse Buttons
 
-<Button variant="inverse" size="standard">Standard Invers</Button>
+<Button variant="inverse" size="standard" content="Standard Invers" />
 
-<Button variant="inverse" size="large">Großer Inverser Button</Button>
+<Button variant="inverse" size="large" content="Großer Inverser Button" />
 
 </Center>
 
@@ -127,7 +127,7 @@ Die `Img`-Komponente bietet optimierte, responsive Bildanzeige mit flexibler Gr�
 <Center>
 
 ### Bild in voller Breite
-<Img src="/src/assets/projects/high-altitude-balloon/project-1.jpg" alt="Projektpräsentation in voller Breite" width="100%" loading="eager" />
+<Img src="/src/assets/projects/high-altitude-balloon/project-1.jpg" alt="Projektpräsentation in voller Breite" width="100%" />
 
 ### Bild mit 80% Breite
 <Img src="/src/assets/projects/project-2.jpg" alt="Bild mit 80% Breite" width="80%" />
@@ -193,60 +193,25 @@ Akkordeons organisieren Inhalte in ausklappbare Abschnitte:
     {
       title: "Was ist das BEARS-Programm?",
       subtitle: "Allgemeine Informationen",
-      content: `
-Das BEARS-Programm ist eine umfassende Initiative zur Förderung von Forschung und Innovation. Es bringt Studierende, Forschende und Industriepartner zusammen, um durch kollaborative Projekte reale Herausforderungen zu bewältigen.
-
-- Multidisziplinärer Ansatz
-- Industriepartnerschaften
-- Studentisch geleitete Forschung
-- Praxisanwendungen
-      `
+      content: "Das BEARS-Programm ist eine umfassende Initiative zur Förderung von Forschung und Innovation. Es bringt Studierende, Forschende und Industriepartner zusammen, um durch kollaborative Projekte reale Herausforderungen zu bewältigen.\n\n- Multidisziplinärer Ansatz\n- Industriepartnerschaften\n- Studentisch geleitete Forschung\n- Praxisanwendungen"
     },
     {
       title: "Wie trete ich einem Projekt bei?",
       subtitle: "Erste Schritte",
-      content: `
-Einem BEARS-Projekt beizutreten ist unkompliziert:
-
-1. Verfügbare Projekte auf der Website durchstöbern
-2. Projektanforderungen und Zeitplan prüfen
-3. Die Projektleitung kontaktieren
-4. Am Kickoff-Meeting teilnehmen
-5. Mit dem Team zusammenarbeiten
-
-Jedes Projekt hat unterschiedliche Anforderungen - schaue auf den einzelnen Projektseiten nach spezifischen Details.
-      `
+      content: "Einem BEARS-Projekt beizutreten ist unkompliziert:\n\n1. Verfügbare Projekte auf der Website durchstöbern\n2. Projektanforderungen und Zeitplan prüfen\n3. Die Projektleitung kontaktieren\n4. Am Kickoff-Meeting teilnehmen\n5. Mit dem Team zusammenarbeiten\n\nJedes Projekt hat unterschiedliche Anforderungen - schaue auf den einzelnen Projektseiten nach spezifischen Details."
     },
     {
       title: "Welche Fähigkeiten brauche ich?",
       subtitle: "Technische Voraussetzungen",
-      content: `
-Erforderliche und bevorzugte Fähigkeiten variieren je nach Projekt:
-
-- **Immer hilfreich:** Problemlösung, Teamarbeit, Kommunikation
-- **Technisch:** Programmierung, CAD, Datenanalyse (projektabhängig)
-- **Soft Skills:** Führung, Projektmanagement, Dokumentation
-- **Wünschenswert:** Vorherige Forschungserfahrung, Fachwissen
-
-Keine Sorge, wenn dir bestimmte Fähigkeiten fehlen - die BEARS-Community ist kooperativ und unterstützend.
-      `
+      content: "Erforderliche und bevorzugte Fähigkeiten variieren je nach Projekt:\n\n- **Immer hilfreich:** Problemlösung, Teamarbeit, Kommunikation\n- **Technisch:** Programmierung, CAD, Datenanalyse (projektabhängig)\n- **Soft Skills:** Führung, Projektmanagement, Dokumentation\n- **Wünschenswert:** Vorherige Forschungserfahrung, Fachwissen\n\nKeine Sorge, wenn dir bestimmte Fähigkeiten fehlen - die BEARS-Community ist kooperativ und unterstützend."
     },
     {
       title: "Gibt es Fristen?",
       subtitle: "Projektzeitplan",
-      content: `
-Ja, jedes Projekt hat spezifische Meilensteine und Fristen:
-
-- Projektstart: Normalerweise zu Semesterbeginn
-- Checkpoint-Reviews: Monatliche Fortschrittskontrollen
-- Abschlusspräsentation: Semesterende
-- Dokumentationsfrist: Eine Woche vor der Abschlusspräsentation
-
-Fristen helfen, Projekte auf Kurs zu halten und qualitativ hochwertige Ergebnisse sicherzustellen.
-      `
+      content: "Ja, jedes Projekt hat spezifische Meilensteine und Fristen:\n\n- Projektstart: Normalerweise zu Semesterbeginn\n- Checkpoint-Reviews: Monatliche Fortschrittskontrollen\n- Abschlusspräsentation: Semesterende\n- Dokumentationsfrist: Eine Woche vor der Abschlusspräsentation\n\nFristen helfen, Projekte auf Kurs zu halten und qualitativ hochwertige Ergebnisse sicherzustellen."
     }
   ]}
-  allowMultiple={true}
+  mode="multi"
   width="100%"
 />
 
@@ -405,18 +370,15 @@ Dies ist besonders nützlich für:
   items={[
     {
       title: "Galerie-Features",
-      content: `
-Dieses Marquee zeigt ausgewählte Projekte mit flüssiger Scroll-Animation. Hover zum Pausieren.
-      `
+      subtitle: "",
+      content: "Dieses Marquee zeigt ausgewählte Projekte mit flüssiger Scroll-Animation. Hover zum Pausieren."
     },
     {
       title: "Komponenten-Vorteile",
-      content: `
-Diese Komponenten schaffen ansprechende, interaktive Nutzererlebnisse, die Besucher fesseln.
-      `
+      subtitle: "",
+      content: "Diese Komponenten schaffen ansprechende, interaktive Nutzererlebnisse, die Besucher fesseln."
     }
   ]}
-  allowMultiple={false}
   width="100%"
 />
 
@@ -477,7 +439,7 @@ Das Design verwendet eine sorgfältig ausgewählte Farbpalette:
 
 Alle interaktiven Elemente verwenden eine konsistente Farbbehandlung:
 
-<Button variant="primary" size="standard">Farbe in Aktion sehen</Button>
+<Button variant="primary" size="standard" content="Farbe in Aktion sehen" />
 
 </Center>
 
