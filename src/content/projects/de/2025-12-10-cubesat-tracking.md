@@ -3,7 +3,7 @@ title: "CubeSat-Tracking-System"
 description: "Ein Echtzeit-Satellitenverfolgungsdashboard zur Überwachung der BEARS-CubeSat-Missionen im Orbit, mit Telemetriedatenvisualisierung und Bodenstationsintegration."
 date: 2025-12-10
 categoryProject: "experimental-rocketry"
-coverImage: "project-4.jpg"
+coverImage: /2025-12-10-cubesat-tracking/project-4.jpg
 isDraft: false
 displayMeetTheTeam: true
 headOfProject: "Alice Johnson"

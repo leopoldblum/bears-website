@@ -3,7 +3,7 @@ title: "KI-gestütztes Navigationssystem"
 description: "Machine-Learning-basierte autonome Navigation für mobile Robotikplattformen, die intelligente Pfadplanung und Hindernisvermeidung in dynamischen Umgebungen ermöglicht."
 date: 2025-07-10
 categoryProject: "science-and-experiments"
-coverImage: "project-7.jpg"
+coverImage: /2025-07-10-ai-navigation/project-7.jpg
 displayMeetTheTeam: true
 headOfProject: "Sophie Taylor"
 personImage: "sophie-taylor.jpg"

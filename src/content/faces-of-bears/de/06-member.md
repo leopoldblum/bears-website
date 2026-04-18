@@ -1,5 +1,5 @@
 ---
 name: "Member 6"
 role: "Rolle / Jahr"
-coverImage: "event-2.jpg"
+coverImage: /06-member/event-2.jpg
 ---

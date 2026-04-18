@@ -3,27 +3,13 @@ title: "Rover Test"
 description: "Drop tower experiments for testing materials and fluid dynamics in microgravity conditions, enabling research in materials science, biology, and physics."
 date: 2026-09-12
 categoryProject: "other"
-coverImage: "project-5.jpg"
+coverImage: /2026-09-12-test-rover/project-5.jpg
 isDraft: false
 displayMeetTheTeam: true
 headOfProject: "Sarah Williams"
 personImage: "sarah-williams.jpg"
 isProjectCompleted: false
 ---
-
-import Button from '@mdx/Button.astro';
-import Center from '@mdx/Center.astro';
-import Carousel from '@mdx/Carousel.astro';
-import Accordion from '@mdx/Accordion.astro';
-import Marquee from '@mdx/Marquee.astro';
-import { SideBySide, Left, Right } from "@mdx/SideBySide"
-import Img from '@mdx/Img.astro';
-import project1 from '../../../assets/projects/project-1.jpg';
-import project2 from '../../../assets/projects/project-2.jpg';
-import project3 from '../../../assets/projects/project-3.jpg';
-import project4 from '../../../assets/projects/project-4.jpg';
-import project5 from '../../../assets/projects/project-5.jpg';
-import project6 from '../../../assets/projects/project-6.jpg';
 
 ## Project Overview
 
@@ -115,12 +101,12 @@ We partner with:
   </Left>
     <Right>
 <Marquee speed={100} gap="1.5rem" height="sm" pauseOnHover={true}>
-  <Img src={project1} alt="Microgravity experiment setup" class="rounded-lg" />
-  <Img src={project2} alt="Drop tower facility exterior" class="rounded-lg" />
-  <Img src={project3} alt="Crystal growth samples under analysis" class="rounded-lg" />
-  <Img src={project4} alt="Fluid dynamics experiment in progress" class="rounded-lg" />
-  <Img src={project5} alt="Team preparing payload for drop test" class="rounded-lg" />
-  <Img src={project6} alt="High-speed camera capturing microgravity phenomena" class="rounded-lg" />
+  <Img src="/src/assets/projects/2026-01-15-high-altitude-balloon/project-1.jpg" alt="Microgravity experiment setup" class="rounded-lg" />
+  <Img src="/src/assets/projects/project-2.jpg" alt="Drop tower facility exterior" class="rounded-lg" />
+  <Img src="/src/assets/projects/project-3.jpg" alt="Crystal growth samples under analysis" class="rounded-lg" />
+  <Img src="/src/assets/projects/2025-12-10-cubesat-tracking/project-4.jpg" alt="Fluid dynamics experiment in progress" class="rounded-lg" />
+  <Img src="/src/assets/projects/2026-09-12-test-rover/project-5.jpg" alt="Team preparing payload for drop test" class="rounded-lg" />
+  <Img src="/src/assets/projects/project-6.jpg" alt="High-speed camera capturing microgravity phenomena" class="rounded-lg" />
 </Marquee>
 </Right>
 </SideBySide>
@@ -130,17 +116,17 @@ We partner with:
 Here's how easy the new Img component is to use:
 
 <Center>
-  <Img src={project1} alt="Microgravity experiment setup" width="30%" loading="eager" />
+  <Img src="/src/assets/projects/2026-01-15-high-altitude-balloon/project-1.jpg" alt="Microgravity experiment setup" width="30%" loading="eager" />
 </Center>
 ### Research Highlights Gallery
 
 <Marquee speed={60} gap="1.5rem" height="md" pauseOnHover={false}>
-  <Img src={project1} alt="Microgravity experiment setup" class="rounded-lg" enableClickToEnlarge={false} />
-  <Img src={project2} alt="Drop tower facility exterior" class="rounded-lg" enableClickToEnlarge={false}/>
-  <Img src={project3} alt="Crystal growth samples under analysis" class="rounded-lg" enableClickToEnlarge={false}/>
-  <Img src={project4} alt="Fluid dynamics experiment in progress" class="rounded-lg" enableClickToEnlarge={false}/>
-  <Img src={project5} alt="Team preparing payload for drop test" class="rounded-lg" />
-  <Img src={project6} alt="High-speed camera capturing microgravity phenomena" class="rounded-lg" />
+  <Img src="/src/assets/projects/2026-01-15-high-altitude-balloon/project-1.jpg" alt="Microgravity experiment setup" class="rounded-lg" enableClickToEnlarge={false} />
+  <Img src="/src/assets/projects/project-2.jpg" alt="Drop tower facility exterior" class="rounded-lg" enableClickToEnlarge={false}/>
+  <Img src="/src/assets/projects/project-3.jpg" alt="Crystal growth samples under analysis" class="rounded-lg" enableClickToEnlarge={false}/>
+  <Img src="/src/assets/projects/2025-12-10-cubesat-tracking/project-4.jpg" alt="Fluid dynamics experiment in progress" class="rounded-lg" enableClickToEnlarge={false}/>
+  <Img src="/src/assets/projects/2026-09-12-test-rover/project-5.jpg" alt="Team preparing payload for drop test" class="rounded-lg" />
+  <Img src="/src/assets/projects/project-6.jpg" alt="High-speed camera capturing microgravity phenomena" class="rounded-lg" />
 </Marquee>
 
 ### Research Outcomes

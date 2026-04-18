@@ -3,7 +3,7 @@ title: "Antriebssystem-Tests"
 description: "Tests und Analyse von Raketenantriebssystemen im kleinen Maßstab für studentisch entwickelte Trägerraketen, mit Schwerpunkt auf Schubmessung und Treibstoffeffizienz."
 date: 2025-08-20
 categoryProject: "experimental-rocketry"
-coverImage: "project-8.jpg"
+coverImage: /2025-08-20-propulsion-testing/project-8.jpg
 displayMeetTheTeam: true
 headOfProject: "David Martinez"
 personImage: "david-martinez.jpg"

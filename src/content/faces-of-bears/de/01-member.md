@@ -1,5 +1,5 @@
 ---
 name: "Matti Keller"
 role: "CEO"
-coverImage: "carousel-7.jpg"
+coverImage: /01-member/carousel-7.jpg
 ---

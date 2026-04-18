@@ -120,31 +120,46 @@ function setField(fmText, key, value) {
 // Extract top-of-file import statements. Keystatic's MDX parser crashes on
 // them, and the component imports are redundant — buildMdxComponents()
 // injects them via the editor's `components` prop.
+//
+// Matches both default imports and named-import-list forms:
+//   import Foo from '...';
+//   import { A, B } from '...';
 function extractImports(body) {
   const map = {};
-  const importRe = /^import\s+(\w+)\s+from\s+['"]([^'"]+)['"];?\s*$/gm;
-  const cleaned = body.replace(importRe, (_, ident, src) => {
+  const defaultRe = /^import\s+(\w+)\s+from\s+['"]([^'"]+)['"];?\s*$/gm;
+  const namedRe = /^import\s+\{[^}]+\}\s+from\s+['"][^'"]+['"];?\s*$/gm;
+  let cleaned = body.replace(defaultRe, (_, ident, src) => {
     map[ident] = src;
     return '';
   });
+  cleaned = cleaned.replace(namedRe, '');
   return { body: cleaned.replace(/^(\s*\n){2,}/, '\n'), map };
 }
 
 // Turn an import specifier into the `/src/assets/...` form. Component
 // imports (@mdx/*) return null so the attribute is left untouched.
-function resolveImport(spec) {
+// Relative `../../../assets/…` paths are normalized against the entry's
+// content path so files written with either alias style are handled.
+function resolveImport(spec, contentPath) {
   if (spec.startsWith('@assets/')) return '/src/assets/' + spec.slice('@assets/'.length);
   if (spec.startsWith('/src/')) return spec;
+  if (spec.startsWith('../') && contentPath) {
+    // Resolve relative to the content file's directory, then make the result
+    // repo-root-absolute (keeps the leading `/src/...` prefix Img expects).
+    const resolved = posix.normalize(posix.join(posix.dirname(contentPath), spec));
+    if (resolved.startsWith('src/')) return '/' + resolved;
+    return null;
+  }
   return null;
 }
 
 // Replace `src={Ident}` with a string src based on the import map. If the
 // resolved path was moved (via the shared move map), use the new path.
-function rewriteImgExpressions(body, importMap, fileMoves) {
+function rewriteImgExpressions(body, importMap, fileMoves, contentPath) {
   return body.replace(/src=\{(\w+)\}/g, (match, ident) => {
     const spec = importMap[ident];
     if (!spec) return match;
-    const raw = resolveImport(spec);
+    const raw = resolveImport(spec, contentPath);
     if (!raw) return match;
     const moved = fileMoves.get(raw.replace(/^\/+/, ''));
     const finalSrc = moved ? `/${moved}` : raw;
@@ -256,7 +271,7 @@ async function executeEntry(plan, fileMoves) {
   let body = plan.split.body;
   if (plan.entryPath.endsWith('.mdx')) {
     const { body: stripped, map } = extractImports(body);
-    body = rewriteImgExpressions(stripped, map, fileMoves);
+    body = rewriteImgExpressions(stripped, map, fileMoves, plan.entryPath);
   }
 
   const updated = `---\n${fmText}\n---\n${body}`;

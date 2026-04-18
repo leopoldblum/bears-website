@@ -3,27 +3,13 @@ title: "Rover-Test"
 description: "Fallturmexperimente zur Untersuchung von Materialien und Fluiddynamik unter Schwerelosigkeitsbedingungen, die Forschung in Materialwissenschaft, Biologie und Physik ermöglichen."
 date: 2026-09-12
 categoryProject: "other"
-coverImage: "project-5.jpg"
+coverImage: /2026-09-12-test-rover/project-5.jpg
 isDraft: false
 displayMeetTheTeam: true
 headOfProject: "Sarah Williams"
 personImage: "sarah-williams.jpg"
 isProjectCompleted: false
 ---
-
-import Button from '@mdx/Button.astro';
-import Center from '@mdx/Center.astro';
-import Carousel from '@mdx/Carousel.astro';
-import Accordion from '@mdx/Accordion.astro';
-import Marquee from '@mdx/Marquee.astro';
-import { SideBySide, Left, Right } from "@mdx/SideBySide"
-import Img from '@mdx/Img.astro';
-import project1 from '../../../assets/projects/project-1.jpg';
-import project2 from '../../../assets/projects/project-2.jpg';
-import project3 from '../../../assets/projects/project-3.jpg';
-import project4 from '../../../assets/projects/project-4.jpg';
-import project5 from '../../../assets/projects/project-5.jpg';
-import project6 from '../../../assets/projects/project-6.jpg';
 
 ## Projektüberblick
 
@@ -115,12 +101,12 @@ Wir kooperieren mit:
   </Left>
     <Right>
 <Marquee speed={100} gap="1.5rem" height="sm" pauseOnHover={true}>
-  <Img src={project1} alt="Aufbau eines Schwerelosigkeitsexperiments" class="rounded-lg" />
-  <Img src={project2} alt="Außenansicht der Fallturmanlage" class="rounded-lg" />
-  <Img src={project3} alt="Kristallwachstumsproben unter Analyse" class="rounded-lg" />
-  <Img src={project4} alt="Fluiddynamik-Experiment in Durchführung" class="rounded-lg" />
-  <Img src={project5} alt="Team bereitet Nutzlast für Falltest vor" class="rounded-lg" />
-  <Img src={project6} alt="Hochgeschwindigkeitskamera erfasst Schwerelosigkeitsphänomene" class="rounded-lg" />
+  <Img src="/src/assets/projects/2026-01-15-high-altitude-balloon/project-1.jpg" alt="Aufbau eines Schwerelosigkeitsexperiments" class="rounded-lg" />
+  <Img src="/src/assets/projects/project-2.jpg" alt="Außenansicht der Fallturmanlage" class="rounded-lg" />
+  <Img src="/src/assets/projects/project-3.jpg" alt="Kristallwachstumsproben unter Analyse" class="rounded-lg" />
+  <Img src="/src/assets/projects/2025-12-10-cubesat-tracking/project-4.jpg" alt="Fluiddynamik-Experiment in Durchführung" class="rounded-lg" />
+  <Img src="/src/assets/projects/2026-09-12-test-rover/project-5.jpg" alt="Team bereitet Nutzlast für Falltest vor" class="rounded-lg" />
+  <Img src="/src/assets/projects/project-6.jpg" alt="Hochgeschwindigkeitskamera erfasst Schwerelosigkeitsphänomene" class="rounded-lg" />
 </Marquee>
 </Right>
 </SideBySide>
@@ -130,17 +116,17 @@ Wir kooperieren mit:
 So einfach ist die neue Img-Komponente zu verwenden:
 
 <Center>
-  <Img src={project1} alt="Aufbau eines Schwerelosigkeitsexperiments" width="30%" loading="eager" />
+  <Img src="/src/assets/projects/2026-01-15-high-altitude-balloon/project-1.jpg" alt="Aufbau eines Schwerelosigkeitsexperiments" width="30%" loading="eager" />
 </Center>
 ### Galerie der Forschungshighlights
 
 <Marquee speed={60} gap="1.5rem" height="md" pauseOnHover={false}>
-  <Img src={project1} alt="Aufbau eines Schwerelosigkeitsexperiments" class="rounded-lg" enableClickToEnlarge={false} />
-  <Img src={project2} alt="Außenansicht der Fallturmanlage" class="rounded-lg" enableClickToEnlarge={false}/>
-  <Img src={project3} alt="Kristallwachstumsproben unter Analyse" class="rounded-lg" enableClickToEnlarge={false}/>
-  <Img src={project4} alt="Fluiddynamik-Experiment in Durchführung" class="rounded-lg" enableClickToEnlarge={false}/>
-  <Img src={project5} alt="Team bereitet Nutzlast für Falltest vor" class="rounded-lg" />
-  <Img src={project6} alt="Hochgeschwindigkeitskamera erfasst Schwerelosigkeitsphänomene" class="rounded-lg" />
+  <Img src="/src/assets/projects/2026-01-15-high-altitude-balloon/project-1.jpg" alt="Aufbau eines Schwerelosigkeitsexperiments" class="rounded-lg" enableClickToEnlarge={false} />
+  <Img src="/src/assets/projects/project-2.jpg" alt="Außenansicht der Fallturmanlage" class="rounded-lg" enableClickToEnlarge={false}/>
+  <Img src="/src/assets/projects/project-3.jpg" alt="Kristallwachstumsproben unter Analyse" class="rounded-lg" enableClickToEnlarge={false}/>
+  <Img src="/src/assets/projects/2025-12-10-cubesat-tracking/project-4.jpg" alt="Fluiddynamik-Experiment in Durchführung" class="rounded-lg" enableClickToEnlarge={false}/>
+  <Img src="/src/assets/projects/2026-09-12-test-rover/project-5.jpg" alt="Team bereitet Nutzlast für Falltest vor" class="rounded-lg" />
+  <Img src="/src/assets/projects/project-6.jpg" alt="Hochgeschwindigkeitskamera erfasst Schwerelosigkeitsphänomene" class="rounded-lg" />
 </Marquee>
 
 ### Forschungsergebnisse

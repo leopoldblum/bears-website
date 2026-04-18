@@ -3,7 +3,7 @@ title: "Autonomer Rover-Prototyp"
 description: "Entwicklung eines KI-gestützten autonomen Navigationssystems für unseren Mars-Rover-Prototyp mit Computer Vision und Hindernisvermeidungsfähigkeiten."
 date: 2025-11-20
 categoryProject: "robotics"
-coverImage: "project-10.jpg"
+coverImage: /2025-11-20-autonomous-rover/project-10.jpg
 isDraft: false
 displayMeetTheTeam: true
 headOfProject: "Emma Watson"
