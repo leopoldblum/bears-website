@@ -28,7 +28,7 @@ Create a new file inside the appropriate tier folder. The filename is just an id
 ---
 name: "Global Space Industries"
 order: 1
-logo: "diamond-01-global-space.png"
+logo: /global-space/global-space.png
 url: "https://example.com"
 ---
 ```
@@ -41,7 +41,7 @@ The body of sponsor files is not used &mdash; all content comes from the frontma
 |-------|------|-------------|
 | `name` | string | Sponsor company name |
 | `order` | number | Display order within the tier (lower = shown first) |
-| `logo` | string | Filename of the logo image in `src/assets/sponsors/` |
+| `logo` | string | Path to the logo image under `src/assets/sponsors/<tier>/<slug>/`, written as `/<slug>/<filename>` |
 
 ## Optional Fields
 
@@ -59,7 +59,7 @@ If a sponsor's brand guidelines require a different background color, set the `b
 ```yaml
 ---
 name: "Hetzner"
-logo: "Hetzner-Logo-slogan_white_space-red.jpg"
+logo: /hetzner/Hetzner-Logo-slogan_white_space-red.jpg
 url: "https://hetzner.com"
 bgColor: "#e20025"
 ---
@@ -69,7 +69,7 @@ Any valid CSS color value works (`#hex`, `rgb()`, named colors). When omitted, t
 
 ## Logos
 
-Place logo images in `src/assets/sponsors/<tier>/` (matching the sponsor's tier folder). Valid formats: `.jpg`, `.jpeg`, `.png`, `.webp`, `.svg`.
+Each sponsor has its own asset subfolder under `src/assets/sponsors/<tier>/<slug>/`, where `<tier>` matches the sponsor's tier folder and `<slug>` matches the filename (without extension). Place the logo there and reference it as `/<slug>/<filename>` (e.g. `/global-space/global-space.png`). Valid formats: `.jpg`, `.jpeg`, `.png`, `.webp`, `.svg`.
 
 ## Display Order
 

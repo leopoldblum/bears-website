@@ -27,25 +27,25 @@ The site supports English (default) and German (/de/ prefix). Content files in p
 CONTENT COLLECTIONS
 ========================================
 
-EVENTS (src/content/events/)
-File naming: "YYYY MM DD title.mdx" or ".mdx"
+EVENTS (src/content/events/{en,de}/)
+File naming: "<slug>.mdx" — filename is the slug, sort order comes from the `date` frontmatter field.
 Frontmatter:
   title: string (required)
   description: string (required)
   date: YYYY-MM-DD (required)
   categoryEvent: one of "trade-fairs-and-conventions", "competitions-and-workshops", "kick-off-events", "other" (required)
-  coverImage: string (required) — filename in src/assets/events/, valid: .jpg .jpeg .png .webp .svg
+  coverImage: string (required) — path under src/assets/events/<slug>/, written as "/<slug>/<filename>", valid: .jpg .jpeg .png .webp .svg
   isDraft: boolean (optional, default false) — hidden in production, visible in dev
 Body: Markdown or MDX content for the detail page.
 
-PROJECTS (src/content/projects/)
-File naming: "YYYY MM DD title.mdx" or ".mdx"
+PROJECTS (src/content/projects/{en,de}/)
+File naming: "<slug>.mdx" — filename is the slug, sort order comes from the `date` frontmatter field.
 Frontmatter:
   title: string (required)
   description: string (required)
   date: YYYY-MM-DD (required)
   categoryProject: one of "experimental-rocketry", "science-and-experiments", "robotics", "other" (required)
-  coverImage: string (required) — filename in src/assets/projects/, valid: .jpg .jpeg .png .webp .svg
+  coverImage: string (required) — path under src/assets/projects/<slug>/, written as "/<slug>/<filename>", valid: .jpg .jpeg .png .webp .svg
   isProjectCompleted: boolean (required)
   isDraft: boolean (optional, default false)
   displayMeetTheTeam: boolean (optional) — shows a "Meet the Team" section
@@ -55,50 +55,54 @@ Body: Markdown or MDX content for the detail page.
 
 SPONSORS (src/content/sponsors/)
 Organized by tier folders: diamond/, platinum/, gold/, silver/, bronze/
-File naming within tier: "NN-name.mdx" (numeric prefix = display order)
+File naming within tier: "<slug>.mdx" — filename is the slug, sort order comes from the `order` frontmatter field.
 Frontmatter:
   name: string (required)
-  logo: string (required) — filename in src/assets/sponsors/{tier}/, valid: .jpg .jpeg .png .webp .svg
+  order: number (required) — display order within the tier (lower = shown first)
+  logo: string (required) — path under src/assets/sponsors/<tier>/<slug>/, written as "/<slug>/<filename>", valid: .jpg .jpeg .png .webp .svg
   url: string (optional) — full website URL
+  bgColor: string (optional, default #ffffff) — logo card background color
 
-TESTIMONIALS (src/content/testimonials/)
-File naming: "NN-name.mdx" (numeric prefix = display order)
+TESTIMONIALS (src/content/testimonials/{en,de}/)
+File naming: "NN-name.mdx" (numeric prefix controls sort order; testimonials are sorted alphabetically by slug)
 Frontmatter:
   quote: string (required)
   name: string (required)
   role: string (required)
-  coverImage: string (required) — filename in src/assets/testimonials/, valid: .jpg .jpeg .png .webp .svg
+  coverImage: string (required) — path under src/assets/testimonials/<slug>/, written as "/<slug>/<filename>", valid: .jpg .jpeg .png .webp .svg
 
 HERO SLIDES (src/content/hero-slides/)
-File naming: "NN-name.mdx" (numeric prefix = display order, sorted numerically not alphabetically)
+File naming: "<slug>.mdx" — filename is the slug, sort order comes from the `order` frontmatter field.
 Two types:
 
 Image slide:
+  order: number (required) — display order (lower = shown first)
   type: "image" (required)
   media: string (required) — filename in src/assets/hero/landingpage/
   alt: string (required)
   shownText: string (optional) — overlay text
 
 Video slide:
+  order: number (required)
   type: "video" (required)
   media: string (required) — video filename in src/assets/hero/landingpage/, valid: .mp4 .webm .ogg
   alt: string (optional)
   shownText: string (optional)
 
 INSTAGRAM POSTS (src/content/instagram/)
-File naming: "YYYY-MM-DD-slug.mdx"
+File naming: filename is the slug (derived from the post URL). Sort order comes from the `date` frontmatter field.
 Frontmatter:
-  url: string (required) — full Instagram post URL
+  url: string (required) — full Instagram post URL (also used as the slug)
   date: YYYY-MM-DD (required)
   isDraft: boolean (optional, default false)
 Landing page shows the 3 most recent posts sorted by date.
 
-FACES OF BEARS (src/content/faces-of-bears/)
-File naming: "NN-name.mdx" (numeric prefix = display order)
+FACES OF BEARS (src/content/faces-of-bears/{en,de}/)
+File naming: "NN-name.mdx" (numeric prefix controls sort order; profiles are sorted alphabetically by slug)
 Frontmatter:
   name: string (required)
   role: string (required)
-  coverImage: string (required) — filename in src/assets/faces-of-bears/, valid: .jpg .jpeg .png .webp .svg
+  coverImage: string (required) — path under src/assets/faces-of-bears/<slug>/, written as "/<slug>/<filename>", valid: .jpg .jpeg .png .webp .svg
 
 PAGE TEXT (src/content/page-text/)
 Editable headings, descriptions, buttons, and structured data for every page section.
@@ -237,13 +241,13 @@ SIDEBYSIDE + LEFT + RIGHT
 IMAGE RULES
 ========================================
 
-All images must be local files in src/assets/ subdirectories:
-  src/assets/events/              — event cover images
-  src/assets/projects/            — project cover images
-  src/assets/projects/team-members/ — project team lead portraits (for Meet the Team)
-  src/assets/sponsors/{tier}/     — sponsor logos, organized by tier folder (diamond/, platinum/, gold/, silver/, bronze/)
-  src/assets/testimonials/        — testimonial portraits
-  src/assets/faces-of-bears/      — Faces of BEARS portraits
+All images must be local files in src/assets/ subdirectories. Events, projects, sponsors, testimonials, and faces-of-bears use a per-slug asset layout — each entry gets its own subfolder whose name matches the entry's filename (without extension):
+  src/assets/events/<slug>/         — per-event cover + inline images
+  src/assets/projects/<slug>/       — per-project cover + inline images
+  src/assets/projects/team-members/ — project team lead portraits (for Meet the Team) — shared folder, not per-slug
+  src/assets/sponsors/<tier>/<slug>/ — per-sponsor logo (organized under the tier folder: diamond/, platinum/, gold/, silver/, bronze/)
+  src/assets/testimonials/<slug>/   — per-testimonial portrait
+  src/assets/faces-of-bears/<slug>/ — per-profile portrait
   src/assets/about-us/our-mission/ — about page mission section images
   src/assets/whatIsBears/         — What is BEARS carousel images
   src/assets/hero/landingpage/    — landing page hero slides (images and videos)
@@ -262,9 +266,9 @@ KEY CONVENTIONS
 ========================================
 
 - isDraft: true hides events, projects, and Instagram posts in production (visible in dev).
-- Numeric prefixes (01-, 02-, etc.) control display order for hero slides, testimonials, sponsors, Faces of BEARS, and team members. Hero slides sort numerically, not alphabetically.
+- Sort order is controlled differently per collection: events/projects/instagram sort by the `date` frontmatter field; sponsors/hero-slides sort by the `order` frontmatter field; testimonials/faces-of-bears sort alphabetically by slug (use numeric prefixes like 01-, 02- in the filename to control order).
 - FAQ answers and Accordion content support Markdown: **bold**, [links](/path), - bullet lists.
-- Sponsor tier is determined by folder name (diamond/, platinum/, gold/, silver/, bronze/), not frontmatter. Sponsor logos go in the matching tier subfolder under src/assets/sponsors/.
+- Sponsor tier is determined by folder name (diamond/, platinum/, gold/, silver/, bronze/), not frontmatter. Sponsor logos live under src/assets/sponsors/<tier>/<slug>/ — one folder per sponsor.
 - The seoDescription field sets a page's <meta name="description"> tag. Keep it ~150 characters.
 - For projects, if displayMeetTheTeam is true then both headOfProject and personImage must also be provided.
 - UI strings for events/projects pages (filter labels, sort options, status badges) are centralized in catalogUiStrings in src/utils/i18n.ts.
