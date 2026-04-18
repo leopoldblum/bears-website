@@ -43,11 +43,11 @@ const label: React.CSSProperties = {
 };
 
 // ============================================================================
-// IMG BLOCK FACTORY
+// IMAGE BLOCK FACTORIES
 //
 // `fields.image` requires a static `directory`, so to let every body-field
-// write uploads into its own collection's asset folder we build the Img
-// block per-collection via `buildMdxComponents({ imageRoot })`. Callers
+// write uploads into its own collection's asset folder we build the image
+// blocks per-collection via `buildMdxComponents({ imageRoot })`. Callers
 // without an imageRoot (page-text, hero-slides, instagram) get the legacy
 // text-input variant so bodies written against the old schema keep loading.
 // ============================================================================
@@ -55,13 +55,12 @@ const label: React.CSSProperties = {
 function makeImgBlock(imageRoot?: string) {
   if (!imageRoot) {
     return block({
-      label: 'Image',
+      label: 'Media — Image',
       description: 'Responsive image. Pass a path relative to /src/assets/ or a public URL.',
       schema: {
         src: fields.text({ label: 'Image path', validation: { isRequired: true } }),
         alt: fields.text({ label: 'Alt text', validation: { isRequired: true } }),
         width: fields.text({ label: 'Width (CSS, default 100%)', defaultValue: '100%' }),
-        sizes: fields.text({ label: 'sizes attribute (optional)' }),
         class: fields.text({
           label: 'Extra classes (optional)',
           description: 'Tailwind classes appended to the image (e.g. "rounded-lg").',
@@ -70,24 +69,6 @@ function makeImgBlock(imageRoot?: string) {
           label: 'Click to enlarge',
           description: 'When on, clicking the image opens a full-resolution modal.',
           defaultValue: true,
-        }),
-        loading: fields.select({
-          label: 'Loading',
-          description: 'Use "eager" only for above-the-fold images.',
-          options: [
-            { label: 'Lazy (default)', value: 'lazy' },
-            { label: 'Eager', value: 'eager' },
-          ],
-          defaultValue: 'lazy',
-        }),
-        fetchpriority: fields.select({
-          label: 'Fetch priority',
-          options: [
-            { label: 'Auto (default)', value: 'auto' },
-            { label: 'High', value: 'high' },
-            { label: 'Low', value: 'low' },
-          ],
-          defaultValue: 'auto',
         }),
       },
       ContentView: ({ value }) => (
@@ -103,7 +84,7 @@ function makeImgBlock(imageRoot?: string) {
   }
 
   return block({
-    label: 'Image',
+    label: 'Media — Image',
     description: "Upload an image — it's saved into this entry's own asset folder.",
     schema: {
       src: fields.image({
@@ -119,7 +100,6 @@ function makeImgBlock(imageRoot?: string) {
       }),
       alt: fields.text({ label: 'Alt text', validation: { isRequired: true } }),
       width: fields.text({ label: 'Width (CSS, default 100%)', defaultValue: '100%' }),
-      sizes: fields.text({ label: 'sizes attribute (optional)' }),
       class: fields.text({
         label: 'Extra classes (optional)',
         description: 'Tailwind classes appended to the image (e.g. "rounded-lg").',
@@ -128,24 +108,6 @@ function makeImgBlock(imageRoot?: string) {
         label: 'Click to enlarge',
         description: 'When on, clicking the image opens a full-resolution modal.',
         defaultValue: true,
-      }),
-      loading: fields.select({
-        label: 'Loading',
-        description: 'Use "eager" only for above-the-fold images.',
-        options: [
-          { label: 'Lazy (default)', value: 'lazy' },
-          { label: 'Eager', value: 'eager' },
-        ],
-        defaultValue: 'lazy',
-      }),
-      fetchpriority: fields.select({
-        label: 'Fetch priority',
-        options: [
-          { label: 'Auto (default)', value: 'auto' },
-          { label: 'High', value: 'high' },
-          { label: 'Low', value: 'low' },
-        ],
-        defaultValue: 'auto',
       }),
     },
     ContentView: ({ value }) => {
@@ -170,6 +132,88 @@ function makeImgBlock(imageRoot?: string) {
   });
 }
 
+function makeImageGridBlock(imageRoot?: string) {
+  const imageField = imageRoot
+    ? fields.image({
+        label: 'Image',
+        directory: imageRoot,
+        publicPath: `/${imageRoot}/`,
+        validation: { isRequired: true },
+        description:
+          'Large images (>2 MB) freeze the tab during upload — pre-resize with squoosh.app first.',
+      })
+    : fields.text({ label: 'Image path', validation: { isRequired: true } });
+
+  return block({
+    label: 'Media — Image grid',
+    description:
+      'Responsive grid of images. Choose number of columns and whether tiles are cropped to squares or keep their native aspect ratio.',
+    schema: {
+      images: fields.array(
+        fields.object({
+          image: imageField,
+          alt: fields.text({ label: 'Alt text', validation: { isRequired: true } }),
+        }),
+        {
+          label: 'Images',
+          itemLabel: (p) => {
+            const img = p.fields.image.value as unknown;
+            const imgLabel =
+              typeof img === 'string'
+                ? img
+                : img && typeof img === 'object' && 'filename' in img
+                  ? ((img as { filename?: string }).filename ?? '')
+                  : '';
+            return p.fields.alt.value || imgLabel || 'Image';
+          },
+        },
+      ),
+      cols: fields.integer({
+        label: 'Columns (desktop)',
+        description: 'Number of columns on desktop. Supported: 2–6.',
+        defaultValue: 4,
+      }),
+      gap: fields.select({
+        label: 'Gap',
+        options: [
+          { label: 'Small', value: 'sm' },
+          { label: 'Medium', value: 'md' },
+          { label: 'Large', value: 'lg' },
+        ],
+        defaultValue: 'md',
+      }),
+      aspectRatio: fields.select({
+        label: 'Aspect ratio',
+        description: '"Square" crops to 1:1 tiles. "Native" uses a masonry column layout.',
+        options: [
+          { label: 'Square', value: 'square' },
+          { label: 'Native', value: 'native' },
+        ],
+        defaultValue: 'square',
+      }),
+      enableClickToEnlarge: fields.checkbox({
+        label: 'Click to enlarge',
+        defaultValue: true,
+      }),
+      class: fields.text({
+        label: 'Extra classes (optional)',
+      }),
+    },
+    ContentView: ({ value }) => (
+      <div style={box}>
+        <div style={label}>
+          Image grid — {value.cols} cols · {value.aspectRatio}
+        </div>
+        <NotEditable>
+          <span>
+            {value.images.length} image{value.images.length === 1 ? '' : 's'}
+          </span>
+        </NotEditable>
+      </div>
+    ),
+  });
+}
+
 // ============================================================================
 // COMPONENT REGISTRY
 // ============================================================================
@@ -177,15 +221,15 @@ function makeImgBlock(imageRoot?: string) {
 type MdxComponentsOptions = {
   /**
    * Collection asset root (e.g. `src/assets/events`). When set, the Img
-   * block offers an upload widget that writes into `<imageRoot>/<slug>/`.
-   * Omit to keep the legacy text-based Img.
+   * and ImageGrid blocks offer an upload widget that writes into
+   * `<imageRoot>/<slug>/`. Omit to keep the legacy text-based variants.
    */
   imageRoot?: string;
 };
 
 const sharedBlocks = {
   Accordion: block({
-    label: 'Accordion',
+    label: 'Content — Accordion',
     description:
       'Collapsible FAQ-style sections. Each item has a title, optional subtitle, and Markdown content.',
     schema: {
@@ -336,9 +380,9 @@ const sharedBlocks = {
   }),
 
   AiPromptBlock: wrapper({
-    label: 'AI prompt block',
+    label: 'Content — Collapsible code block',
     description:
-      'Collapsible container with Copy and Expand/Collapse buttons — wraps a code block for the AI help guide.',
+      'Collapsible container with Copy and Expand/Collapse buttons, wrapping a code block. Originally built for the AI help guide.',
     schema: {
       label: fields.text({
         label: 'Header label',
@@ -354,7 +398,7 @@ const sharedBlocks = {
   }),
 
   Button: inline({
-    label: 'Button',
+    label: 'Content — Button',
     description: 'A styled button or link.',
     schema: {
       href: fields.text({ label: 'Link (optional — renders <a> if set)' }),
@@ -430,7 +474,7 @@ const sharedBlocks = {
   }),
 
   Callout: wrapper({
-    label: 'Callout',
+    label: 'Content — Callout',
     description: 'Highlighted content block with an optional title.',
     schema: {
       title: fields.text({ label: 'Title (optional)' }),
@@ -456,7 +500,7 @@ const sharedBlocks = {
   }),
 
   Carousel: wrapper({
-    label: 'Carousel',
+    label: 'Media — Carousel',
     description:
       'Slideshow with arrows, dots, and optional auto-scroll. Insert Img (or other) components as children — each direct child becomes a slide.',
     schema: {
@@ -488,7 +532,7 @@ const sharedBlocks = {
   }),
 
   Center: wrapper({
-    label: 'Center',
+    label: 'Layout — Center',
     description: 'Centers its children horizontally.',
     schema: {},
     ContentView: ({ children }) => (
@@ -499,68 +543,8 @@ const sharedBlocks = {
     ),
   }),
 
-  ImageGrid: block({
-    label: 'Image grid',
-    description:
-      'Responsive grid of images. Choose number of columns and whether tiles are cropped to squares or keep their native aspect ratio.',
-    schema: {
-      images: fields.array(
-        fields.object({
-          image: fields.text({ label: 'Image path', validation: { isRequired: true } }),
-          alt: fields.text({ label: 'Alt text', validation: { isRequired: true } }),
-        }),
-        {
-          label: 'Images',
-          itemLabel: (p) => p.fields.alt.value || p.fields.image.value || 'Image',
-        },
-      ),
-      cols: fields.integer({
-        label: 'Columns (desktop)',
-        description: 'Number of columns on desktop. Supported: 2–6.',
-        defaultValue: 4,
-      }),
-      gap: fields.select({
-        label: 'Gap',
-        options: [
-          { label: 'Small', value: 'sm' },
-          { label: 'Medium', value: 'md' },
-          { label: 'Large', value: 'lg' },
-        ],
-        defaultValue: 'md',
-      }),
-      aspectRatio: fields.select({
-        label: 'Aspect ratio',
-        description: '"Square" crops to 1:1 tiles. "Native" uses a masonry column layout.',
-        options: [
-          { label: 'Square', value: 'square' },
-          { label: 'Native', value: 'native' },
-        ],
-        defaultValue: 'square',
-      }),
-      enableClickToEnlarge: fields.checkbox({
-        label: 'Click to enlarge',
-        defaultValue: true,
-      }),
-      class: fields.text({
-        label: 'Extra classes (optional)',
-      }),
-    },
-    ContentView: ({ value }) => (
-      <div style={box}>
-        <div style={label}>
-          Image grid — {value.cols} cols · {value.aspectRatio}
-        </div>
-        <NotEditable>
-          <span>
-            {value.images.length} image{value.images.length === 1 ? '' : 's'}
-          </span>
-        </NotEditable>
-      </div>
-    ),
-  }),
-
   Instagram: block({
-    label: 'Instagram embed',
+    label: 'Media — Instagram embed',
     description: 'Embeds an Instagram post by URL.',
     schema: {
       url: fields.text({
@@ -591,7 +575,7 @@ const sharedBlocks = {
   }),
 
   Marquee: wrapper({
-    label: 'Marquee',
+    label: 'Media — Marquee',
     description: 'Horizontally scrolling row of content (logos, images, etc).',
     schema: {
       height: fields.select({
@@ -640,7 +624,7 @@ const sharedBlocks = {
   }),
 
   YouTube: block({
-    label: 'YouTube video',
+    label: 'Media — YouTube video',
     description: 'Embeds a YouTube video by ID or URL.',
     schema: {
       id: fields.text({ label: 'YouTube video ID or URL', validation: { isRequired: true } }),
@@ -658,7 +642,7 @@ const sharedBlocks = {
   }),
 
   Preview: wrapper({
-    label: 'Preview',
+    label: 'Layout — Preview',
     description:
       'Live rendering of one or more components, without prose styling. Used in docs to show what a component looks like next to its code example.',
     schema: {
@@ -689,7 +673,7 @@ const sharedBlocks = {
   }),
 
   SideBySide: repeating({
-    label: 'Side-by-side layout',
+    label: 'Layout — Side-by-side',
     description: 'Two columns that stack on mobile. Insert one Left and one Right child.',
     children: ['Left', 'Right'],
     validation: { children: { min: 0, max: 2 } },
@@ -705,8 +689,9 @@ const sharedBlocks = {
   }),
 
   Left: wrapper({
-    label: 'Left column',
+    label: 'Layout — Left column',
     description: 'Left column of a SideBySide layout.',
+    forSpecificLocations: true,
     schema: {
       centerVertical: fields.checkbox({ label: 'Center vertically', defaultValue: false }),
     },
@@ -719,8 +704,9 @@ const sharedBlocks = {
   }),
 
   Right: wrapper({
-    label: 'Right column',
+    label: 'Layout — Right column',
     description: 'Right column of a SideBySide layout.',
+    forSpecificLocations: true,
     schema: {
       centerVertical: fields.checkbox({ label: 'Center vertically', defaultValue: false }),
     },
@@ -737,6 +723,7 @@ export function buildMdxComponents(opts: MdxComponentsOptions = {}) {
   return {
     ...sharedBlocks,
     Img: makeImgBlock(opts.imageRoot),
+    ImageGrid: makeImageGridBlock(opts.imageRoot),
   };
 }
 
