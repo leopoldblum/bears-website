@@ -55,6 +55,8 @@ Place all media files in `src/assets/hero/landingpage/`.
 - **Images:** `.jpg`, `.jpeg`, `.png`, `.webp`, `.svg`
 - **Videos:** `.mp4`, `.webm`, `.ogg`
 
+**Uploading through the admin UI:** larger files (images >2 MB, videos >10 MB) will freeze the tab during upload &mdash; just let it run and it will go through after a while. Smaller files are preferred; shrink images at [squoosh.app](https://squoosh.app/) and compress videos with HandBrake or ffmpeg when you can. Dropping the file into `src/assets/hero/landingpage/` directly via git is always the quickest route for large media.
+
 ## Hero Logo
 
 The landing hero displays a logo image instead of a text heading. The logo is loaded from `src/assets/hero/landingpage/logo/` &mdash; place a single image file in this directory. The filename does not matter; the component picks the first image it finds. To replace the logo, simply swap the file. If the directory is empty, a plain-text "BEARS" heading is shown as a fallback.

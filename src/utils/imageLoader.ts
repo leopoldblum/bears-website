@@ -18,6 +18,23 @@ import { resolveGlobKey } from './imageConstants';
 export { defaultEventImage, defaultProjectImage, defaultTestimonialImage, defaultSponsorImage, defaultFaceImage };
 
 /**
+ * Resolve a frontmatter `coverImage` / `logo` / `image` value to a glob key.
+ *
+ * Handles three shapes that appear in the wild:
+ *  - legacy flat filename: `event-8.jpg` → `{baseDir}/event-8.jpg`
+ *  - Keystatic per-slug subfolder, relative:        `test/coverImage.png`
+ *  - Keystatic per-slug subfolder, leading slash:  `/test/coverImage.png`
+ *  - Keystatic with non-empty publicPath:     `/src/assets/.../file.jpg`
+ */
+function resolveImagePath(baseDir: string, fileName: string): string {
+  // Already a full asset path (older publicPath config wrote these)
+  if (fileName.startsWith('/src/')) return fileName;
+  // Strip any leading slashes so `${baseDir}/${fileName}` doesn't double up
+  const cleaned = fileName.replace(/^\/+/, '');
+  return `${baseDir}/${cleaned}`;
+}
+
+/**
  * Options for loading a single image
  */
 interface LoadImageOptions {
@@ -185,7 +202,7 @@ export async function loadImagesForCollection<
 
         // Only try to load if coverImageType is CUSTOM and we have an image filename
         if (item.data.coverImageType === "CUSTOM" && imageFileName) {
-          const imagePath = `${baseDir}/${imageFileName}`;
+          const imagePath = resolveImagePath(baseDir, imageFileName);
           const resolvedKey = resolveGlobKey(glob, imagePath);
 
           if (resolvedKey) {
@@ -220,7 +237,7 @@ export async function loadImagesForCollection<
       }
       // For items without coverImageType field (testimonials)
       else if (imageFileName) {
-        const imagePath = `${baseDir}/${imageFileName}`;
+        const imagePath = resolveImagePath(baseDir, imageFileName);
         const resolvedKey = resolveGlobKey(glob, imagePath);
 
         if (resolvedKey) {
@@ -419,7 +436,7 @@ export async function loadCoverImage(
   const glob = await typeConfig.glob();
   const image = await loadImage({
     glob,
-    imagePath: `${typeConfig.baseDir}/${fileName}`,
+    imagePath: resolveImagePath(typeConfig.baseDir, fileName),
     fallbackImage: typeConfig.fallbackImage,
     context,
   });

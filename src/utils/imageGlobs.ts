@@ -21,17 +21,19 @@ export type ImageGlob = Record<string, () => Promise<{ default: ImageMetadata }>
 /**
  * Event cover images
  * Used by: events.astro, [slug].astro, LatestNews.astro
+ * Note: includes subdirectories so Keystatic-scoped uploads (e.g. `test/coverImage.jpg`) resolve.
  */
 export const eventImages: ImageGlob = filterImageGlob(
-  import.meta.glob<{ default: ImageMetadata }>("/src/assets/events/*.*"),
+  import.meta.glob<{ default: ImageMetadata }>("/src/assets/events/**/*.*"),
 );
 
 /**
  * Project cover images
  * Used by: projects.astro, [slug].astro, LatestNews.astro
+ * Note: includes subdirectories (Keystatic and team-members/).
  */
 export const projectImages: ImageGlob = filterImageGlob(
-  import.meta.glob<{ default: ImageMetadata }>("/src/assets/projects/*.*"),
+  import.meta.glob<{ default: ImageMetadata }>("/src/assets/projects/**/*.*"),
 );
 
 /**
@@ -45,9 +47,10 @@ export const teamImages: ImageGlob = filterImageGlob(
 /**
  * Testimonial portrait images
  * Used by: Testimonials.astro
+ * Note: includes subdirectories so Keystatic-scoped uploads resolve.
  */
 export const testimonialImages: ImageGlob = filterImageGlob(
-  import.meta.glob<{ default: ImageMetadata }>("/src/assets/testimonials/*.*"),
+  import.meta.glob<{ default: ImageMetadata }>("/src/assets/testimonials/**/*.*"),
 );
 
 /**
@@ -78,9 +81,10 @@ export const ourMissionImages: ImageGlob = filterImageGlob(
 /**
  * Faces of BEARS portrait images
  * Used by: FacesOfBears.astro
+ * Note: includes subdirectories so Keystatic-scoped uploads resolve.
  */
 export const faceImages: ImageGlob = filterImageGlob(
-  import.meta.glob<{ default: ImageMetadata }>("/src/assets/faces-of-bears/*.*"),
+  import.meta.glob<{ default: ImageMetadata }>("/src/assets/faces-of-bears/**/*.*"),
 );
 
 /**

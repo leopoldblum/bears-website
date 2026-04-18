@@ -46,13 +46,25 @@ const sizes = customSizes || deriveSizes(width);
 // Default to rounded-lg, but allow overriding via class prop
 const roundedClass = className?.match(/\brounded(-\w+)?\b/) ? '' : 'rounded-lg';
 
-// Generate full-res modal image only if click-to-enlarge enabled
-const modalSrc = enableClickToEnlarge
+// Render a visible placeholder when an editor has inserted an <Img /> via the
+// CMS without choosing a source yet. Keeps the build green and surfaces the
+// missing image to the content editor directly on the page.
+const missingSrc = !src;
+
+// Generate full-res modal image only if click-to-enlarge enabled and src present
+const modalSrc = enableClickToEnlarge && !missingSrc
   ? (await getImage({ src, format: 'webp' })).src
   : undefined;
 ---
 
-{enableClickToEnlarge ? (
+{missingSrc ? (
+  <div
+    class={`${roundedClass} border-2 border-dashed border-bears-accent/50 bg-bears-accent/5 text-bears-text-onDark/70 text-center text-sm p-6 my-4`}
+    style={width !== '100%' ? `width: ${width}` : undefined}
+  >
+    <strong>Image missing</strong> — {alt ? `"${alt}"` : 'no src set in the CMS'}
+  </div>
+) : enableClickToEnlarge ? (
   <!-- With wrapper: enables click-to-enlarge modal -->
   <div
     class={`img-better group/image ${roundedClass} overflow-hidden ring-0 ring-bears-accent transition-all duration-300 hover:ring-2 ${width === '100%' ? 'w-full h-full' : 'h-full'} ${className || ''}`.trim()}

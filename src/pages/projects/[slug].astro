@@ -4,6 +4,9 @@ import { type CollectionEntry } from "astro:content";
 import { loadCoverImage } from "@utils/imageLoader";
 import { getPublishedProjects, stripLocaleFromSlug } from "@utils/contentQueries";
 import { getLocale } from "@utils/i18n";
+import * as mdxComponents from "@mdx";
+
+export const prerender = true;
 
 
 export async function getStaticPaths() {
@@ -55,5 +58,5 @@ const { title, date, categoryProject, isProjectCompleted, headOfProject } = entr
   headOfProject={headOfProject}
   type="project"
 >
-  <Content />
+  <Content components={mdxComponents} />
 </PostLayout>

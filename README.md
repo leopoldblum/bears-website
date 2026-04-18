@@ -10,6 +10,12 @@
 > - `src/content/page-text/en/contact/contact-title.md`
 >
 > **TODO:** Add benefits section to sponsors and link in footer, or remove entry in footer.
+>
+> **TODO (Keystatic follow-up — MDX with components):** Keystatic can currently edit plain-markdown bodies but not MDX files that use components like `<Callout>`, `<Carousel>`, etc. Two remaining tasks to fix this:
+> 1. **Strip imports from existing `.mdx` files** under `src/content/events/`, `src/content/projects/`, and `src/content/docs/`. Keystatic's MDX parser crashes on any file whose body starts with `import … from` statements. Until a file is cleaned up, opening it in Keystatic will fail.
+> 2. **Wire the MDX component barrel (`src/components/mdx/index.ts`) into Astro's MDX renderer globally** — via a shared MDX layout or the `components` option on `render()` — so bare tags like `<Button>` / `<Img>` resolve without explicit imports. Once both steps are done, wire `mdxComponents` from `src/keystatic/mdxComponents.tsx` into `keystatic.config.ts` (`mdBodyField` / `mdxBodyField` → `fields.mdx({ components: mdxComponents, … })`) to re-enable the component picker in the editor.
+>
+> **TODO (Keystatic follow-up — extension split):** Each Keystatic collection pins a single file extension. Projects and docs use `.md`; events uses `.mdx`. Files in those collections that use the "other" extension (e.g., the 2 `.mdx` files in `projects/`) are invisible in the admin UI — they still render on the public site but can't be edited through Keystatic. Normalise extensions (e.g., rename the few outliers) or split each collection into two (`…Md` + `…Mdx`) to surface them.
 
 ## Prerequisites
 

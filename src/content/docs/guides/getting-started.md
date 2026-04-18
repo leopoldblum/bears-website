@@ -74,3 +74,5 @@ import { Accordion, Button, Callout, Carousel, Center, Img, Instagram, Marquee, 
 **Drafts:** Set `isDraft: true` on events, projects, and Instagram posts to hide them in production while keeping them visible locally.
 
 **Images:** All images must be local files in `src/assets/` subdirectories. Valid formats: `.jpg`, `.jpeg`, `.png`, `.webp`, `.svg`. Never use remote URLs.
+
+**Uploading images through the admin UI:** larger files (>2 MB) will freeze the tab during upload &mdash; just let it run and it will go through after a while. Smaller files are preferred; shrink images first at [squoosh.app](https://squoosh.app/) when you can. This is a Keystatic limitation, not something we can configure away. For hero-slide **videos**, compress with HandBrake or ffmpeg if the file is large &mdash; or skip the video slide entirely if an image will do.

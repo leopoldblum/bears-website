@@ -14,6 +14,8 @@ Run commands from the project root:
 - `npm run build` - Build production site to ./dist/
 - `npm run preview` - Preview production build locally
 - `npm run astro -- --help` - Get help with Astro CLI commands
+- `npm run dev:admin` - Start dev server with Keystatic admin UI enabled (visit /keystatic)
+- `npm run build:admin` - Build the admin-mode variant (hybrid output + Cloudflare adapter) for the admin subdomain deploy
 
 **Important for Claude Code**: If you start a development server (e.g., `npm run dev`) during a task, you MUST stop it before completing the task. Use the KillShell tool with the appropriate shell ID to terminate background processes. This prevents resource accumulation across multiple prompts.
 
@@ -36,10 +38,71 @@ src/
 ```
 
 ### Key Configuration
-- Astro config: [astro.config.mjs](astro.config.mjs) - Tailwind integrated via Vite plugin
+- Astro config: [astro.config.mjs](astro.config.mjs) - Tailwind integrated via Vite plugin. Branches on `ADMIN_BUILD` env var to produce the admin build variant.
 - TypeScript: [tsconfig.json](tsconfig.json) - Strict Astro configuration
 - Global styles: [src/styles/global.css](src/styles/global.css) - Single Tailwind import
 - Layout: [src/layouts/BaseLayout.astro](src/layouts/BaseLayout.astro) - Imports global.css
+- Keystatic config: [keystatic.config.ts](keystatic.config.ts) - CMS schema mirroring the Astro content collections
+
+### Dual deploy: public site (GitHub Pages) + admin UI (Cloudflare Pages)
+
+The public site and the Keystatic admin UI are **deployed separately from the same repo**:
+
+- **Public site** — `bears-space.de`, GitHub Pages, pure static. Built with `npm run build`. No Keystatic runtime, no adapter. This is what end users see.
+- **Admin site** — `admin.bears-space.de`, Cloudflare Pages, Astro `output: 'server'` with the `@astrojs/cloudflare` adapter. Built with `npm run build:admin` (sets `ADMIN_BUILD=true`). Serves `/keystatic` for editors to manage content. Commits edits back to the same GitHub repo via a GitHub App, which triggers a rebuild of the public site.
+
+Both builds read/write the **same content files** under `src/content/` — Keystatic never maintains its own database. The flow is:
+
+```
+Editor → admin.bears-space.de/keystatic → Keystatic commits to main
+  → GitHub Actions rebuilds public site → gh-pages → bears-space.de
+```
+
+The admin deploy does not prerender most pages — it only needs to serve `/keystatic`. Editors should always use the admin subdomain; the main site has no editing surface.
+
+#### Adding or changing content collection schemas
+
+When you modify a content collection's schema, update **both** files in the same commit:
+
+1. `src/content/config.ts` — Astro's Zod schema, source of truth for validation at build time.
+2. `keystatic.config.ts` — Keystatic's editor schema, controls the admin UI.
+
+Field names and types must match. Some Zod features (`.refine()`, `.transform()`, discriminated unions) don't have direct Keystatic equivalents — use `fields.conditional()` where possible, otherwise rely on Astro build-time validation to catch bad data.
+
+#### Keystatic collection mapping
+
+The 9 Astro collections map to 18 Keystatic collections (split per locale or per tier):
+
+| Astro collection | Keystatic collection(s) |
+|---|---|
+| `testimonials` | `testimonialsEn`, `testimonialsDe` |
+| `sponsors` | `sponsorsDiamond`, `sponsorsPlatinum`, `sponsorsGold`, `sponsorsSilver`, `sponsorsBronze` |
+| `events` | `eventsEn`, `eventsDe` |
+| `projects` | `projectsEn`, `projectsDe` |
+| `hero-slides` | `heroSlides` |
+| `page-text` | `pageTextEn`, `pageTextDe` |
+| `instagram` | `instagram` |
+| `faces-of-bears` | `facesOfBearsEn`, `facesOfBearsDe` |
+| `docs` | `docsGuides`, `docsDev` |
+
+The bilingual split is purely organisational — both Keystatic collections write to the existing `en/`/`de/` subfolders. The sponsor tier split reflects the folder structure (`src/content/sponsors/{tier}/`).
+
+#### MDX component registry
+
+MDX components usable inside Keystatic's MDX editor are registered in [src/keystatic/mdxComponents.tsx](src/keystatic/mdxComponents.tsx). Each entry is a React **preview** of the matching Astro component — the real component renders at build time. When adding a new MDX component:
+
+1. Create the `.astro` file in `src/components/mdx/` and export it from [src/components/mdx/index.ts](src/components/mdx/index.ts).
+2. Add a matching entry to `mdxComponents.tsx` with field definitions and a `ContentView`/`NodeView`.
+3. Imports are not allowed inside MDX files edited through Keystatic — the components are passed in externally via the MDX renderer.
+
+#### Keystatic external setup (one-time)
+
+These steps live outside the codebase and must be configured once before the admin deploy works in production:
+
+1. **GitHub App** — run `npm run dev:admin` and visit `/keystatic/setup` to register a GitHub App against the repo. Generates `KEYSTATIC_GITHUB_CLIENT_ID`, `KEYSTATIC_GITHUB_CLIENT_SECRET`, `KEYSTATIC_SECRET`.
+2. **Cloudflare Pages project** — create a new Pages project connected to the repo. Build command: `npm run build:admin`. Output dir: `dist`. Add the three env vars from step 1.
+3. **DNS** — add `admin.bears-space.de` as a custom domain on the Cloudflare Pages project.
+4. **Access control** — in GitHub, restrict the app installation to the repo only. Only users with repo write access can log in to `/keystatic`. For tighter control, add a GitHub team named "content-editors" with just the editors.
 
 ### Routing & i18n
 Astro uses file-based routing. Files in `src/pages/` automatically become routes:

@@ -28,8 +28,10 @@ const heightMap = { sm: "12rem", md: "16rem", lg: "20rem", xl: "24rem" };
 const heightValue = heightMap[height];
 const isReverse = direction === "right";
 
-// Render slot to HTML so we can post-process image sizes
-let slotHtml = await Astro.slots.render("default");
+// Render slot to HTML so we can post-process image sizes.
+// Empty marquees (no children) fall back to an empty string so the build
+// doesn't crash when an editor inserts a Marquee via the CMS without items yet.
+let slotHtml = (await Astro.slots.render("default")) ?? "";
 
 // Auto-compute `sizes` for <img> tags based on marquee height and aspect ratio.
 // The marquee CSS sets images to fill the content height (minus 8px top + 8px bottom
