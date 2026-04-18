@@ -49,6 +49,16 @@ When adding or editing content (events, projects, sponsors, page text, etc.), **
    ```
 4. *(Optional)* If you're comfortable with GitHub, you can open a **Pull Request** on GitHub to have your changes reviewed before they go live.
 
+## If Something Breaks
+
+Every save through the admin UI becomes a Git commit, so almost any editing mistake can be undone with one click:
+
+1. Go to [github.com/leopoldblum/bears-website/commits/main](https://github.com/leopoldblum/bears-website/commits/main).
+2. Find the bad commit (usually the most recent one).
+3. Click the `...` menu on it → **Revert**. Merge the PR GitHub opens.
+
+The site rebuilds from the previous state within a few minutes. See the [If Something Breaks guide](src/content/docs/guides/if-something-breaks.mdx) for details and when to escalate.
+
 ## Project Structure
 
 ```text
