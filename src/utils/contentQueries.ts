@@ -265,14 +265,15 @@ export async function getDocsBySection() {
 // ============================================================================
 
 /**
- * Gets all hero slides sorted by numeric filename prefix.
- * Hero slides are not locale-dependent.
+ * Gets all hero slides sorted by their `order` frontmatter field (ascending).
+ * Ties break on the filename for deterministic output. Hero slides are not
+ * locale-dependent.
  */
 export async function getLandingHeroSlides() {
   const slides = await getCollection('hero-slides');
   return slides.sort((a, b) => {
-    const numA = parseInt(a.id.match(/^(\d+)/)?.[1] ?? '0', 10);
-    const numB = parseInt(b.id.match(/^(\d+)/)?.[1] ?? '0', 10);
-    return numA - numB;
+    const orderDiff = a.data.order - b.data.order;
+    if (orderDiff !== 0) return orderDiff;
+    return a.id.localeCompare(b.id);
   });
 }

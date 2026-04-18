@@ -405,45 +405,33 @@ describe('getLandingHeroSlides', () => {
     mockedGetCollection.mockReset();
   });
 
-  it('sorts slides by numeric prefix', async () => {
+  it('sorts slides by data.order ascending', async () => {
     mockedGetCollection.mockResolvedValue([
-      { id: '03-slide.md', slug: 'slide-3', data: {} },
-      { id: '01-slide.md', slug: 'slide-1', data: {} },
-      { id: '02-slide.md', slug: 'slide-2', data: {} },
+      { id: 'c.md', slug: 'c', data: { order: 3 } },
+      { id: 'a.md', slug: 'a', data: { order: 1 } },
+      { id: 'b.md', slug: 'b', data: { order: 2 } },
     ]);
     const result = await getLandingHeroSlides();
-    expect(result.map(s => s.id)).toEqual(['01-slide.md', '02-slide.md', '03-slide.md']);
+    expect(result.map(s => s.id)).toEqual(['a.md', 'b.md', 'c.md']);
   });
 
-  it('sorts numerically not lexicographically', async () => {
+  it('sorts numerically across non-contiguous orders', async () => {
     mockedGetCollection.mockResolvedValue([
-      { id: '10-slide.md', slug: 'slide-10', data: {} },
-      { id: '2-slide.md', slug: 'slide-2', data: {} },
-      { id: '1-slide.md', slug: 'slide-1', data: {} },
+      { id: 'ten.md', slug: 'ten', data: { order: 10 } },
+      { id: 'two.md', slug: 'two', data: { order: 2 } },
+      { id: 'one.md', slug: 'one', data: { order: 1 } },
     ]);
     const result = await getLandingHeroSlides();
-    expect(result.map(s => s.id)).toEqual(['1-slide.md', '2-slide.md', '10-slide.md']);
+    expect(result.map(s => s.id)).toEqual(['one.md', 'two.md', 'ten.md']);
   });
 
-  it('sorts slides without numeric prefix to the beginning', async () => {
+  it('breaks ties on filename for deterministic output', async () => {
     mockedGetCollection.mockResolvedValue([
-      { id: '05-slide.md', slug: 'slide-5', data: {} },
-      { id: 'about.md', slug: 'about', data: {} },
-      { id: '01-slide.md', slug: 'slide-1', data: {} },
+      { id: 'beta.md', slug: 'beta', data: { order: 1 } },
+      { id: 'alpha.md', slug: 'alpha', data: { order: 1 } },
     ]);
     const result = await getLandingHeroSlides();
-    expect(result.map(s => s.id)).toEqual(['about.md', '01-slide.md', '05-slide.md']);
-  });
-
-  it('handles slides with same numeric prefix', async () => {
-    mockedGetCollection.mockResolvedValue([
-      { id: '01-alpha.md', slug: 'alpha', data: {} },
-      { id: '01-beta.md', slug: 'beta', data: {} },
-    ]);
-    const result = await getLandingHeroSlides();
-    expect(result).toHaveLength(2);
-    expect(result.map(s => s.id)).toContain('01-alpha.md');
-    expect(result.map(s => s.id)).toContain('01-beta.md');
+    expect(result.map(s => s.id)).toEqual(['alpha.md', 'beta.md']);
   });
 
   it('returns empty array for empty collection', async () => {

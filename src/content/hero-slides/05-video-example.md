@@ -1,4 +1,5 @@
 ---
+order: 5
 type: "video"
 media: "sample-video.webm"
 alt: "Decorative video background"

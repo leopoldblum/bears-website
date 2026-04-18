@@ -399,15 +399,20 @@ const heroSlides = collection({
   label: 'Hero Slides',
   slugField: 'alt',
   path: 'src/content/hero-slides/*',
-  columns: ['type', 'shownText'],
+  columns: ['order', 'type', 'shownText'],
   format: { contentField: 'body' },
   entryLayout: 'form',
   schema: {
+    order: fields.integer({
+      label: 'Order',
+      description: 'Slides are shown in ascending order of this number. Ties fall back to filename.',
+      defaultValue: 0,
+      validation: { isRequired: true },
+    }),
     alt: fields.slug({
       name: {
         label: 'Alt text / slide ID',
-        description:
-          'Used as the filename and image alt text. Prefix with a number (e.g. "01-group-photo") to control order.',
+        description: 'Used as the filename and image alt text.',
         validation: { isRequired: true },
       },
     }),

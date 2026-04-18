@@ -9,12 +9,13 @@ Hero slides control the full-screen background slideshow on the landing page. Th
 
 ## Creating a Slide
 
-Create a new file with the naming convention `NN-name.md` (e.g., `06-team-photo.md`). The numeric prefix determines the display order.
+Create a new file named after the slide (e.g., `team-photo.md`). The filename is just an identifier — display order comes from the `order` frontmatter field, not the filename.
 
 **Image slide:**
 
 ```yaml
 ---
+order: 6
 type: "image"
 media: "hero-mars-rover.jpg"
 alt: "Mars Rover Engineering lecture at BEARS"
@@ -26,8 +27,10 @@ shownText: "Explore Mars"
 
 ```yaml
 ---
+order: 7
 type: "video"
 media: "sample-video.webm"
+alt: "Decorative video background"
 shownText: "Video Background Example"
 ---
 ```
@@ -38,6 +41,7 @@ The body of hero slide files is not used.
 
 | Field | Type | Description |
 |-------|------|-------------|
+| `order` | number | Display order — slides are shown in ascending order of this number |
 | `type` | enum | Either `image` or `video` |
 | `media` | string | Filename of the image or video |
 | `alt` | string | Alt text for accessibility (**required** for image slides, optional for video slides) |
@@ -63,4 +67,4 @@ The landing hero displays a logo image instead of a text heading. The logo is lo
 
 ## Ordering
 
-Slides are sorted by the numeric prefix in the filename. Use two-digit numbers (`01`, `02`, ... `10`, `11`) to ensure correct ordering &mdash; the sort is numeric, not alphabetical.
+Slides are sorted in ascending order of the `order` field. Two slides with the same `order` break the tie by filename. In the admin UI, the `Order` column in the Hero Slides overview shows each slide's position.

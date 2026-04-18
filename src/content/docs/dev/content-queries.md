@@ -73,7 +73,7 @@ posts.forEach(post => {
 | `getSponsorsByTier()` | `{ diamond, platinum, gold, silver, bronze }` | Grouped + sorted (not localized) |
 | `getPageContent(id, locale?)` | `CollectionEntry<'page-text'> \| undefined` | Single entry by ID and locale |
 | `getDocsBySection()` | `Record<string, CollectionEntry<'docs'>[]>` | Grouped by section folder (not localized) |
-| `getLandingHeroSlides()` | `CollectionEntry<'hero-slides'>[]` | Sorted by numeric prefix (not localized) |
+| `getLandingHeroSlides()` | `CollectionEntry<'hero-slides'>[]` | Sorted by `order` field, ties on filename (not localized) |
 
 ## Sponsor Tier Grouping
 
@@ -103,13 +103,7 @@ A console warning is logged if no entry is found in either locale.
 
 ## Hero Slide Ordering
 
-`getLandingHeroSlides()` sorts hero slides by the numeric prefix in their filename:
-
-```
-01-slide.md  →  parsed as 1
-02-slide.md  →  parsed as 2
-10-slide.md  →  parsed as 10
-```
+`getLandingHeroSlides()` sorts hero slides in ascending order of the required `order` frontmatter field. When two slides share an `order`, the filename breaks the tie for deterministic output.
 
 ## Adding a New Query
 

@@ -124,6 +124,7 @@ const validateMediaExtension = (value: string | undefined) => {
 };
 
 const heroSlideBase = {
+  order: z.number(),
   media: z.string().refine(
     validateMediaExtension,
     { message: `media must have a valid extension: ${VALID_EXTENSIONS_MESSAGE} or mp4, webm, ogg` }

@@ -166,31 +166,36 @@ describe('hero-slides schema', () => {
 
   it('accepts image extensions', () => {
     for (const ext of ['jpg', 'jpeg', 'png', 'webp', 'svg']) {
-      const result = schema.safeParse({ type: 'image', media: `hero.${ext}`, alt: 'description' });
+      const result = schema.safeParse({ order: 1, type: 'image', media: `hero.${ext}`, alt: 'description' });
       expect(result.success).toBe(true);
     }
   });
 
   it('accepts video extensions', () => {
     for (const ext of ['mp4', 'webm', 'ogg']) {
-      const result = schema.safeParse({ type: 'video', media: `hero.${ext}` });
+      const result = schema.safeParse({ order: 1, type: 'video', media: `hero.${ext}` });
       expect(result.success).toBe(true);
     }
   });
 
   it('rejects invalid media extensions', () => {
-    const result = schema.safeParse({ type: 'image', media: 'hero.gif', alt: 'description' });
+    const result = schema.safeParse({ order: 1, type: 'image', media: 'hero.gif', alt: 'description' });
     expect(result.success).toBe(false);
   });
 
   it('requires alt for image slides', () => {
-    const result = schema.safeParse({ type: 'image', media: 'hero.jpg' });
+    const result = schema.safeParse({ order: 1, type: 'image', media: 'hero.jpg' });
     expect(result.success).toBe(false);
   });
 
   it('does not require alt for video slides', () => {
-    const result = schema.safeParse({ type: 'video', media: 'hero.mp4' });
+    const result = schema.safeParse({ order: 1, type: 'video', media: 'hero.mp4' });
     expect(result.success).toBe(true);
+  });
+
+  it('rejects slides without an order', () => {
+    const result = schema.safeParse({ type: 'image', media: 'hero.jpg', alt: 'description' });
+    expect(result.success).toBe(false);
   });
 
 });
