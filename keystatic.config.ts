@@ -75,6 +75,21 @@ const PROJECT_CATEGORIES = [
   { label: 'Other', value: 'other' },
 ] as const;
 
+// Each value maps to a hard-coded image glob in src/pages/media.astro
+// (`globById`). Adding a new value here without also wiring it up in
+// media.astro will silently load zero images. "all" is the special aggregate.
+const MEDIA_CATEGORY_IDS = [
+  { label: 'About Us images', value: 'about-us' },
+  { label: 'Event covers', value: 'events' },
+  { label: 'Faces of BEARS portraits', value: 'faces-of-bears' },
+  { label: 'Hero slides', value: 'hero' },
+  { label: 'Project covers', value: 'projects' },
+  { label: 'Project team-member portraits', value: 'team-members' },
+  { label: 'Testimonial portraits', value: 'testimonials' },
+  { label: 'What is BEARS images', value: 'what-is-bears' },
+  { label: 'All (aggregates every category above)', value: 'all' },
+] as const;
+
 // ============================================================================
 // COLLECTION FACTORIES — one factory per collection family,
 // invoked once per locale / tier as needed.
@@ -249,6 +264,8 @@ function projectsCollection(locale: 'en' | 'de') {
 //   src/content/page-text/<locale>/nav-columns.md         — singleton (footer nav)
 //   src/content/page-text/<locale>/social.md              — singleton
 //   src/content/page-text/<locale>/donate.md              — singleton
+//   src/content/page-text/<locale>/site/metadata.md       — singleton
+//   src/content/page-text/<locale>/footer/footer-address.md — singleton
 //   src/content/page-text/<locale>/nav-links/*.md         — collection (2 entries)
 //
 // The main collection's path uses brace expansion to enumerate the common
@@ -260,11 +277,9 @@ const PAGE_TEXT_COMMON_FOLDERS = [
   'contact',
   'datenschutz',
   'events',
-  'footer',
   'imprint',
   'landing',
   'projects',
-  'site',
   'sponsors',
 ].join(',');
 
@@ -356,8 +371,17 @@ function pageTextNavColumnsField() {
 function pageTextMediaCategoriesField() {
   return fields.array(
     fields.object({
-      id: fields.text({ label: 'ID', validation: { isRequired: true } }),
-      label: fields.text({ label: 'Label', validation: { isRequired: true } }),
+      id: fields.select({
+        label: 'Category',
+        description: 'Which image set this entry pulls from. The list is fixed — adding a new option requires a code change in src/pages/media.astro.',
+        options: MEDIA_CATEGORY_IDS,
+        defaultValue: 'about-us',
+      }),
+      label: fields.text({
+        label: 'Label',
+        description: 'Heading shown above this category on the Media page (locale-specific).',
+        validation: { isRequired: true },
+      }),
     }),
     {
       label: 'Media categories',
@@ -484,6 +508,39 @@ function pageTextDonateSingleton(locale: 'en' | 'de') {
       reference: fields.text({ label: 'Transfer reference' }),
       paypalUrl: fields.url({ label: 'PayPal URL' }),
       paypalButtonText: fields.text({ label: 'PayPal button text' }),
+      body: fields.emptyContent({ extension: 'mdx' }),
+    },
+  });
+}
+
+function pageTextSiteMetadataSingleton(locale: 'en' | 'de') {
+  return singleton({
+    label: `Site metadata (${locale.toUpperCase()})`,
+    path: `src/content/page-text/${locale}/site/metadata`,
+    format: { contentField: 'body' },
+    entryLayout: 'form',
+    schema: {
+      title: fields.text({ label: 'Site title', validation: { isRequired: true } }),
+      description: fields.text({
+        label: 'Site description',
+        description: 'Used as the default <meta name="description"> for the site.',
+        multiline: true,
+        validation: { isRequired: true },
+      }),
+      body: fields.emptyContent({ extension: 'mdx' }),
+    },
+  });
+}
+
+function pageTextFooterAddressSingleton(locale: 'en' | 'de') {
+  return singleton({
+    label: `Footer address (${locale.toUpperCase()})`,
+    path: `src/content/page-text/${locale}/footer/footer-address`,
+    format: { contentField: 'body' },
+    entryLayout: 'form',
+    schema: {
+      title: fields.text({ label: 'Heading', validation: { isRequired: true } }),
+      items: pageTextItemsField(),
       body: fields.emptyContent({ extension: 'mdx' }),
     },
   });
@@ -630,7 +687,7 @@ export default config({
   ui: {
     brand: { name: 'BEARS' },
     navigation: {
-      'Homepage content': ['heroSlides', 'instagram'],
+      'Landing page content': ['heroSlides', 'pageTextHeroEn', 'pageTextHeroDe', 'instagram'],
       'Events': ['eventsEn', 'eventsDe'],
       'Projects': ['projectsEn', 'projectsDe'],
       'Sponsors': [
@@ -642,13 +699,15 @@ export default config({
       ],
       'Testimonials': ['testimonialsEn', 'testimonialsDe'],
       'Faces of BEARS': ['facesOfBearsEn', 'facesOfBearsDe'],
-      'Page text': [
+      'Static website text': [
         'pageTextEn',
         'pageTextDe',
         'pageTextNavLinksEn',
         'pageTextNavLinksDe',
-        'pageTextHeroEn',
-        'pageTextHeroDe',
+        'pageTextSiteMetadataEn',
+        'pageTextSiteMetadataDe',
+        'pageTextFooterAddressEn',
+        'pageTextFooterAddressDe',
         'pageTextFaqEn',
         'pageTextFaqDe',
         'pageTextMediaCategoriesEn',
@@ -693,6 +752,10 @@ export default config({
   singletons: {
     pageTextHeroEn: pageTextHeroSingleton('en'),
     pageTextHeroDe: pageTextHeroSingleton('de'),
+    pageTextSiteMetadataEn: pageTextSiteMetadataSingleton('en'),
+    pageTextSiteMetadataDe: pageTextSiteMetadataSingleton('de'),
+    pageTextFooterAddressEn: pageTextFooterAddressSingleton('en'),
+    pageTextFooterAddressDe: pageTextFooterAddressSingleton('de'),
     pageTextFaqEn: pageTextFaqSingleton('en'),
     pageTextFaqDe: pageTextFaqSingleton('de'),
     pageTextMediaCategoriesEn: pageTextMediaCategoriesSingleton('en'),
