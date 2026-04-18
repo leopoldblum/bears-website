@@ -28,6 +28,7 @@ const sponsorsCollection = defineCollection({
   type: 'content',
   schema: z.object({
     name: z.string(),
+    order: z.number(),
     logo: z.string().refine(
       validateImageExtension,
       { message: `logo must have a valid image extension: ${VALID_EXTENSIONS_MESSAGE}` }

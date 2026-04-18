@@ -171,7 +171,8 @@ export async function getFacesOfBearsSorted(locale: Locale = DEFAULT_LOCALE) {
 }
 
 /**
- * Gets all sponsors grouped by tier, sorted alphabetically within each tier.
+ * Gets all sponsors grouped by tier, sorted within each tier by the `order`
+ * frontmatter field (ascending). Ties break on slug for deterministic output.
  * Sponsors are not locale-dependent (logos + names stay the same).
  */
 export async function getSponsorsByTier() {
@@ -197,13 +198,19 @@ export async function getSponsorsByTier() {
     groupedSponsors[tier].push(sponsor);
   });
 
-  // Sort each tier alphabetically by slug
+  const sortByOrder = (list: CollectionEntry<'sponsors'>[]) =>
+    [...list].sort((a, b) => {
+      const orderDiff = a.data.order - b.data.order;
+      if (orderDiff !== 0) return orderDiff;
+      return a.slug.localeCompare(b.slug);
+    });
+
   return {
-    diamond: sortBySlug(groupedSponsors.diamond),
-    platinum: sortBySlug(groupedSponsors.platinum),
-    gold: sortBySlug(groupedSponsors.gold),
-    silver: sortBySlug(groupedSponsors.silver),
-    bronze: sortBySlug(groupedSponsors.bronze),
+    diamond: sortByOrder(groupedSponsors.diamond),
+    platinum: sortByOrder(groupedSponsors.platinum),
+    gold: sortByOrder(groupedSponsors.gold),
+    silver: sortByOrder(groupedSponsors.silver),
+    bronze: sortByOrder(groupedSponsors.bronze),
   };
 }
 

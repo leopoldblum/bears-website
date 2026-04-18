@@ -126,12 +126,18 @@ function sponsorsCollection(tier: 'diamond' | 'platinum' | 'gold' | 'silver' | '
     label: `Sponsors – ${tierLabel}`,
     slugField: 'name',
     path: `src/content/sponsors/${tier}/*`,
-    columns: ['url'],
+    columns: ['order', 'url'],
     format: { contentField: 'body' },
     entryLayout: 'form',
     schema: {
       name: fields.slug({
         name: { label: 'Sponsor name', validation: { isRequired: true } },
+      }),
+      order: fields.integer({
+        label: 'Order',
+        description: 'Sort order within this tier (lower = shown first). Ties fall back to the sponsor name.',
+        defaultValue: 0,
+        validation: { isRequired: true },
       }),
       logo: imageField('Logo', `src/assets/sponsors/${tier}`, `/src/assets/sponsors/${tier}/`),
       url: fields.url({ label: 'Website URL' }),

@@ -22,11 +22,12 @@ src/content/sponsors/
 
 ## Creating a Sponsor
 
-Create a new file inside the appropriate tier folder with the naming convention `NN-name.md`. The numeric prefix controls the display order within the tier.
+Create a new file inside the appropriate tier folder. The filename is just an identifier — display order comes from the `order` frontmatter field.
 
 ```yaml
 ---
 name: "Global Space Industries"
+order: 1
 logo: "diamond-01-global-space.png"
 url: "https://example.com"
 ---
@@ -39,6 +40,7 @@ The body of sponsor files is not used &mdash; all content comes from the frontma
 | Field | Type | Description |
 |-------|------|-------------|
 | `name` | string | Sponsor company name |
+| `order` | number | Display order within the tier (lower = shown first) |
 | `logo` | string | Filename of the logo image in `src/assets/sponsors/` |
 
 ## Optional Fields
@@ -71,7 +73,7 @@ Place logo images in `src/assets/sponsors/<tier>/` (matching the sponsor's tier 
 
 ## Display Order
 
-Within each tier, sponsors are sorted alphabetically by slug (the filename). Use numeric prefixes like `01-`, `02-`, `03-` to control the order.
+Within each tier, sponsors are sorted in ascending order of the `order` field. Two sponsors with the same `order` fall back to alphabetical sort on the filename. The `Order` column in each tier's overview in the admin UI shows each sponsor's position.
 
 ## Donations
 

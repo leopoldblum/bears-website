@@ -238,6 +238,7 @@ describe('sponsors schema', () => {
   it('accepts valid data with optional url', () => {
     const result = schema.safeParse({
       name: 'Acme Corp',
+      order: 1,
       logo: 'acme.png',
       url: 'https://acme.com',
     });
@@ -247,6 +248,7 @@ describe('sponsors schema', () => {
   it('accepts data without url', () => {
     const result = schema.safeParse({
       name: 'Acme Corp',
+      order: 1,
       logo: 'acme.png',
     });
     expect(result.success).toBe(true);
@@ -255,7 +257,16 @@ describe('sponsors schema', () => {
   it('rejects invalid logo extension', () => {
     const result = schema.safeParse({
       name: 'Acme Corp',
+      order: 1,
       logo: 'acme.gif',
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it('rejects missing order', () => {
+    const result = schema.safeParse({
+      name: 'Acme Corp',
+      logo: 'acme.png',
     });
     expect(result.success).toBe(false);
   });
@@ -263,6 +274,7 @@ describe('sponsors schema', () => {
   it('rejects invalid url format', () => {
     const result = schema.safeParse({
       name: 'Acme Corp',
+      order: 1,
       logo: 'acme.png',
       url: 'not-a-url',
     });

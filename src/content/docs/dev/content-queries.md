@@ -70,7 +70,7 @@ posts.forEach(post => {
 |----------|---------|-------|
 | `getTestimonialsSorted(locale?)` | `CollectionEntry<'testimonials'>[]` | Filtered by locale, sorted by slug |
 | `getFacesOfBearsSorted(locale?)` | `CollectionEntry<'faces-of-bears'>[]` | Filtered by locale, sorted by slug |
-| `getSponsorsByTier()` | `{ diamond, platinum, gold, silver, bronze }` | Grouped + sorted (not localized) |
+| `getSponsorsByTier()` | `{ diamond, platinum, gold, silver, bronze }` | Grouped by tier, sorted by `order`, ties on slug (not localized) |
 | `getPageContent(id, locale?)` | `CollectionEntry<'page-text'> \| undefined` | Single entry by ID and locale |
 | `getDocsBySection()` | `Record<string, CollectionEntry<'docs'>[]>` | Grouped by section folder (not localized) |
 | `getLandingHeroSlides()` | `CollectionEntry<'hero-slides'>[]` | Sorted by `order` field, ties on filename (not localized) |
@@ -83,7 +83,7 @@ Sponsor tiers are derived from the folder structure. The `getSponsorsByTier()` f
 const tier = sponsor.id.split('/')[0]; // "gold/acme-corp" → "gold"
 ```
 
-The returned object has all five tiers, each sorted alphabetically by slug.
+The returned object has all five tiers, each sorted by the sponsor's `order` frontmatter field in ascending order. Two sponsors with the same `order` break the tie on slug for deterministic output.
 
 ## Page Content
 

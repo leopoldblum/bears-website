@@ -488,11 +488,11 @@ describe('getMeetTheTeamProjects', () => {
 // getSponsorsByTier
 // ---------------------------------------------------------------------------
 
-function makeSponsor(overrides: { id: string; slug: string }) {
+function makeSponsor(overrides: { id: string; slug: string; order?: number }) {
   return {
     id: overrides.id,
     slug: overrides.slug,
-    data: { name: overrides.slug },
+    data: { name: overrides.slug, order: overrides.order ?? 0 },
     collection: 'sponsors',
   };
 }
@@ -504,10 +504,10 @@ describe('getSponsorsByTier', () => {
 
   it('groups sponsors by tier derived from id', async () => {
     mockedGetCollection.mockResolvedValue([
-      makeSponsor({ id: 'gold/acme', slug: 'acme' }),
-      makeSponsor({ id: 'silver/beta', slug: 'beta' }),
-      makeSponsor({ id: 'gold/zeta', slug: 'zeta' }),
-      makeSponsor({ id: 'bronze/gamma', slug: 'gamma' }),
+      makeSponsor({ id: 'gold/acme', slug: 'acme', order: 1 }),
+      makeSponsor({ id: 'silver/beta', slug: 'beta', order: 1 }),
+      makeSponsor({ id: 'gold/zeta', slug: 'zeta', order: 2 }),
+      makeSponsor({ id: 'bronze/gamma', slug: 'gamma', order: 1 }),
     ]);
 
     const result = await getSponsorsByTier();
@@ -518,15 +518,25 @@ describe('getSponsorsByTier', () => {
     expect(result.platinum).toHaveLength(0);
   });
 
-  it('sorts each tier alphabetically by slug', async () => {
+  it('sorts each tier by data.order ascending', async () => {
     mockedGetCollection.mockResolvedValue([
-      makeSponsor({ id: 'gold/zeta-corp', slug: 'zeta-corp' }),
-      makeSponsor({ id: 'gold/alpha-inc', slug: 'alpha-inc' }),
-      makeSponsor({ id: 'gold/mid-co', slug: 'mid-co' }),
+      makeSponsor({ id: 'gold/zeta-corp', slug: 'zeta-corp', order: 3 }),
+      makeSponsor({ id: 'gold/alpha-inc', slug: 'alpha-inc', order: 1 }),
+      makeSponsor({ id: 'gold/mid-co', slug: 'mid-co', order: 2 }),
     ]);
 
     const result = await getSponsorsByTier();
     expect(result.gold.map(s => s.slug)).toEqual(['alpha-inc', 'mid-co', 'zeta-corp']);
+  });
+
+  it('breaks order ties on slug', async () => {
+    mockedGetCollection.mockResolvedValue([
+      makeSponsor({ id: 'silver/beta', slug: 'beta', order: 1 }),
+      makeSponsor({ id: 'silver/alpha', slug: 'alpha', order: 1 }),
+    ]);
+
+    const result = await getSponsorsByTier();
+    expect(result.silver.map(s => s.slug)).toEqual(['alpha', 'beta']);
   });
 
   it('returns all five tier keys', async () => {
