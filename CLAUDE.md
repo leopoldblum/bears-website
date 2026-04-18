@@ -69,6 +69,8 @@ When you modify a content collection's schema, update **both** files in the same
 
 Field names and types must match. Some Zod features (`.refine()`, `.transform()`, discriminated unions) don't have direct Keystatic equivalents — use `fields.conditional()` where possible, otherwise rely on Astro build-time validation to catch bad data.
 
+After any schema edit, run `npm test`. The suite at `src/utils/__tests__/keystaticSchema.test.ts` uses Keystatic's Reader API to validate every content file against `keystatic.config.ts` — catching drift before editors see it in the admin UI. See [docs/dev/keystatic-testing](src/content/docs/dev/keystatic-testing.md).
+
 #### Keystatic collection mapping
 
 The 9 Astro collections map to 18 Keystatic collections (split per locale or per tier):
