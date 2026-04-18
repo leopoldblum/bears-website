@@ -3,6 +3,7 @@ export { default as Button } from './Button.astro';
 export { default as Callout } from './Callout.astro';
 export { default as Carousel } from './Carousel.astro';
 export { default as Center } from './Center.astro';
+export { default as ImageGrid } from '../reusable/ImageGrid.astro';
 export { default as Img } from './Img.astro';
 export { default as Instagram } from './Instagram.astro';
 export { default as Marquee } from './Marquee.astro';

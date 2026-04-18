@@ -223,15 +223,15 @@ export async function getSponsorsByTier() {
  */
 export async function getPageContent(id: string, locale: Locale = DEFAULT_LOCALE) {
   const allContent = await getCollection('page-text');
-  const cleanId = id.endsWith('.md') ? id.slice(0, -3) : id;
+  const cleanId = id.replace(/\.mdx?$/, '');
 
   // Try requested locale
-  const localeId = `${locale}/${cleanId}.md`;
+  const localeId = `${locale}/${cleanId}.mdx`;
   let entry = allContent.find(entry => entry.id === localeId);
 
   // Fallback to default locale
   if (!entry && locale !== DEFAULT_LOCALE) {
-    const fallbackId = `${DEFAULT_LOCALE}/${cleanId}.md`;
+    const fallbackId = `${DEFAULT_LOCALE}/${cleanId}.mdx`;
     entry = allContent.find(entry => entry.id === fallbackId);
   }
 

@@ -9,24 +9,7 @@ displayMeetTheTeam: false
 isProjectCompleted: true
 ---
 
-import Button from '@mdx/Button.astro';
-import Center from '@mdx/Center.astro';
-import Carousel from '@mdx/Carousel.astro';
-import Accordion from '@mdx/Accordion.astro';
-import Marquee from '@mdx/Marquee.astro';
-import { SideBySide, Left, Right } from "@mdx/SideBySide"
-import Img from '@mdx/Img.astro';
-import ImageGrid from '@reusable/ImageGrid.astro'
-import YouTube from '@mdx/YouTube.astro';
-import Instagram from '@mdx/Instagram.astro';
-import Callout from '@mdx/Callout.astro';
 
-import project1 from '../../../assets/projects/high-altitude-balloon/project-1.jpg';
-import project2 from '../../../assets/projects/project-2.jpg';
-import project3 from '../../../assets/projects/project-3.jpg';
-import project4 from '../../../assets/projects/cubesat-tracking/project-4.jpg';
-import project5 from '../../../assets/projects/test-rover/project-5.jpg';
-import project6 from '../../../assets/projects/project-6.jpg';
 
 test
 
@@ -144,13 +127,13 @@ Die `Img`-Komponente bietet optimierte, responsive Bildanzeige mit flexibler Gr�
 <Center>
 
 ### Bild in voller Breite
-<Img src={project1} alt="Projektpräsentation in voller Breite" width="100%" loading="eager" />
+<Img src="/src/assets/projects/high-altitude-balloon/project-1.jpg" alt="Projektpräsentation in voller Breite" width="100%" loading="eager" />
 
 ### Bild mit 80% Breite
-<Img src={project2} alt="Bild mit 80% Breite" width="80%" />
+<Img src="/src/assets/projects/project-2.jpg" alt="Bild mit 80% Breite" width="80%" />
 
 ### Bild mit 60% Breite
-<Img src={project3} alt="Bild mit 60% Breite" width="60%" />
+<Img src="/src/assets/projects/project-3.jpg" alt="Bild mit 60% Breite" width="60%" />
 
 </Center>
 
@@ -162,12 +145,12 @@ Die `Img`-Komponente bietet optimierte, responsive Bildanzeige mit flexibler Gr�
   cols={2}
   aspectRatio='square'
   images={[
-    { image: project1, alt: "Projekt 1 Rasterbeispiel" },
-    { image: project2, alt: "Projekt 2 Rasterbeispiel" },
-    { image: project3, alt: "Projekt 3 Rasterbeispiel" },
-    { image: project4, alt: "Projekt 4 Rasterbeispiel" },
-    { image: project5, alt: "Projekt 5 Rasterbeispiel" },
-    { image: project6, alt: "Projekt 6 Rasterbeispiel" }
+    { image: "/src/assets/projects/high-altitude-balloon/project-1.jpg", alt: "Projekt 1 Rasterbeispiel" },
+    { image: "/src/assets/projects/project-2.jpg", alt: "Projekt 2 Rasterbeispiel" },
+    { image: "/src/assets/projects/project-3.jpg", alt: "Projekt 3 Rasterbeispiel" },
+    { image: "/src/assets/projects/cubesat-tracking/project-4.jpg", alt: "Projekt 4 Rasterbeispiel" },
+    { image: "/src/assets/projects/test-rover/project-5.jpg", alt: "Projekt 5 Rasterbeispiel" },
+    { image: "/src/assets/projects/project-6.jpg", alt: "Projekt 6 Rasterbeispiel" }
   ]}
 />
 
@@ -177,12 +160,12 @@ Die `Img`-Komponente bietet optimierte, responsive Bildanzeige mit flexibler Gr�
   cols={2}
   aspectRatio="native"
   images={[
-    { image: project1, alt: "Projekt 1 Rasterbeispiel" },
-    { image: project2, alt: "Projekt 2 Rasterbeispiel" },
-    { image: project3, alt: "Projekt 3 Rasterbeispiel" },
-    { image: project4, alt: "Projekt 4 Rasterbeispiel" },
-    { image: project5, alt: "Projekt 5 Rasterbeispiel" },
-    { image: project6, alt: "Projekt 6 Rasterbeispiel" }
+    { image: "/src/assets/projects/high-altitude-balloon/project-1.jpg", alt: "Projekt 1 Rasterbeispiel" },
+    { image: "/src/assets/projects/project-2.jpg", alt: "Projekt 2 Rasterbeispiel" },
+    { image: "/src/assets/projects/project-3.jpg", alt: "Projekt 3 Rasterbeispiel" },
+    { image: "/src/assets/projects/cubesat-tracking/project-4.jpg", alt: "Projekt 4 Rasterbeispiel" },
+    { image: "/src/assets/projects/test-rover/project-5.jpg", alt: "Projekt 5 Rasterbeispiel" },
+    { image: "/src/assets/projects/project-6.jpg", alt: "Projekt 6 Rasterbeispiel" }
   ]}
 />
 
@@ -191,12 +174,12 @@ Die `Img`-Komponente bietet optimierte, responsive Bildanzeige mit flexibler Gr�
 Ein Carousel kann ebenfalls Bilder mit der Img-Komponente anzeigen:
 
 <Carousel showArrows={true} showDots={true} height="md">
-  <Img src={project1} alt="Projekt 1" class="rounded-lg" />
-  <Img src={project2} alt="Projekt 2" class="rounded-lg" />
-  <Img src={project3} alt="Projekt 3" class="rounded-lg" />
-  <Img src={project4} alt="Projekt 4" class="rounded-lg" />
-  <Img src={project5} alt="Projekt 5" class="rounded-lg" />
-  <Img src={project6} alt="Projekt 6" class="rounded-lg" />
+  <Img src="/src/assets/projects/high-altitude-balloon/project-1.jpg" alt="Projekt 1" class="rounded-lg" />
+  <Img src="/src/assets/projects/project-2.jpg" alt="Projekt 2" class="rounded-lg" />
+  <Img src="/src/assets/projects/project-3.jpg" alt="Projekt 3" class="rounded-lg" />
+  <Img src="/src/assets/projects/cubesat-tracking/project-4.jpg" alt="Projekt 4" class="rounded-lg" />
+  <Img src="/src/assets/projects/test-rover/project-5.jpg" alt="Projekt 5" class="rounded-lg" />
+  <Img src="/src/assets/projects/project-6.jpg" alt="Projekt 6" class="rounded-lg" />
 </Carousel>
 
 ---
@@ -325,10 +308,10 @@ Beide Spalten bleiben gleichermaßen lesbar und gut proportioniert.
 Das Marquee erstellt eine scrollende Bildergalerie, die sich perfekt zur Präsentation mehrerer Projekte eignet. Es verarbeitet Bilder mit unterschiedlichen Seitenverhältnissen elegant:
 
 <Marquee speed={80} gap="1.5rem" height="md" direction='left'>
-  <Img src={project1} alt="Projekt 1 Showcase" class="rounded-lg" />
-  <Img src={project2} alt="Projekt 2 Showcase" class="rounded-lg" />
-  <Img src={project3} alt="Projekt 3 Showcase" class="rounded-lg" />
-  <Img src={project4} alt="Projekt 4 Showcase" class="rounded-lg" />
+  <Img src="/src/assets/projects/high-altitude-balloon/project-1.jpg" alt="Projekt 1 Showcase" class="rounded-lg" />
+  <Img src="/src/assets/projects/project-2.jpg" alt="Projekt 2 Showcase" class="rounded-lg" />
+  <Img src="/src/assets/projects/project-3.jpg" alt="Projekt 3 Showcase" class="rounded-lg" />
+  <Img src="/src/assets/projects/cubesat-tracking/project-4.jpg" alt="Projekt 4 Showcase" class="rounded-lg" />
 </Marquee>
 
 ### Marquee in umgekehrter Richtung
@@ -336,11 +319,11 @@ Das Marquee erstellt eine scrollende Bildergalerie, die sich perfekt zur Präsen
 Das Marquee unterstützt auch das Scrollen in die entgegengesetzte Richtung:
 
 <Marquee speed={180} gap="2rem" height="sm" direction="right">
-  <Img src={project1} alt="Projekt 1 Showcase" class="rounded-lg" />
-  <Img src={project2} alt="Projekt 2 Showcase" class="rounded-lg" />
-  <Img src={project3} alt="Projekt 3 Showcase" class="rounded-lg" />
-  <Img src={project4} alt="Projekt 4 Showcase" class="rounded-lg" />
-  <Img src={project5} alt="Projekt 5 Showcase" class="rounded-lg" />
+  <Img src="/src/assets/projects/high-altitude-balloon/project-1.jpg" alt="Projekt 1 Showcase" class="rounded-lg" />
+  <Img src="/src/assets/projects/project-2.jpg" alt="Projekt 2 Showcase" class="rounded-lg" />
+  <Img src="/src/assets/projects/project-3.jpg" alt="Projekt 3 Showcase" class="rounded-lg" />
+  <Img src="/src/assets/projects/cubesat-tracking/project-4.jpg" alt="Projekt 4 Showcase" class="rounded-lg" />
+  <Img src="/src/assets/projects/test-rover/project-5.jpg" alt="Projekt 5 Showcase" class="rounded-lg" />
 </Marquee>
 
 ---
@@ -407,10 +390,10 @@ Dies ist besonders nützlich für:
 <SideBySide>
   <Left>
 <Marquee speed={80} gap="1.5rem" height="md" direction='left'>
-  <Img src={project1} alt="Projekt 1 Showcase" class="rounded-lg" />
-  <Img src={project2} alt="Projekt 2 Showcase" class="rounded-lg" />
-  <Img src={project3} alt="Projekt 3 Showcase" class="rounded-lg" />
-  <Img src={project4} alt="Projekt 4 Showcase" class="rounded-lg" />
+  <Img src="/src/assets/projects/high-altitude-balloon/project-1.jpg" alt="Projekt 1 Showcase" class="rounded-lg" />
+  <Img src="/src/assets/projects/project-2.jpg" alt="Projekt 2 Showcase" class="rounded-lg" />
+  <Img src="/src/assets/projects/project-3.jpg" alt="Projekt 3 Showcase" class="rounded-lg" />
+  <Img src="/src/assets/projects/cubesat-tracking/project-4.jpg" alt="Projekt 4 Showcase" class="rounded-lg" />
 </Marquee>
 
   </Left>

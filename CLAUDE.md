@@ -69,7 +69,7 @@ When you modify a content collection's schema, update **both** files in the same
 
 Field names and types must match. Some Zod features (`.refine()`, `.transform()`, discriminated unions) don't have direct Keystatic equivalents — use `fields.conditional()` where possible, otherwise rely on Astro build-time validation to catch bad data.
 
-After any schema edit, run `npm test`. The suite at `src/utils/__tests__/keystaticSchema.test.ts` uses Keystatic's Reader API to validate every content file against `keystatic.config.ts` — catching drift before editors see it in the admin UI. See [docs/dev/keystatic-testing](src/content/docs/dev/keystatic-testing.md).
+After any schema edit, run `npm test`. The suite at `src/utils/__tests__/keystaticSchema.test.ts` uses Keystatic's Reader API to validate every content file against `keystatic.config.ts` — catching drift before editors see it in the admin UI. See [docs/dev/keystatic-testing](src/content/docs/dev/keystatic-testing.mdx).
 
 #### Keystatic collection mapping
 
@@ -265,7 +265,7 @@ See [Accordion.astro](src/components/mdx/Accordion.astro) for a complete example
 
 ### Editable Page Content
 
-Static text in components and pages — such as headings, descriptions, and button labels — should be sourced from `.md` files in the `page-text` content collection (`src/content/page-text/`) rather than hardcoded, when useful and practical. This allows content creators to update copy without touching component code.
+Static text in components and pages — such as headings, descriptions, and button labels — should be sourced from `.mdx` files in the `page-text` content collection (`src/content/page-text/`) rather than hardcoded, when useful and practical. This allows content creators to update copy without touching component code.
 
 **Locale folder structure:**
 Content files are organized under `en/` and `de/` subfolders. Within each locale folder, the subfolder conventions are:
@@ -277,17 +277,17 @@ Content files are organized under `en/` and `de/` subfolders. Within each locale
 ```
 src/content/page-text/
 ├── en/                  ← English (default)
-│   ├── about-us/our-mission.md
-│   ├── landing/what-is-bears.md
-│   ├── hero.md                 ← outlier singletons at locale root
-│   ├── faq.md
-│   ├── nav-links/header.md     ← multi-entry outlier collection
+│   ├── about-us/our-mission.mdx
+│   ├── landing/what-is-bears.mdx
+│   ├── hero.mdx                ← outlier singletons at locale root
+│   ├── faq.mdx
+│   ├── nav-links/header.mdx    ← multi-entry outlier collection
 │   └── ...
 └── de/                  ← German translations
     └── ... (same structure as en/)
 ```
 
-Outlier shapes (hero, FAQ, nav-columns, social, donate, media-categories, nav-links) live as dedicated `.md` files at the locale root (or under `nav-links/`) so Keystatic can surface each through a dedicated editor form instead of one giant flat schema. See `keystatic.config.ts` for the full mapping.
+Outlier shapes (hero, FAQ, nav-columns, social, donate, media-categories, nav-links) live as dedicated `.mdx` files at the locale root (or under `nav-links/`) so Keystatic can surface each through a dedicated editor form instead of one giant flat schema. See `keystatic.config.ts` for the full mapping.
 
 **Querying content:**
 Use `getPageContent(id, locale)` from `src/utils/contentQueries.ts` to fetch a page content entry by its ID. The `id` does NOT include the locale prefix — the function prepends it automatically and falls back to English if the translation is missing:
@@ -311,7 +311,7 @@ const content = await getPageContent('events/events-title', locale);
 
 ## Documentation
 
-All documentation lives in `src/content/docs/` as a content collection, served at `/docs/` on the website. Files are `.md` or `.mdx` (MDX allows importing and live-demoing components).
+All documentation lives in `src/content/docs/` as a content collection, served at `/docs/` on the website. Files are `.mdx` (MDX allows embedding components like `<Callout>`, `<Img>`, `<Accordion>` in prose).
 
 - **Guides** (`src/content/docs/guides/`): User-facing guides for content creators
 - **Dev Docs** (`src/content/docs/dev/`): Technical reference for developers

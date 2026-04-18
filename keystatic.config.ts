@@ -48,28 +48,12 @@ function imageField(label: string, directory: string, _publicPath: string) {
 }
 
 // Keystatic's `contentField` must reference a real content field (mdx /
-// markdoc / document), not a plain text field. We use `fields.mdx()` with the
-// file extension pinned per-collection.
+// markdoc / document), not a plain text field. All content is stored as
+// `.mdx` so the collections share a single body helper.
 //
-// Data-only collections (.md with empty body) use extension 'md'. Events is
-// mostly `.mdx`, so it pins 'mdx'. Projects and docs are mostly `.md` so they
-// pin 'md'. Files whose extension does not match a collection's pinned
-// extension are hidden from Keystatic — the public site still renders them.
-//
-// KNOWN LIMITATION: `.mdx` files with `import` statements at the top crash
-// Keystatic when opened (mdxjsEsm nodes are unsupported). See README → Future
-// work for the migration plan that removes imports.
-
 // `components` must bind `fields.image` to a specific collection asset root,
 // so body fields are built per-collection. Callers without an imageRoot get
 // the legacy text-input Img block.
-const mdBody = (imageRoot?: string) =>
-  fields.mdx({
-    label: 'Body',
-    extension: 'md',
-    components: buildMdxComponents({ imageRoot }),
-  });
-
 const mdxBody = (imageRoot?: string) =>
   fields.mdx({
     label: 'Body',
@@ -115,7 +99,7 @@ function testimonialsCollection(locale: 'en' | 'de') {
       // the only fields consumed by TestimonialCard.astro. emptyContent
       // satisfies Keystatic's requirement that format.contentField map to a
       // ContentFormField, while rendering no body editor in the admin UI.
-      body: fields.emptyContent({ extension: 'md' }),
+      body: fields.emptyContent({ extension: 'mdx' }),
     },
   });
 }
@@ -146,7 +130,7 @@ function sponsorsCollection(tier: 'diamond' | 'platinum' | 'gold' | 'silver' | '
         description: 'Applied behind the logo. Default #ffffff.',
         defaultValue: '#ffffff',
       }),
-      body: fields.emptyContent({ extension: 'md' }),
+      body: fields.emptyContent({ extension: 'mdx' }),
     },
   });
 }
@@ -239,7 +223,7 @@ function projectsCollection(locale: 'en' | 'de') {
         publicPath: '',
         description: `Required when "Show in Meet the Team" is on. ${IMAGE_SIZE_HINT}`,
       }),
-      body: mdBody('src/assets/projects'),
+      body: mdxBody('src/assets/projects'),
     },
   });
 }
@@ -396,7 +380,7 @@ function pageTextCollection(locale: 'en' | 'de') {
       secondButtonHref: fields.text({ label: 'Secondary button link' }),
       instagramButtonText: fields.text({ label: 'Instagram button text' }),
       items: pageTextItemsField(),
-      body: mdBody(),
+      body: mdxBody(),
     },
   });
 }
@@ -412,7 +396,7 @@ function pageTextHeroSingleton(locale: 'en' | 'de') {
       subtitle: fields.text({ label: 'Subtitle' }),
       seoDescription: fields.text({ label: 'SEO description', multiline: true }),
       ctas: pageTextCtasField(),
-      body: mdBody(),
+      body: mdxBody(),
     },
   });
 }
@@ -428,7 +412,7 @@ function pageTextFaqSingleton(locale: 'en' | 'de') {
       subtitle: fields.text({ label: 'Subtitle' }),
       description: fields.text({ label: 'Description', multiline: true }),
       faqs: pageTextFaqsField(),
-      body: mdBody(),
+      body: mdxBody(),
     },
   });
 }
@@ -444,7 +428,7 @@ function pageTextMediaCategoriesSingleton(locale: 'en' | 'de') {
       subtitle: fields.text({ label: 'Subtitle' }),
       seoDescription: fields.text({ label: 'SEO description', multiline: true }),
       mediaCategories: pageTextMediaCategoriesField(),
-      body: mdBody(),
+      body: mdxBody(),
     },
   });
 }
@@ -458,7 +442,7 @@ function pageTextNavColumnsSingleton(locale: 'en' | 'de') {
     schema: {
       title: fields.text({ label: 'Title', validation: { isRequired: true } }),
       navColumns: pageTextNavColumnsField(),
-      body: mdBody(),
+      body: mdxBody(),
     },
   });
 }
@@ -472,7 +456,7 @@ function pageTextSocialSingleton(locale: 'en' | 'de') {
     schema: {
       title: fields.text({ label: 'Title', validation: { isRequired: true } }),
       socialLinks: pageTextSocialLinksField(),
-      body: mdBody(),
+      body: mdxBody(),
     },
   });
 }
@@ -494,7 +478,7 @@ function pageTextDonateSingleton(locale: 'en' | 'de') {
       reference: fields.text({ label: 'Transfer reference' }),
       paypalUrl: fields.url({ label: 'PayPal URL' }),
       paypalButtonText: fields.text({ label: 'PayPal button text' }),
-      body: mdBody(),
+      body: mdxBody(),
     },
   });
 }
@@ -511,7 +495,7 @@ function pageTextNavLinksCollection(locale: 'en' | 'de') {
         name: { label: 'Title', validation: { isRequired: true } },
       }),
       navLinks: pageTextNavLinksField(),
-      body: mdBody(),
+      body: mdxBody(),
     },
   });
 }
@@ -530,7 +514,7 @@ function facesOfBearsCollection(locale: 'en' | 'de') {
       }),
       role: fields.text({ label: 'Role', validation: { isRequired: true } }),
       coverImage: imageField('Portrait image', 'src/assets/faces-of-bears', '/src/assets/faces-of-bears/'),
-      body: fields.emptyContent({ extension: 'md' }),
+      body: fields.emptyContent({ extension: 'mdx' }),
     },
   });
 }
@@ -556,7 +540,7 @@ function docsCollection(section: 'guides' | 'dev') {
         validation: { isRequired: true },
       }),
       group: fields.text({ label: 'Group (optional)' }),
-      body: mdBody(`src/assets/docs/${section}`),
+      body: mdxBody(`src/assets/docs/${section}`),
     },
   });
 }
@@ -602,7 +586,7 @@ const heroSlides = collection({
       validation: { isRequired: true },
     }),
     shownText: fields.text({ label: 'Overlay text (optional)' }),
-    body: fields.emptyContent({ extension: 'md' }),
+    body: fields.emptyContent({ extension: 'mdx' }),
   },
 });
 
@@ -627,7 +611,7 @@ const instagram = collection({
       description: 'Drafts are hidden in production but visible in dev.',
       defaultValue: false,
     }),
-    body: fields.emptyContent({ extension: 'md' }),
+    body: fields.emptyContent({ extension: 'mdx' }),
   },
 });
 

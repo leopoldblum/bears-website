@@ -30,7 +30,7 @@ Create a new file in `en/` (or `de/` for German) with the naming convention `NN-
 quote: "Working at BEARS taught me more about rocket propulsion than any textbook."
 name: "Jane Doe"
 role: "Propulsion Lead / WS 2025"
-coverImage: "jane-doe.jpg"
+coverImage: /04-jane-doe/jane-doe.jpg
 ---
 ```
 
@@ -45,11 +45,11 @@ All fields are required:
 | `quote` | string | The testimonial text |
 | `name` | string | Person's name |
 | `role` | string | Their role, year, or team (e.g., "Project Lead / WS 2025") |
-| `coverImage` | string | Filename of portrait image in `src/assets/testimonials/` |
+| `coverImage` | string | Path to portrait image under `src/assets/testimonials/<slug>/`, written as `/<slug>/<filename>` |
 
 ## Images
 
-Place portrait images in `src/assets/testimonials/`. Valid formats: `.jpg`, `.jpeg`, `.png`, `.webp`, `.svg`.
+Each testimonial has its own asset subfolder under `src/assets/testimonials/<slug>/`, where `<slug>` matches the filename (without extension). Place the portrait there and reference it as `/<slug>/<filename>`. Valid formats: `.jpg`, `.jpeg`, `.png`, `.webp`, `.svg`.
 
 ## Display Order
 

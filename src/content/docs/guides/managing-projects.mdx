@@ -12,10 +12,10 @@ Projects are stored in `src/content/projects/` as Markdown or MDX files, organiz
 ```
 src/content/projects/
 ├── en/                                    ← English (default)
-│   ├── 2025 11 20 autonomous-rover.md
+│   ├── autonomous-rover.mdx
 │   └── ...
 └── de/                                    ← German translations
-    ├── 2025 11 20 autonomous-rover.md
+    ├── autonomous-rover.mdx
     └── ...
 ```
 
@@ -23,7 +23,7 @@ Both folders use identical filenames. If a German translation is missing, the En
 
 ## Creating a Project
 
-Create a new file in `src/content/projects/en/` (or `de/` for German) with the naming convention `YYYY MM DD title.mdx`:
+Create a new file in `src/content/projects/en/` (or `de/` for German). The filename becomes the slug — use a short, URL-safe title (e.g. `autonomous-rover.mdx`). Sort order on the projects page is driven by the `date` frontmatter field, not the filename.
 
 ```mdx
 ---
@@ -31,7 +31,7 @@ title: "Autonomous Rover Prototype"
 description: "An AI-powered rover with autonomous navigation, computer vision, and obstacle avoidance."
 date: 2025-11-20
 categoryProject: "robotics"
-coverImage: "project-10.jpg"
+coverImage: /autonomous-rover/cover.jpg
 isProjectCompleted: false
 isDraft: false              # Optional — defaults to false, set true to hide from production
 displayMeetTheTeam: true    # Optional — show this project in the homepage "Meet the Team" section
@@ -61,7 +61,7 @@ obstacles and achieving mission objectives.
 | `description` | string | Short summary shown on cards |
 | `date` | date | Project date (`YYYY-MM-DD`) |
 | `categoryProject` | enum | One of: `experimental-rocketry`, `science-and-experiments`, `robotics`, `other` |
-| `coverImage` | string | Filename of cover image in `src/assets/projects/` |
+| `coverImage` | string | Path to cover image under `src/assets/projects/<slug>/`, written as `/<slug>/<filename>` |
 | `isProjectCompleted` | boolean | Set to `true` when the project is finished |
 
 ## Optional Fields
@@ -75,7 +75,7 @@ obstacles and achieving mission objectives.
 
 ## Cover Images
 
-Place cover images in `src/assets/projects/`. Valid formats: `.jpg`, `.jpeg`, `.png`, `.webp`, `.svg`.
+Each project has its own asset subfolder under `src/assets/projects/<slug>/`, where `<slug>` matches the filename (without extension). Place the cover image and any inline MDX images there. The `coverImage` frontmatter is written as `/<slug>/<filename>` (e.g. `/autonomous-rover/cover.jpg`). Valid formats: `.jpg`, `.jpeg`, `.png`, `.webp`, `.svg`.
 
 ## Meet the Team
 

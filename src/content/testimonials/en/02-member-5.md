@@ -1,6 +1,0 @@
----
-quote: "BEARS gave me the opportunity to work on real aerospace projects while still in university. The hands-on experience was invaluable for my career."
-name: "Fifth Member"
-role: "Engineering Lead / 2025"
-coverImage: /02-member-5/placeholder-4.jpg
----

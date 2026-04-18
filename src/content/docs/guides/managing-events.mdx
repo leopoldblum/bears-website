@@ -12,10 +12,10 @@ Events are stored in `src/content/events/` as Markdown or MDX files, organized b
 ```
 src/content/events/
 ├── en/                              ← English (default)
-│   ├── 2026 03 15 hackathon-2026.md
+│   ├── hackathon-2026.mdx
 │   └── ...
 └── de/                              ← German translations
-    ├── 2026 03 15 hackathon-2026.md
+    ├── hackathon-2026.mdx
     └── ...
 ```
 
@@ -23,7 +23,7 @@ Both folders use identical filenames. If a German translation is missing, the En
 
 ## Creating an Event
 
-Create a new file in `src/content/events/en/` (or `de/` for German) with the naming convention `YYYY MM DD title.mdx`:
+Create a new file in `src/content/events/en/` (or `de/` for German). The filename becomes the slug — use a short, URL-safe title (e.g. `hackathon-2026.mdx`). Sort order on the events page is driven by the `date` frontmatter field, not the filename.
 
 ```mdx
 ---
@@ -31,7 +31,7 @@ title: "BEARS 24-Hour Hackathon 2026"
 description: "Test your skills in our annual hackathon focused on autonomous systems and sustainable engineering."
 date: 2026-03-15
 categoryEvent: "competitions-and-workshops"
-coverImage: "event-10.jpg"
+coverImage: /hackathon-2026/cover.jpg
 isDraft: false   # Optional — defaults to false, set true to hide from production
 ---
 
@@ -57,7 +57,7 @@ smart agricultural systems, we want to see your creative solutions.
 | `description` | string | Short summary |
 | `date` | date | Event date (`YYYY-MM-DD`) |
 | `categoryEvent` | enum | One of: `trade-fairs-and-conventions`, `competitions-and-workshops`, `kick-off-events`, `other` |
-| `coverImage` | string | Filename of cover image in `src/assets/events/` |
+| `coverImage` | string | Path to cover image under `src/assets/events/<slug>/`, written as `/<slug>/<filename>` |
 
 ## Optional Fields
 
@@ -67,4 +67,4 @@ smart agricultural systems, we want to see your creative solutions.
 
 ## Cover Images
 
-Place cover images in `src/assets/events/`. Valid formats: `.jpg`, `.jpeg`, `.png`, `.webp`, `.svg`.
+Each event has its own asset subfolder under `src/assets/events/<slug>/`, where `<slug>` matches the filename (without extension). Place the cover image and any inline MDX images there. The `coverImage` frontmatter is written as `/<slug>/<filename>` (e.g. `/hackathon-2026/cover.jpg`). Valid formats: `.jpg`, `.jpeg`, `.png`, `.webp`, `.svg`.

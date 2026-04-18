@@ -565,7 +565,7 @@ describe('loadCollectionImages', () => {
     mockEventImages['/src/assets/events/e1.jpg'] = () => Promise.resolve({ default: img });
 
     const collection = [{
-      id: 'e1.md',
+      id: 'e1.mdx',
       slug: 'e1',
       collection: 'events' as const,
       data: { title: 'Event 1', coverImage: 'e1.jpg', coverImageType: 'CUSTOM' },
@@ -580,7 +580,7 @@ describe('loadCollectionImages', () => {
     mockProjectImages['/src/assets/projects/p1.jpg'] = () => Promise.resolve({ default: img });
 
     const collection = [{
-      id: 'p1.md',
+      id: 'p1.mdx',
       slug: 'p1',
       collection: 'projects' as const,
       data: { title: 'Project 1', coverImage: 'p1.jpg', coverImageType: 'CUSTOM' },
@@ -595,7 +595,7 @@ describe('loadCollectionImages', () => {
     mockTestimonialImages['/src/assets/testimonials/t1.jpg'] = () => Promise.resolve({ default: img });
 
     const collection = [{
-      id: 't1.md',
+      id: 't1.mdx',
       slug: 't1',
       collection: 'testimonials' as const,
       data: { name: 'Person 1', coverImage: 't1.jpg' },
@@ -607,7 +607,7 @@ describe('loadCollectionImages', () => {
 
   it('uses default fallback when image missing', async () => {
     const collection = [{
-      id: 'e1.md',
+      id: 'e1.mdx',
       slug: 'e1',
       collection: 'events' as const,
       data: { title: 'No Image', coverImage: undefined, coverImageType: 'DEFAULT' },
@@ -666,7 +666,7 @@ describe('loadCoverImage', () => {
     mockFaceImages['/src/assets/faces-of-bears/f1.jpg'] = () => Promise.resolve({ default: img });
 
     const collection = [{
-      id: 'f1.md',
+      id: 'f1.mdx',
       slug: 'f1',
       collection: 'faces-of-bears' as const,
       data: { name: 'Jane Doe', coverImage: 'f1.jpg', role: 'CEO' },
@@ -678,7 +678,7 @@ describe('loadCoverImage', () => {
 
   it('uses default face image when face image missing', async () => {
     const collection = [{
-      id: 'f1.md',
+      id: 'f1.mdx',
       slug: 'f1',
       collection: 'faces-of-bears' as const,
       data: { name: 'No Photo', coverImage: 'nonexistent.jpg', role: 'Dev' },
