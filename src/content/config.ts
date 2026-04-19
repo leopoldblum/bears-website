@@ -202,6 +202,10 @@ const pageTextCollection = defineCollection({
       href: z.string(),
     })).max(4).optional(),
     items: z.array(z.string()).optional(),
+    titledItems: z.array(z.object({
+      title: z.string(),
+      description: z.string().optional(),
+    })).optional(),
     address: z.string().optional(),
     room: z.string().optional(),
     schedule: z.string().optional(),

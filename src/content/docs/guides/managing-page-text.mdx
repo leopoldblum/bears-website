@@ -226,29 +226,26 @@ mapLng: 13.3238611
 
 ---
 
-### Items List (Title + Description with Arrow Separator)
+### Titled Items List
 
-A richer list format where each item contains a title and a description, separated by ` -> `. The component splits these into two parts for styled rendering (bold title + lighter description).
+A richer list format where each item has its own `title` and optional `description`. The component renders each as a numbered card with a bold title and lighter description text.
 
 ```yaml
 ---
 title: "What's in it for you?"
-items:
-  - "Hands-on Engineering -> Design, manufacture, and test real rocket systems — from propulsion to avionics and recovery."
-  - "Industry Connections -> Build your network through partnerships with aerospace companies and research institutions."
-  - "Team Leadership -> Take ownership of subsystems and lead cross-functional teams on ambitious projects."
-  - "Competition Experience -> Represent TU Berlin at international rocketry competitions and technical challenges."
-  - "Research Opportunities -> Contribute to cutting-edge aerospace research alongside experienced engineers."
-  - "Community & Friends -> Join a tight-knit group of passionate students who share your curiosity about space."
-  - "Professional Growth -> Develop project management, documentation, and presentation skills."
+titledItems:
+  - title: "Hands-on Engineering"
+    description: "Design, manufacture, and test real rocket systems — from propulsion to avionics and recovery."
+  - title: "Industry Connections"
+    description: "Build your network through partnerships with aerospace companies and research institutions."
+  - title: "Team Leadership"
+    description: "Take ownership of subsystems and lead cross-functional teams on ambitious projects."
 ---
 ```
 
-**Where it appears:** The "What's in it for you?" benefits grid on the About Us page. Each item becomes a card with a numbered label, a bold title, and a description.
+**Where it appears:** The "What's in it for you?" benefits grid on the About Us page. Each entry becomes a card with a numbered label, a bold title, and a description.
 
-**Important:** The ` -> ` separator (space-arrow-space) is significant. Everything before it becomes the card title; everything after becomes the description. If you omit the ` -> `, the entire string is used as the title with no description.
-
-**Fields used:** `title`, `items`
+**Fields used:** `title`, `titledItems` (each with `title` and optional `description`)
 
 **Files:** `about-us/whats-in-it`
 
@@ -652,7 +649,6 @@ description: "From design to launch — building and testing real sounding rocke
 - **`buttonText` and `buttonHref` go together.** If you provide one without the other, the build will fail with a validation error. The same applies to `secondButtonText` and `secondButtonHref` for the optional secondary button.
 - **`seoDescription` matters for search engines.** Keep it around 150 characters. It appears in Google search results and social media previews. Only page header files (the `-title` files) typically need this field.
 - **FAQ answers support Markdown.** Use `**bold**`, `[link text](/path)`, and `- bullet items` to format answers.
-- **The ` -> ` separator in items is optional.** Without it, items render as simple strings. With it, the text splits into a title and description.
 - **The `{year}` placeholder** in the copyright text is the only dynamic template supported. It is replaced with the current year at build time.
 - **To find which file controls a section**, look at the page's subfolder. For example, all About Us content is in `about-us/`, all footer content is in `footer/`.
 - **Adding or removing CTA cards** on the hero automatically adjusts the grid layout (1–4 columns). You can also set `ctas` to an empty list to show no cards.

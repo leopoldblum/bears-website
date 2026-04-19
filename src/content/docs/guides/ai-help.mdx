@@ -113,7 +113,8 @@ Frontmatter fields:
   secondButtonHref: string (optional) — secondary button URL (pair with secondButtonText)
   instagramButtonText: string (optional) — Instagram CTA button label (used in landing/latest-news)
   ctas: array (max 4) — each: { title, description, href }
-  items: array of strings — plain list or "Title -> Description" format (arrow separator splits into title + description)
+  items: array of strings — plain list (used by contact/contact-info, donate, footer)
+  titledItems: array — each: { title, description? } — used by about-us/whats-in-it for the benefits grid
   faqs: array — each: { question, answer } — answers support Markdown (bold, links, lists)
   socialLinks: array — each: { platform, iconFile, url, hoverColor? } — iconFile must be an .svg filename under src/assets/social-icons/ (upload a new SVG via the Social links editor to add a new platform; icons render as silhouettes via CSS mask)
   navLinks: array — each: { label, href }
@@ -167,7 +168,7 @@ Special behaviors:
   {year} in nav-links/footer-bottom title is replaced with the current year at build time.
   buttonText and buttonHref must both be provided for a button to appear. Same for secondButtonText and secondButtonHref.
   paypalUrl and paypalButtonText must both be provided for the PayPal donate button to appear (same pairing rule).
-  items with " -> " separator are split into title + description; without it, the whole string is the title.
+  titledItems (about-us/whats-in-it) renders each entry as a numbered card with a bold title and lighter description.
   donate.mdx (at the locale root) is the direct-donations card on the Sponsors page (below the sponsor CTA, bridged by an "OR" divider). Bank block renders if any of accountHolder/bankName/iban/bic is set; each row only appears if its field is present. The items array renders as a value-props row with icons (icons hardcoded, labels editable).
   sponsors/sponsor-tiers.mdx uses the tierDescriptions object (keyed by tier name: diamond/platinum/gold/silver/bronze) — each value renders above the logos for that tier on the sponsors page.
   footer/footer-address.mdx uses the address field (multi-line text), not items, so the address block can be edited as a free-form block.

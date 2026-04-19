@@ -308,6 +308,20 @@ function pageTextItemsField() {
   });
 }
 
+function pageTextTitledItemsField() {
+  return fields.array(
+    fields.object({
+      title: fields.text({ label: 'Title', validation: { isRequired: true } }),
+      description: fields.text({ label: 'Description', multiline: true }),
+    }),
+    {
+      label: 'Items',
+      description: 'Each item has a bold title and an optional description. Drag the handle on the left of each item to reorder them.',
+      itemLabel: (p) => p.fields.title.value || 'Untitled',
+    },
+  );
+}
+
 function pageTextFaqsField() {
   return fields.array(
     fields.object({
@@ -485,6 +499,19 @@ function listSectionSingleton(locale: Locale, pathSuffix: string, label: string)
       subtitle: fields.text({ label: 'Subtitle' }),
       description: fields.text({ label: 'Description', multiline: true }),
       items: pageTextItemsField(),
+      body: fields.emptyContent({ extension: 'mdx' }),
+    },
+  });
+}
+
+function titledListSectionSingleton(locale: Locale, pathSuffix: string, label: string) {
+  return singleton({
+    ...baseSingletonMeta(locale, pathSuffix, label),
+    schema: {
+      title: fields.text({ label: 'Title', validation: { isRequired: true } }),
+      subtitle: fields.text({ label: 'Subtitle' }),
+      description: fields.text({ label: 'Description', multiline: true }),
+      titledItems: pageTextTitledItemsField(),
       body: fields.emptyContent({ extension: 'mdx' }),
     },
   });
@@ -1023,8 +1050,8 @@ export default config({
     pageTextAboutUsTitleDe: pageHeaderSingleton('de', 'about-us/about-us-title', 'About us — page header'),
     pageTextAboutUsOurMissionEn: sectionSingleton('en', 'about-us/our-mission', 'About us — Our mission'),
     pageTextAboutUsOurMissionDe: sectionSingleton('de', 'about-us/our-mission', 'About us — Our mission'),
-    pageTextAboutUsWhatsInItEn: listSectionSingleton('en', 'about-us/whats-in-it', "About us — What's in it for you"),
-    pageTextAboutUsWhatsInItDe: listSectionSingleton('de', 'about-us/whats-in-it', "About us — What's in it for you"),
+    pageTextAboutUsWhatsInItEn: titledListSectionSingleton('en', 'about-us/whats-in-it', "About us — What's in it for you"),
+    pageTextAboutUsWhatsInItDe: titledListSectionSingleton('de', 'about-us/whats-in-it', "About us — What's in it for you"),
     pageTextAboutUsFindUsEn: findUsSingleton('en', 'about-us/find-us', 'About us — When/where to find us'),
     pageTextAboutUsFindUsDe: findUsSingleton('de', 'about-us/find-us', 'About us — When/where to find us'),
     pageTextAboutUsFacesOfBearsEn: sectionSingleton('en', 'about-us/faces-of-bears', 'About us — Faces of BEARS heading'),
