@@ -87,6 +87,15 @@ Every file must have a `title`. All other fields are optional &mdash; each file 
 | `schedule` | string | About Us "Where to find us": meeting time |
 | `mapLat` | number | Latitude of the pin on the About Us "Where to find us" map |
 | `mapLng` | number | Longitude of the pin on the About Us "Where to find us" map |
+| `rememberLabel` | string | About Us "Where to find us": small uppercase label above the room/schedule (e.g. "remember:") |
+| `emailLabel` | string | Contact page: heading on the email card |
+| `addressLabel` | string | Contact page: heading on the address card |
+| `mapLinkText` | string | Contact page: text on the link below the address that jumps to the map |
+| `followLabel` | string | Contact page: heading on the social-links card |
+| `showMoreText` | string | Landing page "Latest news": mobile-only button that expands the list |
+| `showLessText` | string | Landing page "Latest news": mobile-only button that collapses the list |
+| `orDividerText` | string | Sponsors page: small uppercase label between the sponsor CTA and the donation block (e.g. "Or") |
+| `bankToggleText` | string | Sponsors page: label on the button that expands the bank transfer details |
 
 ## Patterns &amp; Examples
 
@@ -129,7 +138,7 @@ buttonHref: "/about-us"
 
 **Where it appears:** Standalone sections on the homepage, intro paragraphs on content pages, and crosslink banners at the bottom of pages ("Want to see our projects? &rarr;").
 
-**Fields used:** `title`, `description` (optional), `buttonText` + `buttonHref` (optional, always used as a pair), `secondButtonText` + `secondButtonHref` (optional second button, used in `landing/latest-news`), `instagramButtonText` (optional, only in `landing/latest-news`)
+**Fields used:** `title`, `description` (optional), `buttonText` + `buttonHref` (optional, always used as a pair), `secondButtonText` + `secondButtonHref` (optional second button, used in `landing/latest-news`), `instagramButtonText` (optional, only in `landing/latest-news`), `showMoreText` + `showLessText` (optional, only in `landing/latest-news` — label the mobile Show more / Show less toggle)
 
 **Files:** `landing/what-is-bears`, `landing/latest-news`, `landing/become-sponsor`, `events/events-intro`, `events/events-crosslink`, `projects/projects-crosslink`, `sponsors/sponsors-intro`, `sponsors/sponsors-crosslink`, `sponsors/become-sponsor-cta`
 
@@ -151,7 +160,7 @@ description: "We bridge the gap between the classroom and the launchpad. At BEAR
 
 **Where it appears:** The "Our Mission" section on the About Us page. The subtitle renders as a small accented label above the title (e.g., **THIS IS** Our Mission, where "THIS IS" is the subtitle in the site's accent color).
 
-**Fields used:** `subtitle`, `title`, `description`
+**Fields used:** `subtitle`, `title`, `description`, `buttonText` + `buttonHref` (optional pair — `about-us/our-mission` uses these to render the "Join us!" button that jumps down to the Find Us section)
 
 **Files:** `about-us/our-mission`, `landing/testimonials`
 
@@ -176,7 +185,7 @@ address: |-
 
 **Where it appears:** The Contact page cards (email + address) and the site footer's address block. Each line in `address` renders as a separate line. `title` is an internal label for the CMS — it is not rendered on the site.
 
-**Fields used:** `title`, `email`, `address`
+**Fields used:** `title`, `email`, `address`, `emailLabel` (heading on the email card), `addressLabel` (heading on the address card), `mapLinkText` (text for the link below the address that jumps to the map)
 
 **Files:** `contact-details`
 
@@ -223,7 +232,7 @@ mapLng: 13.3238611
 
 **Finding the coordinates:** Open [google.com/maps](https://www.google.com/maps), right-click the spot you want to pin, and the first two numbers in the popup are the latitude and longitude — copy them straight into `mapLat` and `mapLng`.
 
-**Fields used:** `title`, `subtitle` (optional label above heading), `description` (optional intro text), `room`, `schedule`, `mapLat`, `mapLng`
+**Fields used:** `title`, `subtitle` (optional label above heading), `description` (optional intro text), `room`, `schedule`, `mapLat`, `mapLng`, `rememberLabel` (small uppercase label above the room/schedule)
 
 **Files:** `about-us/find-us`
 
@@ -388,7 +397,7 @@ paypalButtonText: "Donate via PayPal"
 - The PayPal button only renders if **both** `paypalUrl` and `paypalButtonText` are provided — same pairing rule as `buttonText`/`buttonHref`.
 - The value trio (`items`) only renders if the array has at least one entry. You can have fewer or more than three items.
 
-**Fields used:** `title`, `description`, `items`, `accountHolder`, `bankName`, `iban`, `bic`, `reference`, `paypalUrl`, `paypalButtonText`
+**Fields used:** `title`, `description`, `items`, `accountHolder`, `bankName`, `iban`, `bic`, `reference`, `paypalUrl`, `paypalButtonText`, `orDividerText` (label on the divider between the sponsor CTA and the donate card, e.g. "Or"), `bankToggleText` (label on the button that expands the bank details)
 
 **File:** `donate.mdx` (at the locale root). Edited in the CMS via the **Donate** singleton.
 
@@ -423,7 +432,7 @@ socialLinks:
 
 **`hoverColor`:** Optional per-entry override. Leave blank to use the platform's default hover color (or the site accent if the platform doesn't define one). Use standard hex color codes (e.g. `"#0A66C2"` for LinkedIn blue).
 
-**Fields used:** `socialLinks`
+**Fields used:** `socialLinks`, `followLabel` (heading on the "Follow Us" card on the Contact page)
 
 **File:** `social.mdx` (at the locale root). Edited in the CMS via the **Social links** singleton.
 

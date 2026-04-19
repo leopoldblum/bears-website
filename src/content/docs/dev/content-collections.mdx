@@ -124,6 +124,11 @@ The `page-text` collection uses a flexible schema with `title` as the only requi
 | `tierDescriptions` | object? | Sponsor tier descriptions, keyed by tier name (`diamond?`, `platinum?`, `gold?`, `silver?`, `bronze?`) |
 | `accountHolder` / `bankName` / `iban` / `bic` / `reference` | string? | Donation card bank-transfer details |
 | `paypalUrl` / `paypalButtonText` | string? | Donation card PayPal button (must be set together) |
+| `rememberLabel` | string? | About Us "Where to find us" small uppercase label above the room/schedule |
+| `emailLabel` / `addressLabel` / `mapLinkText` | string? | Contact page email / address card headings and the view-on-map link text |
+| `followLabel` | string? | Contact page "Follow Us" card heading |
+| `showMoreText` / `showLessText` | string? | Landing page Latest News mobile toggle labels |
+| `orDividerText` / `bankToggleText` | string? | Sponsors page "Or" divider and bank-details toggle label |
 
 The schema uses `.refine()` to enforce that button fields always come in pairs &mdash; setting `buttonText` without `buttonHref` (or vice versa) will fail validation at build time. The same applies to `secondButtonText` / `secondButtonHref`.
 

@@ -5,7 +5,7 @@ import SponsorShowcase from "@components/sponsors/SponsorShowcase.astro";
 import Button from "@mdx/Button.astro";
 import CrosslinkBanner from "@reusable/CrosslinkBanner.astro";
 import { sponsorsHeroImages, sponsorLogos } from "@utils/imageGlobs";
-import { loadAllImagesFromDirectory, loadImage, resolveImagePath, defaultSponsorImage } from "@utils/imageLoader";
+import { loadAllImagesFromDirectory, loadImage, resolveImagePath, getDefaultSponsorImage } from "@utils/imageLoader";
 import { getPageContent, getSponsorsByTier } from "@utils/contentQueries";
 import { getLocale, localizeUrl } from "@utils/i18n";
 
@@ -44,6 +44,7 @@ const { diamond, platinum, gold, silver, bronze } = await getSponsorsByTier();
 
 // Load images for a tier's sponsors (same pattern as BecomeSponsor.astro)
 async function loadTierImages(sponsors: typeof diamond) {
+  const defaultSponsorImage = await getDefaultSponsorImage();
   return Promise.all(
     sponsors.map(async (sponsor) => {
       const tier = sponsor.id.split("/")[0];
@@ -136,7 +137,7 @@ const tiers = [
       {donateContent && (
         <div class="max-w-xl mx-auto flex items-center gap-4 my-10 sm:my-14" aria-hidden="true">
           <div class="flex-1 h-px bg-gradient-to-r from-transparent to-white/15"></div>
-          <span class="text-xs font-bold uppercase tracking-[0.2em] text-bears-text-onDark/40">Or</span>
+          <span class="text-xs font-bold uppercase tracking-[0.2em] text-bears-text-onDark/40">{donateContent.data.orDividerText ?? 'Or'}</span>
           <div class="flex-1 h-px bg-gradient-to-l from-transparent to-white/15"></div>
         </div>
       )}
@@ -225,7 +226,7 @@ const tiers = [
               class="whitespace-nowrap"
             >
               <span class="inline-flex items-center gap-2">
-                <span>Bank transfer details</span>
+                <span>{donateContent.data.bankToggleText ?? 'Bank transfer details'}</span>
                 <svg
                   class="w-4 h-4 transition-transform duration-200"
                   x-bind:class="bankOpen ? 'rotate-180' : 'rotate-0'"

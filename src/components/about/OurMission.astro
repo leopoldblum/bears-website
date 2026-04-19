@@ -117,11 +117,13 @@ const parsedItems = listContent?.data.titledItems ?? [];
           ))}
         </div>
 
-        <div class="mt-8 sm:mt-10 lg:mt-12 flex justify-center">
-          <Button variant="primary" size="large" href="#find-us-section">
-            {locale === 'de' ? 'Mach mit!' : 'Join us!'}
-          </Button>
-        </div>
+        {content?.data.buttonText && content?.data.buttonHref && (
+          <div class="mt-8 sm:mt-10 lg:mt-12 flex justify-center">
+            <Button variant="primary" size="large" href={content.data.buttonHref}>
+              {content.data.buttonText}
+            </Button>
+          </div>
+        )}
       </div>
     )
   }

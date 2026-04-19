@@ -129,7 +129,7 @@ const newsItems = allPostsWithImages.map((post) => {
       type="button"
       class="group flex items-center justify-center gap-2.5 px-6 py-3 rounded-lg border border-white/15 text-sm text-bears-text-onDark/80 hover:border-bears-accent/50 hover:text-bears-text-onDark transition-all duration-200 cursor-pointer"
     >
-      <span>Show more</span>
+      <span>{content?.data.showMoreText ?? 'Show more'}</span>
       <svg class="w-4 h-4 transition-transform duration-200 group-hover:translate-y-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
       </svg>
@@ -141,7 +141,7 @@ const newsItems = allPostsWithImages.map((post) => {
       type="button"
       class="group flex items-center justify-center gap-2.5 px-6 py-3 rounded-lg border border-white/15 text-sm text-bears-text-onDark/80 hover:border-bears-accent/50 hover:text-bears-text-onDark transition-all duration-200 cursor-pointer"
     >
-      <span>Show less</span>
+      <span>{content?.data.showLessText ?? 'Show less'}</span>
       <svg class="w-4 h-4 transition-transform duration-200 group-hover:-translate-y-0.5 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
       </svg>

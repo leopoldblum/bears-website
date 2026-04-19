@@ -513,6 +513,8 @@ function sectionWithImageSingleton(locale: Locale, pathSuffix: string, label: st
           description: 'Read by screen readers. Describe what the image shows.',
         }),
       } : {}),
+      buttonText: fields.text({ label: 'Button text' }),
+      buttonHref: fields.text({ label: 'Button link' }),
       body: fields.emptyContent({ extension: 'mdx' }),
     },
   });
@@ -623,6 +625,10 @@ function findUsSingleton(locale: Locale, pathSuffix: string, label: string) {
           'Longitude of the pin shown on the "Where to find us" map. Tip: open google.com/maps, right-click the spot you want, and the second number in the popup is the longitude (e.g. 13.3238611).',
         validation: { min: -180, max: 180 },
       }),
+      rememberLabel: fields.text({
+        label: 'Remember label',
+        description: 'Small uppercase label shown above the room and meeting time (e.g. "remember:").',
+      }),
       body: fields.emptyContent({ extension: 'mdx' }),
     },
   });
@@ -661,6 +667,14 @@ function latestNewsSingleton(locale: Locale, pathSuffix: string, label: string) 
       secondButtonText: fields.text({ label: 'Secondary button text' }),
       secondButtonHref: fields.text({ label: 'Secondary button link' }),
       instagramButtonText: fields.text({ label: 'Instagram button text' }),
+      showMoreText: fields.text({
+        label: 'Show more button text',
+        description: 'Mobile only — label for the button that expands the list.',
+      }),
+      showLessText: fields.text({
+        label: 'Show less button text',
+        description: 'Mobile only — label for the button that collapses the list.',
+      }),
       body: fields.emptyContent({ extension: 'mdx' }),
     },
   });
@@ -787,6 +801,18 @@ function pageTextContactDetailsSingleton(locale: 'en' | 'de') {
         multiline: true,
         validation: { isRequired: true, length: { min: 1 } },
       }),
+      emailLabel: fields.text({
+        label: 'Email card heading',
+        description: 'Heading on the email card on the Contact page.',
+      }),
+      addressLabel: fields.text({
+        label: 'Address card heading',
+        description: 'Heading on the address card on the Contact page.',
+      }),
+      mapLinkText: fields.text({
+        label: 'Map link text',
+        description: 'Link text below the address that jumps to the map on the About us page.',
+      }),
       body: fields.emptyContent({ extension: 'mdx' }),
     },
   });
@@ -800,6 +826,10 @@ function pageTextSocialSingleton(locale: 'en' | 'de') {
     entryLayout: 'form',
     schema: {
       socialLinks: pageTextSocialLinksField(),
+      followLabel: fields.text({
+        label: 'Follow card heading',
+        description: 'Heading on the social-links card on the Contact page.',
+      }),
       body: fields.emptyContent({ extension: 'mdx' }),
     },
   });
@@ -822,6 +852,14 @@ function pageTextDonateSingleton(locale: 'en' | 'de') {
       reference: fields.text({ label: 'Transfer reference' }),
       paypalUrl: fields.url({ label: 'PayPal URL' }),
       paypalButtonText: fields.text({ label: 'PayPal button text' }),
+      orDividerText: fields.text({
+        label: 'Or divider text',
+        description: 'Small uppercase label shown between the sponsor CTA and the donation block on the Sponsors page (e.g. "Or").',
+      }),
+      bankToggleText: fields.text({
+        label: 'Bank details toggle text',
+        description: 'Label on the button that expands the bank transfer details.',
+      }),
       body: fields.emptyContent({ extension: 'mdx' }),
     },
   });
