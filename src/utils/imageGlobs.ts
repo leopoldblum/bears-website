@@ -48,9 +48,10 @@ export const sponsorLogos: ImageGlob = filterImageGlob(
 /**
  * WhatIsBears carousel images
  * Used by: WhatIsBears.astro
+ * Note: includes subdirectories so Keystatic per-entry subfolder uploads resolve.
  */
 export const whatIsBearsImages: ImageGlob = filterImageGlob(
-  import.meta.glob<{ default: ImageMetadata }>("/src/assets/whatIsBears/*.*"),
+  import.meta.glob<{ default: ImageMetadata }>("/src/assets/whatIsBears/**/*.*"),
 );
 
 /**

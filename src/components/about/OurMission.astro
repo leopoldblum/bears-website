@@ -4,7 +4,7 @@ import Button from "@mdx/Button.astro";
 import GradientDivider from "@reusable/GradientDivider.astro";
 import { getPageContent } from "@utils/contentQueries";
 import { ourMissionImages } from "@utils/imageGlobs";
-import { loadAllImagesFromDirectory } from "@utils/imageLoader";
+import { loadAllImagesFromDirectory, loadImage, resolveImagePath } from "@utils/imageLoader";
 import { type Locale } from '@utils/i18n';
 
 interface Props {
@@ -16,8 +16,26 @@ const { locale } = Astro.props;
 const content = await getPageContent("about-us/our-mission", locale);
 const listContent = await getPageContent("about-us/whats-in-it", locale);
 
-const loadedImages = await loadAllImagesFromDirectory(ourMissionImages);
-const missionImage = loadedImages[0];
+// Image is locale-agnostic; editors can upload on either locale's singleton.
+// Prefer EN, fall back to the active locale, then to the first file found in
+// the directory (legacy hardcoded behaviour).
+const imageEntry = await getPageContent("about-us/our-mission", "en");
+const imageFileName = imageEntry?.data.image || content?.data.image;
+const imageAlt = imageEntry?.data.imageAlt || content?.data.imageAlt
+  || "BEARS team working on aerospace projects";
+
+let missionImage = imageFileName
+  ? await loadImage({
+      glob: ourMissionImages,
+      imagePath: resolveImagePath('/src/assets/about-us/our-mission', imageFileName),
+      context: { itemTitle: 'Our Mission image' },
+    })
+  : null;
+
+if (!missionImage) {
+  const loadedImages = await loadAllImagesFromDirectory(ourMissionImages);
+  missionImage = loadedImages[0] ?? null;
+}
 
 const parsedItems = listContent?.data.titledItems ?? [];
 ---
@@ -32,15 +50,17 @@ const parsedItems = listContent?.data.titledItems ?? [];
     <div
       class="relative w-full h-72 sm:h-80 lg:h-[480px] rounded-2xl overflow-hidden border border-white/10 shadow-[0_4px_12px_rgba(0,0,0,0.4)]"
     >
-      <Img
-        src={missionImage}
-        alt="BEARS team working on aerospace projects"
-        class="rounded-2xl"
-        enableClickToEnlarge={false}
-        fill={true}
-        loading="eager"
-        sizes="(min-width: 1024px) 50vw, 100vw"
-      />
+      {missionImage && (
+        <Img
+          src={missionImage}
+          alt={imageAlt}
+          class="rounded-2xl"
+          enableClickToEnlarge={false}
+          fill={true}
+          loading="eager"
+          sizes="(min-width: 1024px) 50vw, 100vw"
+        />
+      )}
     </div>
 
     <!-- Text -->

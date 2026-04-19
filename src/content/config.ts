@@ -218,6 +218,18 @@ const pageTextCollection = defineCollection({
       answer: z.string(),
     })).optional(),
     instagramButtonText: z.string().optional(),
+    image: z.string().refine(
+      validateImageExtension,
+      { message: `image must have a valid image extension: ${VALID_EXTENSIONS_MESSAGE}` },
+    ).optional(),
+    imageAlt: z.string().optional(),
+    carouselImages: z.array(z.object({
+      src: z.string().refine(
+        validateImageExtension,
+        { message: `src must have a valid image extension: ${VALID_EXTENSIONS_MESSAGE}` },
+      ),
+      alt: z.string().optional(),
+    })).optional(),
     mediaCategories: z.array(z.object({
       id: z.string(),
       label: z.string(),

@@ -37,7 +37,7 @@ Each asset directory has a centralized glob pattern exported as a constant:
 | `eventImages` | `/src/assets/events/` | Events listing, detail pages |
 | `projectImages` | `/src/assets/projects/` | Projects listing, detail pages |
 | `sponsorLogos` | `/src/assets/sponsors/**/` | Sponsor showcase |
-| `whatIsBearsImages` | `/src/assets/whatIsBears/` | Landing "What is BEARS" carousel |
+| `whatIsBearsImages` | `/src/assets/whatIsBears/**/` | Landing "What is BEARS" carousel (content-driven via `landing/what-is-bears` page-text singleton) |
 | `ourMissionImages` | `/src/assets/about-us/our-mission/` | About page hero |
 | `peopleImages` | `/src/assets/people/` | Faces of BEARS grid, Meet the Team portraits, Testimonials carousel |
 | `aboutHeroImages` | `/src/assets/hero/about-us/` | About page hero |
@@ -112,13 +112,15 @@ Always returns a non-null `ImageMetadata` (falls back to default).
 
 ### `loadAllImagesFromDirectory(glob)`
 
-Loads all images from a glob. Used for carousels and galleries.
+Loads all images from a glob. Used for carousels/galleries that are not backed by a content entry.
 
 ```typescript
-const carouselImages = await loadAllImagesFromDirectory(whatIsBearsImages);
+const allHeroImages = await loadAllImagesFromDirectory(allHeroImages);
 ```
 
 Returns `ImageMetadata[]`, filtering out failed loads.
+
+Note: the "What is BEARS" carousel used to rely on this helper. It is now content-driven — see `WhatIsBears.astro`, which reads the image list (in order) from the `landing/what-is-bears` page-text singleton and resolves each filename through `whatIsBearsImages` via `loadImage`.
 
 ## Default / Fallback Images
 

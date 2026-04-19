@@ -434,6 +434,32 @@ function sectionSingleton(locale: Locale, pathSuffix: string, label: string) {
   });
 }
 
+// Variant of sectionSingleton that also exposes a single image drop-in.
+// The image is locale-agnostic — editors upload on either locale's singleton
+// and components read it from whichever side they load. Used by the About us
+// "Our Mission" section.
+function sectionWithImageSingleton(locale: Locale, pathSuffix: string, label: string, imageDirectory: string) {
+  return singleton({
+    ...baseSingletonMeta(locale, pathSuffix, label),
+    schema: {
+      title: fields.text({ label: 'Title', validation: { isRequired: true } }),
+      subtitle: fields.text({ label: 'Subtitle' }),
+      description: fields.text({ label: 'Description', multiline: true }),
+      image: fields.image({
+        label: 'Image',
+        directory: imageDirectory,
+        publicPath: '',
+        description: IMAGE_SIZE_HINT,
+      }),
+      imageAlt: fields.text({
+        label: 'Image alt text',
+        description: 'Read by screen readers. Describe what the image shows.',
+      }),
+      body: fields.emptyContent({ extension: 'mdx' }),
+    },
+  });
+}
+
 function sectionWithButtonSingleton(locale: Locale, pathSuffix: string, label: string) {
   return singleton({
     ...baseSingletonMeta(locale, pathSuffix, label),
@@ -443,6 +469,44 @@ function sectionWithButtonSingleton(locale: Locale, pathSuffix: string, label: s
       description: fields.text({ label: 'Description', multiline: true }),
       buttonText: fields.text({ label: 'Button text' }),
       buttonHref: fields.text({ label: 'Button link' }),
+      body: fields.emptyContent({ extension: 'mdx' }),
+    },
+  });
+}
+
+// Variant of sectionWithButtonSingleton that also exposes a reorderable list of
+// carousel images. Only used by landing/what-is-bears — images are locale-agnostic
+// so we attach the array to the EN singleton and the component reads it regardless
+// of the active locale.
+function sectionWithButtonAndImagesSingleton(locale: Locale, pathSuffix: string, label: string) {
+  return singleton({
+    ...baseSingletonMeta(locale, pathSuffix, label),
+    schema: {
+      title: fields.text({ label: 'Title', validation: { isRequired: true } }),
+      subtitle: fields.text({ label: 'Subtitle' }),
+      description: fields.text({ label: 'Description', multiline: true }),
+      buttonText: fields.text({ label: 'Button text' }),
+      buttonHref: fields.text({ label: 'Button link' }),
+      carouselImages: fields.array(
+        fields.object({
+          src: fields.image({
+            label: 'Image',
+            directory: 'src/assets/whatIsBears',
+            publicPath: '',
+            description: IMAGE_SIZE_HINT,
+            validation: { isRequired: true },
+          }),
+          alt: fields.text({
+            label: 'Alt text',
+            description: 'Read by screen readers. Optional.',
+          }),
+        }),
+        {
+          label: 'Carousel images',
+          description: 'Images shown in the marquee below the text. Drag the handle to reorder. Managed on the English page only — they display on both locales.',
+          itemLabel: (p) => p.fields.alt.value || p.fields.src.value?.filename || 'Image',
+        },
+      ),
       body: fields.emptyContent({ extension: 'mdx' }),
     },
   });
@@ -1077,7 +1141,7 @@ export default config({
     pageTextDonateEn: pageTextDonateSingleton('en'),
     pageTextDonateDe: pageTextDonateSingleton('de'),
     // Landing page sections
-    pageTextLandingWhatIsBearsEn: sectionWithButtonSingleton('en', 'landing/what-is-bears', 'Landing — What is BEARS?'),
+    pageTextLandingWhatIsBearsEn: sectionWithButtonAndImagesSingleton('en', 'landing/what-is-bears', 'Landing — What is BEARS?'),
     pageTextLandingWhatIsBearsDe: sectionWithButtonSingleton('de', 'landing/what-is-bears', 'Landing — What is BEARS?'),
     pageTextLandingMeetTheTeamEn: titleOnlySingleton('en', 'landing/meet-the-team', 'Landing — Meet the team heading'),
     pageTextLandingMeetTheTeamDe: titleOnlySingleton('de', 'landing/meet-the-team', 'Landing — Meet the team heading'),
@@ -1090,8 +1154,8 @@ export default config({
     // About us page sections
     pageTextAboutUsTitleEn: pageHeaderSingleton('en', 'about-us/about-us-title', 'About us — page header'),
     pageTextAboutUsTitleDe: pageHeaderSingleton('de', 'about-us/about-us-title', 'About us — page header'),
-    pageTextAboutUsOurMissionEn: sectionSingleton('en', 'about-us/our-mission', 'About us — Our mission'),
-    pageTextAboutUsOurMissionDe: sectionSingleton('de', 'about-us/our-mission', 'About us — Our mission'),
+    pageTextAboutUsOurMissionEn: sectionWithImageSingleton('en', 'about-us/our-mission', 'About us — Our mission', 'src/assets/about-us/our-mission'),
+    pageTextAboutUsOurMissionDe: sectionWithImageSingleton('de', 'about-us/our-mission', 'About us — Our mission', 'src/assets/about-us/our-mission'),
     pageTextAboutUsWhatsInItEn: titledListSectionSingleton('en', 'about-us/whats-in-it', "About us — What's in it for you"),
     pageTextAboutUsWhatsInItDe: titledListSectionSingleton('de', 'about-us/whats-in-it', "About us — What's in it for you"),
     pageTextAboutUsFindUsEn: findUsSingleton('en', 'about-us/find-us', 'About us — When/where to find us'),
