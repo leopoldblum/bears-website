@@ -228,7 +228,7 @@ const pageTextCollection = defineCollection({
         validateImageExtension,
         { message: `src must have a valid image extension: ${VALID_EXTENSIONS_MESSAGE}` },
       ),
-      alt: z.string().optional(),
+      alt: z.string().min(1),
     })).optional(),
     mediaCategories: z.array(z.object({
       id: z.string(),

@@ -6,20 +6,38 @@ import FacesOfBears from "@components/about/FacesOfBears.astro";
 import FindUs from "@components/about/FindUs.astro";
 import FAQ from "@components/about/FAQ.astro";
 import { aboutHeroImages } from "@utils/imageGlobs";
-import { loadAllImagesFromDirectory } from "@utils/imageLoader";
+import { loadAllImagesFromDirectory, loadImage, resolveImagePath } from "@utils/imageLoader";
 import { getPageContent } from "@utils/contentQueries";
 import { getLocale } from "@utils/i18n";
 
 const locale = getLocale(Astro.url);
 const pageContent = await getPageContent('about-us/about-us-title', locale);
-const loadedHeroImages = await loadAllImagesFromDirectory(aboutHeroImages);
-const aboutHeroImage = loadedHeroImages[0];
+
+// Image is locale-agnostic; editors can upload on either locale's singleton.
+// Prefer EN, fall back to the active locale, then to the first file in the directory.
+const imageEntry = await getPageContent('about-us/about-us-title', 'en');
+const imageFileName = imageEntry?.data.image || pageContent?.data.image;
+const imageAlt = imageEntry?.data.imageAlt || pageContent?.data.imageAlt
+  || "BEARS team working together on aerospace projects";
+
+let aboutHeroImage = imageFileName
+  ? await loadImage({
+      glob: aboutHeroImages,
+      imagePath: resolveImagePath('/src/assets/hero/about-us', imageFileName),
+      context: { itemTitle: 'About Us hero image' },
+    })
+  : null;
+
+if (!aboutHeroImage) {
+  const loadedHeroImages = await loadAllImagesFromDirectory(aboutHeroImages);
+  aboutHeroImage = loadedHeroImages[0] ?? null;
+}
 ---
 
 <BaseLayout title={pageContent?.data.title ?? "About Us"} description={pageContent?.data.seoDescription}>
   <PageHeroImage
-    image={aboutHeroImage}
-    alt="BEARS team working together on aerospace projects"
+    image={aboutHeroImage!}
+    alt={imageAlt}
     title={pageContent?.data.title ?? "Who are we?"}
     subtitle={pageContent?.data.subtitle ?? ""}
     searchAliases={locale === 'de' ? ['Über Uns'] : ['About Us']}

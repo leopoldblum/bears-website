@@ -406,17 +406,36 @@ function baseSingletonMeta(locale: Locale, pathSuffix: string, label: string) {
   };
 }
 
-function pageHeaderSingleton(locale: Locale, pathSuffix: string, label: string) {
+function pageHeaderSingleton(locale: Locale, pathSuffix: string, label: string, imageDirectory: string) {
+  const isEn = locale === 'en';
   return singleton({
     ...baseSingletonMeta(locale, pathSuffix, `${label} + SEO`),
     schema: {
       title: fields.text({ label: 'Title', validation: { isRequired: true } }),
-      subtitle: fields.text({ label: 'Subtitle' }),
+      subtitle: fields.text({
+        label: 'Subtitle',
+        description: isEn
+          ? undefined
+          : 'Note: the background image for this page is managed on the English (EN) singleton and shared across both locales.',
+      }),
       seoDescription: fields.text({
         label: 'SEO description',
         description: 'Shown as the <meta name="description"> for this page (~150 characters).',
         multiline: true,
       }),
+      ...(isEn ? {
+        image: fields.image({
+          label: 'Background image',
+          directory: imageDirectory,
+          publicPath: `/${imageDirectory}/`,
+          description: IMAGE_SIZE_HINT,
+        }),
+        imageAlt: fields.text({
+          label: 'Background image alt text',
+          description: 'Read by screen readers. Describe what the image shows.',
+          validation: { isRequired: true },
+        }),
+      } : {}),
       body: fields.emptyContent({ extension: 'mdx' }),
     },
   });
@@ -435,26 +454,35 @@ function sectionSingleton(locale: Locale, pathSuffix: string, label: string) {
 }
 
 // Variant of sectionSingleton that also exposes a single image drop-in.
-// The image is locale-agnostic — editors upload on either locale's singleton
-// and components read it from whichever side they load. Used by the About us
-// "Our Mission" section.
+// The image is locale-agnostic — it's only editable on the EN singleton and
+// the component reads it from there regardless of the active locale. DE hides
+// the field and shows a note pointing editors to EN. Used by About us "Our
+// Mission".
 function sectionWithImageSingleton(locale: Locale, pathSuffix: string, label: string, imageDirectory: string) {
+  const isEn = locale === 'en';
   return singleton({
     ...baseSingletonMeta(locale, pathSuffix, label),
     schema: {
       title: fields.text({ label: 'Title', validation: { isRequired: true } }),
-      subtitle: fields.text({ label: 'Subtitle' }),
+      subtitle: fields.text({
+        label: 'Subtitle',
+        description: isEn
+          ? undefined
+          : 'Note: the image for this section is managed on the English (EN) singleton and shared across both locales.',
+      }),
       description: fields.text({ label: 'Description', multiline: true }),
-      image: fields.image({
-        label: 'Image',
-        directory: imageDirectory,
-        publicPath: '',
-        description: IMAGE_SIZE_HINT,
-      }),
-      imageAlt: fields.text({
-        label: 'Image alt text',
-        description: 'Read by screen readers. Describe what the image shows.',
-      }),
+      ...(isEn ? {
+        image: fields.image({
+          label: 'Image',
+          directory: imageDirectory,
+          publicPath: '',
+          description: IMAGE_SIZE_HINT,
+        }),
+        imageAlt: fields.text({
+          label: 'Image alt text',
+          description: 'Read by screen readers. Describe what the image shows.',
+        }),
+      } : {}),
       body: fields.emptyContent({ extension: 'mdx' }),
     },
   });
@@ -498,13 +526,14 @@ function sectionWithButtonAndImagesSingleton(locale: Locale, pathSuffix: string,
           }),
           alt: fields.text({
             label: 'Alt text',
-            description: 'Read by screen readers. Optional.',
+            description: 'Describe what the image shows. Read by screen readers.',
+            validation: { isRequired: true, length: { min: 1 } },
           }),
         }),
         {
           label: 'Carousel images',
           description: 'Images shown in the marquee below the text. Drag the handle to reorder. Managed on the English page only — they display on both locales.',
-          itemLabel: (p) => p.fields.alt.value || p.fields.src.value?.filename || 'Image',
+          itemLabel: (p) => p.fields.alt.value || 'Image',
         },
       ),
       body: fields.emptyContent({ extension: 'mdx' }),
@@ -662,6 +691,7 @@ function pageTextFaqSingleton(locale: 'en' | 'de') {
 }
 
 function pageTextMediaCategoriesSingleton(locale: 'en' | 'de') {
+  const isEn = locale === 'en';
   return singleton({
     label: `Media categories + SEO (${locale.toUpperCase()})`,
     path: `src/content/page-text/${locale}/media-categories`,
@@ -669,8 +699,26 @@ function pageTextMediaCategoriesSingleton(locale: 'en' | 'de') {
     entryLayout: 'form',
     schema: {
       title: fields.text({ label: 'Title', validation: { isRequired: true } }),
-      subtitle: fields.text({ label: 'Subtitle' }),
+      subtitle: fields.text({
+        label: 'Subtitle',
+        description: isEn
+          ? undefined
+          : 'Note: the background image for this page is managed on the English (EN) singleton and shared across both locales.',
+      }),
       seoDescription: fields.text({ label: 'SEO description', multiline: true }),
+      ...(isEn ? {
+        image: fields.image({
+          label: 'Background image',
+          directory: 'src/assets/hero/media',
+          publicPath: '/src/assets/hero/media/',
+          description: IMAGE_SIZE_HINT,
+        }),
+        imageAlt: fields.text({
+          label: 'Background image alt text',
+          description: 'Read by screen readers. Describe what the image shows.',
+          validation: { isRequired: true },
+        }),
+      } : {}),
       mediaCategories: pageTextMediaCategoriesField(),
       body: fields.emptyContent({ extension: 'mdx' }),
     },
@@ -978,7 +1026,7 @@ const heroSlides = collection({
       label: 'Media file',
       description: `Supported: ${MEDIA_EXTENSIONS.join(', ')}. Larger files (images >2 MB, videos >10 MB) will freeze the tab during upload — just let it run and it will go through eventually. Smaller files are preferred (squoosh.app for images, HandBrake/ffmpeg for videos).`,
       directory: 'src/assets/hero/landingpage',
-      publicPath: '/src/assets/hero/landingpage/',
+      publicPath: '',
       validation: { isRequired: true },
     }),
     shownText: fields.text({ label: 'Overlay text (optional)' }),
@@ -1152,8 +1200,8 @@ export default config({
     pageTextLandingBecomeSponsorEn: sectionWithButtonSingleton('en', 'landing/become-sponsor', 'Landing — Become a sponsor'),
     pageTextLandingBecomeSponsorDe: sectionWithButtonSingleton('de', 'landing/become-sponsor', 'Landing — Become a sponsor'),
     // About us page sections
-    pageTextAboutUsTitleEn: pageHeaderSingleton('en', 'about-us/about-us-title', 'About us — page header'),
-    pageTextAboutUsTitleDe: pageHeaderSingleton('de', 'about-us/about-us-title', 'About us — page header'),
+    pageTextAboutUsTitleEn: pageHeaderSingleton('en', 'about-us/about-us-title', 'About us — page header', 'src/assets/hero/about-us'),
+    pageTextAboutUsTitleDe: pageHeaderSingleton('de', 'about-us/about-us-title', 'About us — page header', 'src/assets/hero/about-us'),
     pageTextAboutUsOurMissionEn: sectionWithImageSingleton('en', 'about-us/our-mission', 'About us — Our mission', 'src/assets/about-us/our-mission'),
     pageTextAboutUsOurMissionDe: sectionWithImageSingleton('de', 'about-us/our-mission', 'About us — Our mission', 'src/assets/about-us/our-mission'),
     pageTextAboutUsWhatsInItEn: titledListSectionSingleton('en', 'about-us/whats-in-it', "About us — What's in it for you"),
@@ -1165,15 +1213,15 @@ export default config({
     pageTextAboutUsFaqCrosslinkEn: crosslinkSingleton('en', 'about-us/faq-crosslink', 'About us — FAQ crosslink'),
     pageTextAboutUsFaqCrosslinkDe: crosslinkSingleton('de', 'about-us/faq-crosslink', 'About us — FAQ crosslink'),
     // Contact page sections
-    pageTextContactTitleEn: pageHeaderSingleton('en', 'contact/contact-title', 'Contact — page header'),
-    pageTextContactTitleDe: pageHeaderSingleton('de', 'contact/contact-title', 'Contact — page header'),
+    pageTextContactTitleEn: pageHeaderSingleton('en', 'contact/contact-title', 'Contact — page header', 'src/assets/hero/contact'),
+    pageTextContactTitleDe: pageHeaderSingleton('de', 'contact/contact-title', 'Contact — page header', 'src/assets/hero/contact'),
     pageTextContactInfoEn: sectionSingleton('en', 'contact/contact-info', 'Contact — Reach out info'),
     pageTextContactInfoDe: sectionSingleton('de', 'contact/contact-info', 'Contact — Reach out info'),
     pageTextContactCrosslinkEn: crosslinkSingleton('en', 'contact/contact-crosslink', 'Contact — Join crosslink'),
     pageTextContactCrosslinkDe: crosslinkSingleton('de', 'contact/contact-crosslink', 'Contact — Join crosslink'),
     // Events page sections
-    pageTextEventsTitleEn: pageHeaderSingleton('en', 'events/events-title', 'Events — page header'),
-    pageTextEventsTitleDe: pageHeaderSingleton('de', 'events/events-title', 'Events — page header'),
+    pageTextEventsTitleEn: pageHeaderSingleton('en', 'events/events-title', 'Events — page header', 'src/assets/hero/events'),
+    pageTextEventsTitleDe: pageHeaderSingleton('de', 'events/events-title', 'Events — page header', 'src/assets/hero/events'),
     pageTextEventsIntroEn: sectionSingleton('en', 'events/events-intro', 'Events — Intro'),
     pageTextEventsIntroDe: sectionSingleton('de', 'events/events-intro', 'Events — Intro'),
     pageTextEventsEmptyStateEn: sectionSingleton('en', 'events/events-empty-state', 'Events — Empty state'),
@@ -1181,8 +1229,8 @@ export default config({
     pageTextEventsCrosslinkEn: crosslinkSingleton('en', 'events/events-crosslink', 'Events — Projects crosslink'),
     pageTextEventsCrosslinkDe: crosslinkSingleton('de', 'events/events-crosslink', 'Events — Projects crosslink'),
     // Projects page sections
-    pageTextProjectsTitleEn: pageHeaderSingleton('en', 'projects/projects-title', 'Projects — page header'),
-    pageTextProjectsTitleDe: pageHeaderSingleton('de', 'projects/projects-title', 'Projects — page header'),
+    pageTextProjectsTitleEn: pageHeaderSingleton('en', 'projects/projects-title', 'Projects — page header', 'src/assets/hero/projects'),
+    pageTextProjectsTitleDe: pageHeaderSingleton('de', 'projects/projects-title', 'Projects — page header', 'src/assets/hero/projects'),
     pageTextProjectsCategoriesIntroEn: sectionSingleton('en', 'projects/categories-intro', 'Projects — Categories intro'),
     pageTextProjectsCategoriesIntroDe: sectionSingleton('de', 'projects/categories-intro', 'Projects — Categories intro'),
     pageTextProjectsCategoryRocketryEn: sectionSingleton('en', 'projects/category-experimental-rocketry', 'Projects — Category: experimental rocketry'),
@@ -1196,8 +1244,8 @@ export default config({
     pageTextProjectsCrosslinkEn: crosslinkSingleton('en', 'projects/projects-crosslink', 'Projects — Events crosslink'),
     pageTextProjectsCrosslinkDe: crosslinkSingleton('de', 'projects/projects-crosslink', 'Projects — Events crosslink'),
     // Sponsors page sections
-    pageTextSponsorsTitleEn: pageHeaderSingleton('en', 'sponsors/sponsors-title', 'Sponsors — page header'),
-    pageTextSponsorsTitleDe: pageHeaderSingleton('de', 'sponsors/sponsors-title', 'Sponsors — page header'),
+    pageTextSponsorsTitleEn: pageHeaderSingleton('en', 'sponsors/sponsors-title', 'Sponsors — page header', 'src/assets/hero/sponsors'),
+    pageTextSponsorsTitleDe: pageHeaderSingleton('de', 'sponsors/sponsors-title', 'Sponsors — page header', 'src/assets/hero/sponsors'),
     pageTextSponsorsIntroEn: sectionSingleton('en', 'sponsors/sponsors-intro', 'Sponsors — Intro'),
     pageTextSponsorsIntroDe: sectionSingleton('de', 'sponsors/sponsors-intro', 'Sponsors — Intro'),
     pageTextSponsorsTiersEn: sponsorTiersSingleton('en', 'sponsors/sponsor-tiers', 'Sponsors — Tier descriptions'),

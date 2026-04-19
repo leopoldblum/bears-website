@@ -19,9 +19,25 @@ const ctaContent = await getPageContent("sponsors/become-sponsor-cta", locale);
 const donateContent = await getPageContent("donate", locale);
 const crosslink = await getPageContent("sponsors/sponsors-crosslink", locale);
 
-// Hero image
-const loadedHeroImages = await loadAllImagesFromDirectory(sponsorsHeroImages);
-const sponsorHeroImage = loadedHeroImages[0];
+// Hero image — locale-agnostic; editors can upload on either locale's singleton.
+// Prefer EN, fall back to the active locale, then to the first file in the directory.
+const imageEntry = await getPageContent("sponsors/sponsors-title", "en");
+const imageFileName = imageEntry?.data.image || pageContent?.data.image;
+const sponsorHeroAlt = imageEntry?.data.imageAlt || pageContent?.data.imageAlt
+  || "Partnership and collaboration opportunities with BEARS";
+
+let sponsorHeroImage = imageFileName
+  ? await loadImage({
+      glob: sponsorsHeroImages,
+      imagePath: resolveImagePath('/src/assets/hero/sponsors', imageFileName),
+      context: { itemTitle: 'Sponsors hero image' },
+    })
+  : null;
+
+if (!sponsorHeroImage) {
+  const loadedHeroImages = await loadAllImagesFromDirectory(sponsorsHeroImages);
+  sponsorHeroImage = loadedHeroImages[0] ?? null;
+}
 
 // Sponsors by tier
 const { diamond, platinum, gold, silver, bronze } = await getSponsorsByTier();
@@ -75,8 +91,8 @@ const tiers = [
 <BaseLayout title={pageContent?.data.title ?? "Sponsors"} description={pageContent?.data.seoDescription}>
   {/* Hero */}
   <PageHeroImage
-    image={sponsorHeroImage}
-    alt="Partnership and collaboration opportunities with BEARS"
+    image={sponsorHeroImage!}
+    alt={sponsorHeroAlt}
     title={pageContent?.data.title ?? "Sponsors"}
     subtitle={pageContent?.data.subtitle ?? ""}
     searchAliases={['Sponsoren', 'Sponsors']}

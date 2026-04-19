@@ -4,21 +4,39 @@ import PageHeroImage from "@reusable/PageHeroImage.astro";
 import ContactInfo from "@components/contact/ContactInfo.astro";
 import CrosslinkBanner from "@reusable/CrosslinkBanner.astro";
 import { contactHeroImages } from "@utils/imageGlobs";
-import { loadAllImagesFromDirectory } from "@utils/imageLoader";
+import { loadAllImagesFromDirectory, loadImage, resolveImagePath } from "@utils/imageLoader";
 import { getPageContent } from "@utils/contentQueries";
 import { getLocale, localizeUrl } from "@utils/i18n";
 
 const locale = getLocale(Astro.url);
 const pageContent = await getPageContent('contact/contact-title', locale);
 const crosslink = await getPageContent('contact/contact-crosslink', locale);
-const loadedHeroImages = await loadAllImagesFromDirectory(contactHeroImages);
-const contactHeroImage = loadedHeroImages[0];
+
+// Image is locale-agnostic; editors can upload on either locale's singleton.
+// Prefer EN, fall back to the active locale, then to the first file in the directory.
+const imageEntry = await getPageContent('contact/contact-title', 'en');
+const imageFileName = imageEntry?.data.image || pageContent?.data.image;
+const contactHeroAlt = imageEntry?.data.imageAlt || pageContent?.data.imageAlt
+  || "Contact BEARS";
+
+let contactHeroImage = imageFileName
+  ? await loadImage({
+      glob: contactHeroImages,
+      imagePath: resolveImagePath('/src/assets/hero/contact', imageFileName),
+      context: { itemTitle: 'Contact hero image' },
+    })
+  : null;
+
+if (!contactHeroImage) {
+  const loadedHeroImages = await loadAllImagesFromDirectory(contactHeroImages);
+  contactHeroImage = loadedHeroImages[0] ?? null;
+}
 ---
 
 <BaseLayout title={pageContent?.data.title ?? "Contact"} description={pageContent?.data.seoDescription}>
   <PageHeroImage
-    image={contactHeroImage}
-    alt="Contact BEARS"
+    image={contactHeroImage!}
+    alt={contactHeroAlt}
     title={pageContent?.data.title ?? "Contact"}
     subtitle={pageContent?.data.subtitle ?? ""}
   />

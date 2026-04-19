@@ -5,7 +5,7 @@
 import BaseLayout from "@layouts/BaseLayout.astro";
 import MediaAccordion from "../components/reusable/MediaAccordion.astro";
 import PageHeroImage from "../components/reusable/PageHeroImage.astro";
-import { loadAllImagesFromDirectory } from "@utils/imageLoader";
+import { loadAllImagesFromDirectory, loadImage, resolveImagePath } from "@utils/imageLoader";
 import type { ImageMetadata } from "astro";
 import {
   mediaHeroImages,
@@ -22,8 +22,26 @@ import { getLocale, mediaUiStrings } from "@utils/i18n";
 
 const locale = getLocale(Astro.url);
 const pageContent = await getPageContent('media-categories', locale);
-const loadedHeroImages = await loadAllImagesFromDirectory(mediaHeroImages);
-const heroImage = loadedHeroImages[0];
+
+// Image is locale-agnostic; editors can upload on either locale's singleton.
+// Prefer EN, fall back to the active locale, then to the first file in the directory.
+const imageEntry = await getPageContent('media-categories', 'en');
+const imageFileName = imageEntry?.data.image || pageContent?.data.image;
+const heroAlt = imageEntry?.data.imageAlt || pageContent?.data.imageAlt
+  || "BEARS event showcasing student astronautics activities";
+
+let heroImage = imageFileName
+  ? await loadImage({
+      glob: mediaHeroImages,
+      imagePath: resolveImagePath('/src/assets/hero/media', imageFileName),
+      context: { itemTitle: 'Media hero image' },
+    })
+  : null;
+
+if (!heroImage) {
+  const loadedHeroImages = await loadAllImagesFromDirectory(mediaHeroImages);
+  heroImage = loadedHeroImages[0] ?? null;
+}
 
 // Static mapping from content id → image glob
 // To add a new media category, add a glob to imageGlobs.ts and map it here
@@ -76,8 +94,8 @@ for (const cat of contentCategories) {
 
 <BaseLayout title={pageContent?.data.title ?? "Media"} description={pageContent?.data.seoDescription}>
   <PageHeroImage
-    image={heroImage}
-    alt="BEARS event showcasing student astronautics activities"
+    image={heroImage!}
+    alt={heroAlt}
     title={pageContent?.data.title ?? "Media"}
     subtitle={pageContent?.data.subtitle ?? ""}
   />
