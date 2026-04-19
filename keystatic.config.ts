@@ -1003,7 +1003,7 @@ const peopleCollection = collection({
     coverImage: imageField('Portrait image', 'src/assets/people', '/src/assets/people/'),
     showInFaces: fields.checkbox({
       label: 'Show in the "Faces of BEARS" grid',
-      description: 'When on, this person appears in the Faces of BEARS grid on the About us page. Turn off for people who should only appear in a project\'s Meet the Team section.',
+      description: 'When on, this person appears in the Faces of BEARS grid on the About us page.',
       defaultValue: true,
     }),
     order: fields.integer({
