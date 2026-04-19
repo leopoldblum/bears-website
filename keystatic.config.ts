@@ -490,6 +490,38 @@ function listSectionSingleton(locale: Locale, pathSuffix: string, label: string)
   });
 }
 
+function findUsSingleton(locale: Locale, pathSuffix: string, label: string) {
+  return singleton({
+    ...baseSingletonMeta(locale, pathSuffix, label),
+    schema: {
+      title: fields.text({ label: 'Title', validation: { isRequired: true } }),
+      subtitle: fields.text({ label: 'Subtitle' }),
+      description: fields.text({ label: 'Description', multiline: true }),
+      room: fields.text({
+        label: 'Room label',
+        description: 'Large text next to the map — the room/building where you meet.',
+      }),
+      schedule: fields.text({
+        label: 'Meeting time',
+        description: 'Rendered below the room label — when the meetings happen.',
+      }),
+      mapLat: fields.number({
+        label: 'Map pin latitude',
+        description:
+          'Latitude of the pin shown on the "Where to find us" map. Tip: open google.com/maps, right-click the spot you want, and the first number in the popup is the latitude (e.g. 52.5154444).',
+        validation: { min: -90, max: 90 },
+      }),
+      mapLng: fields.number({
+        label: 'Map pin longitude',
+        description:
+          'Longitude of the pin shown on the "Where to find us" map. Tip: open google.com/maps, right-click the spot you want, and the second number in the popup is the longitude (e.g. 13.3238611).',
+        validation: { min: -180, max: 180 },
+      }),
+      body: fields.emptyContent({ extension: 'mdx' }),
+    },
+  });
+}
+
 function sponsorTiersSingleton(locale: Locale, pathSuffix: string, label: string) {
   return singleton({
     ...baseSingletonMeta(locale, pathSuffix, label),
@@ -993,8 +1025,8 @@ export default config({
     pageTextAboutUsOurMissionDe: sectionSingleton('de', 'about-us/our-mission', 'About us — Our mission'),
     pageTextAboutUsWhatsInItEn: listSectionSingleton('en', 'about-us/whats-in-it', "About us — What's in it for you"),
     pageTextAboutUsWhatsInItDe: listSectionSingleton('de', 'about-us/whats-in-it', "About us — What's in it for you"),
-    pageTextAboutUsFindUsEn: listSectionSingleton('en', 'about-us/find-us', 'About us — When/where to find us'),
-    pageTextAboutUsFindUsDe: listSectionSingleton('de', 'about-us/find-us', 'About us — When/where to find us'),
+    pageTextAboutUsFindUsEn: findUsSingleton('en', 'about-us/find-us', 'About us — When/where to find us'),
+    pageTextAboutUsFindUsDe: findUsSingleton('de', 'about-us/find-us', 'About us — When/where to find us'),
     pageTextAboutUsFacesOfBearsEn: sectionSingleton('en', 'about-us/faces-of-bears', 'About us — Faces of BEARS heading'),
     pageTextAboutUsFacesOfBearsDe: sectionSingleton('de', 'about-us/faces-of-bears', 'About us — Faces of BEARS heading'),
     pageTextAboutUsFaqCrosslinkEn: crosslinkSingleton('en', 'about-us/faq-crosslink', 'About us — FAQ crosslink'),

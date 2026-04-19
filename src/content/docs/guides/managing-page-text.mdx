@@ -83,6 +83,10 @@ Every file must have a `title`. All other fields are optional &mdash; each file 
 | `reference` | string | Donation: suggested transfer reference |
 | `paypalUrl` | string | Donation: full PayPal donation URL (pair with `paypalButtonText`) |
 | `paypalButtonText` | string | Donation: PayPal button label (pair with `paypalUrl`) |
+| `room` | string | About Us "Where to find us": large room/building label |
+| `schedule` | string | About Us "Where to find us": meeting time |
+| `mapLat` | number | Latitude of the pin on the About Us "Where to find us" map |
+| `mapLng` | number | Longitude of the pin on the About Us "Where to find us" map |
 
 ## Patterns &amp; Examples
 
@@ -193,6 +197,32 @@ items:
 **Fields used:** `title`, `items`
 
 **Files:** `contact/contact-info`
+
+---
+
+### Find Us (Room + Schedule + Map Pin)
+
+The About Us "When and where to find us" section. A heading/description plus three pieces of location info: the room label, the meeting time, and the coordinates of the map pin.
+
+```yaml
+---
+title: "When and where to find us!"
+subtitle: "You want a sneak peak?"
+description: "We meet weekly in room F11 of the ILR building at TU Berlin. Drop by — no sign-up required."
+room: "Room F11 in ILR"
+schedule: "every Tuesday at 6 PM"
+mapLat: 52.5154444
+mapLng: 13.3238611
+---
+```
+
+**Where it appears:** The two-column "Where to find us" section on the About Us page. `room` renders as the large label next to the map, `schedule` as the line beneath it. The map on the right is centered on the coordinates with a red pin.
+
+**Finding the coordinates:** Open [google.com/maps](https://www.google.com/maps), right-click the spot you want to pin, and the first two numbers in the popup are the latitude and longitude — copy them straight into `mapLat` and `mapLng`.
+
+**Fields used:** `title`, `subtitle` (optional label above heading), `description` (optional intro text), `room`, `schedule`, `mapLat`, `mapLng`
+
+**Files:** `about-us/find-us`
 
 ---
 

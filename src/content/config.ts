@@ -203,6 +203,10 @@ const pageTextCollection = defineCollection({
     })).max(4).optional(),
     items: z.array(z.string()).optional(),
     address: z.string().optional(),
+    room: z.string().optional(),
+    schedule: z.string().optional(),
+    mapLat: z.number().min(-90).max(90).optional(),
+    mapLng: z.number().min(-180).max(180).optional(),
     socialLinks: z.array(z.object({
       platform: z.string(),
       iconFile: z.string().refine(
