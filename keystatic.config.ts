@@ -2,16 +2,24 @@ import { config, collection, fields, singleton } from '@keystatic/core';
 import { buildMdxComponents } from './src/keystatic/mdxComponents';
 
 // ============================================================================
-// STORAGE — GitHub (content edits commit directly to the repo)
+// STORAGE — local filesystem in dev, GitHub in production admin
+//
+// `local` writes edits straight to src/content/ on disk — no OAuth roundtrip,
+// no wait for GitHub's build pipeline, so `npm run dev:admin` reflects changes
+// immediately. `github` is only used by the deployed admin site
+// (admin.bears-space.de, built with ADMIN_BUILD=true which sets NODE_ENV to
+// production), where editor saves need to commit back to the repo.
 // ============================================================================
 
-const storage = {
-  kind: 'github' as const,
-  repo: {
-    owner: 'leopoldblum',
-    name: 'bears-website',
-  },
-};
+const storage = process.env.NODE_ENV === 'production'
+  ? {
+      kind: 'github' as const,
+      repo: {
+        owner: 'leopoldblum',
+        name: 'bears-website',
+      },
+    }
+  : { kind: 'local' as const };
 
 // ============================================================================
 // FIELD HELPERS — shared between collections
