@@ -14,7 +14,7 @@ import {
   getMeetTheTeamProjectsWithPeople,
   getFacesOfBearsPeople,
   getSponsorsByTier,
-  getTestimonialPeople,
+  getTestimonials,
   getPublishedInstagramPosts,
   getLatestInstagramPosts,
 } from '../contentQueries';
@@ -463,10 +463,6 @@ function makePerson(overrides: {
   coverImage?: string;
   showInFaces?: boolean;
   order?: number;
-  showAsTestimonial?: boolean;
-  testimonialOrder?: number;
-  quoteEn?: string;
-  quoteDe?: string;
 }) {
   return {
     id: `${overrides.slug}.mdx`,
@@ -479,10 +475,26 @@ function makePerson(overrides: {
       coverImage: overrides.coverImage ?? `${overrides.slug}/coverImage.jpg`,
       showInFaces: overrides.showInFaces ?? false,
       order: overrides.order ?? 0,
-      showAsTestimonial: overrides.showAsTestimonial ?? false,
-      testimonialOrder: overrides.testimonialOrder ?? 0,
-      quoteEn: overrides.quoteEn,
-      quoteDe: overrides.quoteDe,
+    },
+  };
+}
+
+function makeTestimonial(overrides: {
+  slug: string;
+  person: string;
+  order?: number;
+  quoteEn?: string;
+  quoteDe?: string;
+}) {
+  return {
+    id: `${overrides.slug}.mdx`,
+    slug: overrides.slug,
+    collection: 'testimonials',
+    data: {
+      person: overrides.person,
+      order: overrides.order ?? 0,
+      quoteEn: overrides.quoteEn ?? 'quote',
+      quoteDe: overrides.quoteDe ?? 'zitat',
     },
   };
 }
@@ -691,47 +703,64 @@ describe('getSponsorsByTier', () => {
 });
 
 // ---------------------------------------------------------------------------
-// getTestimonialPeople
+// getTestimonials
 // ---------------------------------------------------------------------------
 
-describe('getTestimonialPeople', () => {
+describe('getTestimonials', () => {
   beforeEach(() => {
     mockedGetCollection.mockReset();
   });
 
-  it('returns only people flagged showAsTestimonial, sorted by testimonialOrder then slug', async () => {
-    mockedGetCollection.mockResolvedValue([
-      makePerson({ slug: 'b', showAsTestimonial: true, testimonialOrder: 5, quoteEn: 'q', quoteDe: 'q' }),
-      makePerson({ slug: 'a', showAsTestimonial: true, testimonialOrder: 5, quoteEn: 'q', quoteDe: 'q' }),
-      makePerson({ slug: 'first', showAsTestimonial: true, testimonialOrder: 1, quoteEn: 'q', quoteDe: 'q' }),
-      makePerson({ slug: 'hidden', showAsTestimonial: false }),
-    ]);
-    const result = await getTestimonialPeople();
+  function withCollections(testimonials: unknown[], people: unknown[]) {
+    mockedGetCollection.mockImplementation(async (name: string) => {
+      if (name === 'testimonials') return testimonials as Array<Record<string, unknown>>;
+      if (name === 'people') return people as Array<Record<string, unknown>>;
+      return [];
+    });
+  }
+
+  it('sorts testimonials by order (ascending) with slug tiebreak and returns the resolved people entries', async () => {
+    withCollections(
+      [
+        makeTestimonial({ slug: 'b', person: 'b', order: 5 }),
+        makeTestimonial({ slug: 'a', person: 'a', order: 5 }),
+        makeTestimonial({ slug: 'first', person: 'first', order: 1 }),
+      ],
+      [makePerson({ slug: 'a' }), makePerson({ slug: 'b' }), makePerson({ slug: 'first' })],
+    );
+    const result = await getTestimonials();
     expect(result.map((p) => p.slug)).toEqual(['first', 'a', 'b']);
   });
 
-  it('projects role and quote from the locale-appropriate fields', async () => {
-    mockedGetCollection.mockResolvedValue([
-      makePerson({
-        slug: 'jane',
-        showAsTestimonial: true,
-        roleEn: 'CEO',
-        roleDe: 'Geschäftsführerin',
-        quoteEn: 'Great place',
-        quoteDe: 'Toller Ort',
-      }),
-    ]);
-    const en = await getTestimonialPeople('en');
-    const de = await getTestimonialPeople('de');
+  it('projects role from the person (locale-aware) and quote from the testimonial (locale-aware)', async () => {
+    withCollections(
+      [makeTestimonial({ slug: 't1', person: 'jane', quoteEn: 'Great place', quoteDe: 'Toller Ort' })],
+      [makePerson({ slug: 'jane', roleEn: 'CEO', roleDe: 'Geschäftsführerin' })],
+    );
+    const en = await getTestimonials('en');
+    const de = await getTestimonials('de');
     expect((en[0].data as { role: string; quote: string }).role).toBe('CEO');
     expect((en[0].data as { role: string; quote: string }).quote).toBe('Great place');
     expect((de[0].data as { role: string; quote: string }).role).toBe('Geschäftsführerin');
     expect((de[0].data as { role: string; quote: string }).quote).toBe('Toller Ort');
   });
 
-  it('calls getCollection with "people"', async () => {
-    mockedGetCollection.mockResolvedValue([]);
-    await getTestimonialPeople();
+  it('skips and warns on testimonials whose person reference does not resolve', async () => {
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    withCollections(
+      [makeTestimonial({ slug: 'orphan', person: 'ghost' })],
+      [],
+    );
+    const result = await getTestimonials();
+    expect(result).toEqual([]);
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('ghost'));
+    warnSpy.mockRestore();
+  });
+
+  it('queries both testimonials and people collections', async () => {
+    withCollections([], []);
+    await getTestimonials();
+    expect(mockedGetCollection).toHaveBeenCalledWith('testimonials');
     expect(mockedGetCollection).toHaveBeenCalledWith('people');
   });
 });

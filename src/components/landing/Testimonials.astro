@@ -1,10 +1,13 @@
 ---
 // Testimonials - Testimonial Carousel Component
-// Sources entries from the `people` collection where showAsTestimonial is on.
+// Sources entries from the `testimonials` collection, each of which references
+// a person from the `people` collection. The query projects locale-correct
+// role + quote and keeps the people-entry shape so loadCollectionImages can
+// consume the result directly.
 import Carousel from "@mdx/Carousel.astro";
 import TestimonialCard from "./TestimonialCard.astro";
 import { loadCollectionImages } from "@utils/imageLoader";
-import { getTestimonialPeople, getPageContent } from "@utils/contentQueries";
+import { getTestimonials, getPageContent } from "@utils/contentQueries";
 import { type Locale } from '@utils/i18n';
 
 interface Props {
@@ -13,7 +16,7 @@ interface Props {
 
 const { locale } = Astro.props;
 
-const sortedPeople = await getTestimonialPeople(locale);
+const sortedPeople = await getTestimonials(locale);
 
 const peopleWithLoadedImages = await loadCollectionImages(
   sortedPeople,

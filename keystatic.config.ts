@@ -1012,30 +1012,49 @@ const peopleCollection = collection({
       defaultValue: 0,
       validation: { isRequired: true },
     }),
-    // Testimonial surface: when "Show as testimonial" is on, the person appears
-    // in the landing-page testimonials carousel with their portrait and quote.
-    // Both quote translations are required in that case — the Astro Zod
-    // schema enforces this at build time (Keystatic can't express cross-field
-    // requirements natively, same pattern as Meet the Team / person above).
-    showAsTestimonial: fields.checkbox({
-      label: 'Show as a testimonial on the landing page',
-      description: 'Off by default. Turning this on adds the person to the testimonials carousel — fill in both quote translations below.',
-      defaultValue: false,
+    body: fields.emptyContent({ extension: 'mdx' }),
+  },
+});
+
+// Locale-agnostic collection for the landing-page testimonials carousel. Each
+// entry points at a person from the `people` collection (no duplicated names
+// or portraits) and carries the two quote translations + display order.
+const testimonialsCollection = collection({
+  label: 'Testimonials',
+  slugField: 'identifier',
+  path: 'src/content/testimonials/*',
+  columns: ['order', 'person'],
+  format: { contentField: 'body' },
+  entryLayout: 'form',
+  schema: {
+    identifier: fields.slug({
+      name: {
+        label: 'Identifier',
+        description: "Used only for the filename — by convention, match the person's slug.",
+        validation: { isRequired: true },
+      },
     }),
-    testimonialOrder: fields.integer({
-      label: 'Testimonial order',
-      description: 'Only meaningful when "Show as testimonial" is on — lower numbers appear first in the carousel.',
+    person: fields.relationship({
+      label: 'Person',
+      description: 'Pick from the People collection. If the person does not exist yet, create them in the People group first.',
+      collection: 'people',
+      validation: { isRequired: true },
+    }),
+    order: fields.integer({
+      label: 'Order',
+      description: 'Lower numbers appear first in the carousel. Ties break on identifier.',
       defaultValue: 0,
+      validation: { isRequired: true },
     }),
     quoteEn: fields.text({
       label: 'Quote (English)',
-      description: 'Required when "Show as testimonial" is on.',
       multiline: true,
+      validation: { isRequired: true },
     }),
     quoteDe: fields.text({
       label: 'Zitat (Deutsch)',
-      description: 'Required when "Show as testimonial" is on.',
       multiline: true,
+      validation: { isRequired: true },
     }),
     body: fields.emptyContent({ extension: 'mdx' }),
   },
@@ -1209,6 +1228,7 @@ export default config({
       'Projects': ['projectsEn', 'projectsDe'],
       'Sponsors': ['sponsorsDiamond', 'sponsorsPlatinum', 'sponsorsGold', 'sponsorsSilver', 'sponsorsBronze'],
       'People': ['people'],
+      'Testimonials': ['testimonials'],
       'Contact & social': [
         'pageTextContactDetailsEn', 'pageTextContactDetailsDe',
         'socialPlatforms',
@@ -1289,6 +1309,8 @@ export default config({
     pageTextNavLinksDe: pageTextNavLinksCollection('de'),
     // Locale-agnostic: one entry per person; roles translate inline.
     people: peopleCollection,
+    // Locale-agnostic: one entry per landing-page testimonial; references people.
+    testimonials: testimonialsCollection,
     // Editor-driven platform catalogue referenced by the Social links singleton.
     socialPlatforms: socialPlatformsCollection,
     // Tier-split sponsors

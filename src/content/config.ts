@@ -143,20 +143,20 @@ const peopleCollection = defineCollection({
     // Only meaningful when showInFaces is true. Defaulted so people referenced
     // only from a project (showInFaces: false) don't need to set it.
     order: z.number().default(0),
-    // Testimonial-surface fields: a person with `showAsTestimonial: true` also
-    // appears in the landing-page testimonials carousel. Both quote translations
-    // are required in that case (enforced by the refine below).
-    quoteEn: z.string().optional(),
-    quoteDe: z.string().optional(),
-    showAsTestimonial: z.boolean().default(false),
-    testimonialOrder: z.number().default(0),
-  }).refine(
-    (data) => !(data.showAsTestimonial === true && (!data.quoteEn || !data.quoteDe)),
-    {
-      message: 'quoteEn and quoteDe are both required when showAsTestimonial is true',
-      path: ['quoteEn'],
-    }
-  ),
+  }),
+});
+
+const testimonialsCollection = defineCollection({
+  type: 'content',
+  schema: z.object({
+    // Reference into the `people` collection — the person the quote belongs to.
+    person: reference('people'),
+    quoteEn: z.string(),
+    quoteDe: z.string(),
+    // Sort key for the landing-page carousel. Lower numbers appear first;
+    // ties break on slug.
+    order: z.number().default(0),
+  }),
 });
 
 const docsCollection = defineCollection({
@@ -321,6 +321,7 @@ export const collections = {
   'page-text': pageTextCollection,
   instagram: instagramCollection,
   people: peopleCollection,
+  testimonials: testimonialsCollection,
   docs: docsCollection,
   'social-platforms': socialPlatformsCollection,
   branding: brandingCollection,

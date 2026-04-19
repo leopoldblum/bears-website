@@ -57,12 +57,13 @@ Dive into the guide for whatever you're working on:
 - **[Managing Events](/docs/guides/managing-events/)** &mdash; workshops, talks, and competitions
 - **[Managing Projects](/docs/guides/managing-projects/)** &mdash; ongoing and completed team projects
 - **[Managing Sponsors](/docs/guides/managing-sponsors/)** &mdash; sponsors organized by tier
-- **[Managing People](/docs/guides/managing-people/)** &mdash; Faces of BEARS grid, project leads, and testimonial quotes (one record per person)
+- **[Managing People](/docs/guides/managing-people/)** &mdash; Faces of BEARS grid and project leads (one record per person)
+- **[Managing Testimonials](/docs/guides/managing-testimonials/)** &mdash; the landing-page quote carousel (each entry references a person)
 - **[Hero Slides](/docs/guides/managing-hero-slides/)**, **[Instagram Posts](/docs/guides/managing-instagram-posts/)**
 
 ### Quick reference
 
-**Languages:** The site has English (default) and German. Localized collections (`events`, `projects`, `page-text`) use `en/` and `de/` subfolders with matching filenames. If a German translation is missing, the English version is shown automatically. Language-neutral collections: `sponsors`, `instagram`, `hero-slides`, `docs`, `people`, `social-platforms` — the `people` collection keeps both translations inline (`roleEn`/`roleDe`, `quoteEn`/`quoteDe`).
+**Languages:** The site has English (default) and German. Localized collections (`events`, `projects`, `page-text`) use `en/` and `de/` subfolders with matching filenames. If a German translation is missing, the English version is shown automatically. Language-neutral collections: `sponsors`, `instagram`, `hero-slides`, `docs`, `people`, `testimonials`, `social-platforms` — `people` keeps role translations inline (`roleEn`/`roleDe`), and `testimonials` keeps quote translations inline (`quoteEn`/`quoteDe`).
 
 **Content files:** Every file in `src/content/` is `.mdx` &mdash; a YAML **frontmatter** block at the top (between `---` delimiters), followed by optional Markdown body content. The `.mdx` extension lets event, project, and docs posts embed interactive components alongside prose; for collections like `people`, `sponsors`, or `page-text` the body is ignored and only the frontmatter is read.
 

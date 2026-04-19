@@ -1,0 +1,47 @@
+---
+title: "Managing Testimonials"
+description: "How to add and manage quotes in the landing-page Testimonials carousel."
+order: 27
+group: "Content"
+---
+
+The **Testimonials** carousel on the landing page is a dedicated collection, separate from People. Each testimonial points at a person from the People collection and adds a bilingual quote plus a display order. The same person can appear as a face in "Faces of BEARS" or as a project lead in "Meet the Team" without being a testimonial — and vice versa.
+
+## Folder Structure
+
+```
+src/content/testimonials/
+├── member-4.mdx
+├── member-5.mdx
+└── ...
+```
+
+One file per testimonial, no `en/` or `de/` subfolders — both quote translations live in the same file.
+
+## Adding a Testimonial
+
+In the Keystatic admin, open the **Testimonials** group in the sidebar and click **Add Testimonial**. If the person you want to quote doesn't exist yet, create them under **People** first (see [Managing People](/docs/guides/managing-people)), then come back.
+
+Fields:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `identifier` | string | Used only for the filename. By convention, set it to the person's slug (e.g. `jane-doe`). |
+| `person` | reference | Pick the person from the People collection dropdown. |
+| `order` | number | Sort order in the carousel. Lower numbers appear first; ties break on identifier. |
+| `quoteEn` | string | English quote text. |
+| `quoteDe` | string | German quote text. |
+
+All fields are required.
+
+## Changing the Order
+
+Open any testimonial and change its `order`. The carousel sorts ascending — so `order: 1` appears first. If two testimonials share an order, the identifier breaks the tie.
+
+## Removing a Testimonial
+
+Delete the testimonial entry from the **Testimonials** group. The underlying person record in the People collection is untouched, so they can still appear in Faces of BEARS or Meet the Team.
+
+## Image and Name
+
+The carousel uses the portrait, name, and role from the referenced person — you don't duplicate those on the testimonial. Update them once in the People entry and every surface picks up the change.

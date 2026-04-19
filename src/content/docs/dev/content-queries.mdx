@@ -68,7 +68,7 @@ posts.forEach(post => {
 
 | Function | Returns | Notes |
 |----------|---------|-------|
-| `getTestimonialPeople(locale?)` | `CollectionEntry<'people'>[]` | Filters `showAsTestimonial: true`, sorts by `testimonialOrder`, projects locale-correct `role` and `quote` onto `data` |
+| `getTestimonials(locale?)` | `CollectionEntry<'people'>[]` | Reads the `testimonials` collection, resolves each `person` reference, sorts by `order`, projects locale-correct `role` (from the person) and `quote` (from the testimonial) onto `data`; skips + warns on unresolved refs |
 | `getFacesOfBearsPeople(locale?)` | `CollectionEntry<'people'>[]` | Filters `showInFaces: true`, sorts by `order`, projects locale-correct `role` from `roleEn`/`roleDe` |
 | `getMeetTheTeamProjectsWithPeople(locale?)` | `Array<{ project, person, displayName, displayRole }>` | Joins published `displayMeetTheTeam` projects to their referenced person; skips + warns on unresolved refs |
 | `getSponsorsByTier()` | `{ diamond, platinum, gold, silver, bronze }` | Grouped by tier, sorted by `order`, ties on slug (not localized) |

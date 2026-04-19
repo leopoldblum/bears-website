@@ -181,28 +181,49 @@ export async function getLatestInstagramPosts(limit: number = 3) {
 // ============================================================================
 
 /**
- * Gets all people flagged `showAsTestimonial: true`, sorted by
- * `testimonialOrder` (ascending) with slug tiebreak, and projects `role` +
- * `quote` from the locale-appropriate pair. The `people` collection is
- * locale-agnostic — a single entry per person carries both translations.
+ * Gets all entries from the `testimonials` collection, sorted by `order`
+ * (ascending) with slug tiebreak. Resolves each entry's `person` reference
+ * to the matching `people` entry and returns the people entries augmented
+ * with `role` (from the locale-appropriate roleEn/roleDe) and `quote` (from
+ * the testimonial's locale-appropriate quote). Testimonials whose `person`
+ * reference doesn't resolve are skipped with a dev warning.
+ *
+ * Return shape stays aligned with `CollectionEntry<'people'>` so callers can
+ * feed the result directly into `loadCollectionImages(..., 'person')`.
  */
-export async function getTestimonialPeople(locale: Locale = DEFAULT_LOCALE) {
-  const all = await getCollection('people');
-  const shown = all.filter((p) => p.data.showAsTestimonial === true);
-  return [...shown]
-    .sort((a, b) => {
-      const orderDiff = a.data.testimonialOrder - b.data.testimonialOrder;
-      if (orderDiff !== 0) return orderDiff;
-      return a.slug.localeCompare(b.slug);
-    })
-    .map((p) => ({
-      ...p,
+export async function getTestimonials(locale: Locale = DEFAULT_LOCALE) {
+  const [testimonials, people] = await Promise.all([
+    getCollection('testimonials'),
+    getCollection('people'),
+  ]);
+  const peopleBySlug = new Map(people.map((p) => [p.slug, p]));
+
+  const sorted = [...testimonials].sort((a, b) => {
+    const orderDiff = a.data.order - b.data.order;
+    if (orderDiff !== 0) return orderDiff;
+    return a.slug.localeCompare(b.slug);
+  });
+
+  return sorted.flatMap((testimonial) => {
+    const ref = testimonial.data.person;
+    // Astro's reference() surfaces as `{ collection, id }` in the typed entry;
+    // the underlying frontmatter is just the slug string.
+    const personSlug = typeof ref === 'string' ? ref : ref.id;
+    const person = peopleBySlug.get(personSlug);
+    if (!person) {
+      console.warn(`[Testimonials] testimonial "${testimonial.slug}" references unknown person "${personSlug}"`);
+      return [];
+    }
+    const quote = locale === 'de' ? testimonial.data.quoteDe : testimonial.data.quoteEn;
+    return [{
+      ...person,
       data: {
-        ...p.data,
-        role: locale === 'de' ? p.data.roleDe : p.data.roleEn,
-        quote: locale === 'de' ? p.data.quoteDe : p.data.quoteEn,
+        ...person.data,
+        role: locale === 'de' ? person.data.roleDe : person.data.roleEn,
+        quote,
       },
-    }));
+    }];
+  });
 }
 
 /**

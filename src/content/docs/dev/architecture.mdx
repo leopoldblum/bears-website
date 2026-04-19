@@ -34,7 +34,7 @@ src/
 
 Content is managed through Astro's content collections, defined in `src/content/config.ts`. Each collection has a Zod schema that validates frontmatter fields.
 
-Localized collections (`events`, `projects`, `page-text`) use `en/` and `de/` subfolders. Language-neutral collections (`sponsors`, `instagram`, `hero-slides`, `docs`, `people`, `social-platforms`) stay flat — the `people` collection carries both translations inline (`roleEn`/`roleDe`, and `quoteEn`/`quoteDe` for the testimonials surface).
+Localized collections (`events`, `projects`, `page-text`) use `en/` and `de/` subfolders. Language-neutral collections (`sponsors`, `instagram`, `hero-slides`, `docs`, `people`, `testimonials`, `social-platforms`) stay flat — `people` carries both role translations inline (`roleEn`/`roleDe`), and `testimonials` carries both quote translations inline (`quoteEn`/`quoteDe`).
 
 ## Internationalization (i18n)
 

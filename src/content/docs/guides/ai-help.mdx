@@ -81,8 +81,8 @@ Frontmatter:
 Landing page shows the 3 most recent posts sorted by date.
 
 PEOPLE (src/content/people/)
-Locale-agnostic — one file per person; both role and testimonial quote translate inline.
-File naming: "name.mdx" (slug based on the person's name). Powers three surfaces from a single record: (1) Faces of BEARS grid, (2) projects' Meet the Team feature via projects.person reference, (3) landing-page Testimonials carousel.
+Locale-agnostic — one file per person; roles translate inline.
+File naming: "name.mdx" (slug based on the person's name). Powers three surfaces from a single record: (1) Faces of BEARS grid, (2) projects' Meet the Team feature via projects.person reference, (3) landing-page Testimonials carousel (via a referencing entry in the `testimonials` collection).
 Frontmatter:
   name: string (required)
   roleEn: string (required) — English role
@@ -90,10 +90,16 @@ Frontmatter:
   coverImage: string (required) — path under src/assets/people/<slug>/, written as "<slug>/<filename>", valid: .jpg .jpeg .png .webp .svg. The same portrait is reused across all three surfaces.
   showInFaces: boolean (default false) — true = appears in the Faces of BEARS grid on the About Us page; project-only people can stay false
   order: number (default 0) — only meaningful when showInFaces is true; lower = shown first; ties fall back to the slug
-  showAsTestimonial: boolean (default false) — true = appears in the landing-page Testimonials carousel. Requires quoteEn and quoteDe.
-  testimonialOrder: number (default 0) — only meaningful when showAsTestimonial is true; lower = shown first; ties fall back to the slug
-  quoteEn: string (required when showAsTestimonial is true) — English testimonial quote
-  quoteDe: string (required when showAsTestimonial is true) — German testimonial quote
+
+TESTIMONIALS (src/content/testimonials/)
+Locale-agnostic — one file per testimonial; both quote translations live inline.
+File naming: identifier (by convention matches the referenced person's slug). Each testimonial references one person from the `people` collection and supplies the quote + display order for the landing-page Testimonials carousel.
+Frontmatter:
+  identifier: string (required) — used for the filename; conventionally matches the person's slug
+  person: reference('people') (required) — slug of the person this testimonial belongs to
+  order: number (default 0) — lower = shown first in the carousel; ties fall back to identifier
+  quoteEn: string (required) — English quote
+  quoteDe: string (required) — German quote
 
 PAGE TEXT (src/content/page-text/)
 Editable headings, descriptions, buttons, and structured data for every page section.
@@ -296,7 +302,7 @@ KEY CONVENTIONS
 ========================================
 
 - isDraft: true hides events, projects, and Instagram posts in production (visible in dev).
-- Sort order is controlled differently per collection: events/projects/instagram sort by the `date` frontmatter field; sponsors/hero-slides sort by the `order` frontmatter field; people sort by `order` in the Faces of BEARS grid (when showInFaces is true) and by `testimonialOrder` in the landing Testimonials carousel (when showAsTestimonial is true). Lower = shown first; ties fall back to the slug. No filename prefixes are used for ordering — slugs should be human-readable (e.g. `jane-doe.mdx`, not `01-jane-doe.mdx`).
+- Sort order is controlled differently per collection: events/projects/instagram sort by the `date` frontmatter field; sponsors/hero-slides sort by the `order` frontmatter field; people sort by `order` in the Faces of BEARS grid (when showInFaces is true); testimonials sort by their own `order` field in the landing Testimonials carousel. Lower = shown first; ties fall back to the slug. No filename prefixes are used for ordering — slugs should be human-readable (e.g. `jane-doe.mdx`, not `01-jane-doe.mdx`).
 - FAQ answers and Accordion content support Markdown: **bold**, [links](/path), - bullet lists.
 - Sponsor tier is determined by folder name (diamond/, platinum/, gold/, silver/, bronze/), not frontmatter. Sponsor logos live under src/assets/sponsors/<tier>/<slug>/ — one folder per sponsor.
 - Sponsor tier descriptions are set via the tierDescriptions object in sponsors/sponsor-tiers.mdx (keyed by tier name), not via separate per-tier files.
