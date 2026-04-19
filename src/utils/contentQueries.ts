@@ -183,7 +183,7 @@ export async function getLatestInstagramPosts(limit: number = 3) {
 /**
  * Reads the landing-page testimonials list (a single-entry `testimonials`
  * data collection backed by a Keystatic singleton, at
- * `src/content/testimonials/list.yaml`). Resolves each item's `person`
+ * `src/content/testimonials/list.mdx`). Resolves each item's `person`
  * reference to the matching `people` entry and returns people-shaped entries
  * augmented with `role` (from the locale-appropriate roleEn/roleDe) and
  * `quote` (locale-appropriate). Array order in the file IS the carousel

@@ -139,20 +139,20 @@ const peopleCollection = defineCollection({
       validateImageExtension,
       { message: `coverImage must have a valid image extension: ${VALID_EXTENSIONS_MESSAGE}` }
     ),
-    showInFaces: z.boolean().default(false),
-    // Only meaningful when showInFaces is true. Defaulted so people referenced
-    // only from a project (showInFaces: false) don't need to set it.
+    showInFaces: z.boolean().default(true),
     order: z.number().default(0),
   }),
 });
 
-// Single-entry data collection backing the landing-page Testimonials carousel.
-// The editor manages one drag-reorderable list via a Keystatic singleton; the
-// array order in the file IS the display order on the landing page (no sort
-// key needed). Each item references a person from the `people` collection and
-// carries both quote translations inline.
+// Single-entry content collection backing the landing-page Testimonials
+// carousel. The editor manages one drag-reorderable list via a Keystatic
+// singleton; the array order in the file IS the display order on the
+// landing page (no sort key needed). Each item references a person from the
+// `people` collection and carries both quote translations inline. Stored as
+// MDX with an empty, uneditable body for consistency with other content-type
+// collections in this project.
 const testimonialsCollection = defineCollection({
-  type: 'data',
+  type: 'content',
   schema: z.object({
     items: z.array(z.object({
       person: reference('people'),

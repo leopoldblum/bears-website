@@ -91,9 +91,9 @@ Frontmatter:
   showInFaces: boolean (default false) — true = appears in the Faces of BEARS grid on the About Us page; project-only people can stay false
   order: number (default 0) — only meaningful when showInFaces is true; lower = shown first; ties fall back to the slug
 
-TESTIMONIALS (src/content/testimonials/list.yaml)
-Single-entry data collection backing the landing-page Testimonials carousel. Managed in Keystatic as a drag-reorderable list (a singleton with fields.array); array order in the file IS the display order — no sort key, no per-item filenames.
-Schema:
+TESTIMONIALS (src/content/testimonials/list.mdx)
+Single-entry content collection backing the landing-page Testimonials carousel. The MDX body is empty and not editable — only frontmatter is used. Managed in Keystatic as a drag-reorderable list (a singleton with fields.array); array order in the file IS the display order — no sort key, no per-item filenames.
+Frontmatter:
   items: array of objects, each with:
     person: reference('people') (required) — slug of the person this quote is from
     quoteEn: string (required) — English quote

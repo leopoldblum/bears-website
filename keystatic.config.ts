@@ -1003,8 +1003,8 @@ const peopleCollection = collection({
     coverImage: imageField('Portrait image', 'src/assets/people', '/src/assets/people/'),
     showInFaces: fields.checkbox({
       label: 'Show in the "Faces of BEARS" grid',
-      description: 'Off by default. People referenced only from a project (Meet the Team) can stay off — turning this on surfaces the entry in the grid on the About us page.',
-      defaultValue: false,
+      description: 'When on, this person appears in the Faces of BEARS grid on the About us page. Turn off for people who should only appear in a project\'s Meet the Team section.',
+      defaultValue: true,
     }),
     order: fields.integer({
       label: 'Order',
@@ -1017,7 +1017,7 @@ const peopleCollection = collection({
 });
 
 // Locale-agnostic singleton backing the landing-page testimonials carousel.
-// One YAML file (src/content/testimonials/list.yaml) holds a drag-reorderable
+// One MDX file (src/content/testimonials/list.mdx) holds a drag-reorderable
 // array of items. Each item shows as a compact form with a Person dropdown
 // and the two quote translations — no filename, no order number, no
 // identifier. Array position IS the carousel order.
@@ -1025,7 +1025,7 @@ function testimonialsSingleton() {
   return singleton({
     label: 'Testimonials',
     path: 'src/content/testimonials/list',
-    format: { data: 'yaml' as const },
+    format: { contentField: 'body' as const },
     entryLayout: 'form' as const,
     schema: {
       items: fields.array(
@@ -1053,6 +1053,7 @@ function testimonialsSingleton() {
           itemLabel: (item) => item.fields.person.value || 'New testimonial',
         },
       ),
+      body: fields.emptyContent({ extension: 'mdx' }),
     },
   });
 }
