@@ -2,18 +2,16 @@ import { config, collection, fields, singleton } from '@keystatic/core';
 import { buildMdxComponents } from './src/keystatic/mdxComponents';
 
 // ============================================================================
-// STORAGE — local in dev, GitHub in production
+// STORAGE — GitHub (content edits commit directly to the repo)
 // ============================================================================
 
-const storage = process.env.NODE_ENV === 'production'
-  ? {
-      kind: 'github' as const,
-      repo: {
-        owner: process.env.KEYSTATIC_GITHUB_REPO_OWNER ?? 'BEARS-TUB',
-        name: process.env.KEYSTATIC_GITHUB_REPO_NAME ?? 'bears-website',
-      },
-    }
-  : { kind: 'local' as const };
+const storage = {
+  kind: 'github' as const,
+  repo: {
+    owner: 'leopoldblum',
+    name: 'bears-website',
+  },
+};
 
 // ============================================================================
 // FIELD HELPERS — shared between collections
