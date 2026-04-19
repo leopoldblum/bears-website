@@ -2,9 +2,9 @@
 // MeetTheTeam component
 import type { ImageMetadata } from "astro";
 import Img from "@mdx/Img.astro";
-import { loadImage, defaultFaceImage } from "@utils/imageLoader";
-import { teamImages } from "@utils/imageGlobs";
-import { getMeetTheTeamProjects, getPageContent } from "@utils/contentQueries";
+import { loadImage, defaultFaceImage, resolveImagePath } from "@utils/imageLoader";
+import { peopleImages } from "@utils/imageGlobs";
+import { getMeetTheTeamProjectsWithPeople, getPageContent } from "@utils/contentQueries";
 import { type Locale } from '@utils/i18n';
 
 interface Props {
@@ -13,24 +13,26 @@ interface Props {
 
 const { locale } = Astro.props;
 
-// Get projects for MeetTheTeam section (filtered and sorted)
-const sortedProjects = await getMeetTheTeamProjects(locale);
+// Each entry already has the resolved person + locale-correct displayRole.
+const entries = await getMeetTheTeamProjectsWithPeople(locale);
 
-// Load person portrait images for each team member
 const projects = await Promise.all(
-  sortedProjects.map(async (project) => {
-    const personImage = await loadImage({
-      glob: teamImages,
-      imagePath: project.data.personImage
-        ? `/src/assets/projects/team-members/${project.data.personImage}`
-        : '',
+  entries.map(async ({ project, person, displayName, displayRole }) => {
+    const portrait = await loadImage({
+      glob: peopleImages,
+      imagePath: resolveImagePath('/src/assets/people', person.data.coverImage),
       fallbackImage: defaultFaceImage,
       context: {
         itemTitle: project.data.title,
         itemSlug: project.slug,
       },
     });
-    return { ...project, loadedImage: personImage as ImageMetadata };
+    return {
+      project,
+      displayName,
+      displayRole,
+      loadedImage: portrait as ImageMetadata,
+    };
   })
 );
 
@@ -134,11 +136,11 @@ const content = await getPageContent('landing/meet-the-team', locale);
             class="shrink-0 w-24 h-24 aspect-square rounded-lg overflow-hidden border-2 transition-all duration-200 hover:cursor-pointer"
             x-bind:class={`activeIndex === ${index} ? 'border-bears-accent scale-100' : 'border-transparent scale-95 hover:scale-100'`}
             x-on:click={`activeIndex = ${index}`}
-            aria-label={`View ${project.data.title} project`}
+            aria-label={`View ${project.project.data.title} project`}
           >
             <Img
               src={project.loadedImage}
-              alt={project.data.headOfProject ?? project.data.title}
+              alt={project.displayName ?? project.project.data.title}
               class="w-full h-full object-cover"
               loading="eager"
               sizes="96px"
@@ -167,11 +169,11 @@ const content = await getPageContent('landing/meet-the-team', locale);
                 class="shrink-0 w-24 h-24 aspect-square rounded-lg overflow-hidden border-2 transition-all duration-200 hover:cursor-pointer"
                 x-bind:class={`activeIndex === ${index} ? 'border-bears-accent scale-100' : 'border-transparent scale-95 hover:scale-100'`}
                 x-on:click={`activeIndex = ${index}`}
-                aria-label={`View ${project.data.title} project`}
+                aria-label={`View ${project.project.data.title} project`}
               >
                 <Img
                   src={project.loadedImage}
-                  alt={project.data.headOfProject ?? project.data.title}
+                  alt={project.displayName ?? project.project.data.title}
                   class="w-full h-full object-cover"
                   loading="eager"
                   sizes="96px"
@@ -194,11 +196,11 @@ const content = await getPageContent('landing/meet-the-team', locale);
                 class="absolute inset-0 transition-opacity duration-300"
                 x-bind:class={`activeIndex === ${index} ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'`}
                 x-on:click={`activeIndex = ${index}`}
-                aria-label={`View ${project.data.title} project details`}
+                aria-label={`View ${project.project.data.title} project details`}
               >
                 <Img
                   src={project.loadedImage}
-                  alt={project.data.headOfProject ?? project.data.title}
+                  alt={project.displayName ?? project.project.data.title}
                   class="w-full h-full object-cover"
                   loading="eager"
                   sizes="(min-width: 1280px) 50vw, (min-width: 1024px) 66vw, 100vw"
@@ -233,7 +235,7 @@ const content = await getPageContent('landing/meet-the-team', locale);
                     x-bind:aria-expanded={`activeIndex === ${index} ? 'true' : 'false'`}
                     aria-controls={itemId}
                   >
-                    <span>{project.data.title}</span>
+                    <span>{project.project.data.title}</span>
                     <svg
                       class="w-4 h-4 flex-shrink-0 ml-3 transition-[transform,color] duration-200"
                       x-bind:class={`activeIndex === ${index} ? 'rotate-180 text-bears-accent' : 'rotate-0 text-bears-text-onDark/60 group-hover:text-bears-accent'`}
@@ -257,14 +259,17 @@ const content = await getPageContent('landing/meet-the-team', locale);
                     style={index === 0 ? '' : 'height: 0px;'}
                   >
                     <div class="px-4 pb-4">
-                      {project.data.headOfProject && (
+                      {project.displayName && (
                         <p class="text-xs sm:text-sm text-bears-text-onDark font-medium mb-2">
-                          {project.data.headOfProject}
+                          {project.displayName}
+                          {project.displayRole && (
+                            <span class="text-bears-text-onDark/60"> — {project.displayRole}</span>
+                          )}
                         </p>
                       )}
                       <div
                         class="text-sm sm:text-base text-bears-text-onDark/90 leading-relaxed"
-                        set:html={project.data.description}
+                        set:html={project.project.data.description}
                       />
                     </div>
                   </div>

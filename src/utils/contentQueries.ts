@@ -109,16 +109,42 @@ export async function getPublishedPosts(locale: Locale = DEFAULT_LOCALE) {
 }
 
 /**
- * Gets published projects for the "Meet the Team" section.
- * Only includes projects with displayMeetTheTeam: true.
+ * Gets published projects for the "Meet the Team" section, each augmented with
+ * its referenced person entry from the `people` collection.
+ *
+ * `displayName` and `displayRole` are projected once (with locale-correct role)
+ * so callers don't need to know about the roleEn/roleDe split. Projects that
+ * reference an unknown person are skipped with a dev warning rather than
+ * crashing the build.
  */
-export async function getMeetTheTeamProjects(locale: Locale = DEFAULT_LOCALE) {
+export async function getMeetTheTeamProjectsWithPeople(locale: Locale = DEFAULT_LOCALE) {
   const allProjects = await getCollection('projects');
+  const allPeople = await getCollection('people');
+  const peopleBySlug = new Map(allPeople.map((p) => [p.slug, p]));
+
   const localeProjects = filterByLocale(allProjects, locale);
   const published = filterDrafts(localeProjects).filter(
-    p => p.data.displayMeetTheTeam === true
+    (p) => p.data.displayMeetTheTeam === true
   );
-  return sortByDateDesc(published);
+
+  return sortByDateDesc(published).flatMap((project) => {
+    const ref = project.data.person;
+    if (!ref) return [];
+    // Astro's reference() at the schema layer surfaces as `{ collection, id }`
+    // in the typed entry; the underlying frontmatter is just the slug string.
+    const personSlug = typeof ref === 'string' ? ref : ref.id;
+    const person = peopleBySlug.get(personSlug);
+    if (!person) {
+      console.warn(`[MeetTheTeam] project "${project.slug}" references unknown person "${personSlug}"`);
+      return [];
+    }
+    return [{
+      project,
+      person,
+      displayName: person.data.name,
+      displayRole: locale === 'de' ? person.data.roleDe : person.data.roleEn,
+    }];
+  });
 }
 
 /**
@@ -169,16 +195,27 @@ export async function getTestimonialsSorted(locale: Locale = DEFAULT_LOCALE) {
 }
 
 /**
- * Gets all faces of BEARS for a locale, sorted by the `order` frontmatter
- * field (ascending). Ties break on slug for deterministic output.
+ * Gets all people flagged `showInFaces: true`, sorted by `order` (ascending),
+ * with `role` projected from the locale-appropriate roleEn/roleDe field. Ties
+ * break on slug. The `people` collection is locale-agnostic — a single entry
+ * per person — so we don't filter by locale folder here, only by the flag.
  */
-export async function getFacesOfBearsSorted(locale: Locale = DEFAULT_LOCALE) {
-  const faces = filterByLocale(await getCollection('faces-of-bears'), locale);
-  return [...faces].sort((a, b) => {
-    const orderDiff = a.data.order - b.data.order;
-    if (orderDiff !== 0) return orderDiff;
-    return a.slug.localeCompare(b.slug);
-  });
+export async function getFacesOfBearsPeople(locale: Locale = DEFAULT_LOCALE) {
+  const all = await getCollection('people');
+  const shown = all.filter((p) => p.data.showInFaces === true);
+  return [...shown]
+    .sort((a, b) => {
+      const orderDiff = a.data.order - b.data.order;
+      if (orderDiff !== 0) return orderDiff;
+      return a.slug.localeCompare(b.slug);
+    })
+    .map((p) => ({
+      ...p,
+      data: {
+        ...p.data,
+        role: locale === 'de' ? p.data.roleDe : p.data.roleEn,
+      },
+    }));
 }
 
 /**

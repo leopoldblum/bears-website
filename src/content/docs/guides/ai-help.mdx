@@ -40,9 +40,8 @@ Frontmatter:
   coverImage: string (required) — path under src/assets/projects/<slug>/, written as "/<slug>/<filename>", valid: .jpg .jpeg .png .webp .svg
   isProjectCompleted: boolean (required)
   isDraft: boolean (optional, default false)
-  displayMeetTheTeam: boolean (optional) — shows a "Meet the Team" section
-  headOfProject: string (optional) — REQUIRED when displayMeetTheTeam is true
-  personImage: string (optional) — REQUIRED when displayMeetTheTeam is true, filename in src/assets/projects/team-members/, valid: .jpg .jpeg .png .webp .svg
+  displayMeetTheTeam: boolean (optional) — shows this project in the homepage "Meet the Team" section
+  person: string (optional) — REQUIRED when displayMeetTheTeam is true; slug of an entry in src/content/people/ (e.g. "jane-doe")
 Body: Markdown or MDX content for the detail page.
 
 SPONSORS (src/content/sponsors/)
@@ -90,13 +89,16 @@ Frontmatter:
   isDraft: boolean (optional, default false)
 Landing page shows the 3 most recent posts sorted by date.
 
-FACES OF BEARS (src/content/faces-of-bears/{en,de}/)
-File naming: "name.mdx" (slug based on the person's name; profiles are sorted by the `order` frontmatter field)
+PEOPLE (src/content/people/)
+Locale-agnostic — one file per person; roles translate inline via roleEn/roleDe.
+File naming: "name.mdx" (slug based on the person's name). Used by the Faces of BEARS grid AND by projects' Meet the Team feature (via projects.person reference).
 Frontmatter:
-  order: number (required) — display order (lower = shown first). Ties fall back to the slug.
   name: string (required)
-  role: string (required)
-  coverImage: string (required) — path under src/assets/faces-of-bears/<slug>/, written as "/<slug>/<filename>", valid: .jpg .jpeg .png .webp .svg
+  roleEn: string (required) — English role
+  roleDe: string (required) — German role
+  coverImage: string (required) — path under src/assets/people/<slug>/, written as "<slug>/<filename>", valid: .jpg .jpeg .png .webp .svg
+  showInFaces: boolean (default false) — true = appears in the Faces of BEARS grid on the About Us page; project-only people can stay false
+  order: number (default 0) — only meaningful when showInFaces is true; lower = shown first; ties fall back to the slug
 
 PAGE TEXT (src/content/page-text/)
 Editable headings, descriptions, buttons, and structured data for every page section.
@@ -120,7 +122,7 @@ Frontmatter fields:
   navLinks: array — each: { label, href }
   navColumns: array — each: { heading, href, links: [{ label, href }] }
   mediaCategories: array — each: { id, label } — controls which categories appear on the Media page and in what order
-    Available ids: all (combined view), about-us, events, faces-of-bears, hero, projects, team-members, testimonials, what-is-bears
+    Available ids: all (combined view), about-us, events, people, hero, projects, testimonials, what-is-bears
     Remove an entry to hide that category; reorder entries to change display order.
   address: string — multi-line text block (footer address). Each line renders on its own line.
   room: string — "Find Us" room label (large text next to the map on the About Us page, e.g. "Room F11 in ILR").
@@ -138,7 +140,7 @@ Frontmatter fields:
 
 Page text folder structure (inside en/ and de/):
   landing/        — homepage sections (what-is-bears, latest-news, meet-the-team, testimonials, become-sponsor)
-  about-us/       — about page (about-us-title, our-mission, whats-in-it, faq-crosslink, find-us, faces-of-bears)
+  about-us/       — about page (about-us-title, our-mission, whats-in-it, faq-crosslink, find-us, faces-of-bears — section heading text only; the people themselves live in src/content/people/)
   events/         — events page (events-title, events-intro, events-crosslink, events-empty-state)
   projects/       — projects page (projects-title, categories-intro, category-experimental-rocketry, category-science-and-experiments, category-robotics, projects-crosslink, projects-empty-state)
   sponsors/       — sponsors page (sponsors-title, sponsors-intro, sponsor-tiers, sponsors-crosslink, become-sponsor-cta)
@@ -267,13 +269,12 @@ SIDEBYSIDE + LEFT + RIGHT
 IMAGE RULES
 ========================================
 
-All images must be local files in src/assets/ subdirectories. Events, projects, sponsors, testimonials, and faces-of-bears use a per-slug asset layout — each entry gets its own subfolder whose name matches the entry's filename (without extension):
+All images must be local files in src/assets/ subdirectories. Events, projects, sponsors, testimonials, and people use a per-slug asset layout — each entry gets its own subfolder whose name matches the entry's filename (without extension):
   src/assets/events/<slug>/         — per-event cover + inline images
   src/assets/projects/<slug>/       — per-project cover + inline images
-  src/assets/projects/team-members/ — project team lead portraits (for Meet the Team) — shared folder, not per-slug
   src/assets/sponsors/<tier>/<slug>/ — per-sponsor logo (organized under the tier folder: diamond/, platinum/, gold/, silver/, bronze/)
   src/assets/testimonials/<slug>/   — per-testimonial portrait
-  src/assets/faces-of-bears/<slug>/ — per-profile portrait
+  src/assets/people/<slug>/         — per-person portrait (used by Faces of BEARS grid + Meet the Team)
   src/assets/about-us/our-mission/ — about page mission section images
   src/assets/whatIsBears/         — What is BEARS carousel images
   src/assets/hero/landingpage/    — landing page hero slides (images and videos)
@@ -292,12 +293,12 @@ KEY CONVENTIONS
 ========================================
 
 - isDraft: true hides events, projects, and Instagram posts in production (visible in dev).
-- Sort order is controlled differently per collection: events/projects/instagram sort by the `date` frontmatter field; sponsors/hero-slides/testimonials/faces-of-bears sort by the `order` frontmatter field (lower = shown first; ties fall back to the slug). No filename prefixes are used for ordering — slugs should be human-readable (e.g. `jane-doe.mdx`, not `01-jane-doe.mdx`).
+- Sort order is controlled differently per collection: events/projects/instagram sort by the `date` frontmatter field; sponsors/hero-slides/testimonials sort by the `order` frontmatter field; people sort by the `order` field within the Faces of BEARS grid (only when showInFaces is true). Lower = shown first; ties fall back to the slug. No filename prefixes are used for ordering — slugs should be human-readable (e.g. `jane-doe.mdx`, not `01-jane-doe.mdx`).
 - FAQ answers and Accordion content support Markdown: **bold**, [links](/path), - bullet lists.
 - Sponsor tier is determined by folder name (diamond/, platinum/, gold/, silver/, bronze/), not frontmatter. Sponsor logos live under src/assets/sponsors/<tier>/<slug>/ — one folder per sponsor.
 - Sponsor tier descriptions are set via the tierDescriptions object in sponsors/sponsor-tiers.mdx (keyed by tier name), not via separate per-tier files.
 - The seoDescription field sets a page's <meta name="description"> tag. Keep it ~150 characters.
-- For projects, if displayMeetTheTeam is true then both headOfProject and personImage must also be provided.
+- For projects, if displayMeetTheTeam is true then the `person` reference must point to an existing entry in src/content/people/ (e.g. `person: "jane-doe"`).
 - UI strings for events/projects pages (filter labels, sort options, status badges) are centralized in catalogUiStrings in src/utils/i18n.ts.
 - UI strings for the media page ("This is" label, empty state) are in mediaUiStrings in src/utils/i18n.ts.
 - Media page categories are configured via the mediaCategories field in the page-text file media-categories.mdx (at the locale root, edited in the CMS as the Media categories singleton). Category labels are set per locale in the content file, not in i18n.ts.

@@ -104,7 +104,7 @@ describe('Content file extensions', () => {
     'testimonials',
     'hero-slides',
     'instagram',
-    'faces-of-bears',
+    'people',
     'page-text',
     'docs',
   ];
@@ -143,26 +143,28 @@ const VALID_ASSET_EXTENSIONS = new Set(
 );
 
 describe('Asset file extensions', () => {
-  const assetDirs = [
-    'events',
-    'projects',
-    'projects/team-members',
-    'sponsors/bronze',
-    'sponsors/silver',
-    'sponsors/gold',
-    'sponsors/platinum',
-    'sponsors/diamond',
-    'testimonials',
-    'faces-of-bears',
-    'hero/landingpage',
+  // Each entry is `{ subdir, recurse }`. Recursive dirs (people, sponsors) are
+  // walked into subfolders so per-slug Keystatic uploads are validated too.
+  const assetDirs: { subdir: string; recurse?: boolean }[] = [
+    { subdir: 'events' },
+    { subdir: 'projects' },
+    { subdir: 'sponsors/bronze' },
+    { subdir: 'sponsors/silver' },
+    { subdir: 'sponsors/gold' },
+    { subdir: 'sponsors/platinum' },
+    { subdir: 'sponsors/diamond' },
+    { subdir: 'testimonials' },
+    { subdir: 'people', recurse: true },
+    { subdir: 'hero/landingpage' },
   ];
 
-  for (const subdir of assetDirs) {
+  for (const { subdir, recurse } of assetDirs) {
     const dir = join(ASSETS_DIR, subdir);
     if (!existsSync(dir)) continue;
 
-    const files = readdirSync(dir)
-      .filter((f) => statSync(join(dir, f)).isFile());
+    const files = recurse
+      ? collectFiles(dir).map((f) => relative(dir, f))
+      : readdirSync(dir).filter((f) => statSync(join(dir, f)).isFile());
 
     if (files.length === 0) continue;
 
@@ -190,22 +192,22 @@ describe('Asset file extensions', () => {
 /**
  * Collections that use locale subfolders (en/, de/)
  */
-const LOCALE_COLLECTIONS = ['events', 'projects', 'testimonials', 'faces-of-bears', 'page-text'];
+const LOCALE_COLLECTIONS = ['events', 'projects', 'testimonials', 'page-text'];
 
 /**
- * Collections without locale subfolders
+ * Collections without locale subfolders. `people` is locale-agnostic by design:
+ * one entry per person, with roleEn / roleDe stored inline.
  */
-const FLAT_COLLECTIONS = ['sponsors', 'hero-slides', 'instagram'];
+const FLAT_COLLECTIONS = ['sponsors', 'hero-slides', 'instagram', 'people'];
 
 /** Mapping from collection name to its expected asset directory for image references */
 const IMAGE_FIELD_TO_ASSET_DIR: Record<string, Record<string, string>> = {
   events: { coverImage: join(ASSETS_DIR, 'events') },
   projects: {
     coverImage: join(ASSETS_DIR, 'projects'),
-    personImage: join(ASSETS_DIR, 'projects', 'team-members'),
   },
   testimonials: { coverImage: join(ASSETS_DIR, 'testimonials') },
-  'faces-of-bears': { coverImage: join(ASSETS_DIR, 'faces-of-bears') },
+  people: { coverImage: join(ASSETS_DIR, 'people') },
   'hero-slides': { media: join(ASSETS_DIR, 'hero', 'landingpage') },
 };
 
@@ -325,8 +327,7 @@ describe('Frontmatter validation', () => {
 // 3b. Project-specific frontmatter edge cases
 //
 // The projects schema has conditional requirements that are easy to get wrong:
-//   - displayMeetTheTeam: true  →  headOfProject AND personImage are REQUIRED
-//   - personImage must have a valid image extension
+//   - displayMeetTheTeam: true  →  `person` slug is REQUIRED and must resolve
 //   - isProjectCompleted is a required boolean (not optional)
 //   - categoryProject must be one of the allowed enum values
 // ---------------------------------------------------------------------------
@@ -340,6 +341,16 @@ describe('Project frontmatter edge cases', () => {
   );
 
   const validCategories = ['experimental-rocketry', 'science-and-experiments', 'robotics', 'other'];
+
+  // Resolve which person slugs exist on disk for cross-reference checks.
+  const peopleDir = join(CONTENT_DIR, 'people');
+  const peopleSlugs = existsSync(peopleDir)
+    ? new Set(
+        readdirSync(peopleDir)
+          .filter((f) => VALID_CONTENT_EXTENSIONS.has(extname(f).toLowerCase()))
+          .map((f) => f.replace(/\.mdx?$/i, ''))
+      )
+    : new Set<string>();
 
   for (const file of files) {
     const label = rel(file);
@@ -370,79 +381,53 @@ describe('Project frontmatter edge cases', () => {
       );
     });
 
-    // --- displayMeetTheTeam: true requires headOfProject ---
+    // --- displayMeetTheTeam: true requires a `person` slug into the people collection ---
     if (frontmatter.displayMeetTheTeam === true) {
-      it(`${label} — "displayMeetTheTeam: true" requires "headOfProject"`, () => {
+      it(`${label} — "displayMeetTheTeam: true" requires a "person" reference`, () => {
         expectWithMessage(
-          typeof frontmatter.headOfProject === 'string' &&
-          frontmatter.headOfProject.trim().length > 0,
-          `File "${label}" has "displayMeetTheTeam: true" but is missing "headOfProject".\n\n` +
-          `When displayMeetTheTeam is enabled, you must also provide the name of the\n` +
-          `person leading the project.\n\n` +
-          `To fix: either:\n` +
-          `  1. Add a "headOfProject" field:  headOfProject: "Jane Doe"\n` +
-          `  2. Or set "displayMeetTheTeam: false" if you don't want to show the team section`,
+          typeof frontmatter.person === 'string' &&
+          frontmatter.person.trim().length > 0,
+          `File "${label}" has "displayMeetTheTeam: true" but is missing a "person" reference.\n\n` +
+          `Meet the Team entries are linked to a person record in the People\n` +
+          `collection (src/content/people/<slug>.mdx).\n\n` +
+          `To fix: pick (or create) a person and reference their slug:\n` +
+          `  person: "jane-doe"\n` +
+          `Or set "displayMeetTheTeam: false" if you don't want to show the team section.`,
         );
       });
 
-      // --- displayMeetTheTeam: true requires personImage ---
-      it(`${label} — "displayMeetTheTeam: true" requires "personImage"`, () => {
+      it(`${label} — "person" must reference an existing entry in src/content/people/`, () => {
+        const slug = (frontmatter.person as string | undefined)?.trim() ?? '';
+        if (!slug) return; // covered by the previous test
+        const available = [...peopleSlugs].sort().map((s) => `  - ${s}`).join('\n');
         expectWithMessage(
-          typeof frontmatter.personImage === 'string' &&
-          frontmatter.personImage.trim().length > 0,
-          `File "${label}" has "displayMeetTheTeam: true" but is missing "personImage".\n\n` +
-          `When displayMeetTheTeam is enabled, you must also provide a portrait image\n` +
-          `of the head of project.\n\n` +
-          `To fix: either:\n` +
-          `  1. Add a "personImage" field:  personImage: "jane-doe.jpg"\n` +
-          `     (place the image in src/assets/projects/team-members/)\n` +
-          `  2. Or set "displayMeetTheTeam: false" if you don't want to show the team section`,
-        );
-      });
-    }
-
-    // --- personImage must have a valid image extension (when provided) ---
-    if (typeof frontmatter.personImage === 'string' && frontmatter.personImage.trim().length > 0) {
-      it(`${label} — "personImage" must have a valid image extension`, () => {
-        const ext = extname(frontmatter.personImage as string).toLowerCase().slice(1);
-        const validExts = [...VALID_IMAGE_EXTENSIONS];
-
-        expectWithMessage(
-          validExts.includes(ext as typeof validExts[number]),
-          `File "${label}" has "personImage: ${frontmatter.personImage}"\n` +
-          `but "${ext}" is not a supported image format.\n\n` +
-          `Supported formats: ${validExts.map((e) => `.${e}`).join(', ')}\n\n` +
-          `To fix: convert the image to a supported format (e.g., .jpg, .png, .webp)\n` +
-          `and update the "personImage" value in the frontmatter.`,
+          peopleSlugs.has(slug),
+          `File "${label}" references person slug "${slug}",\n` +
+          `but no file was found at "src/content/people/${slug}.mdx".\n\n` +
+          (peopleSlugs.size > 0
+            ? `Available people slugs:\n${available}`
+            : `The people collection is empty. Create a person first.`) +
+          `\n\nTo fix: create the person file or update the slug to match an existing one.`,
         );
       });
     }
 
-    // --- headOfProject / personImage without displayMeetTheTeam is likely a mistake ---
-    if (frontmatter.displayMeetTheTeam !== true) {
-      const hasHead = typeof frontmatter.headOfProject === 'string' && frontmatter.headOfProject.trim().length > 0;
-      const hasPerson = typeof frontmatter.personImage === 'string' && (frontmatter.personImage as string).trim().length > 0;
-
-      if (hasHead || hasPerson) {
-        it(`${label} — "headOfProject"/"personImage" are set but "displayMeetTheTeam" is not true`, () => {
-          const setFields = [
-            hasHead ? `headOfProject: "${frontmatter.headOfProject}"` : null,
-            hasPerson ? `personImage: "${frontmatter.personImage}"` : null,
-          ].filter(Boolean);
-
-          expectWithMessage(
-            false,
-            `File "${label}" provides team member info but won't display it:\n` +
-            setFields.map((f) => `  - ${f}`).join('\n') +
-            `\n\n` +
-            `These fields only take effect when "displayMeetTheTeam: true" is set.\n` +
-            `Currently displayMeetTheTeam is ${frontmatter.displayMeetTheTeam === false ? 'false' : 'not set'}.\n\n` +
-            `To fix: either:\n` +
-            `  1. Add "displayMeetTheTeam: true" to show the team section\n` +
-            `  2. Or remove the unused "headOfProject"/"personImage" fields to avoid confusion`,
-          );
-        });
-      }
+    // --- person without displayMeetTheTeam is dead data ---
+    if (
+      frontmatter.displayMeetTheTeam !== true &&
+      typeof frontmatter.person === 'string' &&
+      frontmatter.person.trim().length > 0
+    ) {
+      it(`${label} — "person" is set but "displayMeetTheTeam" is not true`, () => {
+        expectWithMessage(
+          false,
+          `File "${label}" sets "person: ${frontmatter.person}" but won't display it:\n\n` +
+          `The "person" reference only takes effect when "displayMeetTheTeam: true" is set.\n` +
+          `Currently displayMeetTheTeam is ${frontmatter.displayMeetTheTeam === false ? 'false' : 'not set'}.\n\n` +
+          `To fix: either set "displayMeetTheTeam: true" to show the team section,\n` +
+          `or remove the unused "person" field to avoid confusion.`,
+        );
+      });
     }
   }
 });
@@ -888,17 +873,19 @@ describe('Instagram post frontmatter edge cases', () => {
 });
 
 // ---------------------------------------------------------------------------
-// 3h. Faces of BEARS frontmatter edge cases
+// 3h. People frontmatter edge cases
 //
-//   - name, role, coverImage are all required
+//   - name, roleEn, roleDe, coverImage are all required
 //   - coverImage must have a valid image extension
+//   - showInFaces is a boolean (defaulted, but must be valid type when set)
+//   - order is a number (defaulted, but must be valid type when set)
 // ---------------------------------------------------------------------------
 
-describe('Faces of BEARS frontmatter edge cases', () => {
-  const facesDir = join(CONTENT_DIR, 'faces-of-bears');
-  if (!existsSync(facesDir)) return;
+describe('People frontmatter edge cases', () => {
+  const peopleDir = join(CONTENT_DIR, 'people');
+  if (!existsSync(peopleDir)) return;
 
-  const files = collectFiles(facesDir).filter((f) =>
+  const files = collectFiles(peopleDir).filter((f) =>
     VALID_CONTENT_EXTENSIONS.has(extname(f).toLowerCase()),
   );
 
@@ -911,19 +898,27 @@ describe('Faces of BEARS frontmatter edge cases', () => {
       expectWithMessage(
         typeof frontmatter.name === 'string' && frontmatter.name.trim().length > 0,
         `File "${label}" is missing the required field "name".\n\n` +
-        `Every Faces of BEARS entry needs the team member's name.\n\n` +
+        `Every person entry needs a display name.\n\n` +
         `To fix: add a "name" field to the frontmatter:\n` +
         `  name: "Jane Doe"`,
       );
     });
 
-    it(`${label} — must have a "role"`, () => {
+    it(`${label} — must have a "roleEn"`, () => {
       expectWithMessage(
-        typeof frontmatter.role === 'string' && frontmatter.role.trim().length > 0,
-        `File "${label}" is missing the required field "role".\n\n` +
-        `Every Faces of BEARS entry needs the person's role.\n\n` +
-        `To fix: add a "role" field to the frontmatter:\n` +
-        `  role: "Project Lead / 2026"`,
+        typeof frontmatter.roleEn === 'string' && frontmatter.roleEn.trim().length > 0,
+        `File "${label}" is missing the required field "roleEn" (English role).\n\n` +
+        `To fix: add a "roleEn" field to the frontmatter:\n` +
+        `  roleEn: "Project Lead / 2026"`,
+      );
+    });
+
+    it(`${label} — must have a "roleDe"`, () => {
+      expectWithMessage(
+        typeof frontmatter.roleDe === 'string' && frontmatter.roleDe.trim().length > 0,
+        `File "${label}" is missing the required field "roleDe" (German role).\n\n` +
+        `To fix: add a "roleDe" field to the frontmatter:\n` +
+        `  roleDe: "Projektleitung / 2026"`,
       );
     });
 
@@ -931,10 +926,10 @@ describe('Faces of BEARS frontmatter edge cases', () => {
       expectWithMessage(
         typeof frontmatter.coverImage === 'string' && frontmatter.coverImage.trim().length > 0,
         `File "${label}" is missing the required field "coverImage".\n\n` +
-        `Every Faces of BEARS entry needs a portrait image.\n\n` +
+        `Every person needs a portrait image.\n\n` +
         `To fix: add a "coverImage" field to the frontmatter:\n` +
-        `  coverImage: "portrait.jpg"\n` +
-        `  (place the image in src/assets/faces-of-bears/)`,
+        `  coverImage: "<slug>/portrait.jpg"\n` +
+        `  (place the image in src/assets/people/<slug>/)`,
       );
 
       if (typeof frontmatter.coverImage === 'string') {
@@ -950,6 +945,24 @@ describe('Faces of BEARS frontmatter edge cases', () => {
         );
       }
     });
+
+    if (frontmatter.showInFaces !== undefined) {
+      it(`${label} — "showInFaces" must be a boolean`, () => {
+        expectWithMessage(
+          typeof frontmatter.showInFaces === 'boolean',
+          `File "${label}" has "showInFaces: ${frontmatter.showInFaces}" but it must be true or false.`,
+        );
+      });
+    }
+
+    if (frontmatter.order !== undefined) {
+      it(`${label} — "order" must be a number`, () => {
+        expectWithMessage(
+          typeof frontmatter.order === 'number',
+          `File "${label}" has "order: ${frontmatter.order}" but it must be a number.`,
+        );
+      });
+    }
   }
 });
 

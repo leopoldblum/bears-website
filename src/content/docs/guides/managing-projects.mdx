@@ -35,8 +35,7 @@ coverImage: /autonomous-rover/cover.jpg
 isProjectCompleted: false
 isDraft: false              # Optional — defaults to false, set true to hide from production
 displayMeetTheTeam: true    # Optional — show this project in the homepage "Meet the Team" section
-headOfProject: "Emma Watson" # Optional — required when displayMeetTheTeam is true
-personImage: "emma-watson.jpg" # Optional — required when displayMeetTheTeam is true
+person: "emma-watson"       # Optional — required when displayMeetTheTeam is true; slug of an entry in src/content/people/
 ---
 
 import { Accordion, Button, Callout, Carousel, Center, ImageGrid, Img, Instagram, Marquee, YouTube, SideBySide, Left, Right } from '@mdx';
@@ -69,9 +68,8 @@ obstacles and achieving mission objectives.
 | Field | Type | Description |
 |-------|------|-------------|
 | `isDraft` | boolean | Set to `true` to hide in production (default: `false`) |
-| `displayMeetTheTeam` | boolean | Show a "Meet the Team" section on the project page |
-| `headOfProject` | string | Name of the project lead (**required** if `displayMeetTheTeam` is `true`) |
-| `personImage` | string | Portrait image filename in `src/assets/projects/team-members/` (**required** if `displayMeetTheTeam` is `true`) |
+| `displayMeetTheTeam` | boolean | Show this project in the homepage "Meet the Team" section |
+| `person` | reference | Slug of a person in `src/content/people/` who leads this project (**required** if `displayMeetTheTeam` is `true`) |
 
 ## Cover Images
 
@@ -79,8 +77,8 @@ Each project has its own asset subfolder under `src/assets/projects/<slug>/`, wh
 
 ## Meet the Team
 
-If you set `displayMeetTheTeam: true`, you must also provide `headOfProject` and `personImage`. The build will fail if either field is missing when `displayMeetTheTeam` is enabled.
+If you set `displayMeetTheTeam: true`, you must also reference a person via the `person` field. The build will fail if `person` is missing or doesn't resolve to a real entry under `src/content/people/`.
 
-### Person Images
+In the Keystatic admin, the **Head of project** field is a dropdown populated from the People collection — pick the person there. If they don't exist yet, create them in the **People** group first. See [Managing People](/docs/guides/managing-people) for the people schema.
 
-Place team member portrait images in `src/assets/projects/team-members/`. Valid formats: `.jpg`, `.jpeg`, `.png`, `.webp`, `.svg`. Use descriptive filenames matching the person's name (e.g., `emma-watson.jpg`).
+The same person record powers both the Faces of BEARS grid (when `showInFaces: true`) and the project Meet the Team callout — name, role, and photo come from the people entry, not from the project.

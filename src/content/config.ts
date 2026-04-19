@@ -1,4 +1,4 @@
-import { defineCollection, z } from 'astro:content';
+import { defineCollection, reference, z } from 'astro:content';
 import { CoverImageType, CategoryEventEnum, CategoryProjectEnum } from '@types';
 import { IMAGE_EXTENSION_REGEX, VALID_EXTENSIONS_MESSAGE } from '@utils/imageConstants';
 
@@ -79,35 +79,16 @@ const projectsCollection = defineCollection({
     ),
     isDraft: z.boolean().default(false).optional(),
     displayMeetTheTeam: z.boolean().optional(),
-    headOfProject: z.string().optional(),
-    personImage: z.string().optional().refine(
-      validateImageExtension,
-      { message: `personImage must have a valid image extension: ${VALID_EXTENSIONS_MESSAGE}` }
-    ),
+    // Reference into the `people` collection. Replaces the old flat
+    // headOfProject (string) + personImage (filename) pair. Required when
+    // displayMeetTheTeam is true (enforced by the .refine() below).
+    person: reference('people').optional(),
     isProjectCompleted: z.boolean(),
   }).refine(
-    (data) => {
-      // If displayMeetTheTeam is true, headOfProject must be provided
-      if (data.displayMeetTheTeam === true && !data.headOfProject) {
-        return false;
-      }
-      return true;
-    },
+    (data) => !(data.displayMeetTheTeam === true && !data.person),
     {
-      message: "headOfProject is required when displayMeetTheTeam is true",
-      path: ["headOfProject"],
-    }
-  ).refine(
-    (data) => {
-      // If displayMeetTheTeam is true, personImage must be provided
-      if (data.displayMeetTheTeam === true && !data.personImage) {
-        return false;
-      }
-      return true;
-    },
-    {
-      message: "personImage is required when displayMeetTheTeam is true",
-      path: ["personImage"],
+      message: "person is required when displayMeetTheTeam is true",
+      path: ["person"],
     }
   ).transform((data) => {
     // Derive coverImageType from coverImage presence
@@ -162,16 +143,20 @@ const instagramCollection = defineCollection({
   }),
 });
 
-const facesOfBearsCollection = defineCollection({
+const peopleCollection = defineCollection({
   type: 'content',
   schema: z.object({
-    order: z.number(),
     name: z.string(),
-    role: z.string(),
+    roleEn: z.string(),
+    roleDe: z.string(),
     coverImage: z.string().refine(
       validateImageExtension,
       { message: `coverImage must have a valid image extension: ${VALID_EXTENSIONS_MESSAGE}` }
     ),
+    showInFaces: z.boolean().default(false),
+    // Only meaningful when showInFaces is true. Defaulted so people referenced
+    // only from a project (showInFaces: false) don't need to set it.
+    order: z.number().default(0),
   }),
 });
 
@@ -278,6 +263,6 @@ export const collections = {
   'hero-slides': heroSlidesCollection,
   'page-text': pageTextCollection,
   instagram: instagramCollection,
-  'faces-of-bears': facesOfBearsCollection,
+  people: peopleCollection,
   docs: docsCollection,
 };

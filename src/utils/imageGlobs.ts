@@ -30,18 +30,10 @@ export const eventImages: ImageGlob = filterImageGlob(
 /**
  * Project cover images
  * Used by: projects.astro, [slug].astro, LatestNews.astro
- * Note: includes subdirectories (Keystatic and team-members/).
+ * Note: includes subdirectories so Keystatic-scoped uploads resolve.
  */
 export const projectImages: ImageGlob = filterImageGlob(
   import.meta.glob<{ default: ImageMetadata }>("/src/assets/projects/**/*.*"),
-);
-
-/**
- * Team member portrait images for Meet the Team section
- * Used by: MeetTheTeam.astro
- */
-export const teamImages: ImageGlob = filterImageGlob(
-  import.meta.glob<{ default: ImageMetadata }>("/src/assets/projects/team-members/*.*"),
 );
 
 /**
@@ -79,12 +71,13 @@ export const ourMissionImages: ImageGlob = filterImageGlob(
 );
 
 /**
- * Faces of BEARS portrait images
- * Used by: FacesOfBears.astro
- * Note: includes subdirectories so Keystatic-scoped uploads resolve.
+ * People portrait images (Faces of BEARS grid + project Meet-the-Team leads).
+ * Used by: FacesOfBears.astro, MeetTheTeam.astro, media.astro.
+ * Files live at /src/assets/people/{slug}/coverImage.{ext} following the
+ * Keystatic per-entry-subfolder convention.
  */
-export const faceImages: ImageGlob = filterImageGlob(
-  import.meta.glob<{ default: ImageMetadata }>("/src/assets/faces-of-bears/**/*.*"),
+export const peopleImages: ImageGlob = filterImageGlob(
+  import.meta.glob<{ default: ImageMetadata }>("/src/assets/people/**/*.*"),
 );
 
 /**

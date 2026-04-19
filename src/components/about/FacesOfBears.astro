@@ -2,7 +2,7 @@
 import FaceCard from "./FaceCard.astro";
 import CarouselArrow from "@reusable/CarouselArrow.astro";
 import GradientDivider from "@reusable/GradientDivider.astro";
-import { getPageContent, getFacesOfBearsSorted } from "@utils/contentQueries";
+import { getPageContent, getFacesOfBearsPeople } from "@utils/contentQueries";
 import { loadCollectionImages } from "@utils/imageLoader";
 import { type Locale } from '@utils/i18n';
 
@@ -14,13 +14,13 @@ const { locale } = Astro.props;
 
 const content = await getPageContent("about-us/faces-of-bears", locale);
 
-const sortedFaces = await getFacesOfBearsSorted(locale);
-const facesWithImages = await loadCollectionImages(sortedFaces, "face");
+const sortedPeople = await getFacesOfBearsPeople(locale);
+const peopleWithImages = await loadCollectionImages(sortedPeople, "person");
 
-const faces = facesWithImages.map((face) => ({
-  name: face.data.name,
-  role: face.data.role,
-  coverImage: face.loadedImage,
+const faces = peopleWithImages.map((person) => ({
+  name: person.data.name,
+  role: person.data.role,
+  coverImage: person.loadedImage,
 }));
 
 const cols = 3;

@@ -1,0 +1,65 @@
+---
+title: "Managing People"
+description: "How to add and manage people who appear in the Faces of BEARS grid and as project leads in Meet the Team."
+order: 26
+group: "Content"
+---
+
+People (team members, project leads, anyone whose photo + role appears on the site) live in a single `people` collection. The same record can power both:
+
+- **Faces of BEARS** — the portrait grid on the About Us page.
+- **Meet the Team** — the project lead callout on the landing page (one project's lead is one person from this collection).
+
+The collection is **locale-agnostic**: one entry per person, with `roleEn` and `roleDe` fields for the bilingual job title. Names and photos are shared across English and German.
+
+## Folder Structure
+
+```
+src/content/people/
+├── matti-keller.mdx
+├── jane-doe.mdx
+└── ...
+```
+
+No `en/` or `de/` subfolder — one file per person.
+
+## Creating a Person
+
+Create a new `.mdx` file under `src/content/people/` named after the person (e.g., `jane-doe.mdx`). The filename becomes the slug used by other content (projects' `person` reference, the URL of any future people-detail page).
+
+```yaml
+---
+name: "Jane Doe"
+roleEn: "Propulsion Lead / WS 2025"
+roleDe: "Antriebsteam-Leitung / WS 2025"
+coverImage: jane-doe/jane-doe.jpg
+showInFaces: true
+order: 17
+---
+```
+
+The body of these files is not rendered — all content comes from the frontmatter.
+
+## Required Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `name` | string | The person's display name. |
+| `roleEn` | string | English role (e.g., "Project Lead"). |
+| `roleDe` | string | German role (e.g., "Projektleitung"). |
+| `coverImage` | string | Portrait path under `src/assets/people/<slug>/`, written as `<slug>/<filename>`. |
+| `showInFaces` | boolean | If `true`, this person appears in the Faces of BEARS grid on the About Us page. Default `false`. |
+| `order` | number | Sort order in the grid. Only meaningful when `showInFaces` is `true`. Lower numbers appear first; ties break on the slug. |
+
+## Images
+
+Each person has their own asset subfolder under `src/assets/people/<slug>/`. Place the portrait there and reference it as `<slug>/<filename>`. Valid formats: `.jpg`, `.jpeg`, `.png`, `.webp`, `.svg`.
+
+When uploading through the Keystatic admin, the image is automatically scoped to the right subfolder.
+
+## Faces of BEARS vs. Meet the Team
+
+- A person with `showInFaces: true` appears in the grid on About Us, sorted by `order`.
+- A person referenced from a project's `person` field powers that project's Meet the Team entry on the landing page — independently of `showInFaces`. Project leads who don't belong in the public grid can stay with `showInFaces: false`.
+
+To attach a person to a project, edit the project (`Projects` group in the admin) and pick the person from the **Head of project** dropdown. See [Managing Projects](/docs/guides/managing-projects).

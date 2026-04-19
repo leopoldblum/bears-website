@@ -80,11 +80,11 @@ The 9 Astro collections fan out into ~90 Keystatic collections + singletons (spl
 | `testimonials` | `testimonialsEn`, `testimonialsDe` |
 | `sponsors` | `sponsorsDiamond`, `sponsorsPlatinum`, `sponsorsGold`, `sponsorsSilver`, `sponsorsBronze` |
 | `events` | `eventsEn`, `eventsDe` |
-| `projects` | `projectsEn`, `projectsDe` |
+| `projects` | `projectsEn`, `projectsDe` — `person` field is a `reference('people')` (the project's first cross-collection relationship) |
 | `hero-slides` | `heroSlides` |
 | `page-text` | One Keystatic singleton per `.mdx` file, scoped to a "shape" schema that only exposes the fields that file uses (page header, section, section-with-button, crosslink, list section, title-only, latest-news, legal page). See the singleton names in [keystatic.config.ts](keystatic.config.ts). Plus `pageTextNavLinksEn`/`De` (collection for the two nav-link list entries). |
 | `instagram` | `instagram` |
-| `faces-of-bears` | `facesOfBearsEn`, `facesOfBearsDe` |
+| `people` | `people` — locale-agnostic, one entry per person; roles translate inline via `roleEn` / `roleDe`. Powers the Faces of BEARS grid (when `showInFaces: true`) and project Meet the Team callouts (via `projects.person`). |
 | `docs` | `docsGuides`, `docsDev` |
 
 The bilingual split is purely organisational — both Keystatic collections write to the existing `en/`/`de/` subfolders. The sponsor tier split reflects the folder structure (`src/content/sponsors/{tier}/`). For page-text, every file has its own singleton with a tight schema — this keeps each editor form minimal (e.g. a crosslink file only shows title/button text/button link). The singletons are grouped in the admin navigation by page (Landing, About us, Contact, Events, Projects, Sponsors, Legal, Site-wide) so editors find content by the page it lives on.

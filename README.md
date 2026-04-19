@@ -69,7 +69,7 @@ The site rebuilds from the previous state within a few minutes. See the [If Some
 │   │   ├── about-us/        # About page section images (our-mission/)
 │   │   ├── default-images/  # Placeholder/fallback images
 │   │   ├── events/          # Event cover images
-│   │   ├── faces-of-bears/  # Team member portraits
+│   │   ├── people/          # Person portraits (Faces of BEARS + Meet the Team)
 │   │   ├── hero/            # Hero images by page (about-us/, events/, etc.)
 │   │   ├── projects/        # Project cover images
 │   │   ├── sponsors/        # Sponsor logos by tier (diamond/, gold/, etc.)
@@ -95,9 +95,7 @@ The site rebuilds from the previous state within a few minutes. See the [If Some
 │   │   ├── events/          # Event entries (.md/.mdx)
 │   │   │   ├── en/          #   English (default)
 │   │   │   └── de/          #   German translations
-│   │   ├── faces-of-bears/  # Team member profiles
-│   │   │   ├── en/          #   English (default)
-│   │   │   └── de/          #   German translations
+│   │   ├── people/          # People (Faces of BEARS + project leads, locale-agnostic)
 │   │   ├── hero-slides/     # Landing page hero carousel slides
 │   │   ├── instagram/       # Instagram feed entries
 │   │   ├── page-text/       # Editable page copy by section
@@ -147,7 +145,7 @@ The site supports two languages: **English** (default) and **German**.
 - English pages live at the root URL (e.g., `/about-us`)
 - German pages live under `/de/` (e.g., `/de/about-us`)
 
-Localized content collections (`events`, `projects`, `page-text`, `testimonials`, `faces-of-bears`) use `en/` and `de/` subfolders. Collections that are language-neutral (`sponsors`, `instagram`, `hero-slides`) stay flat. If a German translation is missing, the English version is shown as fallback.
+Localized content collections (`events`, `projects`, `page-text`, `testimonials`) use `en/` and `de/` subfolders. Collections that are language-neutral (`people`, `sponsors`, `instagram`, `hero-slides`) stay flat — `people` keeps role translation inline via `roleEn` / `roleDe`. If a German translation is missing, the English version is shown as fallback.
 
 The language switcher in the header toggles between locales. Locale utilities live in `src/utils/i18n.ts`.
 

@@ -37,13 +37,13 @@ vi.mock('@assets/default-images/default-face.jpg', () => ({
 const mockEventImages: Record<string, () => Promise<{ default: ImageMetadata }>> = {};
 const mockProjectImages: Record<string, () => Promise<{ default: ImageMetadata }>> = {};
 const mockTestimonialImages: Record<string, () => Promise<{ default: ImageMetadata }>> = {};
-const mockFaceImages: Record<string, () => Promise<{ default: ImageMetadata }>> = {};
+const mockPeopleImages: Record<string, () => Promise<{ default: ImageMetadata }>> = {};
 
 vi.mock('../imageGlobs', () => ({
   get eventImages() { return mockEventImages; },
   get projectImages() { return mockProjectImages; },
   get testimonialImages() { return mockTestimonialImages; },
-  get faceImages() { return mockFaceImages; },
+  get peopleImages() { return mockPeopleImages; },
 }));
 
 // ---------------------------------------------------------------------------
@@ -553,7 +553,7 @@ describe('loadCollectionImages', () => {
     Object.keys(mockEventImages).forEach(k => delete mockEventImages[k]);
     Object.keys(mockProjectImages).forEach(k => delete mockProjectImages[k]);
     Object.keys(mockTestimonialImages).forEach(k => delete mockTestimonialImages[k]);
-    Object.keys(mockFaceImages).forEach(k => delete mockFaceImages[k]);
+    Object.keys(mockPeopleImages).forEach(k => delete mockPeopleImages[k]);
   });
 
   afterEach(() => {
@@ -661,30 +661,44 @@ describe('loadCoverImage', () => {
     expect(result).toEqual(img);
   });
 
-  it('loads face images using face config', async () => {
-    const img = makeImage('/faces/f1.jpg');
-    mockFaceImages['/src/assets/faces-of-bears/f1.jpg'] = () => Promise.resolve({ default: img });
+  it('loads person images using person config', async () => {
+    const img = makeImage('/people/jane/coverImage.jpg');
+    mockPeopleImages['/src/assets/people/jane/coverImage.jpg'] = () => Promise.resolve({ default: img });
 
     const collection = [{
-      id: 'f1.mdx',
-      slug: 'f1',
-      collection: 'faces-of-bears' as const,
-      data: { name: 'Jane Doe', coverImage: 'f1.jpg', role: 'CEO' },
+      id: 'jane.mdx',
+      slug: 'jane',
+      collection: 'people' as const,
+      data: {
+        name: 'Jane Doe',
+        coverImage: 'jane/coverImage.jpg',
+        roleEn: 'CEO',
+        roleDe: 'Geschäftsführerin',
+        showInFaces: true,
+        order: 0,
+      },
     }];
 
-    const result = await loadCollectionImages(collection as any, 'face');
+    const result = await loadCollectionImages(collection as any, 'person');
     expect(result[0].loadedImage).toEqual(img);
   });
 
-  it('uses default face image when face image missing', async () => {
+  it('uses default person image when portrait missing', async () => {
     const collection = [{
-      id: 'f1.mdx',
-      slug: 'f1',
-      collection: 'faces-of-bears' as const,
-      data: { name: 'No Photo', coverImage: 'nonexistent.jpg', role: 'Dev' },
+      id: 'jane.mdx',
+      slug: 'jane',
+      collection: 'people' as const,
+      data: {
+        name: 'No Photo',
+        coverImage: 'jane/nonexistent.jpg',
+        roleEn: 'Dev',
+        roleDe: 'Dev',
+        showInFaces: true,
+        order: 0,
+      },
     }];
 
-    const result = await loadCollectionImages(collection as any, 'face');
+    const result = await loadCollectionImages(collection as any, 'person');
     expect(result[0].loadedImage).toEqual(mockDefaultFace);
   });
 

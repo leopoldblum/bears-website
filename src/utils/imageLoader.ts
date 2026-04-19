@@ -107,7 +107,7 @@ interface LoadImagesForCollectionOptions<T> {
   baseDir: string;
   imageField: 'coverImage' | 'image';
   fallbackImage?: ImageMetadata;
-  postType?: 'event' | 'project' | 'testimonial' | 'face';
+  postType?: 'event' | 'project' | 'testimonial' | 'person';
 }
 
 /**
@@ -337,13 +337,13 @@ export async function loadCollectionImages(
   type: 'testimonial'
 ): Promise<Array<CollectionEntry<'testimonials'> & { loadedImage: ImageMetadata }>>;
 export async function loadCollectionImages(
-  collection: CollectionEntry<'faces-of-bears'>[],
-  type: 'face'
-): Promise<Array<CollectionEntry<'faces-of-bears'> & { loadedImage: ImageMetadata }>>;
+  collection: CollectionEntry<'people'>[],
+  type: 'person'
+): Promise<Array<CollectionEntry<'people'> & { loadedImage: ImageMetadata }>>;
 export async function loadCollectionImages(
-  collection: CollectionEntry<'events'>[] | CollectionEntry<'projects'>[] | CollectionEntry<'testimonials'>[] | CollectionEntry<'faces-of-bears'>[],
-  type: 'event' | 'project' | 'testimonial' | 'face'
-): Promise<Array<(CollectionEntry<'events'> | CollectionEntry<'projects'> | CollectionEntry<'testimonials'> | CollectionEntry<'faces-of-bears'>) & { loadedImage: ImageMetadata }>> {
+  collection: CollectionEntry<'events'>[] | CollectionEntry<'projects'>[] | CollectionEntry<'testimonials'>[] | CollectionEntry<'people'>[],
+  type: 'event' | 'project' | 'testimonial' | 'person'
+): Promise<Array<(CollectionEntry<'events'> | CollectionEntry<'projects'> | CollectionEntry<'testimonials'> | CollectionEntry<'people'>) & { loadedImage: ImageMetadata }>> {
   // Configuration mapping for each collection type
   const config = {
     event: {
@@ -364,11 +364,11 @@ export async function loadCollectionImages(
       fallbackImage: defaultTestimonialImage,
       postType: 'testimonial' as const,
     },
-    face: {
-      glob: async () => (await import('./imageGlobs')).faceImages,
-      baseDir: '/src/assets/faces-of-bears',
+    person: {
+      glob: async () => (await import('./imageGlobs')).peopleImages,
+      baseDir: '/src/assets/people',
       fallbackImage: defaultFaceImage,
-      postType: 'face' as const,
+      postType: 'person' as const,
     },
   };
 

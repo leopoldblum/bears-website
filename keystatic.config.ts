@@ -79,10 +79,9 @@ const PROJECT_CATEGORIES = [
 const MEDIA_CATEGORY_IDS = [
   { label: 'About Us images', value: 'about-us' },
   { label: 'Event covers', value: 'events' },
-  { label: 'Faces of BEARS portraits', value: 'faces-of-bears' },
+  { label: 'People portraits', value: 'people' },
   { label: 'Hero slides', value: 'hero' },
   { label: 'Project covers', value: 'projects' },
-  { label: 'Project team-member portraits', value: 'team-members' },
   { label: 'Testimonial portraits', value: 'testimonials' },
   { label: 'What is BEARS images', value: 'what-is-bears' },
   { label: 'All (aggregates every category above)', value: 'all' },
@@ -205,7 +204,7 @@ function projectsCollection(locale: 'en' | 'de') {
     label: `Projects (${locale.toUpperCase()})`,
     slugField: 'title',
     path: `src/content/projects/${locale}/*`,
-    columns: ['date', 'categoryProject', 'isDraft', 'isProjectCompleted'],
+    columns: ['date', 'categoryProject', 'isDraft', 'isProjectCompleted', 'displayMeetTheTeam'],
     format: { contentField: 'body' },
     entryLayout: 'content',
     schema: {
@@ -246,25 +245,19 @@ function projectsCollection(locale: 'en' | 'de') {
         description: 'Marks the project as completed (vs ongoing).',
         defaultValue: false,
       }),
-      // Flat trio matching the Astro Zod schema in src/content/config.ts.
-      // Keystatic's fields.conditional would nest these under a discriminant,
-      // which diverges from the flat frontmatter the site code reads. Leaving
-      // them flat + optional keeps both sides in sync. The Astro schema's
-      // .refine() enforces "headOfProject + personImage are required when
-      // displayMeetTheTeam is true" at build time.
+      // Meet the Team is wired through the unified `people` collection: editors
+      // pick a person from the dropdown rather than typing a name + uploading a
+      // duplicate photo. The Astro Zod schema's .refine() enforces "person is
+      // required when displayMeetTheTeam is true" at build time — Keystatic
+      // can't express that cross-field requirement natively.
       displayMeetTheTeam: fields.checkbox({
         label: 'Show this project in the "Meet the Team" section',
         defaultValue: false,
       }),
-      headOfProject: fields.text({
+      person: fields.relationship({
         label: 'Head of project',
-        description: 'Required when "Show in Meet the Team" is on.',
-      }),
-      personImage: fields.image({
-        label: 'Head of project portrait',
-        directory: 'src/assets/projects/team-members',
-        publicPath: '',
-        description: `Required when "Show in Meet the Team" is on. ${IMAGE_SIZE_HINT}`,
+        description: 'Pick from the People collection. Required when "Show in Meet the Team" is on. If the person does not exist yet, create them in the People group first.',
+        collection: 'people',
       }),
       body: mdxBody('src/assets/projects'),
     },
@@ -772,30 +765,44 @@ function pageTextNavLinksCollection(locale: 'en' | 'de') {
   });
 }
 
-function facesOfBearsCollection(locale: 'en' | 'de') {
-  return collection({
-    label: `Faces of BEARS (${locale.toUpperCase()})`,
-    slugField: 'name',
-    path: `src/content/faces-of-bears/${locale}/*`,
-    columns: ['order', 'role'],
-    format: { contentField: 'body' },
-    entryLayout: 'form',
-    schema: {
-      order: fields.integer({
-        label: 'Order',
-        description: 'Faces are shown in ascending order of this number. Ties fall back to filename. Tip: click the Order column header in the list view to sort entries by this.',
-        defaultValue: 0,
-        validation: { isRequired: true },
-      }),
-      name: fields.slug({
-        name: { label: 'Name', validation: { isRequired: true } },
-      }),
-      role: fields.text({ label: 'Role', validation: { isRequired: true } }),
-      coverImage: imageField('Portrait image', 'src/assets/faces-of-bears', '/src/assets/faces-of-bears/'),
-      body: fields.emptyContent({ extension: 'mdx' }),
-    },
-  });
-}
+// The People collection is locale-agnostic — name and portrait are shared
+// across languages, only `role` translates. Editors maintain a single record
+// per person; the Faces of BEARS grid filters by `showInFaces`, while project
+// Meet-the-Team entries link via a relationship() field on `projects`.
+const peopleCollection = collection({
+  label: 'People',
+  slugField: 'name',
+  path: 'src/content/people/*',
+  columns: ['showInFaces', 'order', 'roleEn'],
+  format: { contentField: 'body' },
+  entryLayout: 'form',
+  schema: {
+    name: fields.slug({
+      name: { label: 'Name', validation: { isRequired: true } },
+    }),
+    roleEn: fields.text({
+      label: 'Role (English)',
+      validation: { isRequired: true },
+    }),
+    roleDe: fields.text({
+      label: 'Rolle (Deutsch)',
+      validation: { isRequired: true },
+    }),
+    coverImage: imageField('Portrait image', 'src/assets/people', '/src/assets/people/'),
+    showInFaces: fields.checkbox({
+      label: 'Show in the "Faces of BEARS" grid',
+      description: 'Off by default. People referenced only from a project (Meet the Team) can stay off — turning this on surfaces the entry in the grid on the About us page.',
+      defaultValue: false,
+    }),
+    order: fields.integer({
+      label: 'Order',
+      description: 'Only meaningful when "Show in Faces of BEARS" is on — lower numbers appear first in the grid. Ignored for people that are not shown in the grid.',
+      defaultValue: 0,
+      validation: { isRequired: true },
+    }),
+    body: fields.emptyContent({ extension: 'mdx' }),
+  },
+});
 
 function docsCollection(section: 'guides' | 'dev') {
   const sectionLabel = section === 'guides' ? 'Guides' : 'Dev Docs';
@@ -924,7 +931,7 @@ export default config({
       'Projects': ['projectsEn', 'projectsDe'],
       'Sponsors': ['sponsorsDiamond', 'sponsorsPlatinum', 'sponsorsGold', 'sponsorsSilver', 'sponsorsBronze'],
       'Testimonials': ['testimonialsEn', 'testimonialsDe'],
-      'Faces of BEARS': ['facesOfBearsEn', 'facesOfBearsDe'],
+      'People': ['people'],
       'Instagram': ['instagram'],
       // --- Page text (per-page sub-groups, clustered by "Page text — " prefix)
       'Static Page Text - Landing': [
@@ -999,8 +1006,8 @@ export default config({
     projectsDe: projectsCollection('de'),
     pageTextNavLinksEn: pageTextNavLinksCollection('en'),
     pageTextNavLinksDe: pageTextNavLinksCollection('de'),
-    facesOfBearsEn: facesOfBearsCollection('en'),
-    facesOfBearsDe: facesOfBearsCollection('de'),
+    // Locale-agnostic: one entry per person; roles translate inline.
+    people: peopleCollection,
     // Tier-split sponsors
     sponsorsDiamond: sponsorsCollection('diamond'),
     sponsorsPlatinum: sponsorsCollection('platinum'),

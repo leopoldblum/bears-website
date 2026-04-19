@@ -12,9 +12,9 @@ All website content is managed through [Astro content collections](https://docs.
 | Collection | Folder | Localized | Key Fields |
 |------------|--------|-----------|------------|
 | `events` | `src/content/events/{en,de}/` | Yes | title, description, date, categoryEvent, coverImage, isDraft |
-| `projects` | `src/content/projects/{en,de}/` | Yes | title, description, date, categoryProject, coverImage, isDraft, isProjectCompleted |
+| `projects` | `src/content/projects/{en,de}/` | Yes | title, description, date, categoryProject, coverImage, isDraft, isProjectCompleted, person (→ `people`) |
 | `testimonials` | `src/content/testimonials/{en,de}/` | Yes | quote, name, role, order, coverImage |
-| `faces-of-bears` | `src/content/faces-of-bears/{en,de}/` | Yes | order, name, role, coverImage |
+| `people` | `src/content/people/` | No (roles inline in `roleEn`/`roleDe`) | name, roleEn, roleDe, coverImage, showInFaces, order |
 | `page-text` | `src/content/page-text/{en,de}/` | Yes | title, subtitle, description, ctas, items, address, socialLinks, navLinks, navColumns, faqs, mediaCategories, tierDescriptions, donate fields |
 | `sponsors` | `src/content/sponsors/<tier>/` | No | name, order, logo, url, bgColor (tier from folder) |
 | `hero-slides` | `src/content/hero-slides/` | No | order, type (image\|video), media, shownText, alt |
@@ -25,7 +25,7 @@ All website content is managed through [Astro content collections](https://docs.
 
 ## Image Validation
 
-All image filename fields (`coverImage`, `logo`, `personImage`) are validated against `IMAGE_EXTENSION_REGEX` from `src/utils/imageConstants.ts`. Only `.jpg`, `.jpeg`, `.png`, `.webp`, and `.svg` are accepted. The validation runs through a shared `validateImageExtension` helper in the config file.
+All image filename fields (`coverImage`, `logo`) are validated against `IMAGE_EXTENSION_REGEX` from `src/utils/imageConstants.ts`. Only `.jpg`, `.jpeg`, `.png`, `.webp`, and `.svg` are accepted. The validation runs through a shared `validateImageExtension` helper in the config file.
 
 ## Schema Patterns
 
@@ -54,14 +54,26 @@ This discriminator is used by the image loader to decide whether to load a custo
 
 ### Conditional Validation (Projects)
 
-Projects support a "Meet the Team" feature with conditional fields. When `displayMeetTheTeam` is `true`, both `headOfProject` and `personImage` become required. This is enforced with two `.refine()` calls:
+Projects support a "Meet the Team" feature linked to the `people` collection. When `displayMeetTheTeam` is `true`, the `person` reference must be set:
 
 ```typescript
 .refine(
-  (data) => !(data.displayMeetTheTeam === true && !data.headOfProject),
-  { message: "headOfProject is required when displayMeetTheTeam is true" }
+  (data) => !(data.displayMeetTheTeam === true && !data.person),
+  { message: "person is required when displayMeetTheTeam is true", path: ["person"] }
 )
 ```
+
+### Cross-Collection References
+
+The `projects.person` field is a reference into the `people` collection, declared with Astro's `reference()` helper:
+
+```typescript
+person: reference('people').optional()
+```
+
+Keystatic's matching field is `fields.relationship({ collection: 'people' })`. The frontmatter stores the slug as a plain string (e.g. `person: "jane-doe"`); at runtime it surfaces as `{ collection: 'people', id: 'jane-doe' }`. Resolve via `getEntry('people', slug)` or by indexing a pre-loaded `getCollection('people')` map (the latter is what `getMeetTheTeamProjectsWithPeople` does in `src/utils/contentQueries.ts`).
+
+This is the project's first cross-collection reference — follow the same pattern (`reference()` + `fields.relationship()`) for any future ones.
 
 ### Discriminated Unions (Hero Slides)
 
