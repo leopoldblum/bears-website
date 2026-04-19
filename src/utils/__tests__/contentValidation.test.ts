@@ -913,6 +913,8 @@ describe('Page-text frontmatter edge cases', () => {
     'src/content/page-text/de/contact-details.mdx',
     'src/content/page-text/en/social.mdx',
     'src/content/page-text/de/social.mdx',
+    'src/content/page-text/en/site/search.mdx',
+    'src/content/page-text/de/site/search.mdx',
   ]);
 
   for (const file of files) {

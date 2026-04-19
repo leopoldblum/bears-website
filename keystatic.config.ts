@@ -865,6 +865,28 @@ function pageTextDonateSingleton(locale: 'en' | 'de') {
   });
 }
 
+function pageTextSearchSingleton(locale: 'en' | 'de') {
+  return singleton({
+    label: `Search strings (${locale.toUpperCase()})`,
+    path: `src/content/page-text/${locale}/site/search`,
+    format: { contentField: 'body' },
+    entryLayout: 'form',
+    schema: {
+      searchPlaceholder: fields.text({
+        label: 'Search input placeholder',
+        description: 'Shown inside the header search box before the user types.',
+        validation: { isRequired: true },
+      }),
+      searchNoResultsText: fields.text({
+        label: 'No results message',
+        description: 'Shown in the search dropdown when a query returns nothing.',
+        validation: { isRequired: true },
+      }),
+      body: fields.emptyContent({ extension: 'mdx' }),
+    },
+  });
+}
+
 function pageTextSiteMetadataSingleton(locale: 'en' | 'de') {
   return singleton({
     label: `Site metadata (${locale.toUpperCase()})`,
@@ -1249,6 +1271,7 @@ export default config({
         'pageTextNavLinksEn', 'pageTextNavLinksDe',
         'pageTextNavColumnsEn', 'pageTextNavColumnsDe',
         'pageTextSiteMetadataEn', 'pageTextSiteMetadataDe',
+        'pageTextSearchEn', 'pageTextSearchDe',
         'branding',
         'defaultImages',
       ],
@@ -1287,6 +1310,8 @@ export default config({
     pageTextHeroDe: pageTextHeroSingleton('de'),
     pageTextSiteMetadataEn: pageTextSiteMetadataSingleton('en'),
     pageTextSiteMetadataDe: pageTextSiteMetadataSingleton('de'),
+    pageTextSearchEn: pageTextSearchSingleton('en'),
+    pageTextSearchDe: pageTextSearchSingleton('de'),
     pageTextFaqEn: pageTextFaqSingleton('en'),
     pageTextFaqDe: pageTextFaqSingleton('de'),
     pageTextMediaCategoriesEn: pageTextMediaCategoriesSingleton('en'),

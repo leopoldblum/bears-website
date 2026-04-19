@@ -257,6 +257,8 @@ const pageTextCollection = defineCollection({
     followLabel: z.string().optional(),
     orDividerText: z.string().optional(),
     bankToggleText: z.string().optional(),
+    searchPlaceholder: z.string().optional(),
+    searchNoResultsText: z.string().optional(),
   }).refine(d => !d.buttonText || d.buttonHref, {
     message: 'buttonHref is required when buttonText is set',
     path: ['buttonHref'],

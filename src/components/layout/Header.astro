@@ -40,8 +40,11 @@ function isActive(href: string): boolean {
 const alternateLocale = getAlternateLocale(locale);
 const barePath = stripLocalePrefix(currentPath);
 const alternateUrl = localizeUrl(barePath, alternateLocale);
-const searchPlaceholder = locale === 'de' ? 'Suche...' : 'Search...';
-const noResultsText = locale === 'de' ? 'Keine Ergebnisse' : 'No results found';
+const searchContent = await getPageContent('site/search', locale);
+const searchPlaceholder = searchContent?.data.searchPlaceholder
+  ?? (locale === 'de' ? 'Suche...' : 'Search...');
+const noResultsText = searchContent?.data.searchNoResultsText
+  ?? (locale === 'de' ? 'Keine Ergebnisse' : 'No results found');
 ---
 
 <header
