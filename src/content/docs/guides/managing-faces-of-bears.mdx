@@ -5,17 +5,17 @@ order: 26
 group: "Content"
 ---
 
-The "Faces of BEARS" section on the About Us page shows team member profiles. They are stored in `src/content/faces-of-bears/`, organized by locale.
+The "Faces of BEARS" section on the About Us page shows team member profiles. They are stored in `src/content/faces-of-bears/` as `.mdx` files, organized by locale.
 
 ## Folder Structure
 
 ```
 src/content/faces-of-bears/
 ├── en/              ← English (default)
-│   ├── 01-member.md
+│   ├── matti-keller.mdx
 │   └── ...
 └── de/              ← German translations
-    ├── 01-member.md
+    ├── matti-keller.mdx
     └── ...
 ```
 
@@ -23,13 +23,14 @@ Both folders use identical filenames. If a German translation is missing, the En
 
 ## Creating a Member Profile
 
-Create a new file in `en/` (or `de/` for German) with the naming convention `NN-name.md` (e.g., `17-jane-doe.md`). The numeric prefix controls the display order.
+Create a new file in `en/` (or `de/` for German) named after the person (e.g., `jane-doe.mdx`). The `order` frontmatter field controls display order — the filename is just a slug.
 
 ```yaml
 ---
+order: 17
 name: "Jane Doe"
 role: "Propulsion Lead / WS 2025"
-coverImage: /17-jane-doe/jane-doe.jpg
+coverImage: /jane-doe/jane-doe.jpg
 ---
 ```
 
@@ -41,6 +42,7 @@ All fields are required:
 
 | Field | Type | Description |
 |-------|------|-------------|
+| `order` | number | Sort order (lower = shown first). Ties fall back to the slug. |
 | `name` | string | Team member's name |
 | `role` | string | Their role, year, or team |
 | `coverImage` | string | Path to portrait image under `src/assets/faces-of-bears/<slug>/`, written as `/<slug>/<filename>` |
@@ -51,4 +53,4 @@ Each profile has its own asset subfolder under `src/assets/faces-of-bears/<slug>
 
 ## Display Order
 
-Profiles are sorted alphabetically by slug. Use numeric prefixes like `01-`, `02-`, `03-` to control the order.
+Profiles are sorted ascending by the `order` frontmatter field; ties break on the filename. Lower `order` values are shown first.

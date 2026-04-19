@@ -1,0 +1,95 @@
+---
+title: "ImageGrid"
+description: "Responsive image grid with square (CSS Grid) and masonry (CSS columns) layout modes."
+order: 26
+group: "MDX Components"
+---
+
+The `ImageGrid` component arranges a list of images in a responsive grid. It has two layout modes &mdash; a square 1:1 CSS Grid and a native-aspect masonry built on CSS columns &mdash; and delegates the actual image rendering to `<Img>`, so every tile gets the same `srcset`, lazy-loading, and click-to-enlarge behaviour as a standalone image.
+
+It lives under `src/components/reusable/` rather than `src/components/mdx/`, but is re-exported from the `@mdx` barrel so it can be used inside MDX content alongside the other components.
+
+## Import
+
+```astro
+import ImageGrid from '@mdx/ImageGrid.astro';
+// or, equivalently:
+import ImageGrid from '@reusable/ImageGrid.astro';
+```
+
+## Props
+
+| Prop | Type | Default | Description |
+|------|------|---------|-------------|
+| `images` | `ImageWithAlt[]` | &mdash; | **Required.** Array of `{ image, alt }` entries; `image` is an `ImageMetadata` import |
+| `cols` | `2 \| 3 \| 4 \| 5 \| 6` | `4` | Desktop column count (mobile is always 2 cols) |
+| `gap` | `'sm' \| 'md' \| 'lg'` | `'md'` | Spacing between tiles |
+| `aspectRatio` | `'square' \| 'native'` | `'square'` | `square` crops to 1:1, `native` keeps original aspect ratios in a masonry layout |
+| `enableClickToEnlarge` | `boolean` | `true` | Forwarded to every `<Img>` inside the grid |
+| `class` | `string` | &mdash; | Extra classes for the grid container |
+
+`ImageWithAlt` is defined in `@types`:
+
+```ts
+type ImageWithAlt = { image: ImageMetadata; alt: string };
+```
+
+## Layout Modes
+
+### Square (CSS Grid)
+
+`aspectRatio="square"` (default) renders a `display: grid` container. Each tile is wrapped in a `<div class="square-grid-item">` whose CSS `aspect-ratio: 1 / 1` forces a 1:1 box; the inner `<Img>` uses `object-fit: cover` and `object-position: center` to crop. This mode produces a perfectly aligned grid &mdash; same row heights, same column widths.
+
+Column classes (responsive):
+
+| `cols` | Mobile | `lg:` (≥1024 px) |
+|--------|--------|------------------|
+| 2 | `grid-cols-2` | `grid-cols-2` |
+| 3 | `grid-cols-2` | `grid-cols-3` |
+| 4 | `grid-cols-2` | `grid-cols-4` |
+| 5 | `grid-cols-2` | `grid-cols-5` |
+| 6 | `grid-cols-2` | `grid-cols-6` |
+
+### Native (CSS columns / masonry)
+
+`aspectRatio="native"` switches to `display: block` with `column-count` (`columns-2 lg:columns-4` etc.). Each tile uses `break-inside: avoid` so it never splits across columns, and `margin-bottom` provides vertical spacing. Images keep their original aspect ratios &mdash; no cropping &mdash; and the layout flows Pinterest-style, with shorter tiles tucked under taller ones.
+
+This mode is purely CSS &mdash; no JavaScript layout code &mdash; which means **the visual order of items follows column-fill order, not source order** (browser default is `column-fill: balance`). For galleries this is usually fine; for ordered content prefer the square mode.
+
+## Sizes Hint
+
+The component computes a `sizes` value from `cols` and passes it to each `<Img>`:
+
+| `cols` | `sizes` value |
+|--------|---------------|
+| 2 | `"50vw"` |
+| 3 | `"(min-width: 1024px) 33vw, 50vw"` |
+| 4 | `"(min-width: 1024px) 25vw, 50vw"` |
+| 5 | `"(min-width: 1024px) 20vw, 50vw"` |
+| 6 | `"(min-width: 1024px) 17vw, 50vw"` |
+
+This lets the browser pick the smallest image from the `srcset` that still covers the rendered tile.
+
+## Lazy Loading
+
+The first `cols * 2` images load eagerly (i.e. the visible-on-load top section &mdash; two full rows in square mode); everything below is lazy. This keeps the first paint snappy without loading the entire gallery up front.
+
+## Spacing Between Tiles
+
+| `gap` | Square mode (`gap-*`) | Native mode (`mb-*`) |
+|-------|-----------------------|----------------------|
+| `sm` | `gap-2` | `mb-2` |
+| `md` | `gap-3 lg:gap-4` | `mb-3 lg:mb-4` |
+| `lg` | `gap-4 lg:gap-6` | `mb-4 lg:mb-6` |
+
+Square mode uses CSS Grid `gap` (both axes); native mode uses `margin-bottom` per item (CSS columns ignores `gap` between items, only between columns).
+
+## CMS Behaviour
+
+When `ImageGrid` is inserted via the Keystatic MDX editor, each image entry is a direct file upload &mdash; the editor writes the resulting filename into `images[].image` and Keystatic stores the file under the surrounding entry's per-slug asset folder. This is why the schema accepts `images` as an inline array rather than a folder reference: it lets editors add images one at a time without leaving the inline block.
+
+## Container Classes
+
+Both modes wrap with `not-prose` to escape any inherited prose typography styles, plus `px-4 sm:px-6 py-3` for default horizontal/vertical padding. Pass extra utilities via `class` to override.
+
+**Source:** `src/components/reusable/ImageGrid.astro` (re-exported from `src/components/mdx/index.ts`)

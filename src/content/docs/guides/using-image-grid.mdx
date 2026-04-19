@@ -1,0 +1,90 @@
+---
+title: "Using Image Grids"
+description: "Display multiple images in a responsive grid or masonry layout."
+order: 39
+group: "MDX Components"
+---
+
+
+The `ImageGrid` component lays out a set of images in a responsive grid. Use it when you have several photos that belong together &mdash; event highlights, project galleries, team snapshots &mdash; and you want them displayed in a tidy, equal-spaced layout instead of one long vertical stack.
+
+```mdx
+import { Accordion, Button, Callout, Carousel, Center, ImageGrid, Img, Instagram, Marquee, YouTube, SideBySide, Left, Right } from '@mdx';
+import photo1 from '@assets/events/photo-1.jpg';
+import photo2 from '@assets/events/photo-2.jpg';
+import photo3 from '@assets/events/photo-3.jpg';
+import photo4 from '@assets/events/photo-4.jpg';
+
+<ImageGrid
+  cols={4}
+  images={[
+    { image: photo1, alt: 'Workshop opening' },
+    { image: photo2, alt: 'Team building the rocket' },
+    { image: photo3, alt: 'Launch day crowd' },
+    { image: photo4, alt: 'Recovered payload' },
+  ]}
+/>
+```
+
+Click any image to open the full-size modal (same behaviour as `<Img>`).
+
+## Two Layout Modes
+
+### Square (default)
+
+Every image is cropped to a 1:1 square. Great for **logo grids, profile photos, or any gallery where uniform tile size matters more than seeing every part of the photo**.
+
+```mdx
+<ImageGrid cols={3} aspectRatio="square" images={[...]} />
+```
+
+### Native (masonry)
+
+Images keep their original aspect ratio and flow into columns Pinterest-style. Use this when **you want to show whole photos without cropping** (mixed portrait + landscape shots).
+
+```mdx
+<ImageGrid cols={3} aspectRatio="native" images={[...]} />
+```
+
+## Controlling Columns
+
+`cols` sets the **desktop** column count. Mobile is always 2 columns &mdash; the desktop value kicks in at the `lg:` breakpoint (1024 px).
+
+| `cols` | Mobile | Desktop |
+|--------|--------|---------|
+| `2` | 2 | 2 |
+| `3` | 2 | 3 |
+| `4` (default) | 2 | 4 |
+| `5` | 2 | 5 |
+| `6` | 2 | 6 |
+
+## Spacing Between Images
+
+`gap` controls the breathing room between tiles:
+
+| Value | Mobile | Desktop |
+|-------|--------|---------|
+| `"sm"` | 0.5rem | 0.5rem |
+| `"md"` (default) | 0.75rem | 1rem |
+| `"lg"` | 1rem | 1.5rem |
+
+## Required Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `images` | array | Each entry has `image` (an imported `ImageMetadata`) and `alt` (description for accessibility). Must be a local file from `src/assets/` &mdash; no remote URLs. |
+
+## Optional Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `cols` | enum | Desktop column count: `2`, `3`, `4`, `5`, or `6` (default: `4`) |
+| `gap` | enum | `"sm"`, `"md"`, `"lg"` (default: `"md"`) |
+| `aspectRatio` | enum | `"square"` (1:1 grid, default) or `"native"` (masonry, original aspect ratios) |
+| `enableClickToEnlarge` | boolean | Show full-size modal on click for every tile (default: `true`) |
+| `class` | string | Extra CSS classes on the grid container |
+
+## Notes
+
+- Each tile uses the same `<Img>` pipeline as a standalone image &mdash; you get optimised, responsive `srcset`s and lazy loading for free. The first `cols * 2` images load eagerly so the top of the grid feels snappy; everything below is lazy.
+- For carousels, see the [Using Carousels](/docs/using-carousels) guide. Carousels are better when you want one slide visible at a time; image grids are better when you want everything visible at once.

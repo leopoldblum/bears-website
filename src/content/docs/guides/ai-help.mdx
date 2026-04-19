@@ -91,8 +91,9 @@ Frontmatter:
 Landing page shows the 3 most recent posts sorted by date.
 
 FACES OF BEARS (src/content/faces-of-bears/{en,de}/)
-File naming: "NN-name.mdx" (numeric prefix controls sort order; profiles are sorted alphabetically by slug)
+File naming: "name.mdx" (slug based on the person's name; profiles are sorted by the `order` frontmatter field)
 Frontmatter:
+  order: number (required) — display order (lower = shown first). Ties fall back to the slug.
   name: string (required)
   role: string (required)
   coverImage: string (required) — path under src/assets/faces-of-bears/<slug>/, written as "/<slug>/<filename>", valid: .jpg .jpeg .png .webp .svg
@@ -120,6 +121,12 @@ Frontmatter fields:
   mediaCategories: array — each: { id, label } — controls which categories appear on the Media page and in what order
     Available ids: all (combined view), about-us, events, faces-of-bears, hero, projects, team-members, testimonials, what-is-bears
     Remove an entry to hide that category; reorder entries to change display order.
+  address: string — multi-line text block (footer address). Each line renders on its own line.
+  room: string — "Find Us" room label (large text next to the map on the About Us page, e.g. "Room F11 in ILR").
+  schedule: string — "Find Us" meeting time, rendered below the room label (e.g. "every Tuesday at 6 PM").
+  mapLat: number — "Find Us" map pin latitude (-90 to 90). Right-click a spot on google.com/maps to copy it.
+  mapLng: number — "Find Us" map pin longitude (-180 to 180). Second number in the same Google Maps popup.
+  tierDescriptions: object — sponsor tier descriptions, keyed by tier name: { diamond?, platinum?, gold?, silver?, bronze? } — each value is a short string shown above the logos for that tier.
   accountHolder: string — donation: account holder name (donate card on sponsors page)
   bankName: string — donation: bank name
   iban: string — donation: IBAN for bank transfers
@@ -129,19 +136,26 @@ Frontmatter fields:
   paypalButtonText: string — donation: PayPal button label (must be paired with paypalUrl)
 
 Page text folder structure (inside en/ and de/):
-  landing/        — homepage sections (hero, what-is-bears, latest-news, meet-the-team, testimonials, become-sponsor)
-  about-us/       — about page (about-us-title, our-mission, whats-in-it, faq, faq-crosslink, find-us, faces-of-bears)
+  landing/        — homepage sections (what-is-bears, latest-news, meet-the-team, testimonials, become-sponsor)
+  about-us/       — about page (about-us-title, our-mission, whats-in-it, faq-crosslink, find-us, faces-of-bears)
   events/         — events page (events-title, events-intro, events-crosslink, events-empty-state)
   projects/       — projects page (projects-title, categories-intro, category-experimental-rocketry, category-science-and-experiments, category-robotics, projects-crosslink, projects-empty-state)
-  sponsors/       — sponsors page (sponsors-title, sponsors-intro, sponsor-tiers, sponsors-crosslink, become-sponsor-cta, donate)
+  sponsors/       — sponsors page (sponsors-title, sponsors-intro, sponsor-tiers, sponsors-crosslink, become-sponsor-cta)
   contact/        — contact page (contact-title, contact-info, contact-crosslink)
-  media/          — media page (media-title)
-  header/         — header navigation (navigation — uses navLinks)
-  footer/         — footer (navigation — uses navColumns, footer-address, bottom-bar)
-  site/           — site-wide (metadata, social-links — social media links used across the site)
+  footer/         — footer (footer-address — multiline address block)
+  site/           — site-wide (metadata — default site title and description)
+  nav-links/      — flat nav-link lists (header — top nav; footer-bottom — copyright + legal links)
   404/            — 404 page (not-found)
   imprint/        — imprint page (imprint)
   datenschutz/    — privacy policy page (datenschutz)
+
+Outlier singletons at the locale root (one .mdx file each, not in a subfolder):
+  hero.mdx              — landing hero (subtitle/seoDescription + ctas array of up to 4 cards)
+  faq.mdx               — About Us FAQ (faqs array; answers support Markdown)
+  donate.mdx            — Sponsors page donate card (description, items, accountHolder, bankName, iban, bic, reference, paypalUrl, paypalButtonText)
+  social.mdx            — site-wide social media links (socialLinks array; iconFile is an .svg uploaded to src/assets/social-icons/)
+  nav-columns.mdx       — footer multi-column navigation (navColumns array)
+  media-categories.mdx  — Media page (title + subtitle + seoDescription + mediaCategories array)
 
 Naming conventions:
   -title suffix     — page hero header (e.g. events/events-title)
@@ -154,24 +168,29 @@ Special behaviors:
   buttonText and buttonHref must both be provided for a button to appear. Same for secondButtonText and secondButtonHref.
   paypalUrl and paypalButtonText must both be provided for the PayPal donate button to appear (same pairing rule).
   items with " -> " separator are split into title + description; without it, the whole string is the title.
-  donate (at the locale root, edited as a Keystatic singleton) is the direct-donations card on the Sponsors page (below the sponsor CTA, bridged by an "OR" divider). Bank block renders if any of accountHolder/bankName/iban/bic is set; each row only appears if its field is present. The items array renders as a value-props row with icons (icons hardcoded, labels editable).
+  donate.mdx (at the locale root) is the direct-donations card on the Sponsors page (below the sponsor CTA, bridged by an "OR" divider). Bank block renders if any of accountHolder/bankName/iban/bic is set; each row only appears if its field is present. The items array renders as a value-props row with icons (icons hardcoded, labels editable).
+  sponsors/sponsor-tiers.mdx uses the tierDescriptions object (keyed by tier name: diamond/platinum/gold/silver/bronze) — each value renders above the logos for that tier on the sponsors page.
+  footer/footer-address.mdx uses the address field (multi-line text), not items, so the address block can be edited as a free-form block.
 
 ========================================
 MDX COMPONENTS (for .mdx event/project posts)
 ========================================
 
 Import all components at the top of any .mdx file:
-import { Accordion, Button, Callout, Carousel, Center, Img, Instagram, Marquee, YouTube, SideBySide, Left, Right } from '@mdx';
+import { Accordion, Button, Callout, Carousel, Center, ImageGrid, Img, Instagram, Marquee, YouTube, SideBySide, Left, Right } from '@mdx';
 
 Unused imports are removed at build time — no performance cost.
 
 ACCORDION
   items: array of { title, subtitle? (small label), content (Markdown string) } (required)
-  defaultOpen: number | null — which item starts expanded (0-indexed)
-  allowCloseAll: boolean — whether clicking the open item closes it
-  allowMultiple: boolean — allow multiple items open at once (default false)
+  mode: "single-closed" | "single-open" | "always-one" | "multi" — preset that controls how items open/close.
+    - "single-closed": all items start closed; clicking one closes any other (default-style).
+    - "single-open": first item starts open; only one open at a time; can close all.
+    - "always-one": first item starts open; only one open at a time; can NOT close all (always exactly one open).
+    - "multi": all start closed; multiple can be open simultaneously.
   width: CSS string (default "100%")
   Content field supports full Markdown: bold, links, lists, code.
+  Note: legacy props defaultOpen/allowCloseAll/allowMultiple still work in the Astro component for backwards compatibility, but `mode` is the preferred API and is the only Accordion control surfaced through the CMS.
 
 BUTTON
   content: string — button text (or use a slot)
@@ -191,7 +210,8 @@ CAROUSEL
   showArrows: boolean (default true)
   showDots: boolean (default true)
   height: "sm" (300px) | "md" (400px) | "lg" (500px) | "xl" (600px) | "auto" (default "md")
-  Each direct child becomes a slide. Supports swipe on mobile.
+  Each direct child becomes a slide (typically <Img>). Supports swipe on mobile.
+  IMPORTANT: <Img> children must keep enableClickToEnlarge enabled (the default) — disabling it breaks the carousel layout.
 
 CENTER
   Wraps content in a centered flex container. Accepts a class prop.
@@ -202,10 +222,21 @@ IMG
   width: CSS string (default "100%")
   sizes: string — responsive sizes hint
   widths: number[] — srcset widths (default [240, 480, 720, 960, 1280, 1920, 2560])
+  class: string — extra Tailwind/CSS classes (e.g. "rounded-full shadow-lg"). If the class string contains a "rounded*" utility, the default rounded-lg is dropped so your override wins.
   enableClickToEnlarge: boolean (default true) — click opens full-size modal
   loading: "eager" | "lazy" (default "lazy")
+  fetchpriority: "high" | "low" | "auto"
   fill: boolean — fill parent container (default false)
   IMPORTANT: images must be imported from src/assets/, never remote URLs.
+
+IMAGEGRID
+  images: array of { image, alt } (required) — `image` is an imported ImageMetadata, `alt` is the caption
+  cols: 2 | 3 | 4 | 5 | 6 (default 4) — desktop column count; mobile is always 2 cols
+  gap: "sm" | "md" | "lg" (default "md") — spacing between images
+  aspectRatio: "square" (default) | "native" — "square" crops every tile to 1:1 in a CSS Grid; "native" keeps the original aspect ratios in a CSS-columns masonry layout
+  enableClickToEnlarge: boolean (default true) — applies to every Img inside the grid
+  class: string — extra classes for the grid container
+  Each tile is rendered with the standard <Img> pipeline (responsive srcset, lazy loading, click-to-enlarge), so the same image rules apply.
 
 INSTAGRAM
   url: string (required) — full Instagram URL or shortcode
@@ -220,10 +251,11 @@ MARQUEE
   Infinite horizontal scroll. Children are auto-duplicated to fill screen.
 
 YOUTUBE
-  id: string (required) — video ID or full URL (youtube.com/watch?v=..., youtu.be/..., etc.)
+  id: string (required) — video ID or full URL (youtube.com/watch?v=..., youtu.be/..., youtube.com/embed/..., youtube.com/shorts/..., etc.)
   title: string — accessibility label (default "YouTube video")
   width: CSS string (default "100%")
-  start: number — start time in seconds
+  start: number — start time in seconds (only sent to YouTube when > 0)
+  class: string — extra Tailwind/CSS classes for the outer container
 
 SIDEBYSIDE + LEFT + RIGHT
   SideBySide: showDivider (boolean, default true) — vertical line between columns on desktop
@@ -259,16 +291,19 @@ KEY CONVENTIONS
 ========================================
 
 - isDraft: true hides events, projects, and Instagram posts in production (visible in dev).
-- Sort order is controlled differently per collection: events/projects/instagram sort by the `date` frontmatter field; sponsors/hero-slides/testimonials sort by the `order` frontmatter field; faces-of-bears sorts alphabetically by slug (use numeric prefixes like 01-, 02- in the filename to control order).
+- Sort order is controlled differently per collection: events/projects/instagram sort by the `date` frontmatter field; sponsors/hero-slides/testimonials/faces-of-bears sort by the `order` frontmatter field (lower = shown first; ties fall back to the slug). No filename prefixes are used for ordering — slugs should be human-readable (e.g. `jane-doe.mdx`, not `01-jane-doe.mdx`).
 - FAQ answers and Accordion content support Markdown: **bold**, [links](/path), - bullet lists.
 - Sponsor tier is determined by folder name (diamond/, platinum/, gold/, silver/, bronze/), not frontmatter. Sponsor logos live under src/assets/sponsors/<tier>/<slug>/ — one folder per sponsor.
+- Sponsor tier descriptions are set via the tierDescriptions object in sponsors/sponsor-tiers.mdx (keyed by tier name), not via separate per-tier files.
 - The seoDescription field sets a page's <meta name="description"> tag. Keep it ~150 characters.
 - For projects, if displayMeetTheTeam is true then both headOfProject and personImage must also be provided.
 - UI strings for events/projects pages (filter labels, sort options, status badges) are centralized in catalogUiStrings in src/utils/i18n.ts.
 - UI strings for the media page ("This is" label, empty state) are in mediaUiStrings in src/utils/i18n.ts.
-- Media page categories are configured via the mediaCategories field in the page-text file media-categories.mdx (edited in the CMS as the Media categories singleton). Category labels are set per locale in the content file, not in i18n.ts.
+- Media page categories are configured via the mediaCategories field in the page-text file media-categories.mdx (at the locale root, edited in the CMS as the Media categories singleton). Category labels are set per locale in the content file, not in i18n.ts.
 - Header navigation links are configured in the page-text file nav-links/header.mdx (navLinks field, edited as part of the Nav link lists collection in the CMS).
-- Footer navigation columns are configured in the page-text file nav-columns.mdx (navColumns field, edited as the Footer navigation singleton in the CMS).
+- Footer navigation columns are configured in the page-text file nav-columns.mdx (at the locale root, navColumns field, edited as the Footer navigation singleton in the CMS).
+- Footer address is configured in footer/footer-address.mdx via the multi-line `address` field (each line in the YAML renders as its own line on the page).
+- Slugs for events, projects, docs, and nav-links must be lowercase kebab-case (letters, digits, and hyphens only) — Keystatic enforces this and validation at build time would reject anything else. Use `hackathon-2026.mdx`, not `Hackathon 2026.mdx`.
 ```
 
 </AiPromptBlock>

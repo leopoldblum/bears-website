@@ -5,17 +5,17 @@ order: 23
 group: "Content"
 ---
 
-Testimonials are stored in `src/content/testimonials/` as Markdown files, organized by locale.
+Testimonials are stored in `src/content/testimonials/` as `.mdx` files, organized by locale.
 
 ## Folder Structure
 
 ```
 src/content/testimonials/
 ├── en/              ← English (default)
-│   ├── member-4.md
+│   ├── member-4.mdx
 │   └── ...
 └── de/              ← German translations
-    ├── member-4.md
+    ├── member-4.mdx
     └── ...
 ```
 
@@ -23,7 +23,7 @@ Both folders use identical filenames. If a German translation is missing, the En
 
 ## Creating a Testimonial
 
-Create a new file in `en/` (or `de/` for German) named after the person (e.g., `jane-doe.md`). The `order` frontmatter field controls display order — the filename is just a slug.
+Create a new file in `en/` (or `de/` for German) named after the person (e.g., `jane-doe.mdx`). The `order` frontmatter field controls display order — the filename is just a slug.
 
 ```yaml
 ---
