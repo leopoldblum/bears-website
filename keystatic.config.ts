@@ -1017,32 +1017,30 @@ const peopleCollection = collection({
 });
 
 // Locale-agnostic collection for the landing-page testimonials carousel. Each
-// entry points at a person from the `people` collection (no duplicated names
-// or portraits) and carries the two quote translations + display order.
+// entry's slug IS the slug of a person in the `people` collection — no
+// separate relationship field. The filename (e.g. `jane-doe.mdx`) is the
+// person reference, and Astro's Zod `reference('people')` validates that the
+// referenced person actually exists at build time. We lose the admin-side
+// dropdown this way, but gain a single-field identity instead of the
+// identifier + dropdown pair that used to duplicate each other.
 const testimonialsCollection = collection({
   label: 'Testimonials',
-  slugField: 'identifier',
+  slugField: 'person',
   path: 'src/content/testimonials/*',
-  columns: ['order', 'person'],
+  columns: ['order'],
   format: { contentField: 'body' },
   entryLayout: 'form',
   schema: {
-    identifier: fields.slug({
+    person: fields.slug({
       name: {
-        label: 'Identifier',
-        description: "Used only for the filename — by convention, match the person's slug.",
+        label: 'Person',
+        description: "The person this testimonial is from — type the exact slug of a file under src/content/people/ (e.g. `jane-doe`). The build will fail if no matching person exists.",
         validation: { isRequired: true },
       },
     }),
-    person: fields.relationship({
-      label: 'Person',
-      description: 'Pick from the People collection. If the person does not exist yet, create them in the People group first.',
-      collection: 'people',
-      validation: { isRequired: true },
-    }),
     order: fields.integer({
       label: 'Order',
-      description: 'Lower numbers appear first in the carousel. Ties break on identifier.',
+      description: 'Lower numbers appear first in the carousel. Ties break on the person slug.',
       defaultValue: 0,
       validation: { isRequired: true },
     }),

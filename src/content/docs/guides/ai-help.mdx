@@ -93,11 +93,10 @@ Frontmatter:
 
 TESTIMONIALS (src/content/testimonials/)
 Locale-agnostic — one file per testimonial; both quote translations live inline.
-File naming: identifier (by convention matches the referenced person's slug). Each testimonial references one person from the `people` collection and supplies the quote + display order for the landing-page Testimonials carousel.
+File naming: the filename IS the referenced person's slug (e.g. jane-doe.mdx corresponds to people/jane-doe.mdx). Astro's reference('people') on the `person` field validates the match at build time.
 Frontmatter:
-  identifier: string (required) — used for the filename; conventionally matches the person's slug
-  person: reference('people') (required) — slug of the person this testimonial belongs to
-  order: number (default 0) — lower = shown first in the carousel; ties fall back to identifier
+  person: reference('people') (required) — slug of the person this testimonial is from; must match a file under src/content/people/ (also used as this file's own slug/filename)
+  order: number (default 0) — lower = shown first in the carousel; ties fall back to the person slug
   quoteEn: string (required) — English quote
   quoteDe: string (required) — German quote
 

@@ -26,17 +26,16 @@ Fields:
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `identifier` | string | Used only for the filename. By convention, set it to the person's slug (e.g. `jane-doe`). |
-| `person` | reference | Pick the person from the People collection dropdown. |
-| `order` | number | Sort order in the carousel. Lower numbers appear first; ties break on identifier. |
+| `person` | string | The person this testimonial is from — type the exact slug of a file under `src/content/people/` (e.g. `jane-doe`). This doubles as the testimonial's filename. |
+| `order` | number | Sort order in the carousel. Lower numbers appear first; ties break on the person slug. |
 | `quoteEn` | string | English quote text. |
 | `quoteDe` | string | German quote text. |
 
-All fields are required.
+All fields are required. The build will fail if `person` doesn't match an existing file in the People collection, so typos surface immediately instead of silently.
 
 ## Changing the Order
 
-Open any testimonial and change its `order`. The carousel sorts ascending — so `order: 1` appears first. If two testimonials share an order, the identifier breaks the tie.
+Open any testimonial and change its `order`. The carousel sorts ascending — so `order: 1` appears first. If two testimonials share an order, the person slug breaks the tie.
 
 ## Removing a Testimonial
 
