@@ -16,7 +16,7 @@ import cloudflare from '@astrojs/cloudflare';
 const ADMIN_BUILD = process.env.ADMIN_BUILD === 'true';
 
 const baseIntegrations = [alpinejs(), mdx(), react(), sitemap({
-  filter: (page) => !page.includes('/docs/') && !page.includes('/keystatic'),
+  filter: (page) => !page.includes('/docs/') && !page.includes('/keystatic') && !page.includes('/translation-status'),
 })];
 
 // https://astro.build/config
