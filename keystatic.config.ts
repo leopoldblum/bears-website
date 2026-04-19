@@ -22,6 +22,57 @@ const storage = process.env.NODE_ENV === 'production'
   : { kind: 'local' as const };
 
 // ============================================================================
+// LOCALE PARITY — flag collections that are out of sync between en/ and de/
+//
+// We use Vite's `import.meta.glob` (not node:fs) so this works both during the
+// Node-side Astro build and when Keystatic's config is bundled for the admin
+// UI. Globs resolve at build time, so the counts are a snapshot per admin
+// deploy — every editor commit triggers an admin rebuild, so labels refresh
+// within a few minutes. The goal is to make missing translations visible in
+// the sidebar the moment an editor opens /keystatic.
+// ============================================================================
+
+type LocaleParity = { missingInDe: string[]; missingInEn: string[] };
+
+function computeParity(
+  enFiles: Record<string, unknown>,
+  deFiles: Record<string, unknown>,
+  enPrefix: string,
+  dePrefix: string,
+): LocaleParity {
+  const enSet = new Set(Object.keys(enFiles).map((p) => p.slice(enPrefix.length)));
+  const deSet = new Set(Object.keys(deFiles).map((p) => p.slice(dePrefix.length)));
+  return {
+    missingInDe: [...enSet].filter((f) => !deSet.has(f)),
+    missingInEn: [...deSet].filter((f) => !enSet.has(f)),
+  };
+}
+
+const eventsParity = computeParity(
+  import.meta.glob('/src/content/events/en/*.mdx'),
+  import.meta.glob('/src/content/events/de/*.mdx'),
+  '/src/content/events/en/',
+  '/src/content/events/de/',
+);
+
+const projectsParity = computeParity(
+  import.meta.glob('/src/content/projects/en/*.mdx'),
+  import.meta.glob('/src/content/projects/de/*.mdx'),
+  '/src/content/projects/en/',
+  '/src/content/projects/de/',
+);
+
+// Build a sidebar label. If this locale has entries whose counterpart in the
+// other locale is missing, prefix with ⚠️ and a count so it's the first thing
+// an editor sees when they open Keystatic.
+function parityLabel(base: string, locale: 'en' | 'de', parity: LocaleParity): string {
+  const missingCount = locale === 'en' ? parity.missingInDe.length : parity.missingInEn.length;
+  if (missingCount === 0) return `${base} (${locale.toUpperCase()})`;
+  const otherLocale = locale === 'en' ? 'DE' : 'EN';
+  return `⚠️ ${base} (${locale.toUpperCase()}) — ${missingCount} missing ${otherLocale}`;
+}
+
+// ============================================================================
 // FIELD HELPERS — shared between collections
 // ============================================================================
 
@@ -162,7 +213,7 @@ function sponsorsCollection(tier: 'diamond' | 'platinum' | 'gold' | 'silver' | '
 
 function eventsCollection(locale: 'en' | 'de') {
   return collection({
-    label: `Events (${locale.toUpperCase()})`,
+    label: parityLabel('Events', locale, eventsParity),
     slugField: 'title',
     path: `src/content/events/${locale}/*`,
     columns: ['date', 'categoryEvent', 'isDraft'],
@@ -208,7 +259,7 @@ function eventsCollection(locale: 'en' | 'de') {
 
 function projectsCollection(locale: 'en' | 'de') {
   return collection({
-    label: `Projects (${locale.toUpperCase()})`,
+    label: parityLabel('Projects', locale, projectsParity),
     slugField: 'title',
     path: `src/content/projects/${locale}/*`,
     columns: ['date', 'categoryProject', 'isDraft', 'isProjectCompleted', 'displayMeetTheTeam'],
