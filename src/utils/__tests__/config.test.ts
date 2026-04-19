@@ -190,46 +190,6 @@ describe('hero-slides schema', () => {
 });
 
 // ---------------------------------------------------------------------------
-// Testimonials schema
-// ---------------------------------------------------------------------------
-
-describe('testimonials schema', () => {
-  const schema = getSchema(collections.testimonials);
-
-  it('accepts valid data', () => {
-    const result = schema.safeParse({
-      quote: 'Great experience',
-      name: 'John Doe',
-      role: 'Engineer',
-      order: 1,
-      coverImage: 'john.jpg',
-    });
-    expect(result.success).toBe(true);
-  });
-
-  it('rejects invalid coverImage extension', () => {
-    const result = schema.safeParse({
-      quote: 'Great',
-      name: 'John',
-      role: 'Dev',
-      order: 1,
-      coverImage: 'john.gif',
-    });
-    expect(result.success).toBe(false);
-  });
-
-  it('rejects missing order', () => {
-    const result = schema.safeParse({
-      quote: 'Great',
-      name: 'John',
-      role: 'Dev',
-      coverImage: 'john.jpg',
-    });
-    expect(result.success).toBe(false);
-  });
-});
-
-// ---------------------------------------------------------------------------
 // Sponsors schema
 // ---------------------------------------------------------------------------
 
@@ -356,7 +316,7 @@ describe('page-text schema', () => {
       ],
       items: ['Item 1', 'Item 2'],
       socialLinks: [
-        { platform: 'linkedin', iconFile: 'linkedin.svg', url: 'https://linkedin.com/bears', hoverColor: '#333' },
+        { platform: 'linkedin', url: 'https://linkedin.com/bears', hoverColor: '#333' },
       ],
       navLinks: [
         { label: 'Impressum', href: '/imprint' },
@@ -377,9 +337,11 @@ describe('page-text schema', () => {
     expect(result.success).toBe(true);
   });
 
-  it('rejects missing title (required)', () => {
+  it('accepts an entry without a title (optional)', () => {
+    // `title` is optional on page-text so site-wide config entries such as
+    // contact-details.mdx can omit it — they are never rendered as a heading.
     const result = schema.safeParse({});
-    expect(result.success).toBe(false);
+    expect(result.success).toBe(true);
   });
 
   it('rejects buttonText without buttonHref', () => {
@@ -430,23 +392,7 @@ describe('page-text schema', () => {
   it('rejects invalid socialLinks url', () => {
     const result = schema.safeParse({
       ...validBase,
-      socialLinks: [{ platform: 'x', iconFile: 'x.svg', url: 'not-a-url' }],
-    });
-    expect(result.success).toBe(false);
-  });
-
-  it('rejects socialLinks missing iconFile', () => {
-    const result = schema.safeParse({
-      ...validBase,
-      socialLinks: [{ platform: 'instagram', url: 'https://instagram.com' }],
-    });
-    expect(result.success).toBe(false);
-  });
-
-  it('rejects socialLinks with non-svg iconFile', () => {
-    const result = schema.safeParse({
-      ...validBase,
-      socialLinks: [{ platform: 'x', iconFile: 'x.png', url: 'https://x.com' }],
+      socialLinks: [{ platform: 'x', url: 'not-a-url' }],
     });
     expect(result.success).toBe(false);
   });
@@ -470,7 +416,7 @@ describe('page-text schema', () => {
   it('accepts socialLinks without optional hoverColor', () => {
     const result = schema.safeParse({
       ...validBase,
-      socialLinks: [{ platform: 'youtube', iconFile: 'youtube.svg', url: 'https://youtube.com' }],
+      socialLinks: [{ platform: 'youtube', url: 'https://youtube.com' }],
     });
     expect(result.success).toBe(true);
   });

@@ -73,7 +73,7 @@ Every file must have a `title`. All other fields are optional &mdash; each file 
 | `ctas` | array | Call-to-action cards (max 4), each with `title`, `description`, `href` |
 | `items` | array | List of strings (for addresses, benefits, tiers &mdash; see below) |
 | `faqs` | array | FAQ entries, each with `question` and `answer` (answers support Markdown) |
-| `socialLinks` | array | Social media links, each with `platform`, `iconFile` (uploaded SVG), `url`, optional `hoverColor` |
+| `socialLinks` | array | Social media links, each with `platform` (id of an entry in the Social platforms collection), `url`, optional `hoverColor` override |
 | `navLinks` | array | Simple navigation links, each with `label` and `href` |
 | `navColumns` | array | Multi-column navigation, each with `heading`, `href`, and nested `links` |
 | `accountHolder` | string | Donation: account holder name (donate card) |
@@ -155,13 +155,14 @@ description: "We bridge the gap between the classroom and the launchpad. At BEAR
 
 ---
 
-### Multi-line Address Block
+### Contact Details (Email + Multi-line Address)
 
-A heading plus a free-form multi-line text block, rendered line-for-line. Used for the footer address.
+A standalone entry that holds the public email and postal address. Both the Contact page's email/address cards and the site footer's address block read from here, so editing it in one place updates both surfaces.
 
 ```yaml
 ---
-title: "BEARS"
+title: "Contact details"
+email: "info@bears-space.de"
 address: |-
   Berlin Experimental Astronautics
   Research Student team e.V.
@@ -171,11 +172,11 @@ address: |-
 ---
 ```
 
-**Where it appears:** The footer address block. Each line in the `address` field renders as a separate line.
+**Where it appears:** The Contact page cards (email + address) and the site footer's address block. Each line in `address` renders as a separate line. `title` is an internal label for the CMS — it is not rendered on the site.
 
-**Fields used:** `title`, `address`
+**Fields used:** `title`, `email`, `address`
 
-**Files:** `footer/footer-address`
+**Files:** `contact-details`
 
 ---
 
@@ -397,36 +398,30 @@ paypalButtonText: "Donate via PayPal"
 
 The single source of truth for all social media links across the website. This file is used by the Footer, Contact page, LatestNews section (Instagram CTA), and the structured data (`schema.org` Organization `sameAs`).
 
-Each entry specifies a `platform` label, an `iconFile` (an SVG uploaded through the CMS), and a `url`. You can optionally set a custom `hoverColor` per entry.
+Each entry picks a `platform` from the **Social platforms** collection and sets a `url`. The icon and default hover color live on the platform entry, not on the Social link — editors never re-upload an icon for an existing platform. You can optionally override the hover color per entry.
 
 ```yaml
 ---
-title: "Social Links"
 socialLinks:
   - platform: "instagram"
-    iconFile: "instagram.svg"
     url: "https://www.instagram.com/bears.space/"
   - platform: "linkedin"
-    iconFile: "linkedin.svg"
     url: "https://www.linkedin.com/company/bears-ev/"
     hoverColor: "#0A66C2"
   - platform: "youtube"
-    iconFile: "youtube.svg"
     url: "https://www.youtube.com/@BEARS-Space"
 ---
 ```
 
 **Where it appears:** The social media icon row in the Footer and Contact page, the Instagram CTA link on the homepage, and the `sameAs` array in structured data.
 
-**Adding a new social platform:** In the **Social links** singleton, click **Add**, pick an **Icon (SVG)** from your computer (the file is uploaded to `src/assets/social-icons/` and the filename is saved into `iconFile`), set a URL, and save. Nothing else to change — the Footer and Contact page pick it up automatically. The Instagram homepage CTA is wired by URL (`instagram.com`), so the Instagram entry stays discoverable regardless of its label.
+**Adding a new platform:** In the CMS, go to **Social platforms** (grouped under "Contact & social"), click **Add**, pick an ID (e.g. `bluesky`), upload the SVG icon, and set an optional default hover color. Save. The new platform immediately appears in the **Platform** dropdown on every Social link entry — no code change required.
 
-**`iconFile`:** Required. An SVG file uploaded into `src/assets/social-icons/`. Icons render as a **silhouette** via CSS mask — the fill colour inside the SVG is ignored, which is what lets the hover animation swap between dark, white, and `hoverColor`. For best results, use a single-colour 24&times;24 SVG (the same shape you'd find on [simpleicons.org](https://simpleicons.org)). An AI can also generate one for you — ask for a single-path 24&times;24 silhouette SVG of the platform's logo.
+**`platform`:** Required. The id of an entry in the Social platforms collection. Drives the icon, default hover color, and accessible label.
 
-**`platform`:** A free-form label (e.g. `"instagram"`). Used as the accessible label and as the item title in the CMS list. You can set it to any readable name.
+**`hoverColor`:** Optional per-entry override. Leave blank to use the platform's default hover color (or the site accent if the platform doesn't define one). Use standard hex color codes (e.g. `"#0A66C2"` for LinkedIn blue).
 
-**`hoverColor`:** Optional. Sets a custom background colour when hovering over the icon. If omitted, the default accent colour is used. Use standard hex colour codes (e.g., `"#0A66C2"` for LinkedIn blue).
-
-**Fields used:** `title` (not displayed), `socialLinks`
+**Fields used:** `socialLinks`
 
 **File:** `social.mdx` (at the locale root). Edited in the CMS via the **Social links** singleton.
 
@@ -604,10 +599,9 @@ mediaCategories:
 | `all` | Combined images from all other listed categories (special) |
 | `about-us` | About Us page images (`src/assets/about-us/our-mission/`) |
 | `events` | Event cover images (`src/assets/events/`) |
-| `people` | Person portraits — Faces of BEARS + Meet the Team (`src/assets/people/`) |
+| `people` | Person portraits — Faces of BEARS, Meet the Team, and Testimonials (`src/assets/people/`) |
 | `hero` | All hero images across pages (`src/assets/hero/`) |
 | `projects` | Project cover images (`src/assets/projects/`) |
-| `testimonials` | Testimonial portraits (`src/assets/testimonials/`) |
 | `what-is-bears` | What is BEARS images (`src/assets/whatIsBears/`) |
 
 **Controlling the page:**

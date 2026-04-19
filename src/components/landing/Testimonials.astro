@@ -1,10 +1,10 @@
 ---
 // Testimonials - Testimonial Carousel Component
+// Sources entries from the `people` collection where showAsTestimonial is on.
 import Carousel from "@mdx/Carousel.astro";
 import TestimonialCard from "./TestimonialCard.astro";
-import type { ImageMetadata } from "astro";
 import { loadCollectionImages } from "@utils/imageLoader";
-import { getTestimonialsSorted, getPageContent } from "@utils/contentQueries";
+import { getTestimonialPeople, getPageContent } from "@utils/contentQueries";
 import { type Locale } from '@utils/i18n';
 
 interface Props {
@@ -13,19 +13,18 @@ interface Props {
 
 const { locale } = Astro.props;
 
-// Get testimonials sorted alphabetically by slug
-const sortedTestimonials = await getTestimonialsSorted(locale);
+const sortedPeople = await getTestimonialPeople(locale);
 
-// Load images for testimonials
-const testimonialsWithLoadedImages = await loadCollectionImages(
-  sortedTestimonials,
-  "testimonial",
+const peopleWithLoadedImages = await loadCollectionImages(
+  sortedPeople,
+  "person",
 );
 
-// Map to format expected by TestimonialCard
-const testimonials = testimonialsWithLoadedImages.map((testimonial) => ({
-  ...testimonial.data,
-  image: testimonial.loadedImage, // Guaranteed non-null by loader (schema field: coverImage, component prop: image)
+const testimonials = peopleWithLoadedImages.map((person) => ({
+  quote: person.data.quote ?? "",
+  name: person.data.name,
+  role: person.data.role,
+  image: person.loadedImage,
 }));
 
 const content = await getPageContent('landing/testimonials', locale);

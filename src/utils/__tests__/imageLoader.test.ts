@@ -13,7 +13,6 @@ import {
 
 const mockDefaultEvent: ImageMetadata = { src: '/default-event.jpg', width: 100, height: 100, format: 'jpg' };
 const mockDefaultProject: ImageMetadata = { src: '/default-project.jpg', width: 100, height: 100, format: 'jpg' };
-const mockDefaultTestimonial: ImageMetadata = { src: '/default-testimonial.jpg', width: 100, height: 100, format: 'jpg' };
 const mockDefaultSponsor: ImageMetadata = { src: '/default-sponsor.jpg', width: 100, height: 100, format: 'jpg' };
 const mockDefaultFace: ImageMetadata = { src: '/default-face.jpg', width: 100, height: 100, format: 'jpg' };
 
@@ -22,9 +21,6 @@ vi.mock('@assets/default-images/default-event.jpg', () => ({
 }));
 vi.mock('@assets/default-images/default-project.jpg', () => ({
   default: { src: '/default-project.jpg', width: 100, height: 100, format: 'jpg' },
-}));
-vi.mock('@assets/default-images/default-testimonial.jpg', () => ({
-  default: { src: '/default-testimonial.jpg', width: 100, height: 100, format: 'jpg' },
 }));
 vi.mock('@assets/default-images/default-sponsor.jpg', () => ({
   default: { src: '/default-sponsor.jpg', width: 100, height: 100, format: 'jpg' },
@@ -36,13 +32,11 @@ vi.mock('@assets/default-images/default-face.jpg', () => ({
 // Mock imageGlobs for loadCollectionImages / loadCoverImage
 const mockEventImages: Record<string, () => Promise<{ default: ImageMetadata }>> = {};
 const mockProjectImages: Record<string, () => Promise<{ default: ImageMetadata }>> = {};
-const mockTestimonialImages: Record<string, () => Promise<{ default: ImageMetadata }>> = {};
 const mockPeopleImages: Record<string, () => Promise<{ default: ImageMetadata }>> = {};
 
 vi.mock('../imageGlobs', () => ({
   get eventImages() { return mockEventImages; },
   get projectImages() { return mockProjectImages; },
-  get testimonialImages() { return mockTestimonialImages; },
   get peopleImages() { return mockPeopleImages; },
 }));
 
@@ -319,11 +313,11 @@ describe('loadImagesForCollection', () => {
     expect(warnSpy.mock.calls[0][0]).toContain('no image filename');
   });
 
-  // --- testimonials path (no coverImageType) ---
+  // --- people path (no coverImageType) ---
 
-  it('loads image for testimonial-type items', async () => {
-    const img = makeImage('/testimonials/person.jpg');
-    const glob = makeGlob({ '/src/assets/testimonials/person.jpg': img });
+  it('loads image for person-type items', async () => {
+    const img = makeImage('/people/person.jpg');
+    const glob = makeGlob({ '/src/assets/people/person.jpg': img });
     const collection = [{
       data: { name: 'Jane', image: 'person.jpg' },
       slug: 'jane',
@@ -332,7 +326,7 @@ describe('loadImagesForCollection', () => {
     const result = await loadImagesForCollection({
       glob,
       collection,
-      baseDir: '/src/assets/testimonials',
+      baseDir: '/src/assets/people',
       imageField: 'image' as 'coverImage' | 'image',
       fallbackImage: makeImage('/fb.jpg'),
     });
@@ -340,7 +334,7 @@ describe('loadImagesForCollection', () => {
     expect(result[0].loadedImage).toEqual(img);
   });
 
-  it('falls back when testimonial image not in glob', async () => {
+  it('falls back when person image not in glob', async () => {
     const fallback = makeImage('/fallback.jpg');
     const collection = [{
       data: { name: 'John', image: 'missing.jpg' },
@@ -350,16 +344,16 @@ describe('loadImagesForCollection', () => {
     const result = await loadImagesForCollection({
       glob: {},
       collection,
-      baseDir: '/src/assets/testimonials',
+      baseDir: '/src/assets/people',
       imageField: 'image' as 'coverImage' | 'image',
       fallbackImage: fallback,
-      postType: 'testimonial',
+      postType: 'person',
     });
 
     expect(result[0].loadedImage).toEqual(fallback);
     expect(warnSpy).toHaveBeenCalled();
     expect(warnSpy.mock.calls[0][0]).toContain('John');
-    expect(warnSpy.mock.calls[0][0]).toContain('Testimonial');
+    expect(warnSpy.mock.calls[0][0]).toContain('Person');
   });
 
   it('uses "Item" in warning when postType is not provided', async () => {
@@ -380,9 +374,9 @@ describe('loadImagesForCollection', () => {
     expect(warnSpy.mock.calls[0][0]).toContain('Item');
   });
 
-  it('falls back when testimonial image load throws', async () => {
+  it('falls back when person image load throws', async () => {
     const fallback = makeImage('/fallback.jpg');
-    const glob = makeFailingGlob(['/src/assets/testimonials/broken.jpg']);
+    const glob = makeFailingGlob(['/src/assets/people/broken.jpg']);
     const collection = [{
       data: { name: 'Error Person', image: 'broken.jpg' },
       slug: 'error',
@@ -391,7 +385,7 @@ describe('loadImagesForCollection', () => {
     const result = await loadImagesForCollection({
       glob,
       collection,
-      baseDir: '/src/assets/testimonials',
+      baseDir: '/src/assets/people',
       imageField: 'image' as 'coverImage' | 'image',
       fallbackImage: fallback,
     });
@@ -409,7 +403,7 @@ describe('loadImagesForCollection', () => {
     const result = await loadImagesForCollection({
       glob: {},
       collection,
-      baseDir: '/src/assets/testimonials',
+      baseDir: '/src/assets/people',
       imageField: 'image' as 'coverImage' | 'image',
       fallbackImage: fallback,
     });
@@ -458,9 +452,9 @@ describe('loadImagesForCollection', () => {
     expect(result[0].loadedImage).toEqual(customImg);
   });
 
-  it('loads testimonial image when extension case differs', async () => {
-    const img = makeImage('/testimonials/person.JPG');
-    const glob = makeGlob({ '/src/assets/testimonials/person.JPG': img });
+  it('loads person image when extension case differs', async () => {
+    const img = makeImage('/people/person.JPG');
+    const glob = makeGlob({ '/src/assets/people/person.JPG': img });
     const collection = [{
       data: { name: 'Jane', image: 'person.jpg' },
       slug: 'jane',
@@ -469,7 +463,7 @@ describe('loadImagesForCollection', () => {
     const result = await loadImagesForCollection({
       glob,
       collection,
-      baseDir: '/src/assets/testimonials',
+      baseDir: '/src/assets/people',
       imageField: 'image' as 'coverImage' | 'image',
       fallbackImage: makeImage('/fb.jpg'),
     });
@@ -552,7 +546,6 @@ describe('loadCollectionImages', () => {
     // Clear mock glob entries
     Object.keys(mockEventImages).forEach(k => delete mockEventImages[k]);
     Object.keys(mockProjectImages).forEach(k => delete mockProjectImages[k]);
-    Object.keys(mockTestimonialImages).forEach(k => delete mockTestimonialImages[k]);
     Object.keys(mockPeopleImages).forEach(k => delete mockPeopleImages[k]);
   });
 
@@ -587,21 +580,6 @@ describe('loadCollectionImages', () => {
     }];
 
     const result = await loadCollectionImages(collection as any, 'project');
-    expect(result[0].loadedImage).toEqual(img);
-  });
-
-  it('loads testimonial images using testimonial config', async () => {
-    const img = makeImage('/testimonials/t1.jpg');
-    mockTestimonialImages['/src/assets/testimonials/t1.jpg'] = () => Promise.resolve({ default: img });
-
-    const collection = [{
-      id: 't1.mdx',
-      slug: 't1',
-      collection: 'testimonials' as const,
-      data: { name: 'Person 1', coverImage: 't1.jpg' },
-    }];
-
-    const result = await loadCollectionImages(collection as any, 'testimonial');
     expect(result[0].loadedImage).toEqual(img);
   });
 

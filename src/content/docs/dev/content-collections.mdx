@@ -1,6 +1,6 @@
 ---
 title: "Content Collections"
-description: "Schema reference for all nine content collections."
+description: "Schema reference for all content collections."
 order: 10
 group: "Architecture"
 ---
@@ -13,8 +13,7 @@ All website content is managed through [Astro content collections](https://docs.
 |------------|--------|-----------|------------|
 | `events` | `src/content/events/{en,de}/` | Yes | title, description, date, categoryEvent, coverImage, isDraft |
 | `projects` | `src/content/projects/{en,de}/` | Yes | title, description, date, categoryProject, coverImage, isDraft, isProjectCompleted, person (→ `people`) |
-| `testimonials` | `src/content/testimonials/{en,de}/` | Yes | quote, name, role, order, coverImage |
-| `people` | `src/content/people/` | No (roles inline in `roleEn`/`roleDe`) | name, roleEn, roleDe, coverImage, showInFaces, order |
+| `people` | `src/content/people/` | No (roles + quotes inline per locale) | name, roleEn, roleDe, coverImage, showInFaces, order, showAsTestimonial, testimonialOrder, quoteEn, quoteDe |
 | `page-text` | `src/content/page-text/{en,de}/` | Yes | title, subtitle, description, ctas, items, address, socialLinks, navLinks, navColumns, faqs, mediaCategories, tierDescriptions, donate fields |
 | `sponsors` | `src/content/sponsors/<tier>/` | No | name, order, logo, url, bgColor (tier from folder) |
 | `hero-slides` | `src/content/hero-slides/` | No | order, type (image\|video), media, shownText, alt |
@@ -116,7 +115,7 @@ The `page-text` collection uses a flexible schema with `title` as the only requi
 | `address` | string? | Multi-line text block (footer address) |
 | `room` / `schedule` | string? | About Us "Where to find us" room label and meeting time |
 | `mapLat` / `mapLng` | number? | About Us "Where to find us" map pin coordinates (lat −90…90, lng −180…180) |
-| `socialLinks` | array? | Platform label + required iconFile (uploaded SVG) + URL + optional hoverColor |
+| `socialLinks` | array? | `platform` (reference to the `social-platforms` collection) + URL + optional `hoverColor` override |
 | `navLinks` | array? | Label + href pairs |
 | `navColumns` | array? | Grouped navigation (heading + links) |
 | `faqs` | array? | Question + answer pairs |

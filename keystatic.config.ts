@@ -90,7 +90,6 @@ const MEDIA_CATEGORY_IDS = [
   { label: 'People portraits', value: 'people' },
   { label: 'Hero slides', value: 'hero' },
   { label: 'Project covers', value: 'projects' },
-  { label: 'Testimonial portraits', value: 'testimonials' },
   { label: 'What is BEARS images', value: 'what-is-bears' },
   { label: 'All (aggregates every category above)', value: 'all' },
 ] as const;
@@ -99,36 +98,6 @@ const MEDIA_CATEGORY_IDS = [
 // COLLECTION FACTORIES — one factory per collection family,
 // invoked once per locale / tier as needed.
 // ============================================================================
-
-function testimonialsCollection(locale: 'en' | 'de') {
-  return collection({
-    label: `Testimonials (${locale.toUpperCase()})`,
-    slugField: 'name',
-    path: `src/content/testimonials/${locale}/*`,
-    columns: ['order', 'role'],
-    format: { contentField: 'body' },
-    entryLayout: 'form',
-    schema: {
-      name: fields.slug({
-        name: { label: 'Name', validation: { isRequired: true } },
-      }),
-      order: fields.integer({
-        label: 'Order',
-        description: 'Sort order (lower = shown first). Ties fall back to the slug.',
-        defaultValue: 0,
-        validation: { isRequired: true },
-      }),
-      role: fields.text({ label: 'Role', validation: { isRequired: true } }),
-      quote: fields.text({ label: 'Quote', multiline: true, validation: { isRequired: true } }),
-      coverImage: imageField('Portrait image', 'src/assets/testimonials', '/src/assets/testimonials/'),
-      // Testimonials have no rendered body — quote/name/role/coverImage are
-      // the only fields consumed by TestimonialCard.astro. emptyContent
-      // satisfies Keystatic's requirement that format.contentField map to a
-      // ContentFormField, while rendering no body editor in the admin UI.
-      body: fields.emptyContent({ extension: 'mdx' }),
-    },
-  });
-}
 
 function sponsorsCollection(tier: 'diamond' | 'platinum' | 'gold' | 'silver' | 'bronze') {
   const tierLabel = tier[0].toUpperCase() + tier.slice(1);
@@ -338,16 +307,17 @@ function pageTextFaqsField() {
 function pageTextSocialLinksField() {
   return fields.array(
     fields.object({
-      platform: fields.text({ label: 'Platform', validation: { isRequired: true } }),
-      iconFile: fields.file({
-        label: 'Icon (SVG)',
-        description: 'Upload a single-color SVG icon (24×24 viewBox, any fill). The icon is rendered as a silhouette via CSS mask so the hover color can be applied — colors inside the SVG are ignored. Same icon can be reused across entries by uploading once and then typing the filename into other entries.',
-        directory: 'src/assets/social-icons',
-        publicPath: '',
+      platform: fields.relationship({
+        label: 'Platform',
+        description: 'Pick from the Social platforms collection. To add a new platform, create an entry there first (icon + default hover color) — it will immediately appear in this dropdown.',
+        collection: 'socialPlatforms',
         validation: { isRequired: true },
       }),
       url: fields.url({ label: 'URL', validation: { isRequired: true } }),
-      hoverColor: fields.text({ label: 'Hover color (hex)' }),
+      hoverColor: fields.text({
+        label: 'Hover color (hex, optional)',
+        description: 'Override this platform\'s default hover color. Leave blank to use the default (site accent, or the platform\'s brand color where one is defined).',
+      }),
     }),
     {
       label: 'Social links',
@@ -485,19 +455,6 @@ function crosslinkSingleton(locale: Locale, pathSuffix: string, label: string) {
       title: fields.text({ label: 'Title', validation: { isRequired: true } }),
       buttonText: fields.text({ label: 'Button text', validation: { isRequired: true } }),
       buttonHref: fields.text({ label: 'Button link', validation: { isRequired: true } }),
-      body: fields.emptyContent({ extension: 'mdx' }),
-    },
-  });
-}
-
-function listSectionSingleton(locale: Locale, pathSuffix: string, label: string) {
-  return singleton({
-    ...baseSingletonMeta(locale, pathSuffix, label),
-    schema: {
-      title: fields.text({ label: 'Title', validation: { isRequired: true } }),
-      subtitle: fields.text({ label: 'Subtitle' }),
-      description: fields.text({ label: 'Description', multiline: true }),
-      items: pageTextItemsField(),
       body: fields.emptyContent({ extension: 'mdx' }),
     },
   });
@@ -670,6 +627,29 @@ function pageTextNavColumnsSingleton(locale: 'en' | 'de') {
   });
 }
 
+function pageTextContactDetailsSingleton(locale: 'en' | 'de') {
+  return singleton({
+    label: `Contact details (${locale.toUpperCase()})`,
+    path: `src/content/page-text/${locale}/contact-details`,
+    format: { contentField: 'body' },
+    entryLayout: 'form',
+    schema: {
+      email: fields.text({
+        label: 'Email',
+        description: 'Shown on the Contact page.',
+        validation: { isRequired: true, length: { min: 1 } },
+      }),
+      address: fields.text({
+        label: 'Address',
+        description: 'One line per row. Press Enter to start a new line. Shown on the Contact page and in the site footer.',
+        multiline: true,
+        validation: { isRequired: true, length: { min: 1 } },
+      }),
+      body: fields.emptyContent({ extension: 'mdx' }),
+    },
+  });
+}
+
 function pageTextSocialSingleton(locale: 'en' | 'de') {
   return singleton({
     label: `Social links (${locale.toUpperCase()})`,
@@ -677,7 +657,6 @@ function pageTextSocialSingleton(locale: 'en' | 'de') {
     format: { contentField: 'body' },
     entryLayout: 'form',
     schema: {
-      title: fields.text({ label: 'Title', validation: { isRequired: true } }),
       socialLinks: pageTextSocialLinksField(),
       body: fields.emptyContent({ extension: 'mdx' }),
     },
@@ -725,25 +704,6 @@ function pageTextSiteMetadataSingleton(locale: 'en' | 'de') {
   });
 }
 
-function pageTextFooterAddressSingleton(locale: 'en' | 'de') {
-  return singleton({
-    label: `Footer address (${locale.toUpperCase()})`,
-    path: `src/content/page-text/${locale}/footer/footer-address`,
-    format: { contentField: 'body' },
-    entryLayout: 'form',
-    schema: {
-      title: fields.text({ label: 'Heading', validation: { isRequired: true } }),
-      address: fields.text({
-        label: 'Address',
-        description: 'One line per row. Press Enter to start a new line.',
-        multiline: true,
-        validation: { isRequired: true, length: { min: 1 } },
-      }),
-      body: fields.emptyContent({ extension: 'mdx' }),
-    },
-  });
-}
-
 function pageTextNavLinksCollection(locale: 'en' | 'de') {
   return collection({
     label: `Nav link lists (${locale.toUpperCase()})`,
@@ -773,10 +733,52 @@ function pageTextNavLinksCollection(locale: 'en' | 'de') {
   });
 }
 
+// Social platforms is an editor-driven catalogue: each entry owns an icon and
+// a default hover color, and the Social links singleton references entries by
+// slug via fields.relationship. Using a collection (not an array) keeps the
+// icon path stable per slug — Keystatic only rewrites upload paths when the
+// slug itself changes, so editors can freely add/remove/reorder Social links
+// without losing files.
+const socialPlatformsCollection = collection({
+  label: 'Social platforms',
+  slugField: 'label',
+  path: 'src/content/social-platforms/*',
+  columns: ['iconFile', 'defaultHoverColor'],
+  format: { contentField: 'body' },
+  entryLayout: 'form',
+  schema: {
+    label: fields.slug({
+      name: {
+        label: 'Label',
+        description: 'Display name (e.g. "Instagram", "Bluesky"). Used as the accessible label in the footer and contact page.',
+        validation: { isRequired: true },
+      },
+      slug: {
+        label: 'ID',
+        description: 'Lowercase id used by Social links to reference this platform. Letters, digits, and hyphens only.',
+      },
+    }),
+    iconFile: fields.file({
+      label: 'Icon (SVG)',
+      description: 'Upload a single-color SVG (24×24 viewBox, any fill). The icon renders as a silhouette via CSS mask so the hover color can be applied — colors inside the SVG are ignored.',
+      directory: 'src/assets/social-icons',
+      publicPath: '',
+      validation: { isRequired: true },
+    }),
+    defaultHoverColor: fields.text({
+      label: 'Default hover color (hex, optional)',
+      description: "Brand color applied on hover when a Social link entry does not set its own hoverColor. Example: #0A66C2 for LinkedIn. Leave blank to fall back to the site accent color.",
+    }),
+    body: fields.emptyContent({ extension: 'mdx' }),
+  },
+});
+
 // The People collection is locale-agnostic — name and portrait are shared
-// across languages, only `role` translates. Editors maintain a single record
-// per person; the Faces of BEARS grid filters by `showInFaces`, while project
-// Meet-the-Team entries link via a relationship() field on `projects`.
+// across languages, only role and (optionally) the testimonial quote translate.
+// Editors maintain a single record per person; the Faces of BEARS grid filters
+// by `showInFaces`, the landing testimonials carousel filters by
+// `showAsTestimonial`, and project Meet-the-Team entries link via a
+// relationship() field on `projects`.
 const peopleCollection = collection({
   label: 'People',
   slugField: 'name',
@@ -807,6 +809,31 @@ const peopleCollection = collection({
       description: 'Only meaningful when "Show in Faces of BEARS" is on — lower numbers appear first in the grid. Ignored for people that are not shown in the grid.',
       defaultValue: 0,
       validation: { isRequired: true },
+    }),
+    // Testimonial surface: when "Show as testimonial" is on, the person appears
+    // in the landing-page testimonials carousel with their portrait and quote.
+    // Both quote translations are required in that case — the Astro Zod
+    // schema enforces this at build time (Keystatic can't express cross-field
+    // requirements natively, same pattern as Meet the Team / person above).
+    showAsTestimonial: fields.checkbox({
+      label: 'Show as a testimonial on the landing page',
+      description: 'Off by default. Turning this on adds the person to the testimonials carousel — fill in both quote translations below.',
+      defaultValue: false,
+    }),
+    testimonialOrder: fields.integer({
+      label: 'Testimonial order',
+      description: 'Only meaningful when "Show as testimonial" is on — lower numbers appear first in the carousel.',
+      defaultValue: 0,
+    }),
+    quoteEn: fields.text({
+      label: 'Quote (English)',
+      description: 'Required when "Show as testimonial" is on.',
+      multiline: true,
+    }),
+    quoteDe: fields.text({
+      label: 'Zitat (Deutsch)',
+      description: 'Required when "Show as testimonial" is on.',
+      multiline: true,
     }),
     body: fields.emptyContent({ extension: 'mdx' }),
   },
@@ -938,9 +965,13 @@ export default config({
       'Events': ['eventsEn', 'eventsDe'],
       'Projects': ['projectsEn', 'projectsDe'],
       'Sponsors': ['sponsorsDiamond', 'sponsorsPlatinum', 'sponsorsGold', 'sponsorsSilver', 'sponsorsBronze'],
-      'Testimonials': ['testimonialsEn', 'testimonialsDe'],
       'People': ['people'],
-      'Instagram': ['instagram'],
+      'Contact & social': [
+        'pageTextContactDetailsEn', 'pageTextContactDetailsDe',
+        'socialPlatforms',
+        'pageTextSocialEn', 'pageTextSocialDe',
+        'instagram',
+      ],
       // --- Page text (per-page sub-groups, clustered by "Page text — " prefix)
       'Static Page Text - Landing': [
         'pageTextHeroEn', 'pageTextHeroDe',
@@ -993,11 +1024,9 @@ export default config({
         'pageTextDatenschutzEn', 'pageTextDatenschutzDe',
         'pageText404En', 'pageText404De',
       ],
-      'Static Page Text - Site-wide (nav, footer, meta)': [
+      'Static Page Text - Site-wide (nav, meta)': [
         'pageTextNavLinksEn', 'pageTextNavLinksDe',
         'pageTextNavColumnsEn', 'pageTextNavColumnsDe',
-        'pageTextFooterAddressEn', 'pageTextFooterAddressDe',
-        'pageTextSocialEn', 'pageTextSocialDe',
         'pageTextSiteMetadataEn', 'pageTextSiteMetadataDe',
       ],
       // --- Docs -------------------------------------------------------------
@@ -1006,8 +1035,6 @@ export default config({
   },
   collections: {
     // Bilingual
-    testimonialsEn: testimonialsCollection('en'),
-    testimonialsDe: testimonialsCollection('de'),
     eventsEn: eventsCollection('en'),
     eventsDe: eventsCollection('de'),
     projectsEn: projectsCollection('en'),
@@ -1016,6 +1043,8 @@ export default config({
     pageTextNavLinksDe: pageTextNavLinksCollection('de'),
     // Locale-agnostic: one entry per person; roles translate inline.
     people: peopleCollection,
+    // Editor-driven platform catalogue referenced by the Social links singleton.
+    socialPlatforms: socialPlatformsCollection,
     // Tier-split sponsors
     sponsorsDiamond: sponsorsCollection('diamond'),
     sponsorsPlatinum: sponsorsCollection('platinum'),
@@ -1035,14 +1064,14 @@ export default config({
     pageTextHeroDe: pageTextHeroSingleton('de'),
     pageTextSiteMetadataEn: pageTextSiteMetadataSingleton('en'),
     pageTextSiteMetadataDe: pageTextSiteMetadataSingleton('de'),
-    pageTextFooterAddressEn: pageTextFooterAddressSingleton('en'),
-    pageTextFooterAddressDe: pageTextFooterAddressSingleton('de'),
     pageTextFaqEn: pageTextFaqSingleton('en'),
     pageTextFaqDe: pageTextFaqSingleton('de'),
     pageTextMediaCategoriesEn: pageTextMediaCategoriesSingleton('en'),
     pageTextMediaCategoriesDe: pageTextMediaCategoriesSingleton('de'),
     pageTextNavColumnsEn: pageTextNavColumnsSingleton('en'),
     pageTextNavColumnsDe: pageTextNavColumnsSingleton('de'),
+    pageTextContactDetailsEn: pageTextContactDetailsSingleton('en'),
+    pageTextContactDetailsDe: pageTextContactDetailsSingleton('de'),
     pageTextSocialEn: pageTextSocialSingleton('en'),
     pageTextSocialDe: pageTextSocialSingleton('de'),
     pageTextDonateEn: pageTextDonateSingleton('en'),
@@ -1074,8 +1103,8 @@ export default config({
     // Contact page sections
     pageTextContactTitleEn: pageHeaderSingleton('en', 'contact/contact-title', 'Contact — page header'),
     pageTextContactTitleDe: pageHeaderSingleton('de', 'contact/contact-title', 'Contact — page header'),
-    pageTextContactInfoEn: listSectionSingleton('en', 'contact/contact-info', 'Contact — Reach out info'),
-    pageTextContactInfoDe: listSectionSingleton('de', 'contact/contact-info', 'Contact — Reach out info'),
+    pageTextContactInfoEn: sectionSingleton('en', 'contact/contact-info', 'Contact — Reach out info'),
+    pageTextContactInfoDe: sectionSingleton('de', 'contact/contact-info', 'Contact — Reach out info'),
     pageTextContactCrosslinkEn: crosslinkSingleton('en', 'contact/contact-crosslink', 'Contact — Join crosslink'),
     pageTextContactCrosslinkDe: crosslinkSingleton('de', 'contact/contact-crosslink', 'Contact — Join crosslink'),
     // Events page sections

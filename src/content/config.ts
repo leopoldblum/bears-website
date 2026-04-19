@@ -2,9 +2,6 @@ import { defineCollection, reference, z } from 'astro:content';
 import { CoverImageType, CategoryEventEnum, CategoryProjectEnum } from '@types';
 import { IMAGE_EXTENSION_REGEX, VALID_EXTENSIONS_MESSAGE } from '@utils/imageConstants';
 
-/** Social-link icons are SVGs uploaded via Keystatic into src/assets/social-icons/. */
-const validateSvgExtension = (value: string) => /\.svg$/i.test(value);
-
 /**
  * Helper for validating image file extensions
  * Ensures image filenames have valid extensions matching supported glob patterns
@@ -14,19 +11,8 @@ const validateImageExtension = (value: string | undefined) => {
   return IMAGE_EXTENSION_REGEX.test(value);
 };
 
-const testimonialsCollection = defineCollection({
-  type: 'content',
-  schema: z.object({
-    quote: z.string(),
-    name: z.string(),
-    role: z.string(),
-    order: z.number(),
-    coverImage: z.string().refine(
-      validateImageExtension,
-      { message: `coverImage must have a valid image extension: ${VALID_EXTENSIONS_MESSAGE}` }
-    ),
-  }),
-});
+/** Social-platform icons must be SVGs (rendered as silhouettes via CSS mask). */
+const validateSvgExtension = (value: string) => /\.svg$/i.test(value);
 
 const sponsorsCollection = defineCollection({
   type: 'content',
@@ -157,7 +143,20 @@ const peopleCollection = defineCollection({
     // Only meaningful when showInFaces is true. Defaulted so people referenced
     // only from a project (showInFaces: false) don't need to set it.
     order: z.number().default(0),
-  }),
+    // Testimonial-surface fields: a person with `showAsTestimonial: true` also
+    // appears in the landing-page testimonials carousel. Both quote translations
+    // are required in that case (enforced by the refine below).
+    quoteEn: z.string().optional(),
+    quoteDe: z.string().optional(),
+    showAsTestimonial: z.boolean().default(false),
+    testimonialOrder: z.number().default(0),
+  }).refine(
+    (data) => !(data.showAsTestimonial === true && (!data.quoteEn || !data.quoteDe)),
+    {
+      message: 'quoteEn and quoteDe are both required when showAsTestimonial is true',
+      path: ['quoteEn'],
+    }
+  ),
 });
 
 const docsCollection = defineCollection({
@@ -173,7 +172,7 @@ const docsCollection = defineCollection({
 const pageTextCollection = defineCollection({
   type: 'content',
   schema: z.object({
-    title: z.string(),
+    title: z.string().optional(),
     subtitle: z.string().optional(),
     description: z.string().optional(),
     seoDescription: z.string().optional(),
@@ -191,17 +190,14 @@ const pageTextCollection = defineCollection({
       title: z.string(),
       description: z.string().optional(),
     })).optional(),
+    email: z.string().optional(),
     address: z.string().optional(),
     room: z.string().optional(),
     schedule: z.string().optional(),
     mapLat: z.number().min(-90).max(90).optional(),
     mapLng: z.number().min(-180).max(180).optional(),
     socialLinks: z.array(z.object({
-      platform: z.string(),
-      iconFile: z.string().refine(
-        validateSvgExtension,
-        { message: 'iconFile must be an SVG (.svg)' }
-      ),
+      platform: reference('social-platforms'),
       url: z.string().url(),
       hoverColor: z.string().optional(),
     })).optional(),
@@ -255,8 +251,19 @@ const pageTextCollection = defineCollection({
   }),
 });
 
+const socialPlatformsCollection = defineCollection({
+  type: 'content',
+  schema: z.object({
+    label: z.string(),
+    iconFile: z.string().refine(
+      validateSvgExtension,
+      { message: 'iconFile must be an SVG (.svg)' },
+    ),
+    defaultHoverColor: z.string().optional(),
+  }),
+});
+
 export const collections = {
-  testimonials: testimonialsCollection,
   sponsors: sponsorsCollection,
   events: eventsCollection,
   projects: projectsCollection,
@@ -265,4 +272,5 @@ export const collections = {
   instagram: instagramCollection,
   people: peopleCollection,
   docs: docsCollection,
+  'social-platforms': socialPlatformsCollection,
 };

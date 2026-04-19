@@ -1,16 +1,17 @@
 ---
 title: "Managing People"
-description: "How to add and manage people who appear in the Faces of BEARS grid and as project leads in Meet the Team."
+description: "How to add and manage people who appear in the Faces of BEARS grid, the landing-page Testimonials carousel, and as project leads in Meet the Team."
 order: 26
 group: "Content"
 ---
 
-People (team members, project leads, anyone whose photo + role appears on the site) live in a single `people` collection. The same record can power both:
+People (team members, project leads, anyone whose photo + role appears on the site) live in a single `people` collection. The same record can power all three surfaces where a person shows up:
 
 - **Faces of BEARS** — the portrait grid on the About Us page.
 - **Meet the Team** — the project lead callout on the landing page (one project's lead is one person from this collection).
+- **Testimonials** — the quote carousel on the landing page.
 
-The collection is **locale-agnostic**: one entry per person, with `roleEn` and `roleDe` fields for the bilingual job title. Names and photos are shared across English and German.
+The collection is **locale-agnostic**: one entry per person, with `roleEn` / `roleDe` fields for the bilingual job title and `quoteEn` / `quoteDe` for an optional testimonial quote. Names and photos are shared across English and German.
 
 ## Folder Structure
 
@@ -51,15 +52,29 @@ The body of these files is not rendered — all content comes from the frontmatt
 | `showInFaces` | boolean | If `true`, this person appears in the Faces of BEARS grid on the About Us page. Default `false`. |
 | `order` | number | Sort order in the grid. Only meaningful when `showInFaces` is `true`. Lower numbers appear first; ties break on the slug. |
 
+## Optional Fields (Testimonials)
+
+Set these if the person should appear in the landing-page Testimonials carousel. Both quote translations are required once `showAsTestimonial` is on.
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `showAsTestimonial` | boolean | If `true`, the person shows up in the landing Testimonials carousel. Default `false`. |
+| `testimonialOrder` | number | Sort order in the carousel (lower = shown first). Only meaningful when `showAsTestimonial` is `true`. |
+| `quoteEn` | string | English quote text. Required when `showAsTestimonial` is `true`. |
+| `quoteDe` | string | German quote text. Required when `showAsTestimonial` is `true`. |
+
 ## Images
 
-Each person has their own asset subfolder under `src/assets/people/<slug>/`. Place the portrait there and reference it as `<slug>/<filename>`. Valid formats: `.jpg`, `.jpeg`, `.png`, `.webp`, `.svg`.
+Each person has their own asset subfolder under `src/assets/people/<slug>/`. Place the portrait there and reference it as `<slug>/<filename>`. Valid formats: `.jpg`, `.jpeg`, `.png`, `.webp`, `.svg`. The same portrait is reused across Faces of BEARS, Meet the Team, and Testimonials — one image per person.
 
 When uploading through the Keystatic admin, the image is automatically scoped to the right subfolder.
 
-## Faces of BEARS vs. Meet the Team
+## Surfaces a person can appear on
 
-- A person with `showInFaces: true` appears in the grid on About Us, sorted by `order`.
-- A person referenced from a project's `person` field powers that project's Meet the Team entry on the landing page — independently of `showInFaces`. Project leads who don't belong in the public grid can stay with `showInFaces: false`.
+The three surfaces are independent — any combination of flags is valid.
+
+- **Faces of BEARS** — `showInFaces: true`, sorted by `order`.
+- **Testimonials** — `showAsTestimonial: true` with both quote translations, sorted by `testimonialOrder`.
+- **Meet the Team** — this person is referenced from a project's `person` field. Works independently of the two flags above; project leads who don't belong in the grid can stay with `showInFaces: false`.
 
 To attach a person to a project, edit the project (`Projects` group in the admin) and pick the person from the **Head of project** dropdown. See [Managing Projects](/docs/guides/managing-projects).

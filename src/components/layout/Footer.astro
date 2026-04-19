@@ -2,6 +2,7 @@
 import { Image } from "astro:assets";
 import { footerLogoImages, socialIconFiles } from "@utils/imageGlobs";
 import { getPageContent } from "@utils/contentQueries";
+import { getSocialPlatformsMap } from "@utils/socialPlatforms";
 import { resolveImagePath } from "@utils/imageLoader";
 import { localizeUrl, type Locale } from "@utils/i18n";
 
@@ -18,21 +19,32 @@ const currentYear = new Date().getFullYear();
 
 const socialContent = await getPageContent("social", locale);
 const socialLinks = socialContent?.data.socialLinks ?? [];
+const platformsMap = await getSocialPlatformsMap();
 
 // Resolve each uploaded SVG path to its built URL so we can feed it into a
 // CSS mask-image — this preserves the fill-on-hover animation that the
 // legacy hardcoded <svg><path/></svg> approach gave us, regardless of any
 // fill set inside the uploaded file.
 const socialLinksWithIcons = await Promise.all(
-  socialLinks.map(async (link: { platform: string; iconFile: string; url: string; hoverColor?: string }) => {
-    const key = resolveImagePath('/src/assets/social-icons', link.iconFile);
-    const loader = socialIconFiles[key];
+  socialLinks.map(async (link: { platform: { id: string } | string; url: string; hoverColor?: string }) => {
+    const platformId = typeof link.platform === "string" ? link.platform : link.platform.id;
+    const info = platformsMap.get(platformId);
+    const iconKey = info
+      ? resolveImagePath("/src/assets/social-icons", info.iconFile)
+      : null;
+    const loader = iconKey ? socialIconFiles[iconKey] : undefined;
     const iconUrl = loader ? await loader() : null;
-    return { ...link, iconUrl };
+    const hoverColor = link.hoverColor || info?.defaultHoverColor;
+    return {
+      platform: info?.label ?? platformId,
+      url: link.url,
+      iconUrl,
+      hoverColor,
+    };
   })
 );
 
-const addressContent = await getPageContent("footer/footer-address", locale);
+const addressContent = await getPageContent("contact-details", locale);
 const addressLines =
   addressContent?.data.address
     ?.split("\n")

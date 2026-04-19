@@ -9,13 +9,12 @@ import type { ImageMetadata } from 'astro';
 import type { CollectionEntry } from 'astro:content';
 import defaultEventImage from '@assets/default-images/default-event.jpg';
 import defaultProjectImage from '@assets/default-images/default-project.jpg';
-import defaultTestimonialImage from '@assets/default-images/default-testimonial.jpg';
 import defaultSponsorImage from '@assets/default-images/default-sponsor.jpg';
 import defaultFaceImage from '@assets/default-images/default-face.jpg';
 import { resolveGlobKey } from './imageConstants';
 
 // Export default images for components that need direct access
-export { defaultEventImage, defaultProjectImage, defaultTestimonialImage, defaultSponsorImage, defaultFaceImage };
+export { defaultEventImage, defaultProjectImage, defaultSponsorImage, defaultFaceImage };
 
 /**
  * Resolve a frontmatter `coverImage` / `logo` / `image` value to a glob key.
@@ -107,13 +106,13 @@ interface LoadImagesForCollectionOptions<T> {
   baseDir: string;
   imageField: 'coverImage' | 'image';
   fallbackImage?: ImageMetadata;
-  postType?: 'event' | 'project' | 'testimonial' | 'person';
+  postType?: 'event' | 'project' | 'person';
 }
 
 /**
- * Load images for a collection of items (posts, testimonials, etc.)
+ * Load images for a collection of items (posts, people, etc.)
  *
- * Handles both simple image loading (testimonials) and posts with coverImageType logic.
+ * Handles both simple image loading (people) and posts with coverImageType logic.
  * For posts with coverImageType:
  * - Only loads if coverImageType === "CUSTOM"
  * - Logs dev warning if coverImageType === "DEFAULT"
@@ -235,7 +234,7 @@ export async function loadImagesForCollection<
           );
         }
       }
-      // For items without coverImageType field (testimonials)
+      // For items without coverImageType field (people)
       else if (imageFileName) {
         const imagePath = resolveImagePath(baseDir, imageFileName);
         const resolvedKey = resolveGlobKey(glob, imagePath);
@@ -311,17 +310,17 @@ export async function loadAllImagesFromDirectory(
  * Unified collection image loader
  *
  * Loads images for a collection of items with type-specific configuration.
- * Supports events, projects, and testimonials.
+ * Supports events, projects, and people.
  *
  * @param collection - Collection of items to load images for
- * @param type - Type of collection ('event', 'project', or 'testimonial')
+ * @param type - Type of collection ('event', 'project', or 'person')
  * @returns Array of items with loaded images attached as `loadedImage` property
  *
  * @example
  * ```ts
  * const eventsWithImages = await loadCollectionImages(sortedEvents, 'event');
  * const projectsWithImages = await loadCollectionImages(sortedProjects, 'project');
- * const testimonialsWithImages = await loadCollectionImages(sortedTestimonials, 'testimonial');
+ * const peopleWithImages = await loadCollectionImages(sortedPeople, 'person');
  * ```
  */
 export async function loadCollectionImages(
@@ -333,17 +332,13 @@ export async function loadCollectionImages(
   type: 'project'
 ): Promise<Array<CollectionEntry<'projects'> & { loadedImage: ImageMetadata }>>;
 export async function loadCollectionImages(
-  collection: CollectionEntry<'testimonials'>[],
-  type: 'testimonial'
-): Promise<Array<CollectionEntry<'testimonials'> & { loadedImage: ImageMetadata }>>;
-export async function loadCollectionImages(
   collection: CollectionEntry<'people'>[],
   type: 'person'
 ): Promise<Array<CollectionEntry<'people'> & { loadedImage: ImageMetadata }>>;
 export async function loadCollectionImages(
-  collection: CollectionEntry<'events'>[] | CollectionEntry<'projects'>[] | CollectionEntry<'testimonials'>[] | CollectionEntry<'people'>[],
-  type: 'event' | 'project' | 'testimonial' | 'person'
-): Promise<Array<(CollectionEntry<'events'> | CollectionEntry<'projects'> | CollectionEntry<'testimonials'> | CollectionEntry<'people'>) & { loadedImage: ImageMetadata }>> {
+  collection: CollectionEntry<'events'>[] | CollectionEntry<'projects'>[] | CollectionEntry<'people'>[],
+  type: 'event' | 'project' | 'person'
+): Promise<Array<(CollectionEntry<'events'> | CollectionEntry<'projects'> | CollectionEntry<'people'>) & { loadedImage: ImageMetadata }>> {
   // Configuration mapping for each collection type
   const config = {
     event: {
@@ -357,12 +352,6 @@ export async function loadCollectionImages(
       baseDir: '/src/assets/projects',
       fallbackImage: defaultProjectImage,
       postType: 'project' as const,
-    },
-    testimonial: {
-      glob: async () => (await import('./imageGlobs')).testimonialImages,
-      baseDir: '/src/assets/testimonials',
-      fallbackImage: defaultTestimonialImage,
-      postType: 'testimonial' as const,
     },
     person: {
       glob: async () => (await import('./imageGlobs')).peopleImages,

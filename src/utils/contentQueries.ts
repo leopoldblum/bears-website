@@ -181,17 +181,28 @@ export async function getLatestInstagramPosts(limit: number = 3) {
 // ============================================================================
 
 /**
- * Gets all testimonials for a locale, sorted by the `order` frontmatter field
- * (ascending). Ties break on slug for deterministic output.
+ * Gets all people flagged `showAsTestimonial: true`, sorted by
+ * `testimonialOrder` (ascending) with slug tiebreak, and projects `role` +
+ * `quote` from the locale-appropriate pair. The `people` collection is
+ * locale-agnostic — a single entry per person carries both translations.
  */
-export async function getTestimonialsSorted(locale: Locale = DEFAULT_LOCALE) {
-  const allTestimonials = await getCollection('testimonials');
-  const localeEntries = filterByLocale(allTestimonials, locale);
-  return [...localeEntries].sort((a, b) => {
-    const orderDiff = a.data.order - b.data.order;
-    if (orderDiff !== 0) return orderDiff;
-    return a.slug.localeCompare(b.slug);
-  });
+export async function getTestimonialPeople(locale: Locale = DEFAULT_LOCALE) {
+  const all = await getCollection('people');
+  const shown = all.filter((p) => p.data.showAsTestimonial === true);
+  return [...shown]
+    .sort((a, b) => {
+      const orderDiff = a.data.testimonialOrder - b.data.testimonialOrder;
+      if (orderDiff !== 0) return orderDiff;
+      return a.slug.localeCompare(b.slug);
+    })
+    .map((p) => ({
+      ...p,
+      data: {
+        ...p.data,
+        role: locale === 'de' ? p.data.roleDe : p.data.roleEn,
+        quote: locale === 'de' ? p.data.quoteDe : p.data.quoteEn,
+      },
+    }));
 }
 
 /**

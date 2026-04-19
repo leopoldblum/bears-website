@@ -37,15 +37,6 @@ export const projectImages: ImageGlob = filterImageGlob(
 );
 
 /**
- * Testimonial portrait images
- * Used by: Testimonials.astro
- * Note: includes subdirectories so Keystatic-scoped uploads resolve.
- */
-export const testimonialImages: ImageGlob = filterImageGlob(
-  import.meta.glob<{ default: ImageMetadata }>("/src/assets/testimonials/**/*.*"),
-);
-
-/**
  * Sponsor logo images
  * Used by: BecomeSponsor.astro
  * Note: Includes subdirectories for tier-based organization

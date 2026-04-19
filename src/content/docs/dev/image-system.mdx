@@ -36,11 +36,10 @@ Each asset directory has a centralized glob pattern exported as a constant:
 |--------|-----------|---------|
 | `eventImages` | `/src/assets/events/` | Events listing, detail pages |
 | `projectImages` | `/src/assets/projects/` | Projects listing, detail pages |
-| `testimonialImages` | `/src/assets/testimonials/` | Testimonials carousel |
 | `sponsorLogos` | `/src/assets/sponsors/**/` | Sponsor showcase |
 | `whatIsBearsImages` | `/src/assets/whatIsBears/` | Landing "What is BEARS" carousel |
 | `ourMissionImages` | `/src/assets/about-us/our-mission/` | About page hero |
-| `peopleImages` | `/src/assets/people/` | Faces of BEARS grid + Meet the Team portraits |
+| `peopleImages` | `/src/assets/people/` | Faces of BEARS grid, Meet the Team portraits, Testimonials carousel |
 | `aboutHeroImages` | `/src/assets/hero/about-us/` | About page hero |
 | `eventsHeroImages` | `/src/assets/hero/events/` | Events page hero |
 | `projectsHeroImages` | `/src/assets/hero/projects/` | Projects page hero |
@@ -91,11 +90,10 @@ The primary API for loading images for a content collection. Uses type-specific 
 ```typescript
 const eventsWithImages = await loadCollectionImages(sortedEvents, 'event');
 const projectsWithImages = await loadCollectionImages(sortedProjects, 'project');
-const testimonialsWithImages = await loadCollectionImages(sortedTestimonials, 'testimonial');
-const facesWithImages = await loadCollectionImages(sortedFaces, 'face');
+const peopleWithImages = await loadCollectionImages(sortedPeople, 'person');
 ```
 
-Supported types: `'event'`, `'project'`, `'testimonial'`, `'face'`.
+Supported types: `'event'`, `'project'`, `'person'`. The `'person'` loader backs both the Faces of BEARS grid and the Testimonials carousel — same portrait folder, same defaults.
 
 TypeScript overloads guarantee that when a fallback is configured (which it always is for the built-in types), `loadedImage` is non-null.
 
@@ -130,9 +128,8 @@ Default images are imported from `src/assets/default-images/`:
 |--------|------|----------|
 | `defaultEventImage` | `default-event.jpg` | Events with no custom cover |
 | `defaultProjectImage` | `default-project.jpg` | Projects with no custom cover |
-| `defaultTestimonialImage` | `default-testimonial.jpg` | Testimonials with missing portrait |
 | `defaultSponsorImage` | `default-sponsor.jpg` | Sponsors with missing logo |
-| `defaultFaceImage` | `default-face.jpg` | Faces of BEARS with missing portrait |
+| `defaultFaceImage` | `default-face.jpg` | People with missing portrait (Faces of BEARS + Testimonials) |
 
 ## coverImageType Logic
 

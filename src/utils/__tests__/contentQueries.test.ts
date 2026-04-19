@@ -14,7 +14,7 @@ import {
   getMeetTheTeamProjectsWithPeople,
   getFacesOfBearsPeople,
   getSponsorsByTier,
-  getTestimonialsSorted,
+  getTestimonialPeople,
   getPublishedInstagramPosts,
   getLatestInstagramPosts,
 } from '../contentQueries';
@@ -455,7 +455,19 @@ describe('getLandingHeroSlides', () => {
 // getMeetTheTeamProjectsWithPeople
 // ---------------------------------------------------------------------------
 
-function makePerson(overrides: { slug: string; name?: string; roleEn?: string; roleDe?: string; coverImage?: string; showInFaces?: boolean; order?: number }) {
+function makePerson(overrides: {
+  slug: string;
+  name?: string;
+  roleEn?: string;
+  roleDe?: string;
+  coverImage?: string;
+  showInFaces?: boolean;
+  order?: number;
+  showAsTestimonial?: boolean;
+  testimonialOrder?: number;
+  quoteEn?: string;
+  quoteDe?: string;
+}) {
   return {
     id: `${overrides.slug}.mdx`,
     slug: overrides.slug,
@@ -467,6 +479,10 @@ function makePerson(overrides: { slug: string; name?: string; roleEn?: string; r
       coverImage: overrides.coverImage ?? `${overrides.slug}/coverImage.jpg`,
       showInFaces: overrides.showInFaces ?? false,
       order: overrides.order ?? 0,
+      showAsTestimonial: overrides.showAsTestimonial ?? false,
+      testimonialOrder: overrides.testimonialOrder ?? 0,
+      quoteEn: overrides.quoteEn,
+      quoteDe: overrides.quoteDe,
     },
   };
 }
@@ -675,38 +691,48 @@ describe('getSponsorsByTier', () => {
 });
 
 // ---------------------------------------------------------------------------
-// getTestimonialsSorted
+// getTestimonialPeople
 // ---------------------------------------------------------------------------
 
-describe('getTestimonialsSorted', () => {
+describe('getTestimonialPeople', () => {
   beforeEach(() => {
     mockedGetCollection.mockReset();
   });
 
-  it('returns testimonials sorted by order (ascending), slug tiebreak', async () => {
+  it('returns only people flagged showAsTestimonial, sorted by testimonialOrder then slug', async () => {
     mockedGetCollection.mockResolvedValue([
-      makeEntry({ id: 'en/charlie.mdx', slug: 'charlie', order: 3 }),
-      makeEntry({ id: 'en/alpha.mdx', slug: 'alpha', order: 1 }),
-      makeEntry({ id: 'en/bravo.mdx', slug: 'bravo', order: 2 }),
+      makePerson({ slug: 'b', showAsTestimonial: true, testimonialOrder: 5, quoteEn: 'q', quoteDe: 'q' }),
+      makePerson({ slug: 'a', showAsTestimonial: true, testimonialOrder: 5, quoteEn: 'q', quoteDe: 'q' }),
+      makePerson({ slug: 'first', showAsTestimonial: true, testimonialOrder: 1, quoteEn: 'q', quoteDe: 'q' }),
+      makePerson({ slug: 'hidden', showAsTestimonial: false }),
     ]);
-    const result = await getTestimonialsSorted();
-    expect(result.map(t => t.slug)).toEqual(['alpha', 'bravo', 'charlie']);
+    const result = await getTestimonialPeople();
+    expect(result.map((p) => p.slug)).toEqual(['first', 'a', 'b']);
   });
 
-  it('breaks order ties alphabetically by slug', async () => {
+  it('projects role and quote from the locale-appropriate fields', async () => {
     mockedGetCollection.mockResolvedValue([
-      makeEntry({ id: 'en/charlie.mdx', slug: 'charlie', order: 0 }),
-      makeEntry({ id: 'en/alpha.mdx', slug: 'alpha', order: 0 }),
-      makeEntry({ id: 'en/bravo.mdx', slug: 'bravo', order: 0 }),
+      makePerson({
+        slug: 'jane',
+        showAsTestimonial: true,
+        roleEn: 'CEO',
+        roleDe: 'Geschäftsführerin',
+        quoteEn: 'Great place',
+        quoteDe: 'Toller Ort',
+      }),
     ]);
-    const result = await getTestimonialsSorted();
-    expect(result.map(t => t.slug)).toEqual(['alpha', 'bravo', 'charlie']);
+    const en = await getTestimonialPeople('en');
+    const de = await getTestimonialPeople('de');
+    expect((en[0].data as { role: string; quote: string }).role).toBe('CEO');
+    expect((en[0].data as { role: string; quote: string }).quote).toBe('Great place');
+    expect((de[0].data as { role: string; quote: string }).role).toBe('Geschäftsführerin');
+    expect((de[0].data as { role: string; quote: string }).quote).toBe('Toller Ort');
   });
 
-  it('calls getCollection with "testimonials"', async () => {
+  it('calls getCollection with "people"', async () => {
     mockedGetCollection.mockResolvedValue([]);
-    await getTestimonialsSorted();
-    expect(mockedGetCollection).toHaveBeenCalledWith('testimonials');
+    await getTestimonialPeople();
+    expect(mockedGetCollection).toHaveBeenCalledWith('people');
   });
 });
 

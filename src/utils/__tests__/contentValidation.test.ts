@@ -101,7 +101,6 @@ describe('Content file extensions', () => {
     'events',
     'projects',
     'sponsors',
-    'testimonials',
     'hero-slides',
     'instagram',
     'people',
@@ -153,7 +152,6 @@ describe('Asset file extensions', () => {
     { subdir: 'sponsors/gold' },
     { subdir: 'sponsors/platinum' },
     { subdir: 'sponsors/diamond' },
-    { subdir: 'testimonials' },
     { subdir: 'people', recurse: true },
     { subdir: 'hero/landingpage' },
   ];
@@ -192,7 +190,7 @@ describe('Asset file extensions', () => {
 /**
  * Collections that use locale subfolders (en/, de/)
  */
-const LOCALE_COLLECTIONS = ['events', 'projects', 'testimonials', 'page-text'];
+const LOCALE_COLLECTIONS = ['events', 'projects', 'page-text'];
 
 /**
  * Collections without locale subfolders. `people` is locale-agnostic by design:
@@ -206,7 +204,6 @@ const IMAGE_FIELD_TO_ASSET_DIR: Record<string, Record<string, string>> = {
   projects: {
     coverImage: join(ASSETS_DIR, 'projects'),
   },
-  testimonials: { coverImage: join(ASSETS_DIR, 'testimonials') },
   people: { coverImage: join(ASSETS_DIR, 'people') },
   'hero-slides': { media: join(ASSETS_DIR, 'hero', 'landingpage') },
 };
@@ -545,83 +542,7 @@ describe('Event frontmatter edge cases', () => {
 });
 
 // ---------------------------------------------------------------------------
-// 3d. Testimonial-specific frontmatter edge cases
-//
-//   - quote, name, role, coverImage are all required
-//   - coverImage must have a valid image extension
-// ---------------------------------------------------------------------------
-
-describe('Testimonial frontmatter edge cases', () => {
-  const testimonialsDir = join(CONTENT_DIR, 'testimonials');
-  if (!existsSync(testimonialsDir)) return;
-
-  const files = collectFiles(testimonialsDir).filter((f) =>
-    VALID_CONTENT_EXTENSIONS.has(extname(f).toLowerCase()),
-  );
-
-  for (const file of files) {
-    const label = rel(file);
-    const frontmatter = parseFrontmatter(file);
-    if (!frontmatter) continue;
-
-    it(`${label} — must have a "quote"`, () => {
-      expectWithMessage(
-        typeof frontmatter.quote === 'string' && frontmatter.quote.trim().length > 0,
-        `File "${label}" is missing the required field "quote".\n\n` +
-        `Every testimonial needs the member's quote text.\n\n` +
-        `To fix: add a "quote" field to the frontmatter:\n` +
-        `  quote: "BEARS gave me an amazing experience..."`,
-      );
-    });
-
-    it(`${label} — must have a "name"`, () => {
-      expectWithMessage(
-        typeof frontmatter.name === 'string' && frontmatter.name.trim().length > 0,
-        `File "${label}" is missing the required field "name".\n\n` +
-        `Every testimonial needs the name of the person being quoted.\n\n` +
-        `To fix: add a "name" field to the frontmatter:\n` +
-        `  name: "Jane Doe"`,
-      );
-    });
-
-    it(`${label} — must have a "role"`, () => {
-      expectWithMessage(
-        typeof frontmatter.role === 'string' && frontmatter.role.trim().length > 0,
-        `File "${label}" is missing the required field "role".\n\n` +
-        `Every testimonial needs the person's role or title.\n\n` +
-        `To fix: add a "role" field to the frontmatter:\n` +
-        `  role: "Engineering Lead / 2025"`,
-      );
-    });
-
-    it(`${label} — "coverImage" must have a valid image extension`, () => {
-      expectWithMessage(
-        typeof frontmatter.coverImage === 'string' && frontmatter.coverImage.trim().length > 0,
-        `File "${label}" is missing the required field "coverImage".\n\n` +
-        `Every testimonial needs a portrait image of the person.\n\n` +
-        `To fix: add a "coverImage" field to the frontmatter:\n` +
-        `  coverImage: "portrait.jpg"\n` +
-        `  (place the image in src/assets/testimonials/)`,
-      );
-
-      if (typeof frontmatter.coverImage === 'string') {
-        const ext = extname(frontmatter.coverImage as string).toLowerCase().slice(1);
-        const validExts = [...VALID_IMAGE_EXTENSIONS];
-
-        expectWithMessage(
-          validExts.includes(ext as typeof validExts[number]),
-          `File "${label}" has "coverImage: ${frontmatter.coverImage}"\n` +
-          `but ".${ext}" is not a supported image format.\n\n` +
-          `Supported formats: ${validExts.map((e) => `.${e}`).join(', ')}\n\n` +
-          `To fix: convert the image to a supported format and update the "coverImage" value.`,
-        );
-      }
-    });
-  }
-});
-
-// ---------------------------------------------------------------------------
-// 3e. Sponsor-specific frontmatter edge cases
+// 3d. Sponsor-specific frontmatter edge cases
 //
 //   - name and logo are required
 //   - logo must have a valid image extension
@@ -713,7 +634,7 @@ describe('Sponsor frontmatter edge cases', () => {
 });
 
 // ---------------------------------------------------------------------------
-// 3f. Hero slides frontmatter edge cases
+// 3e. Hero slides frontmatter edge cases
 //
 //   - type must be "image" or "video"
 //   - media is required with valid image/video extension
@@ -810,7 +731,7 @@ describe('Hero slides frontmatter edge cases', () => {
 });
 
 // ---------------------------------------------------------------------------
-// 3g. Instagram post frontmatter edge cases
+// 3f. Instagram post frontmatter edge cases
 //
 //   - url is required and must be a valid URL
 //   - date is required
@@ -873,7 +794,7 @@ describe('Instagram post frontmatter edge cases', () => {
 });
 
 // ---------------------------------------------------------------------------
-// 3h. People frontmatter edge cases
+// 3g. People frontmatter edge cases
 //
 //   - name, roleEn, roleDe, coverImage are all required
 //   - coverImage must have a valid image extension
@@ -967,7 +888,7 @@ describe('People frontmatter edge cases', () => {
 });
 
 // ---------------------------------------------------------------------------
-// 3i. Page-text frontmatter edge cases
+// 3h. Page-text frontmatter edge cases
 //
 //   - title is always required
 //   - buttonText and buttonHref must always come as a pair
@@ -984,20 +905,32 @@ describe('Page-text frontmatter edge cases', () => {
     VALID_CONTENT_EXTENSIONS.has(extname(f).toLowerCase()),
   );
 
+  // Page-text files that are pure site-wide config and are not rendered as
+  // a section heading. They are allowed to omit the `title` field so the CMS
+  // does not surface a pointless "Internal label" row above the real fields.
+  const PAGE_TEXT_NO_TITLE_REQUIRED = new Set([
+    'src/content/page-text/en/contact-details.mdx',
+    'src/content/page-text/de/contact-details.mdx',
+    'src/content/page-text/en/social.mdx',
+    'src/content/page-text/de/social.mdx',
+  ]);
+
   for (const file of files) {
     const label = rel(file);
     const frontmatter = parseFrontmatter(file);
     if (!frontmatter) continue;
 
-    it(`${label} — must have a "title"`, () => {
-      expectWithMessage(
-        typeof frontmatter.title === 'string' && frontmatter.title.trim().length > 0,
-        `File "${label}" is missing the required field "title".\n\n` +
-        `Every page-text entry needs a title.\n\n` +
-        `To fix: add a "title" field to the frontmatter:\n` +
-        `  title: "My Section Title"`,
-      );
-    });
+    if (!PAGE_TEXT_NO_TITLE_REQUIRED.has(label)) {
+      it(`${label} — must have a "title"`, () => {
+        expectWithMessage(
+          typeof frontmatter.title === 'string' && frontmatter.title.trim().length > 0,
+          `File "${label}" is missing the required field "title".\n\n` +
+          `Every page-text entry needs a title.\n\n` +
+          `To fix: add a "title" field to the frontmatter:\n` +
+          `  title: "My Section Title"`,
+        );
+      });
+    }
 
     // buttonText ↔ buttonHref must come as a pair
     const hasButtonText = typeof frontmatter.buttonText === 'string';
@@ -1098,31 +1031,12 @@ describe('Page-text frontmatter edge cases', () => {
         );
       });
 
-      it(`${label} — every socialLink must reference an .svg "iconFile"`, () => {
-        const invalid = (frontmatter.socialLinks as Record<string, unknown>[]).filter(
-          (link) => typeof link.iconFile !== 'string' || !/\.svg$/i.test(link.iconFile as string),
-        );
-
-        expectWithMessage(
-          invalid.length === 0,
-          `File "${label}" has social links with a missing or non-SVG "iconFile":\n` +
-          invalid
-            .map((link) => `  - platform: "${link.platform}", iconFile: "${link.iconFile ?? ''}"`)
-            .join('\n') +
-          `\n\nEvery entry needs an "iconFile" pointing to an SVG uploaded into src/assets/social-icons/.\n\n` +
-          `To fix via the CMS: upload an SVG in the Social links editor (Icon (SVG) field).\n` +
-          `To fix by hand, drop the .svg into src/assets/social-icons/ and reference its filename:\n` +
-          `  - platform: "instagram"\n` +
-          `    iconFile: "instagram.svg"\n` +
-          `    url: "https://instagram.com/..."`,
-        );
-      });
     }
   }
 });
 
 // ---------------------------------------------------------------------------
-// 3j. Docs frontmatter edge cases
+// 3i. Docs frontmatter edge cases
 //
 //   - title is required
 //   - order is required and must be a number
@@ -1170,7 +1084,7 @@ describe('Docs frontmatter edge cases', () => {
 // ---------------------------------------------------------------------------
 
 describe('Image references point to existing files', () => {
-  // ---- Events, Projects, Testimonials, Faces of Bears ----
+  // ---- Events, Projects, People ----
   for (const [collection, fieldMap] of Object.entries(IMAGE_FIELD_TO_ASSET_DIR)) {
     if (collection === 'hero-slides') continue; // handled separately below
 

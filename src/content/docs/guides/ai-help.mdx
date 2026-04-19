@@ -54,15 +54,6 @@ Frontmatter:
   url: string (optional) — full website URL
   bgColor: string (optional, default #ffffff) — logo card background color
 
-TESTIMONIALS (src/content/testimonials/{en,de}/)
-File naming: "name.mdx" (slug based on the person's name; testimonials are sorted by the `order` frontmatter field)
-Frontmatter:
-  quote: string (required)
-  name: string (required)
-  role: string (required)
-  order: number (required) — display order (lower = shown first). Ties fall back to the slug.
-  coverImage: string (required) — path under src/assets/testimonials/<slug>/, written as "/<slug>/<filename>", valid: .jpg .jpeg .png .webp .svg
-
 HERO SLIDES (src/content/hero-slides/)
 File naming: "<slug>.mdx" — filename is the slug, sort order comes from the `order` frontmatter field.
 Two types:
@@ -90,15 +81,19 @@ Frontmatter:
 Landing page shows the 3 most recent posts sorted by date.
 
 PEOPLE (src/content/people/)
-Locale-agnostic — one file per person; roles translate inline via roleEn/roleDe.
-File naming: "name.mdx" (slug based on the person's name). Used by the Faces of BEARS grid AND by projects' Meet the Team feature (via projects.person reference).
+Locale-agnostic — one file per person; both role and testimonial quote translate inline.
+File naming: "name.mdx" (slug based on the person's name). Powers three surfaces from a single record: (1) Faces of BEARS grid, (2) projects' Meet the Team feature via projects.person reference, (3) landing-page Testimonials carousel.
 Frontmatter:
   name: string (required)
   roleEn: string (required) — English role
   roleDe: string (required) — German role
-  coverImage: string (required) — path under src/assets/people/<slug>/, written as "<slug>/<filename>", valid: .jpg .jpeg .png .webp .svg
+  coverImage: string (required) — path under src/assets/people/<slug>/, written as "<slug>/<filename>", valid: .jpg .jpeg .png .webp .svg. The same portrait is reused across all three surfaces.
   showInFaces: boolean (default false) — true = appears in the Faces of BEARS grid on the About Us page; project-only people can stay false
   order: number (default 0) — only meaningful when showInFaces is true; lower = shown first; ties fall back to the slug
+  showAsTestimonial: boolean (default false) — true = appears in the landing-page Testimonials carousel. Requires quoteEn and quoteDe.
+  testimonialOrder: number (default 0) — only meaningful when showAsTestimonial is true; lower = shown first; ties fall back to the slug
+  quoteEn: string (required when showAsTestimonial is true) — English testimonial quote
+  quoteDe: string (required when showAsTestimonial is true) — German testimonial quote
 
 PAGE TEXT (src/content/page-text/)
 Editable headings, descriptions, buttons, and structured data for every page section.
@@ -118,11 +113,11 @@ Frontmatter fields:
   items: array of strings — plain list (used by contact/contact-info, donate, footer)
   titledItems: array — each: { title, description? } — used by about-us/whats-in-it for the benefits grid
   faqs: array — each: { question, answer } — answers support Markdown (bold, links, lists)
-  socialLinks: array — each: { platform, iconFile, url, hoverColor? } — iconFile must be an .svg filename under src/assets/social-icons/ (upload a new SVG via the Social links editor to add a new platform; icons render as silhouettes via CSS mask)
+  socialLinks: array — each: { platform, url, hoverColor? } — platform is a reference to the social-platforms collection (one content entry per platform, with its own iconFile and defaultHoverColor). Adding a new platform is editor-driven: create an entry in the Social platforms collection in the CMS and upload an icon — no code change needed.
   navLinks: array — each: { label, href }
   navColumns: array — each: { heading, href, links: [{ label, href }] }
   mediaCategories: array — each: { id, label } — controls which categories appear on the Media page and in what order
-    Available ids: all (combined view), about-us, events, people, hero, projects, testimonials, what-is-bears
+    Available ids: all (combined view), about-us, events, people, hero, projects, what-is-bears
     Remove an entry to hide that category; reorder entries to change display order.
   address: string — multi-line text block (footer address). Each line renders on its own line.
   room: string — "Find Us" room label (large text next to the map on the About Us page, e.g. "Room F11 in ILR").
@@ -145,7 +140,6 @@ Page text folder structure (inside en/ and de/):
   projects/       — projects page (projects-title, categories-intro, category-experimental-rocketry, category-science-and-experiments, category-robotics, projects-crosslink, projects-empty-state)
   sponsors/       — sponsors page (sponsors-title, sponsors-intro, sponsor-tiers, sponsors-crosslink, become-sponsor-cta)
   contact/        — contact page (contact-title, contact-info, contact-crosslink)
-  footer/         — footer (footer-address — multiline address block)
   site/           — site-wide (metadata — default site title and description)
   nav-links/      — flat nav-link lists (header — top nav; footer-bottom — copyright + legal links)
   404/            — 404 page (not-found)
@@ -156,7 +150,8 @@ Outlier singletons at the locale root (one .mdx file each, not in a subfolder):
   hero.mdx              — landing hero (subtitle/seoDescription + ctas array of up to 4 cards)
   faq.mdx               — About Us FAQ (faqs array; answers support Markdown)
   donate.mdx            — Sponsors page donate card (description, items, accountHolder, bankName, iban, bic, reference, paypalUrl, paypalButtonText)
-  social.mdx            — site-wide social media links (socialLinks array; iconFile is an .svg uploaded to src/assets/social-icons/)
+  social.mdx            — site-wide social media links (socialLinks array; each entry references an entry in the social-platforms content collection — icons are owned by that collection, not the mdx)
+  contact-details.mdx   — site-wide email and multi-line address; read by the Contact page and the site footer
   nav-columns.mdx       — footer multi-column navigation (navColumns array)
   media-categories.mdx  — Media page (title + subtitle + seoDescription + mediaCategories array)
 
@@ -173,7 +168,7 @@ Special behaviors:
   titledItems (about-us/whats-in-it) renders each entry as a numbered card with a bold title and lighter description.
   donate.mdx (at the locale root) is the direct-donations card on the Sponsors page (below the sponsor CTA, bridged by an "OR" divider). Bank block renders if any of accountHolder/bankName/iban/bic is set; each row only appears if its field is present. The items array renders as a value-props row with icons (icons hardcoded, labels editable).
   sponsors/sponsor-tiers.mdx uses the tierDescriptions object (keyed by tier name: diamond/platinum/gold/silver/bronze) — each value renders above the logos for that tier on the sponsors page.
-  footer/footer-address.mdx uses the address field (multi-line text), not items, so the address block can be edited as a free-form block.
+  contact-details.mdx (at the locale root) owns the email and the multi-line address. Both the Contact page (email + address cards) and the site footer read from it, so editing it in one place updates both surfaces.
 
 ========================================
 MDX COMPONENTS (for .mdx event/project posts)
@@ -269,12 +264,11 @@ SIDEBYSIDE + LEFT + RIGHT
 IMAGE RULES
 ========================================
 
-All images must be local files in src/assets/ subdirectories. Events, projects, sponsors, testimonials, and people use a per-slug asset layout — each entry gets its own subfolder whose name matches the entry's filename (without extension):
+All images must be local files in src/assets/ subdirectories. Events, projects, sponsors, and people use a per-slug asset layout — each entry gets its own subfolder whose name matches the entry's filename (without extension):
   src/assets/events/<slug>/         — per-event cover + inline images
   src/assets/projects/<slug>/       — per-project cover + inline images
   src/assets/sponsors/<tier>/<slug>/ — per-sponsor logo (organized under the tier folder: diamond/, platinum/, gold/, silver/, bronze/)
-  src/assets/testimonials/<slug>/   — per-testimonial portrait
-  src/assets/people/<slug>/         — per-person portrait (used by Faces of BEARS grid + Meet the Team)
+  src/assets/people/<slug>/         — per-person portrait (used by Faces of BEARS grid, Meet the Team, and Testimonials carousel)
   src/assets/about-us/our-mission/ — about page mission section images
   src/assets/whatIsBears/         — What is BEARS carousel images
   src/assets/hero/landingpage/    — landing page hero slides (images and videos)
@@ -293,7 +287,7 @@ KEY CONVENTIONS
 ========================================
 
 - isDraft: true hides events, projects, and Instagram posts in production (visible in dev).
-- Sort order is controlled differently per collection: events/projects/instagram sort by the `date` frontmatter field; sponsors/hero-slides/testimonials sort by the `order` frontmatter field; people sort by the `order` field within the Faces of BEARS grid (only when showInFaces is true). Lower = shown first; ties fall back to the slug. No filename prefixes are used for ordering — slugs should be human-readable (e.g. `jane-doe.mdx`, not `01-jane-doe.mdx`).
+- Sort order is controlled differently per collection: events/projects/instagram sort by the `date` frontmatter field; sponsors/hero-slides sort by the `order` frontmatter field; people sort by `order` in the Faces of BEARS grid (when showInFaces is true) and by `testimonialOrder` in the landing Testimonials carousel (when showAsTestimonial is true). Lower = shown first; ties fall back to the slug. No filename prefixes are used for ordering — slugs should be human-readable (e.g. `jane-doe.mdx`, not `01-jane-doe.mdx`).
 - FAQ answers and Accordion content support Markdown: **bold**, [links](/path), - bullet lists.
 - Sponsor tier is determined by folder name (diamond/, platinum/, gold/, silver/, bronze/), not frontmatter. Sponsor logos live under src/assets/sponsors/<tier>/<slug>/ — one folder per sponsor.
 - Sponsor tier descriptions are set via the tierDescriptions object in sponsors/sponsor-tiers.mdx (keyed by tier name), not via separate per-tier files.
@@ -304,7 +298,7 @@ KEY CONVENTIONS
 - Media page categories are configured via the mediaCategories field in the page-text file media-categories.mdx (at the locale root, edited in the CMS as the Media categories singleton). Category labels are set per locale in the content file, not in i18n.ts.
 - Header navigation links are configured in the page-text file nav-links/header.mdx (navLinks field, edited as part of the Nav link lists collection in the CMS).
 - Footer navigation columns are configured in the page-text file nav-columns.mdx (at the locale root, navColumns field, edited as the Footer navigation singleton in the CMS).
-- Footer address is configured in footer/footer-address.mdx via the multi-line `address` field (each line in the YAML renders as its own line on the page).
+- Footer address is configured in contact-details.mdx (at the locale root) via the multi-line `address` field (each line in the YAML renders as its own line on the page); the same field drives the Contact page address card.
 - Slugs for events, projects, docs, and nav-links must be lowercase kebab-case (letters, digits, and hyphens only) — Keystatic enforces this and validation at build time would reject anything else. Use `hackathon-2026.mdx`, not `Hackathon 2026.mdx`.
 ```
 
