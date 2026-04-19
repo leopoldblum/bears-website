@@ -1,0 +1,70 @@
+---
+title: "Managing Events"
+description: "How to add, edit, and organize events."
+order: 20
+group: "Content"
+---
+
+Events are stored in `src/content/events/` as Markdown or MDX files, organized by locale.
+
+## Folder Structure
+
+```
+src/content/events/
+├── en/                              ← English (default)
+│   ├── hackathon-2026.mdx
+│   └── ...
+└── de/                              ← German translations
+    ├── hackathon-2026.mdx
+    └── ...
+```
+
+Both folders use identical filenames. If a German translation is missing, the English version is displayed on the `/de/` pages.
+
+## Creating an Event
+
+Create a new file in `src/content/events/en/` (or `de/` for German). The filename becomes the slug — use a short, URL-safe title (e.g. `hackathon-2026.mdx`). Sort order on the events page is driven by the `date` frontmatter field, not the filename.
+
+```mdx
+---
+title: "BEARS 24-Hour Hackathon 2026"
+description: "Test your skills in our annual hackathon focused on autonomous systems and sustainable engineering."
+date: 2026-03-15
+categoryEvent: "competitions-and-workshops"
+coverImage: /hackathon-2026/cover.jpg
+isDraft: false   # Optional — defaults to false, set true to hide from production
+---
+
+import { Accordion, Button, Callout, Carousel, Center, ImageGrid, Img, Instagram, Marquee, YouTube, SideBySide, Left, Right } from '@mdx';
+
+## About the Hackathon
+
+<Callout title="Registration Open">
+  Sign up before March 1st to secure your spot!
+</Callout>
+
+Get ready for the most exciting event of the semester! Our annual hackathon
+challenges teams to design, build, and program innovative solutions within
+24 hours. Whether it's waste-sorting robots, energy-efficient drones, or
+smart agricultural systems, we want to see your creative solutions.
+```
+
+## Required Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `title` | string | Event title |
+| `description` | string | Short summary |
+| `date` | date | Event date (`YYYY-MM-DD`) |
+| `categoryEvent` | enum | One of: `trade-fairs-and-conventions`, `competitions-and-workshops`, `kick-off-events`, `other` |
+| `coverImage` | string | Path to cover image under `src/assets/events/<slug>/`, written as `/<slug>/<filename>` |
+
+## Optional Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `isDraft` | boolean | Set to `true` to hide in production (default: `false`) |
+
+## Cover Images
+
+Each event has its own asset subfolder under `src/assets/events/<slug>/`, where `<slug>` matches the filename (without extension). Place the cover image and any inline MDX images there. The `coverImage` frontmatter is written as `/<slug>/<filename>` (e.g. `/hackathon-2026/cover.jpg`). Valid formats: `.jpg`, `.jpeg`, `.png`, `.webp`, `.svg`.

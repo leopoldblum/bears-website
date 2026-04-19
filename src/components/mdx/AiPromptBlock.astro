@@ -1,0 +1,53 @@
+---
+// AiPromptBlock — collapsible, copyable prompt container for the AI help guide.
+// Wraps a single code block (slotted) with Copy and Expand/Collapse controls.
+
+interface Props {
+  /** Small uppercase label shown in the header. */
+  label?: string;
+}
+
+const { label = 'AI Context Prompt' } = Astro.props;
+---
+
+<div
+  x-data="{ expanded: false, copied: false, hc: false, he: false }"
+  data-no-auto-copy
+  class="relative my-6 overflow-hidden rounded-lg border border-white/10"
+>
+  <div class="flex items-center justify-between border-b border-white/10 bg-white/5 px-3.5 py-2.5">
+    <span class="text-[0.7rem] font-semibold uppercase tracking-wider text-white/35">
+      {label}
+    </span>
+    <span class="flex gap-2">
+      <button
+        type="button"
+        x-on:click="const c = $el.closest('[x-data]').querySelector('code'); navigator.clipboard.writeText(c.textContent).then(() => { copied = true; setTimeout(() => copied = false, 2000) })"
+        x-text="copied ? '✓ Copied' : 'Copy'"
+        x-on:mouseenter="hc = true"
+        x-on:mouseleave="hc = false"
+        class="cursor-pointer rounded-md border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-medium leading-none text-white/60 transition-all duration-150"
+        x-bind:style="copied ? { color: '#C50E1F', borderColor: 'rgba(197,14,31,0.4)', background: 'rgba(197,14,31,0.12)' } : hc ? { color: 'rgba(255,255,255,0.95)', background: 'rgba(255,255,255,0.15)', borderColor: 'rgba(255,255,255,0.25)' } : {}"
+      ></button>
+      <button
+        type="button"
+        x-on:click="expanded = !expanded"
+        x-text="expanded ? 'Collapse' : 'Expand'"
+        x-on:mouseenter="he = true"
+        x-on:mouseleave="he = false"
+        class="cursor-pointer rounded-md border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-medium leading-none text-white/60 transition-all duration-150"
+        x-bind:style="he ? { color: 'rgba(255,255,255,0.95)', background: 'rgba(255,255,255,0.15)', borderColor: 'rgba(255,255,255,0.25)' } : {}"
+      ></button>
+    </span>
+  </div>
+  <div
+    x-bind:style="expanded ? '' : 'max-height: 12rem; overflow: hidden;'"
+    class="transition-[max-height] duration-[350ms]"
+  >
+    <slot />
+  </div>
+  <div
+    x-show="!expanded"
+    class="pointer-events-none absolute bottom-0 left-0 right-0 h-20 bg-gradient-to-t from-[#24292e] to-transparent transition-opacity"
+  ></div>
+</div>

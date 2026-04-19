@@ -5,15 +5,13 @@ order: 37
 group: "MDX Components"
 ---
 
-import { Carousel, Img } from '@mdx';
-import testImage from '@assets/projects/project-1.jpg';
 
 Carousels cycle through slides with arrows, dots, and optional auto-scrolling. Each direct child becomes a slide.
 
 **Important:** `<Img>` images inside a carousel must have click-to-enlarge enabled (the default) for proper rendering. Do not set `enableClickToEnlarge={false}` on carousel slides.
 
 ```mdx
-import { Accordion, Button, Callout, Carousel, Center, Img, Instagram, Marquee, YouTube, SideBySide, Left, Right } from '@mdx';
+import { Accordion, Button, Callout, Carousel, Center, ImageGrid, Img, Instagram, Marquee, YouTube, SideBySide, Left, Right } from '@mdx';
 import photo1 from '@assets/events/photo-1.jpg';
 import photo2 from '@assets/events/photo-2.jpg';
 
@@ -23,13 +21,13 @@ import photo2 from '@assets/events/photo-2.jpg';
 </Carousel>
 ```
 
-<div class="not-prose mb-4">
+<Preview>
   <Carousel>
-    <Img src={testImage} alt="Slide 1" />
-    <Img src={testImage} alt="Slide 2" />
-    <Img src={testImage} alt="Slide 3" />
+    <Img src="/src/assets/default-images/default-event.jpg" alt="Slide 1" />
+    <Img src="/src/assets/default-images/default-event.jpg" alt="Slide 2" />
+    <Img src="/src/assets/default-images/default-event.jpg" alt="Slide 3" />
   </Carousel>
-</div>
+</Preview>
 
 Navigate with the arrows or dots below. On mobile, you can swipe.
 

@@ -1,0 +1,30 @@
+---
+// Preview — live-preview wrapper for the docs. Strips prose styles so the
+// rendered components look like they would on a real page, and offers a few
+// layout presets for inline vs. stacked demos.
+
+type Layout = 'stack' | 'row' | 'row-center';
+type Spacing = 'compact' | 'normal';
+
+interface Props {
+  layout?: Layout;
+  spacing?: Spacing;
+}
+
+const { layout = 'stack', spacing = 'compact' } = Astro.props;
+
+const layoutClass: Record<Layout, string> = {
+  stack: '',
+  row: 'flex flex-wrap gap-3',
+  'row-center': 'flex flex-wrap items-center gap-3',
+};
+
+const spacingClass: Record<Spacing, string> = {
+  compact: 'mb-4',
+  normal: 'my-6',
+};
+---
+
+<div class:list={['not-prose', spacingClass[spacing], layoutClass[layout]]}>
+  <slot />
+</div>

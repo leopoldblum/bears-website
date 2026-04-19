@@ -1,0 +1,58 @@
+---
+title: "Managing Testimonials"
+description: "How to add member quotes and testimonials."
+order: 23
+group: "Content"
+---
+
+Testimonials are stored in `src/content/testimonials/` as `.mdx` files, organized by locale.
+
+## Folder Structure
+
+```
+src/content/testimonials/
+├── en/              ← English (default)
+│   ├── member-4.mdx
+│   └── ...
+└── de/              ← German translations
+    ├── member-4.mdx
+    └── ...
+```
+
+Both folders use identical filenames. If a German translation is missing, the English version is displayed on the `/de/` pages.
+
+## Creating a Testimonial
+
+Create a new file in `en/` (or `de/` for German) named after the person (e.g., `jane-doe.mdx`). The `order` frontmatter field controls display order — the filename is just a slug.
+
+```yaml
+---
+quote: "Working at BEARS taught me more about rocket propulsion than any textbook."
+name: "Jane Doe"
+role: "Propulsion Lead / WS 2025"
+order: 4
+coverImage: /jane-doe/jane-doe.jpg
+---
+```
+
+The body of testimonial files is not used &mdash; all content comes from the frontmatter.
+
+## Required Fields
+
+All fields are required:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `quote` | string | The testimonial text |
+| `name` | string | Person's name |
+| `role` | string | Their role, year, or team (e.g., "Project Lead / WS 2025") |
+| `order` | number | Sort order (lower = shown first). Ties fall back to the slug. |
+| `coverImage` | string | Path to portrait image under `src/assets/testimonials/<slug>/`, written as `/<slug>/<filename>` |
+
+## Images
+
+Each testimonial has its own asset subfolder under `src/assets/testimonials/<slug>/`, where `<slug>` matches the filename (without extension). Place the portrait there and reference it as `/<slug>/<filename>`. Valid formats: `.jpg`, `.jpeg`, `.png`, `.webp`, `.svg`.
+
+## Display Order
+
+Testimonials are sorted ascending by the `order` frontmatter field; ties break on the filename. Lower `order` values are shown first.

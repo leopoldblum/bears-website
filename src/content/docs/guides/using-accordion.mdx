@@ -5,12 +5,11 @@ order: 30
 group: "MDX Components"
 ---
 
-import { Accordion } from '@mdx';
 
 Accordions hide content behind clickable titles — perfect for FAQs and long-form content. Add this to any `.mdx` file:
 
 ```mdx
-import { Accordion, Button, Callout, Carousel, Center, Img, Instagram, Marquee, YouTube, SideBySide, Left, Right } from '@mdx';
+import { Accordion, Button, Callout, Carousel, Center, ImageGrid, Img, Instagram, Marquee, YouTube, SideBySide, Left, Right } from '@mdx';
 
 <Accordion
   items={[
@@ -21,7 +20,7 @@ import { Accordion, Button, Callout, Carousel, Center, Img, Instagram, Marquee, 
 />
 ```
 
-<div class="not-prose mb-4">
+<Preview>
   <Accordion
     items={[
       { title: "When do we meet?", content: "Every Thursday at 18:00." },
@@ -29,47 +28,52 @@ import { Accordion, Button, Callout, Carousel, Center, Img, Instagram, Marquee, 
       { title: "How do I join?", content: "Come to a meeting and talk to a project lead." }
     ]}
   />
-</div>
+</Preview>
 
 Each item needs a `title` and `content`. The content supports Markdown — use `\n\n` for paragraphs, `**bold**`, `- lists`, etc.
 
 ## Options
 
-### `defaultOpen` — start with an item expanded
+### `mode` — choose how items open and close
 
-Pass the item number, starting from `0`:
+Pick a display mode instead of tweaking several flags by hand:
+
+| Mode | Behavior |
+|------|----------|
+| `single-closed` (default) | One open at a time. All start closed. |
+| `single-open` | One open at a time. First item starts expanded. |
+| `always-one` | First item starts expanded and cannot be closed. |
+| `multi` | Multiple items can be open at once. |
 
 ```mdx
-<Accordion defaultOpen={0} items={[...]} />
+<Accordion mode="single-open" items={[...]} />
 ```
 
-<div class="not-prose mb-4">
+<Preview>
   <Accordion
-    defaultOpen={0}
+    mode="single-open"
     items={[
-      { title: "This starts open", content: "Because `defaultOpen` is set to `0` (the first item)." },
+      { title: "This starts open", content: "Because `mode` is set to `single-open`." },
       { title: "This starts closed", content: "Click to expand." }
     ]}
   />
-</div>
+</Preview>
 
-### `allowMultiple` — open several at once
-
-By default, opening one item closes the others. Set `allowMultiple` to change that:
+### `mode="multi"` — open several at once
 
 ```mdx
-<Accordion allowMultiple={true} items={[...]} />
+<Accordion mode="multi" items={[...]} />
 ```
 
-<div class="not-prose mb-4">
+<Preview>
   <Accordion
-    allowMultiple={true}
+    mode="multi"
     items={[
       { title: "Open me", content: "Now open the next one too — this stays open." },
       { title: "Open me too", content: "Both can be expanded at the same time." }
     ]}
   />
-</div>
+</Preview>
 
 ### `subtitle` — categorize items
 
@@ -84,14 +88,14 @@ Add a `subtitle` field to items to show a small label:
 />
 ```
 
-<div class="not-prose mb-4">
+<Preview>
   <Accordion
     items={[
       { title: "How do I apply?", subtitle: "Membership", content: "Fill out the form on our contact page." },
       { title: "Where is the workshop?", subtitle: "Location", content: "Building MAR, Room 6.001 on the TU Berlin campus." }
     ]}
   />
-</div>
+</Preview>
 
 ## Required Fields
 
@@ -103,7 +107,5 @@ Add a `subtitle` field to items to show a small label:
 
 | Field | Type | Description |
 |-------|------|-------------|
-| `defaultOpen` | number | Which item starts expanded, counting from `0` (default: all closed) |
-| `allowMultiple` | boolean | Let readers open more than one at a time (default: `false`) |
-| `allowCloseAll` | boolean | Let readers close all items |
+| `mode` | enum | `"single-closed"` \| `"single-open"` \| `"always-one"` \| `"multi"` (default: `"single-closed"`) |
 | `width` | string | Width of the accordion (default: `"100%"`) |

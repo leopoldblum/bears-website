@@ -19,18 +19,7 @@ const listContent = await getPageContent("about-us/whats-in-it", locale);
 const loadedImages = await loadAllImagesFromDirectory(ourMissionImages);
 const missionImage = loadedImages[0];
 
-// Parse items: "Title -> Description" or just "Title"
-const parsedItems =
-  listContent?.data.items?.map((item) => {
-    const separatorIndex = item.indexOf(" -> ");
-    if (separatorIndex !== -1) {
-      return {
-        title: item.slice(0, separatorIndex),
-        description: item.slice(separatorIndex + 4) || undefined,
-      };
-    }
-    return { title: item, description: undefined };
-  }) ?? [];
+const parsedItems = listContent?.data.titledItems ?? [];
 ---
 
 <section

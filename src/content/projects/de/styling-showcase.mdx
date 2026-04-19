@@ -9,24 +9,7 @@ displayMeetTheTeam: false
 isProjectCompleted: true
 ---
 
-import Button from '@mdx/Button.astro';
-import Center from '@mdx/Center.astro';
-import Carousel from '@mdx/Carousel.astro';
-import Accordion from '@mdx/Accordion.astro';
-import Marquee from '@mdx/Marquee.astro';
-import { SideBySide, Left, Right } from "@mdx/SideBySide"
-import Img from '@mdx/Img.astro';
-import ImageGrid from '@reusable/ImageGrid.astro'
-import YouTube from '@mdx/YouTube.astro';
-import Instagram from '@mdx/Instagram.astro';
-import Callout from '@mdx/Callout.astro';
 
-import project1 from '../../../assets/projects/project-1.jpg';
-import project2 from '../../../assets/projects/project-2.jpg';
-import project3 from '../../../assets/projects/project-3.jpg';
-import project4 from '../../../assets/projects/project-4.jpg';
-import project5 from '../../../assets/projects/project-5.jpg';
-import project6 from '../../../assets/projects/project-6.jpg';
 
 test
 
@@ -117,21 +100,21 @@ Buttons gibt es in mehreren Varianten und Größen für verschiedene Anwendungsf
 <Center>
 ### Primäre Buttons
 
-<Button variant="primary" size="standard" href="#buttons">Standard Primär</Button>
+<Button variant="primary" size="standard" href="#buttons" content="Standard Primär" />
 
-<Button variant="primary" size="large">Großer Primärer Button</Button>
+<Button variant="primary" size="large" content="Großer Primärer Button" />
 
 ### Sekundäre Buttons
 
-<Button variant="secondary" size="standard">Standard Sekundär</Button>
+<Button variant="secondary" size="standard" content="Standard Sekundär" />
 
-<Button variant="secondary" size="large">Großer Sekundärer Button</Button>
+<Button variant="secondary" size="large" content="Großer Sekundärer Button" />
 
 ### Inverse Buttons
 
-<Button variant="inverse" size="standard">Standard Invers</Button>
+<Button variant="inverse" size="standard" content="Standard Invers" />
 
-<Button variant="inverse" size="large">Großer Inverser Button</Button>
+<Button variant="inverse" size="large" content="Großer Inverser Button" />
 
 </Center>
 
@@ -144,13 +127,13 @@ Die `Img`-Komponente bietet optimierte, responsive Bildanzeige mit flexibler Gr�
 <Center>
 
 ### Bild in voller Breite
-<Img src={project1} alt="Projektpräsentation in voller Breite" width="100%" loading="eager" />
+<Img src="/src/assets/projects/high-altitude-balloon/project-1.jpg" alt="Projektpräsentation in voller Breite" width="100%" />
 
 ### Bild mit 80% Breite
-<Img src={project2} alt="Bild mit 80% Breite" width="80%" />
+<Img src="/src/assets/projects/project-2.jpg" alt="Bild mit 80% Breite" width="80%" />
 
 ### Bild mit 60% Breite
-<Img src={project3} alt="Bild mit 60% Breite" width="60%" />
+<Img src="/src/assets/projects/project-3.jpg" alt="Bild mit 60% Breite" width="60%" />
 
 </Center>
 
@@ -162,12 +145,12 @@ Die `Img`-Komponente bietet optimierte, responsive Bildanzeige mit flexibler Gr�
   cols={2}
   aspectRatio='square'
   images={[
-    { image: project1, alt: "Projekt 1 Rasterbeispiel" },
-    { image: project2, alt: "Projekt 2 Rasterbeispiel" },
-    { image: project3, alt: "Projekt 3 Rasterbeispiel" },
-    { image: project4, alt: "Projekt 4 Rasterbeispiel" },
-    { image: project5, alt: "Projekt 5 Rasterbeispiel" },
-    { image: project6, alt: "Projekt 6 Rasterbeispiel" }
+    { image: "/src/assets/projects/high-altitude-balloon/project-1.jpg", alt: "Projekt 1 Rasterbeispiel" },
+    { image: "/src/assets/projects/project-2.jpg", alt: "Projekt 2 Rasterbeispiel" },
+    { image: "/src/assets/projects/project-3.jpg", alt: "Projekt 3 Rasterbeispiel" },
+    { image: "/src/assets/projects/cubesat-tracking/project-4.jpg", alt: "Projekt 4 Rasterbeispiel" },
+    { image: "/src/assets/projects/test-rover/project-5.jpg", alt: "Projekt 5 Rasterbeispiel" },
+    { image: "/src/assets/projects/project-6.jpg", alt: "Projekt 6 Rasterbeispiel" }
   ]}
 />
 
@@ -177,12 +160,12 @@ Die `Img`-Komponente bietet optimierte, responsive Bildanzeige mit flexibler Gr�
   cols={2}
   aspectRatio="native"
   images={[
-    { image: project1, alt: "Projekt 1 Rasterbeispiel" },
-    { image: project2, alt: "Projekt 2 Rasterbeispiel" },
-    { image: project3, alt: "Projekt 3 Rasterbeispiel" },
-    { image: project4, alt: "Projekt 4 Rasterbeispiel" },
-    { image: project5, alt: "Projekt 5 Rasterbeispiel" },
-    { image: project6, alt: "Projekt 6 Rasterbeispiel" }
+    { image: "/src/assets/projects/high-altitude-balloon/project-1.jpg", alt: "Projekt 1 Rasterbeispiel" },
+    { image: "/src/assets/projects/project-2.jpg", alt: "Projekt 2 Rasterbeispiel" },
+    { image: "/src/assets/projects/project-3.jpg", alt: "Projekt 3 Rasterbeispiel" },
+    { image: "/src/assets/projects/cubesat-tracking/project-4.jpg", alt: "Projekt 4 Rasterbeispiel" },
+    { image: "/src/assets/projects/test-rover/project-5.jpg", alt: "Projekt 5 Rasterbeispiel" },
+    { image: "/src/assets/projects/project-6.jpg", alt: "Projekt 6 Rasterbeispiel" }
   ]}
 />
 
@@ -191,12 +174,12 @@ Die `Img`-Komponente bietet optimierte, responsive Bildanzeige mit flexibler Gr�
 Ein Carousel kann ebenfalls Bilder mit der Img-Komponente anzeigen:
 
 <Carousel showArrows={true} showDots={true} height="md">
-  <Img src={project1} alt="Projekt 1" class="rounded-lg" />
-  <Img src={project2} alt="Projekt 2" class="rounded-lg" />
-  <Img src={project3} alt="Projekt 3" class="rounded-lg" />
-  <Img src={project4} alt="Projekt 4" class="rounded-lg" />
-  <Img src={project5} alt="Projekt 5" class="rounded-lg" />
-  <Img src={project6} alt="Projekt 6" class="rounded-lg" />
+  <Img src="/src/assets/projects/high-altitude-balloon/project-1.jpg" alt="Projekt 1" class="rounded-lg" />
+  <Img src="/src/assets/projects/project-2.jpg" alt="Projekt 2" class="rounded-lg" />
+  <Img src="/src/assets/projects/project-3.jpg" alt="Projekt 3" class="rounded-lg" />
+  <Img src="/src/assets/projects/cubesat-tracking/project-4.jpg" alt="Projekt 4" class="rounded-lg" />
+  <Img src="/src/assets/projects/test-rover/project-5.jpg" alt="Projekt 5" class="rounded-lg" />
+  <Img src="/src/assets/projects/project-6.jpg" alt="Projekt 6" class="rounded-lg" />
 </Carousel>
 
 ---
@@ -210,60 +193,25 @@ Akkordeons organisieren Inhalte in ausklappbare Abschnitte:
     {
       title: "Was ist das BEARS-Programm?",
       subtitle: "Allgemeine Informationen",
-      content: `
-Das BEARS-Programm ist eine umfassende Initiative zur Förderung von Forschung und Innovation. Es bringt Studierende, Forschende und Industriepartner zusammen, um durch kollaborative Projekte reale Herausforderungen zu bewältigen.
-
-- Multidisziplinärer Ansatz
-- Industriepartnerschaften
-- Studentisch geleitete Forschung
-- Praxisanwendungen
-      `
+      content: "Das BEARS-Programm ist eine umfassende Initiative zur Förderung von Forschung und Innovation. Es bringt Studierende, Forschende und Industriepartner zusammen, um durch kollaborative Projekte reale Herausforderungen zu bewältigen.\n\n- Multidisziplinärer Ansatz\n- Industriepartnerschaften\n- Studentisch geleitete Forschung\n- Praxisanwendungen"
     },
     {
       title: "Wie trete ich einem Projekt bei?",
       subtitle: "Erste Schritte",
-      content: `
-Einem BEARS-Projekt beizutreten ist unkompliziert:
-
-1. Verfügbare Projekte auf der Website durchstöbern
-2. Projektanforderungen und Zeitplan prüfen
-3. Die Projektleitung kontaktieren
-4. Am Kickoff-Meeting teilnehmen
-5. Mit dem Team zusammenarbeiten
-
-Jedes Projekt hat unterschiedliche Anforderungen - schaue auf den einzelnen Projektseiten nach spezifischen Details.
-      `
+      content: "Einem BEARS-Projekt beizutreten ist unkompliziert:\n\n1. Verfügbare Projekte auf der Website durchstöbern\n2. Projektanforderungen und Zeitplan prüfen\n3. Die Projektleitung kontaktieren\n4. Am Kickoff-Meeting teilnehmen\n5. Mit dem Team zusammenarbeiten\n\nJedes Projekt hat unterschiedliche Anforderungen - schaue auf den einzelnen Projektseiten nach spezifischen Details."
     },
     {
       title: "Welche Fähigkeiten brauche ich?",
       subtitle: "Technische Voraussetzungen",
-      content: `
-Erforderliche und bevorzugte Fähigkeiten variieren je nach Projekt:
-
-- **Immer hilfreich:** Problemlösung, Teamarbeit, Kommunikation
-- **Technisch:** Programmierung, CAD, Datenanalyse (projektabhängig)
-- **Soft Skills:** Führung, Projektmanagement, Dokumentation
-- **Wünschenswert:** Vorherige Forschungserfahrung, Fachwissen
-
-Keine Sorge, wenn dir bestimmte Fähigkeiten fehlen - die BEARS-Community ist kooperativ und unterstützend.
-      `
+      content: "Erforderliche und bevorzugte Fähigkeiten variieren je nach Projekt:\n\n- **Immer hilfreich:** Problemlösung, Teamarbeit, Kommunikation\n- **Technisch:** Programmierung, CAD, Datenanalyse (projektabhängig)\n- **Soft Skills:** Führung, Projektmanagement, Dokumentation\n- **Wünschenswert:** Vorherige Forschungserfahrung, Fachwissen\n\nKeine Sorge, wenn dir bestimmte Fähigkeiten fehlen - die BEARS-Community ist kooperativ und unterstützend."
     },
     {
       title: "Gibt es Fristen?",
       subtitle: "Projektzeitplan",
-      content: `
-Ja, jedes Projekt hat spezifische Meilensteine und Fristen:
-
-- Projektstart: Normalerweise zu Semesterbeginn
-- Checkpoint-Reviews: Monatliche Fortschrittskontrollen
-- Abschlusspräsentation: Semesterende
-- Dokumentationsfrist: Eine Woche vor der Abschlusspräsentation
-
-Fristen helfen, Projekte auf Kurs zu halten und qualitativ hochwertige Ergebnisse sicherzustellen.
-      `
+      content: "Ja, jedes Projekt hat spezifische Meilensteine und Fristen:\n\n- Projektstart: Normalerweise zu Semesterbeginn\n- Checkpoint-Reviews: Monatliche Fortschrittskontrollen\n- Abschlusspräsentation: Semesterende\n- Dokumentationsfrist: Eine Woche vor der Abschlusspräsentation\n\nFristen helfen, Projekte auf Kurs zu halten und qualitativ hochwertige Ergebnisse sicherzustellen."
     }
   ]}
-  allowMultiple={true}
+  mode="multi"
   width="100%"
 />
 
@@ -325,10 +273,10 @@ Beide Spalten bleiben gleichermaßen lesbar und gut proportioniert.
 Das Marquee erstellt eine scrollende Bildergalerie, die sich perfekt zur Präsentation mehrerer Projekte eignet. Es verarbeitet Bilder mit unterschiedlichen Seitenverhältnissen elegant:
 
 <Marquee speed={80} gap="1.5rem" height="md" direction='left'>
-  <Img src={project1} alt="Projekt 1 Showcase" class="rounded-lg" />
-  <Img src={project2} alt="Projekt 2 Showcase" class="rounded-lg" />
-  <Img src={project3} alt="Projekt 3 Showcase" class="rounded-lg" />
-  <Img src={project4} alt="Projekt 4 Showcase" class="rounded-lg" />
+  <Img src="/src/assets/projects/high-altitude-balloon/project-1.jpg" alt="Projekt 1 Showcase" class="rounded-lg" />
+  <Img src="/src/assets/projects/project-2.jpg" alt="Projekt 2 Showcase" class="rounded-lg" />
+  <Img src="/src/assets/projects/project-3.jpg" alt="Projekt 3 Showcase" class="rounded-lg" />
+  <Img src="/src/assets/projects/cubesat-tracking/project-4.jpg" alt="Projekt 4 Showcase" class="rounded-lg" />
 </Marquee>
 
 ### Marquee in umgekehrter Richtung
@@ -336,11 +284,11 @@ Das Marquee erstellt eine scrollende Bildergalerie, die sich perfekt zur Präsen
 Das Marquee unterstützt auch das Scrollen in die entgegengesetzte Richtung:
 
 <Marquee speed={180} gap="2rem" height="sm" direction="right">
-  <Img src={project1} alt="Projekt 1 Showcase" class="rounded-lg" />
-  <Img src={project2} alt="Projekt 2 Showcase" class="rounded-lg" />
-  <Img src={project3} alt="Projekt 3 Showcase" class="rounded-lg" />
-  <Img src={project4} alt="Projekt 4 Showcase" class="rounded-lg" />
-  <Img src={project5} alt="Projekt 5 Showcase" class="rounded-lg" />
+  <Img src="/src/assets/projects/high-altitude-balloon/project-1.jpg" alt="Projekt 1 Showcase" class="rounded-lg" />
+  <Img src="/src/assets/projects/project-2.jpg" alt="Projekt 2 Showcase" class="rounded-lg" />
+  <Img src="/src/assets/projects/project-3.jpg" alt="Projekt 3 Showcase" class="rounded-lg" />
+  <Img src="/src/assets/projects/cubesat-tracking/project-4.jpg" alt="Projekt 4 Showcase" class="rounded-lg" />
+  <Img src="/src/assets/projects/test-rover/project-5.jpg" alt="Projekt 5 Showcase" class="rounded-lg" />
 </Marquee>
 
 ---
@@ -407,10 +355,10 @@ Dies ist besonders nützlich für:
 <SideBySide>
   <Left>
 <Marquee speed={80} gap="1.5rem" height="md" direction='left'>
-  <Img src={project1} alt="Projekt 1 Showcase" class="rounded-lg" />
-  <Img src={project2} alt="Projekt 2 Showcase" class="rounded-lg" />
-  <Img src={project3} alt="Projekt 3 Showcase" class="rounded-lg" />
-  <Img src={project4} alt="Projekt 4 Showcase" class="rounded-lg" />
+  <Img src="/src/assets/projects/high-altitude-balloon/project-1.jpg" alt="Projekt 1 Showcase" class="rounded-lg" />
+  <Img src="/src/assets/projects/project-2.jpg" alt="Projekt 2 Showcase" class="rounded-lg" />
+  <Img src="/src/assets/projects/project-3.jpg" alt="Projekt 3 Showcase" class="rounded-lg" />
+  <Img src="/src/assets/projects/cubesat-tracking/project-4.jpg" alt="Projekt 4 Showcase" class="rounded-lg" />
 </Marquee>
 
   </Left>
@@ -422,18 +370,15 @@ Dies ist besonders nützlich für:
   items={[
     {
       title: "Galerie-Features",
-      content: `
-Dieses Marquee zeigt ausgewählte Projekte mit flüssiger Scroll-Animation. Hover zum Pausieren.
-      `
+      subtitle: "",
+      content: "Dieses Marquee zeigt ausgewählte Projekte mit flüssiger Scroll-Animation. Hover zum Pausieren."
     },
     {
       title: "Komponenten-Vorteile",
-      content: `
-Diese Komponenten schaffen ansprechende, interaktive Nutzererlebnisse, die Besucher fesseln.
-      `
+      subtitle: "",
+      content: "Diese Komponenten schaffen ansprechende, interaktive Nutzererlebnisse, die Besucher fesseln."
     }
   ]}
-  allowMultiple={false}
   width="100%"
 />
 
@@ -494,7 +439,7 @@ Das Design verwendet eine sorgfältig ausgewählte Farbpalette:
 
 Alle interaktiven Elemente verwenden eine konsistente Farbbehandlung:
 
-<Button variant="primary" size="standard">Farbe in Aktion sehen</Button>
+<Button variant="primary" size="standard" content="Farbe in Aktion sehen" />
 
 </Center>
 

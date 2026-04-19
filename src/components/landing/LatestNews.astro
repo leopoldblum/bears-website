@@ -17,8 +17,13 @@ const content = await getPageContent('landing/latest-news', locale);
 const instagramPosts = await getLatestInstagramPosts(3);
 
 // Derive Instagram URL from footer social links (single source of truth)
-const socialContent = await getPageContent('site/social-links', locale);
-const instagramUrl = socialContent?.data.socialLinks?.find((l: { platform: string }) => l.platform === 'instagram')?.url;
+const socialContent = await getPageContent('social', locale);
+// Instagram CTA sources its URL from the social-links singleton. We detect
+// the entry by matching instagram.com in the URL — lets editors pick any
+// icon/platform label while still wiring the CTA to the right destination.
+const instagramUrl = socialContent?.data.socialLinks?.find(
+  (l: { url: string }) => /(^|\.)instagram\.com/i.test(new URL(l.url).hostname),
+)?.url;
 
 // Get latest 4 posts (filtered and sorted)
 const latestPosts = await getLatestPosts(4, locale);

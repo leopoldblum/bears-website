@@ -1,3 +1,4 @@
+import type { MockedFunction } from 'vitest';
 import { getCollection } from 'astro:content';
 import {
   sortByDateDesc,
@@ -17,20 +18,28 @@ import {
   getLatestInstagramPosts,
 } from '../contentQueries';
 
-const mockedGetCollection = vi.mocked(getCollection);
+// `astro:content` is aliased to a loose local mock at runtime (vitest.config.ts)
+// but tsconfig resolves it to the real Astro types — so `vi.mocked(getCollection)`
+// inherits the full `CollectionEntry` union, rejecting the minimal shapes
+// `makeEntry` builds below. Re-typing relaxes the argument shape without
+// affecting the rest of the test file.
+const mockedGetCollection = vi.mocked(getCollection) as unknown as MockedFunction<
+  (collection: string) => Promise<Array<Record<string, unknown>>>
+>;
 
 // ---------------------------------------------------------------------------
 // Helpers for creating mock entries
 // ---------------------------------------------------------------------------
 
-function makeEntry(overrides: { date?: Date; slug?: string; isDraft?: boolean; id?: string; displayMeetTheTeam?: boolean }) {
+function makeEntry(overrides: { date?: Date; slug?: string; isDraft?: boolean; id?: string; displayMeetTheTeam?: boolean; order?: number }) {
   return {
-    id: overrides.id ?? 'en/test.md',
+    id: overrides.id ?? 'en/test.mdx',
     slug: overrides.slug ?? 'test',
     data: {
       date: overrides.date ?? new Date('2024-01-01'),
       isDraft: overrides.isDraft,
       displayMeetTheTeam: overrides.displayMeetTheTeam,
+      order: overrides.order,
     },
   };
 }
@@ -356,8 +365,8 @@ describe('getPageContent', () => {
 
   it('finds entry by id', async () => {
     mockedGetCollection.mockResolvedValue([
-      { id: 'en/landing/hero.md', slug: 'hero', data: { title: 'Hero' } },
-      { id: 'en/sub-pages/about.md', slug: 'about', data: { title: 'About' } },
+      { id: 'en/landing/hero.mdx', slug: 'hero', data: { title: 'Hero' } },
+      { id: 'en/sub-pages/about.mdx', slug: 'about', data: { title: 'About' } },
     ]);
     const result = await getPageContent('landing/hero');
     expect(result?.data.title).toBe('Hero');
@@ -365,23 +374,23 @@ describe('getPageContent', () => {
 
   it('appends .md extension if missing', async () => {
     mockedGetCollection.mockResolvedValue([
-      { id: 'en/landing/hero.md', slug: 'hero', data: { title: 'Hero' } },
+      { id: 'en/landing/hero.mdx', slug: 'hero', data: { title: 'Hero' } },
     ]);
     const result = await getPageContent('landing/hero');
     expect(result).toBeDefined();
   });
 
-  it('does not double-append .md', async () => {
+  it('does not double-append .mdx', async () => {
     mockedGetCollection.mockResolvedValue([
-      { id: 'en/landing/hero.md', slug: 'hero', data: { title: 'Hero' } },
+      { id: 'en/landing/hero.mdx', slug: 'hero', data: { title: 'Hero' } },
     ]);
-    const result = await getPageContent('landing/hero.md');
+    const result = await getPageContent('landing/hero.mdx');
     expect(result).toBeDefined();
   });
 
   it('returns undefined for non-existent id', async () => {
     mockedGetCollection.mockResolvedValue([
-      { id: 'en/landing/hero.md', slug: 'hero', data: { title: 'Hero' } },
+      { id: 'en/landing/hero.mdx', slug: 'hero', data: { title: 'Hero' } },
     ]);
     const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
     const result = await getPageContent('does-not-exist');
@@ -405,45 +414,33 @@ describe('getLandingHeroSlides', () => {
     mockedGetCollection.mockReset();
   });
 
-  it('sorts slides by numeric prefix', async () => {
+  it('sorts slides by data.order ascending', async () => {
     mockedGetCollection.mockResolvedValue([
-      { id: '03-slide.md', slug: 'slide-3', data: {} },
-      { id: '01-slide.md', slug: 'slide-1', data: {} },
-      { id: '02-slide.md', slug: 'slide-2', data: {} },
+      { id: 'c.mdx', slug: 'c', data: { order: 3 } },
+      { id: 'a.mdx', slug: 'a', data: { order: 1 } },
+      { id: 'b.mdx', slug: 'b', data: { order: 2 } },
     ]);
     const result = await getLandingHeroSlides();
-    expect(result.map(s => s.id)).toEqual(['01-slide.md', '02-slide.md', '03-slide.md']);
+    expect(result.map(s => s.id)).toEqual(['a.mdx', 'b.mdx', 'c.mdx']);
   });
 
-  it('sorts numerically not lexicographically', async () => {
+  it('sorts numerically across non-contiguous orders', async () => {
     mockedGetCollection.mockResolvedValue([
-      { id: '10-slide.md', slug: 'slide-10', data: {} },
-      { id: '2-slide.md', slug: 'slide-2', data: {} },
-      { id: '1-slide.md', slug: 'slide-1', data: {} },
+      { id: 'ten.mdx', slug: 'ten', data: { order: 10 } },
+      { id: 'two.mdx', slug: 'two', data: { order: 2 } },
+      { id: 'one.mdx', slug: 'one', data: { order: 1 } },
     ]);
     const result = await getLandingHeroSlides();
-    expect(result.map(s => s.id)).toEqual(['1-slide.md', '2-slide.md', '10-slide.md']);
+    expect(result.map(s => s.id)).toEqual(['one.mdx', 'two.mdx', 'ten.mdx']);
   });
 
-  it('sorts slides without numeric prefix to the beginning', async () => {
+  it('breaks ties on filename for deterministic output', async () => {
     mockedGetCollection.mockResolvedValue([
-      { id: '05-slide.md', slug: 'slide-5', data: {} },
-      { id: 'about.md', slug: 'about', data: {} },
-      { id: '01-slide.md', slug: 'slide-1', data: {} },
+      { id: 'beta.mdx', slug: 'beta', data: { order: 1 } },
+      { id: 'alpha.mdx', slug: 'alpha', data: { order: 1 } },
     ]);
     const result = await getLandingHeroSlides();
-    expect(result.map(s => s.id)).toEqual(['about.md', '01-slide.md', '05-slide.md']);
-  });
-
-  it('handles slides with same numeric prefix', async () => {
-    mockedGetCollection.mockResolvedValue([
-      { id: '01-alpha.md', slug: 'alpha', data: {} },
-      { id: '01-beta.md', slug: 'beta', data: {} },
-    ]);
-    const result = await getLandingHeroSlides();
-    expect(result).toHaveLength(2);
-    expect(result.map(s => s.id)).toContain('01-alpha.md');
-    expect(result.map(s => s.id)).toContain('01-beta.md');
+    expect(result.map(s => s.id)).toEqual(['alpha.mdx', 'beta.mdx']);
   });
 
   it('returns empty array for empty collection', async () => {
@@ -500,11 +497,11 @@ describe('getMeetTheTeamProjects', () => {
 // getSponsorsByTier
 // ---------------------------------------------------------------------------
 
-function makeSponsor(overrides: { id: string; slug: string }) {
+function makeSponsor(overrides: { id: string; slug: string; order?: number }) {
   return {
     id: overrides.id,
     slug: overrides.slug,
-    data: { name: overrides.slug },
+    data: { name: overrides.slug, order: overrides.order ?? 0 },
     collection: 'sponsors',
   };
 }
@@ -516,10 +513,10 @@ describe('getSponsorsByTier', () => {
 
   it('groups sponsors by tier derived from id', async () => {
     mockedGetCollection.mockResolvedValue([
-      makeSponsor({ id: 'gold/acme', slug: 'acme' }),
-      makeSponsor({ id: 'silver/beta', slug: 'beta' }),
-      makeSponsor({ id: 'gold/zeta', slug: 'zeta' }),
-      makeSponsor({ id: 'bronze/gamma', slug: 'gamma' }),
+      makeSponsor({ id: 'gold/acme', slug: 'acme', order: 1 }),
+      makeSponsor({ id: 'silver/beta', slug: 'beta', order: 1 }),
+      makeSponsor({ id: 'gold/zeta', slug: 'zeta', order: 2 }),
+      makeSponsor({ id: 'bronze/gamma', slug: 'gamma', order: 1 }),
     ]);
 
     const result = await getSponsorsByTier();
@@ -530,15 +527,25 @@ describe('getSponsorsByTier', () => {
     expect(result.platinum).toHaveLength(0);
   });
 
-  it('sorts each tier alphabetically by slug', async () => {
+  it('sorts each tier by data.order ascending', async () => {
     mockedGetCollection.mockResolvedValue([
-      makeSponsor({ id: 'gold/zeta-corp', slug: 'zeta-corp' }),
-      makeSponsor({ id: 'gold/alpha-inc', slug: 'alpha-inc' }),
-      makeSponsor({ id: 'gold/mid-co', slug: 'mid-co' }),
+      makeSponsor({ id: 'gold/zeta-corp', slug: 'zeta-corp', order: 3 }),
+      makeSponsor({ id: 'gold/alpha-inc', slug: 'alpha-inc', order: 1 }),
+      makeSponsor({ id: 'gold/mid-co', slug: 'mid-co', order: 2 }),
     ]);
 
     const result = await getSponsorsByTier();
     expect(result.gold.map(s => s.slug)).toEqual(['alpha-inc', 'mid-co', 'zeta-corp']);
+  });
+
+  it('breaks order ties on slug', async () => {
+    mockedGetCollection.mockResolvedValue([
+      makeSponsor({ id: 'silver/beta', slug: 'beta', order: 1 }),
+      makeSponsor({ id: 'silver/alpha', slug: 'alpha', order: 1 }),
+    ]);
+
+    const result = await getSponsorsByTier();
+    expect(result.silver.map(s => s.slug)).toEqual(['alpha', 'beta']);
   });
 
   it('returns all five tier keys', async () => {
@@ -589,11 +596,21 @@ describe('getTestimonialsSorted', () => {
     mockedGetCollection.mockReset();
   });
 
-  it('returns testimonials sorted by slug', async () => {
+  it('returns testimonials sorted by order (ascending), slug tiebreak', async () => {
     mockedGetCollection.mockResolvedValue([
-      makeEntry({ id: 'en/charlie.md', slug: 'charlie' }),
-      makeEntry({ id: 'en/alpha.md', slug: 'alpha' }),
-      makeEntry({ id: 'en/bravo.md', slug: 'bravo' }),
+      makeEntry({ id: 'en/charlie.mdx', slug: 'charlie', order: 3 }),
+      makeEntry({ id: 'en/alpha.mdx', slug: 'alpha', order: 1 }),
+      makeEntry({ id: 'en/bravo.mdx', slug: 'bravo', order: 2 }),
+    ]);
+    const result = await getTestimonialsSorted();
+    expect(result.map(t => t.slug)).toEqual(['alpha', 'bravo', 'charlie']);
+  });
+
+  it('breaks order ties alphabetically by slug', async () => {
+    mockedGetCollection.mockResolvedValue([
+      makeEntry({ id: 'en/charlie.mdx', slug: 'charlie', order: 0 }),
+      makeEntry({ id: 'en/alpha.mdx', slug: 'alpha', order: 0 }),
+      makeEntry({ id: 'en/bravo.mdx', slug: 'bravo', order: 0 }),
     ]);
     const result = await getTestimonialsSorted();
     expect(result.map(t => t.slug)).toEqual(['alpha', 'bravo', 'charlie']);
@@ -684,8 +701,8 @@ describe('getPageContent locale fallback', () => {
 
   it('returns German entry when available', async () => {
     mockedGetCollection.mockResolvedValue([
-      { id: 'en/landing/hero.md', slug: 'hero', data: { title: 'Hero EN' } },
-      { id: 'de/landing/hero.md', slug: 'hero', data: { title: 'Hero DE' } },
+      { id: 'en/landing/hero.mdx', slug: 'hero', data: { title: 'Hero EN' } },
+      { id: 'de/landing/hero.mdx', slug: 'hero', data: { title: 'Hero DE' } },
     ]);
     const result = await getPageContent('landing/hero', 'de');
     expect(result?.data.title).toBe('Hero DE');
@@ -693,7 +710,7 @@ describe('getPageContent locale fallback', () => {
 
   it('falls back to English when German entry is missing', async () => {
     mockedGetCollection.mockResolvedValue([
-      { id: 'en/landing/hero.md', slug: 'hero', data: { title: 'Hero EN' } },
+      { id: 'en/landing/hero.mdx', slug: 'hero', data: { title: 'Hero EN' } },
     ]);
     const result = await getPageContent('landing/hero', 'de');
     expect(result?.data.title).toBe('Hero EN');
@@ -701,7 +718,7 @@ describe('getPageContent locale fallback', () => {
 
   it('does not fall back when locale is en (default)', async () => {
     mockedGetCollection.mockResolvedValue([
-      { id: 'de/landing/hero.md', slug: 'hero', data: { title: 'Hero DE' } },
+      { id: 'de/landing/hero.mdx', slug: 'hero', data: { title: 'Hero DE' } },
     ]);
     const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
     const result = await getPageContent('landing/hero', 'en');
@@ -721,9 +738,9 @@ describe('getDocsBySection', () => {
 
   it('groups docs by section folder', async () => {
     mockedGetCollection.mockResolvedValue([
-      { id: 'guides/getting-started.md', slug: 'getting-started', data: { title: 'Getting Started', order: 10 } },
-      { id: 'guides/advanced.md', slug: 'advanced', data: { title: 'Advanced', order: 20 } },
-      { id: 'dev/architecture.md', slug: 'architecture', data: { title: 'Architecture', order: 10 } },
+      { id: 'guides/getting-started.mdx', slug: 'getting-started', data: { title: 'Getting Started', order: 10 } },
+      { id: 'guides/advanced.mdx', slug: 'advanced', data: { title: 'Advanced', order: 20 } },
+      { id: 'dev/architecture.mdx', slug: 'architecture', data: { title: 'Architecture', order: 10 } },
     ]);
 
     const result = await getDocsBySection();
@@ -735,9 +752,9 @@ describe('getDocsBySection', () => {
 
   it('sorts docs within each section by order', async () => {
     mockedGetCollection.mockResolvedValue([
-      { id: 'guides/z-last.md', slug: 'z-last', data: { title: 'Last', order: 30 } },
-      { id: 'guides/a-first.md', slug: 'a-first', data: { title: 'First', order: 10 } },
-      { id: 'guides/m-middle.md', slug: 'm-middle', data: { title: 'Middle', order: 20 } },
+      { id: 'guides/z-last.mdx', slug: 'z-last', data: { title: 'Last', order: 30 } },
+      { id: 'guides/a-first.mdx', slug: 'a-first', data: { title: 'First', order: 10 } },
+      { id: 'guides/m-middle.mdx', slug: 'm-middle', data: { title: 'Middle', order: 20 } },
     ]);
 
     const result = await getDocsBySection();

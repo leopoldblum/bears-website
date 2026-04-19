@@ -5,8 +5,8 @@ import type { ImageMetadata } from 'astro';
  * Used by ImageGrid and other image display components.
  */
 export interface ImageWithAlt {
-  /** Image file to display */
-  image: ImageMetadata;
+  /** Image file to display — imported ImageMetadata or string path resolved by `<Img>`. */
+  image: ImageMetadata | string;
   /** Descriptive alt text for accessibility (required) */
   alt: string;
 }

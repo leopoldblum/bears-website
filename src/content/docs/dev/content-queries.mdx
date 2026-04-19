@@ -1,0 +1,119 @@
+---
+title: "Content Queries"
+description: "Query utilities for fetching, filtering, and sorting content collections."
+order: 51
+group: "Systems"
+---
+
+All content query functions live in `src/utils/contentQueries.ts`. They follow a composable pattern: generic utilities are combined into pre-composed functions for each collection.
+
+Most query functions accept an optional `locale` parameter (type `Locale` from `src/utils/i18n.ts`, defaults to `'en'`). Localized collections are filtered by their `en/` or `de/` id prefix, with automatic fallback to English when no entries exist for the requested locale.
+
+## Composable Utilities
+
+### Sorting
+
+```typescript
+sortByDateDesc<T>(entries: T[]): T[]    // Newest first
+sortBySlug<T>(entries: T[]): T[]        // Alphabetical by slug
+```
+
+Both return new arrays without mutating the original. They work with any collection entry that has the required field (`data.date` or `slug`).
+
+### Filtering
+
+```typescript
+filterDrafts<T>(entries: T[]): T[]
+filterByLocale<T>(entries: T[], locale: Locale): T[]
+stripLocaleFromSlug(slug: string): string
+```
+
+`filterDrafts`: In development (`import.meta.env.DEV`), returns all entries including drafts. In production, removes entries where `isDraft` is `true`.
+
+`filterByLocale`: Filters entries by their id prefix (e.g., `en/` or `de/`). Falls back to the default locale (English) if no entries exist for the requested locale.
+
+`stripLocaleFromSlug`: Removes the `en/` or `de/` prefix from a slug (e.g., `en/rocket-launch` &rarr; `rocket-launch`). Used in dynamic routes to generate clean URL paths.
+
+## Pre-Composed Queries
+
+### Posts (Events + Projects)
+
+All post query functions accept an optional `locale` parameter (defaults to `'en'`):
+
+| Function | Returns | Notes |
+|----------|---------|-------|
+| `getPublishedEvents(locale?)` | `CollectionEntry<'events'>[]` | Filtered by locale + sorted by date |
+| `getPublishedProjects(locale?)` | `CollectionEntry<'projects'>[]` | Filtered by locale + sorted by date |
+| `getPublishedPosts(locale?)` | Combined array with `_collectionType` | Events + projects merged, sorted |
+| `getLatestPosts(limit?, locale?)` | Sliced array of latest posts | Used by "Latest News" |
+| `getMeetTheTeamProjects(locale?)` | Projects with `displayMeetTheTeam: true` | Filtered + sorted by date |
+
+The `_collectionType` marker on combined posts is either `'events'` or `'projects'`, used to route to the correct detail page:
+
+```typescript
+const posts = await getPublishedPosts();
+posts.forEach(post => {
+  const href = `/${post._collectionType}/${post.slug}`;
+});
+```
+
+### Instagram
+
+| Function | Returns | Notes |
+|----------|---------|-------|
+| `getPublishedInstagramPosts()` | `CollectionEntry<'instagram'>[]` | Filtered + sorted by date |
+| `getLatestInstagramPosts(limit = 3)` | Sliced array | Used by landing page |
+
+### Other Collections
+
+| Function | Returns | Notes |
+|----------|---------|-------|
+| `getTestimonialsSorted(locale?)` | `CollectionEntry<'testimonials'>[]` | Filtered by locale, sorted by `order` (ascending), ties on slug |
+| `getFacesOfBearsSorted(locale?)` | `CollectionEntry<'faces-of-bears'>[]` | Filtered by locale, sorted by slug |
+| `getSponsorsByTier()` | `{ diamond, platinum, gold, silver, bronze }` | Grouped by tier, sorted by `order`, ties on slug (not localized) |
+| `getPageContent(id, locale?)` | `CollectionEntry<'page-text'> \| undefined` | Single entry by ID and locale |
+| `getDocsBySection()` | `Record<string, CollectionEntry<'docs'>[]>` | Grouped by section folder (not localized) |
+| `getLandingHeroSlides()` | `CollectionEntry<'hero-slides'>[]` | Sorted by `order` field, ties on filename (not localized) |
+
+## Sponsor Tier Grouping
+
+Sponsor tiers are derived from the folder structure. The `getSponsorsByTier()` function extracts the tier from the first segment of the entry's ID:
+
+```typescript
+const tier = sponsor.id.split('/')[0]; // "gold/acme-corp" → "gold"
+```
+
+The returned object has all five tiers, each sorted by the sponsor's `order` frontmatter field in ascending order. Two sponsors with the same `order` break the tie on slug for deterministic output.
+
+## Page Content
+
+`getPageContent(id, locale?)` fetches a single `page-text` entry by its ID path and locale. The `id` does **not** include the locale prefix &mdash; it is prepended automatically. Falls back to English if the translation is missing:
+
+```typescript
+const content = await getPageContent('landing/what-is-bears', 'de');
+// Tries "de/landing/what-is-bears.mdx" first
+// Falls back to "en/landing/what-is-bears.mdx" if not found
+```
+
+A console warning is logged if no entry is found in either locale.
+
+## Docs Sections
+
+`getDocsBySection()` groups docs by their folder path (e.g., `guides/`, `dev/`) and sorts within each section by the `order` field.
+
+## Hero Slide Ordering
+
+`getLandingHeroSlides()` sorts hero slides in ascending order of the required `order` frontmatter field. When two slides share an `order`, the filename breaks the tie for deterministic output.
+
+## Adding a New Query
+
+Follow this pattern for new collections:
+
+```typescript
+export async function getMyCollectionSorted() {
+  const all = await getCollection('my-collection');
+  return sortBySlug(filterDrafts(all)); // or sortByDateDesc
+}
+```
+
+For collections without `isDraft`, skip `filterDrafts()`. For collections with custom sorting, write the sort inline or create a new composable utility.

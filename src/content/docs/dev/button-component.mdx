@@ -5,7 +5,6 @@ order: 21
 group: "MDX Components"
 ---
 
-import Button from '@mdx/Button.astro';
 
 The `Button` component is a versatile button/link element supporting multiple variants and sizes.
 
@@ -29,22 +28,22 @@ import Button from '@mdx/Button.astro';
 
 ### Variants
 
-<div class="not-prose flex flex-wrap gap-3 my-6">
+<Preview layout="row" spacing="normal">
   <Button content="Primary" variant="primary" />
   <Button content="Secondary" variant="secondary" />
   <Button content="Inverse" variant="inverse" />
-</div>
+</Preview>
 
 ### Sizes
 
-<div class="not-prose flex flex-wrap items-center gap-3 my-6">
+<Preview layout="row-center" spacing="normal">
   <Button content="Standard" size="standard" />
   <Button content="Large" size="large" />
   <Button content="XLarge" size="xlarge" />
-</div>
+</Preview>
 
 ### As Link
 
-<div class="not-prose my-6">
+<Preview spacing="normal">
   <Button content="Visit BEARS" href="/" variant="primary" />
-</div>
+</Preview>

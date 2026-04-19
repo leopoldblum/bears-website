@@ -1,11 +1,22 @@
 import { collections } from '../../content/config';
 
+// Astro types `defineCollection`'s `schema` as a union of a Zod schema and a
+// context-aware callback — our collections all use the plain form, so this
+// helper narrows the union so tests can call `.safeParse` directly.
+import type { z } from 'zod';
+function getSchema(collection: { schema?: unknown }): z.ZodTypeAny {
+  const s = collection.schema;
+  if (!s) throw new Error('collection.schema is undefined');
+  if (typeof s === 'function') throw new Error('context-aware schema callbacks are not used in this project');
+  return s as z.ZodTypeAny;
+}
+
 // ---------------------------------------------------------------------------
 // Events schema
 // ---------------------------------------------------------------------------
 
 describe('events schema', () => {
-  const schema = collections.events.schema;
+  const schema = getSchema(collections.events);
 
   const validBase = {
     title: 'Test Event',
@@ -70,7 +81,7 @@ describe('events schema', () => {
 // ---------------------------------------------------------------------------
 
 describe('projects schema', () => {
-  const schema = collections.projects.schema;
+  const schema = getSchema(collections.projects);
 
   const validBase = {
     title: 'Test Project',
@@ -162,35 +173,40 @@ describe('projects schema', () => {
 // ---------------------------------------------------------------------------
 
 describe('hero-slides schema', () => {
-  const schema = collections['hero-slides'].schema;
+  const schema = getSchema(collections['hero-slides']);
 
   it('accepts image extensions', () => {
     for (const ext of ['jpg', 'jpeg', 'png', 'webp', 'svg']) {
-      const result = schema.safeParse({ type: 'image', media: `hero.${ext}`, alt: 'description' });
+      const result = schema.safeParse({ order: 1, type: 'image', media: `hero.${ext}`, alt: 'description' });
       expect(result.success).toBe(true);
     }
   });
 
   it('accepts video extensions', () => {
     for (const ext of ['mp4', 'webm', 'ogg']) {
-      const result = schema.safeParse({ type: 'video', media: `hero.${ext}` });
+      const result = schema.safeParse({ order: 1, type: 'video', media: `hero.${ext}` });
       expect(result.success).toBe(true);
     }
   });
 
   it('rejects invalid media extensions', () => {
-    const result = schema.safeParse({ type: 'image', media: 'hero.gif', alt: 'description' });
+    const result = schema.safeParse({ order: 1, type: 'image', media: 'hero.gif', alt: 'description' });
     expect(result.success).toBe(false);
   });
 
   it('requires alt for image slides', () => {
-    const result = schema.safeParse({ type: 'image', media: 'hero.jpg' });
+    const result = schema.safeParse({ order: 1, type: 'image', media: 'hero.jpg' });
     expect(result.success).toBe(false);
   });
 
   it('does not require alt for video slides', () => {
-    const result = schema.safeParse({ type: 'video', media: 'hero.mp4' });
+    const result = schema.safeParse({ order: 1, type: 'video', media: 'hero.mp4' });
     expect(result.success).toBe(true);
+  });
+
+  it('rejects slides without an order', () => {
+    const result = schema.safeParse({ type: 'image', media: 'hero.jpg', alt: 'description' });
+    expect(result.success).toBe(false);
   });
 
 });
@@ -200,13 +216,14 @@ describe('hero-slides schema', () => {
 // ---------------------------------------------------------------------------
 
 describe('testimonials schema', () => {
-  const schema = collections.testimonials.schema;
+  const schema = getSchema(collections.testimonials);
 
   it('accepts valid data', () => {
     const result = schema.safeParse({
       quote: 'Great experience',
       name: 'John Doe',
       role: 'Engineer',
+      order: 1,
       coverImage: 'john.jpg',
     });
     expect(result.success).toBe(true);
@@ -217,7 +234,18 @@ describe('testimonials schema', () => {
       quote: 'Great',
       name: 'John',
       role: 'Dev',
+      order: 1,
       coverImage: 'john.gif',
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it('rejects missing order', () => {
+    const result = schema.safeParse({
+      quote: 'Great',
+      name: 'John',
+      role: 'Dev',
+      coverImage: 'john.jpg',
     });
     expect(result.success).toBe(false);
   });
@@ -228,11 +256,12 @@ describe('testimonials schema', () => {
 // ---------------------------------------------------------------------------
 
 describe('sponsors schema', () => {
-  const schema = collections.sponsors.schema;
+  const schema = getSchema(collections.sponsors);
 
   it('accepts valid data with optional url', () => {
     const result = schema.safeParse({
       name: 'Acme Corp',
+      order: 1,
       logo: 'acme.png',
       url: 'https://acme.com',
     });
@@ -242,6 +271,7 @@ describe('sponsors schema', () => {
   it('accepts data without url', () => {
     const result = schema.safeParse({
       name: 'Acme Corp',
+      order: 1,
       logo: 'acme.png',
     });
     expect(result.success).toBe(true);
@@ -250,7 +280,16 @@ describe('sponsors schema', () => {
   it('rejects invalid logo extension', () => {
     const result = schema.safeParse({
       name: 'Acme Corp',
+      order: 1,
       logo: 'acme.gif',
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it('rejects missing order', () => {
+    const result = schema.safeParse({
+      name: 'Acme Corp',
+      logo: 'acme.png',
     });
     expect(result.success).toBe(false);
   });
@@ -258,6 +297,7 @@ describe('sponsors schema', () => {
   it('rejects invalid url format', () => {
     const result = schema.safeParse({
       name: 'Acme Corp',
+      order: 1,
       logo: 'acme.png',
       url: 'not-a-url',
     });
@@ -270,7 +310,7 @@ describe('sponsors schema', () => {
 // ---------------------------------------------------------------------------
 
 describe('instagram schema', () => {
-  const schema = collections.instagram.schema;
+  const schema = getSchema(collections.instagram);
 
   const validBase = {
     url: 'https://www.instagram.com/p/abc123/',
@@ -316,7 +356,7 @@ describe('instagram schema', () => {
 // ---------------------------------------------------------------------------
 
 describe('page-text schema', () => {
-  const schema = collections['page-text'].schema;
+  const schema = getSchema(collections['page-text']);
 
   const validBase = { title: 'Test Page Title' };
 
@@ -338,7 +378,7 @@ describe('page-text schema', () => {
       ],
       items: ['Item 1', 'Item 2'],
       socialLinks: [
-        { platform: 'github', url: 'https://github.com/bears', hoverColor: '#333' },
+        { platform: 'linkedin', iconFile: 'linkedin.svg', url: 'https://linkedin.com/bears', hoverColor: '#333' },
       ],
       navLinks: [
         { label: 'Impressum', href: '/imprint' },
@@ -412,7 +452,23 @@ describe('page-text schema', () => {
   it('rejects invalid socialLinks url', () => {
     const result = schema.safeParse({
       ...validBase,
-      socialLinks: [{ platform: 'x', url: 'not-a-url' }],
+      socialLinks: [{ platform: 'x', iconFile: 'x.svg', url: 'not-a-url' }],
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it('rejects socialLinks missing iconFile', () => {
+    const result = schema.safeParse({
+      ...validBase,
+      socialLinks: [{ platform: 'instagram', url: 'https://instagram.com' }],
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it('rejects socialLinks with non-svg iconFile', () => {
+    const result = schema.safeParse({
+      ...validBase,
+      socialLinks: [{ platform: 'x', iconFile: 'x.png', url: 'https://x.com' }],
     });
     expect(result.success).toBe(false);
   });
@@ -436,7 +492,7 @@ describe('page-text schema', () => {
   it('accepts socialLinks without optional hoverColor', () => {
     const result = schema.safeParse({
       ...validBase,
-      socialLinks: [{ platform: 'github', url: 'https://github.com' }],
+      socialLinks: [{ platform: 'youtube', iconFile: 'youtube.svg', url: 'https://youtube.com' }],
     });
     expect(result.success).toBe(true);
   });

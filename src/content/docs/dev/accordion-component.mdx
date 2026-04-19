@@ -5,7 +5,6 @@ order: 20
 group: "MDX Components"
 ---
 
-import Accordion from '@mdx/Accordion.astro';
 
 The `Accordion` component renders collapsible sections with rich content. Item content is written in Markdown and processed server-side to HTML via `markdownToHtml()`.
 
@@ -20,26 +19,38 @@ import Accordion from '@mdx/Accordion.astro';
 | Prop | Type | Default | Description |
 |------|------|---------|-------------|
 | `items` | `Array<{title, subtitle?, content}>` | &mdash; | Array of accordion items. `content` accepts Markdown. |
-| `defaultOpen` | `number \| null` | `null` | Index of initially open item |
-| `allowCloseAll` | `boolean` | Auto-derived | Whether an open item can be collapsed. Defaults to `true` when `defaultOpen` is null. |
-| `allowMultiple` | `boolean` | `false` | Allow multiple items open simultaneously |
+| `mode` | `'single-closed' \| 'single-open' \| 'always-one' \| 'multi'` | &mdash; | Preset that controls the open/close behaviour. Overrides the three legacy props below. **Preferred API.** |
+| `defaultOpen` | `number \| null` | `null` | *(Legacy.)* Index of initially open item |
+| `allowCloseAll` | `boolean` | Auto-derived | *(Legacy.)* Whether an open item can be collapsed. Defaults to `true` when `defaultOpen` is null. |
+| `allowMultiple` | `boolean` | `false` | *(Legacy.)* Allow multiple items open simultaneously |
 | `width` | `string` | `"100%"` | CSS width of the accordion container |
+
+### Mode presets
+
+| `mode` | `defaultOpen` | `allowCloseAll` | `allowMultiple` | Behaviour |
+|--------|---------------|-----------------|-----------------|-----------|
+| `single-closed` | `null` | `true` | `false` | All start closed; clicking one closes any other; can close all. |
+| `single-open` | `0` | `true` | `false` | First starts open; only one open at a time; can close all. |
+| `always-one` | `0` | `false` | `false` | First starts open; only one open at a time; *cannot* close all (always exactly one open). |
+| `multi` | `null` | `true` | `true` | All start closed; multiple can be open simultaneously. |
+
+The legacy props are kept on the Astro component for backwards compatibility with hand-authored MDX, but the Keystatic schema only exposes `mode`. New content should use `mode` exclusively.
 
 ## Live Examples
 
 ### Default (all closed)
 
-<div class="not-prose my-6">
+<Preview spacing="normal">
   <Accordion items={[
     { title: "First Section", content: "Content of the **first** section with Markdown support." },
     { title: "Second Section", content: "Content with a [link](/) and `inline code`." },
     { title: "Third Section", content: "- List item one\n- List item two\n- List item three" }
   ]} />
-</div>
+</Preview>
 
 ### With default open and subtitle
 
-<div class="not-prose my-6">
+<Preview spacing="normal">
   <Accordion
     items={[
       { title: "Open by default", subtitle: "Subtitle text", content: "This item starts open." },
@@ -47,7 +58,7 @@ import Accordion from '@mdx/Accordion.astro';
     ]}
     defaultOpen={0}
   />
-</div>
+</Preview>
 
 ## Implementation Notes
 

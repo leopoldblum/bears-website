@@ -2,6 +2,9 @@ import { defineCollection, z } from 'astro:content';
 import { CoverImageType, CategoryEventEnum, CategoryProjectEnum } from '@types';
 import { IMAGE_EXTENSION_REGEX, VALID_EXTENSIONS_MESSAGE } from '@utils/imageConstants';
 
+/** Social-link icons are SVGs uploaded via Keystatic into src/assets/social-icons/. */
+const validateSvgExtension = (value: string) => /\.svg$/i.test(value);
+
 /**
  * Helper for validating image file extensions
  * Ensures image filenames have valid extensions matching supported glob patterns
@@ -17,6 +20,7 @@ const testimonialsCollection = defineCollection({
     quote: z.string(),
     name: z.string(),
     role: z.string(),
+    order: z.number(),
     coverImage: z.string().refine(
       validateImageExtension,
       { message: `coverImage must have a valid image extension: ${VALID_EXTENSIONS_MESSAGE}` }
@@ -28,6 +32,7 @@ const sponsorsCollection = defineCollection({
   type: 'content',
   schema: z.object({
     name: z.string(),
+    order: z.number(),
     logo: z.string().refine(
       validateImageExtension,
       { message: `logo must have a valid image extension: ${VALID_EXTENSIONS_MESSAGE}` }
@@ -124,6 +129,7 @@ const validateMediaExtension = (value: string | undefined) => {
 };
 
 const heroSlideBase = {
+  order: z.number(),
   media: z.string().refine(
     validateMediaExtension,
     { message: `media must have a valid extension: ${VALID_EXTENSIONS_MESSAGE} or mp4, webm, ogg` }
@@ -159,6 +165,7 @@ const instagramCollection = defineCollection({
 const facesOfBearsCollection = defineCollection({
   type: 'content',
   schema: z.object({
+    order: z.number(),
     name: z.string(),
     role: z.string(),
     coverImage: z.string().refine(
@@ -195,8 +202,21 @@ const pageTextCollection = defineCollection({
       href: z.string(),
     })).max(4).optional(),
     items: z.array(z.string()).optional(),
+    titledItems: z.array(z.object({
+      title: z.string(),
+      description: z.string().optional(),
+    })).optional(),
+    address: z.string().optional(),
+    room: z.string().optional(),
+    schedule: z.string().optional(),
+    mapLat: z.number().min(-90).max(90).optional(),
+    mapLng: z.number().min(-180).max(180).optional(),
     socialLinks: z.array(z.object({
       platform: z.string(),
+      iconFile: z.string().refine(
+        validateSvgExtension,
+        { message: 'iconFile must be an SVG (.svg)' }
+      ),
       url: z.string().url(),
       hoverColor: z.string().optional(),
     })).optional(),
@@ -228,6 +248,13 @@ const pageTextCollection = defineCollection({
     reference: z.string().optional(),
     paypalUrl: z.string().url().optional(),
     paypalButtonText: z.string().optional(),
+    tierDescriptions: z.object({
+      diamond: z.string().optional(),
+      platinum: z.string().optional(),
+      gold: z.string().optional(),
+      silver: z.string().optional(),
+      bronze: z.string().optional(),
+    }).optional(),
   }).refine(d => !d.buttonText || d.buttonHref, {
     message: 'buttonHref is required when buttonText is set',
     path: ['buttonHref'],

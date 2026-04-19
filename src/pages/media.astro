@@ -1,6 +1,6 @@
 ---
 // Media Page - Displays all media organized by category in accordion format
-// Categories are configured via the page-text content collection (media-title.md)
+// Categories are configured via the page-text content collection (media-title.mdx)
 
 import BaseLayout from "@layouts/BaseLayout.astro";
 import MediaAccordion from "../components/reusable/MediaAccordion.astro";
@@ -23,7 +23,7 @@ import { getPageContent } from "@utils/contentQueries";
 import { getLocale, mediaUiStrings } from "@utils/i18n";
 
 const locale = getLocale(Astro.url);
-const pageContent = await getPageContent('media/media-title', locale);
+const pageContent = await getPageContent('media-categories', locale);
 const loadedHeroImages = await loadAllImagesFromDirectory(mediaHeroImages);
 const heroImage = loadedHeroImages[0];
 

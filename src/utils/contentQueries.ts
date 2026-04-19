@@ -155,23 +155,35 @@ export async function getLatestInstagramPosts(limit: number = 3) {
 // ============================================================================
 
 /**
- * Gets all testimonials for a locale, sorted alphabetically by slug.
+ * Gets all testimonials for a locale, sorted by the `order` frontmatter field
+ * (ascending). Ties break on slug for deterministic output.
  */
 export async function getTestimonialsSorted(locale: Locale = DEFAULT_LOCALE) {
   const allTestimonials = await getCollection('testimonials');
-  return sortBySlug(filterByLocale(allTestimonials, locale));
+  const localeEntries = filterByLocale(allTestimonials, locale);
+  return [...localeEntries].sort((a, b) => {
+    const orderDiff = a.data.order - b.data.order;
+    if (orderDiff !== 0) return orderDiff;
+    return a.slug.localeCompare(b.slug);
+  });
 }
 
 /**
- * Gets all faces of BEARS for a locale, sorted alphabetically by slug.
+ * Gets all faces of BEARS for a locale, sorted by the `order` frontmatter
+ * field (ascending). Ties break on slug for deterministic output.
  */
 export async function getFacesOfBearsSorted(locale: Locale = DEFAULT_LOCALE) {
-  const allFaces = await getCollection('faces-of-bears');
-  return sortBySlug(filterByLocale(allFaces, locale));
+  const faces = filterByLocale(await getCollection('faces-of-bears'), locale);
+  return [...faces].sort((a, b) => {
+    const orderDiff = a.data.order - b.data.order;
+    if (orderDiff !== 0) return orderDiff;
+    return a.slug.localeCompare(b.slug);
+  });
 }
 
 /**
- * Gets all sponsors grouped by tier, sorted alphabetically within each tier.
+ * Gets all sponsors grouped by tier, sorted within each tier by the `order`
+ * frontmatter field (ascending). Ties break on slug for deterministic output.
  * Sponsors are not locale-dependent (logos + names stay the same).
  */
 export async function getSponsorsByTier() {
@@ -197,13 +209,19 @@ export async function getSponsorsByTier() {
     groupedSponsors[tier].push(sponsor);
   });
 
-  // Sort each tier alphabetically by slug
+  const sortByOrder = (list: CollectionEntry<'sponsors'>[]) =>
+    [...list].sort((a, b) => {
+      const orderDiff = a.data.order - b.data.order;
+      if (orderDiff !== 0) return orderDiff;
+      return a.slug.localeCompare(b.slug);
+    });
+
   return {
-    diamond: sortBySlug(groupedSponsors.diamond),
-    platinum: sortBySlug(groupedSponsors.platinum),
-    gold: sortBySlug(groupedSponsors.gold),
-    silver: sortBySlug(groupedSponsors.silver),
-    bronze: sortBySlug(groupedSponsors.bronze),
+    diamond: sortByOrder(groupedSponsors.diamond),
+    platinum: sortByOrder(groupedSponsors.platinum),
+    gold: sortByOrder(groupedSponsors.gold),
+    silver: sortByOrder(groupedSponsors.silver),
+    bronze: sortByOrder(groupedSponsors.bronze),
   };
 }
 
@@ -216,15 +234,15 @@ export async function getSponsorsByTier() {
  */
 export async function getPageContent(id: string, locale: Locale = DEFAULT_LOCALE) {
   const allContent = await getCollection('page-text');
-  const cleanId = id.endsWith('.md') ? id.slice(0, -3) : id;
+  const cleanId = id.replace(/\.mdx?$/, '');
 
   // Try requested locale
-  const localeId = `${locale}/${cleanId}.md`;
+  const localeId = `${locale}/${cleanId}.mdx`;
   let entry = allContent.find(entry => entry.id === localeId);
 
   // Fallback to default locale
   if (!entry && locale !== DEFAULT_LOCALE) {
-    const fallbackId = `${DEFAULT_LOCALE}/${cleanId}.md`;
+    const fallbackId = `${DEFAULT_LOCALE}/${cleanId}.mdx`;
     entry = allContent.find(entry => entry.id === fallbackId);
   }
 
@@ -265,14 +283,15 @@ export async function getDocsBySection() {
 // ============================================================================
 
 /**
- * Gets all hero slides sorted by numeric filename prefix.
- * Hero slides are not locale-dependent.
+ * Gets all hero slides sorted by their `order` frontmatter field (ascending).
+ * Ties break on the filename for deterministic output. Hero slides are not
+ * locale-dependent.
  */
 export async function getLandingHeroSlides() {
   const slides = await getCollection('hero-slides');
   return slides.sort((a, b) => {
-    const numA = parseInt(a.id.match(/^(\d+)/)?.[1] ?? '0', 10);
-    const numB = parseInt(b.id.match(/^(\d+)/)?.[1] ?? '0', 10);
-    return numA - numB;
+    const orderDiff = a.data.order - b.data.order;
+    if (orderDiff !== 0) return orderDiff;
+    return a.id.localeCompare(b.id);
   });
 }

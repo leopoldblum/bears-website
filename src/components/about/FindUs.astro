@@ -11,11 +11,13 @@ const { locale } = Astro.props;
 
 const content = await getPageContent("about-us/find-us", locale);
 
-// items[0] = room, items[1] = schedule
-const room = content?.data.items?.[0] ?? "H1001";
-const schedule = content?.data.items?.[1] ?? "every Tuesday 18 PM";
+const room = content?.data.room ?? "H1001";
+const schedule = content?.data.schedule ?? "every Tuesday 18 PM";
 
-const location = { lat: 52.5154444, lng: 13.3238611 };
+const location = {
+  lat: content?.data.mapLat ?? 52.5154444,
+  lng: content?.data.mapLng ?? 13.3238611,
+};
 ---
 
 <section

@@ -5,12 +5,11 @@ order: 36
 group: "MDX Components"
 ---
 
-import { SideBySide, Left, Right, Callout } from '@mdx';
 
 Split content into two columns that appear side-by-side on desktop and stack on mobile:
 
 ```mdx
-import { Accordion, Button, Callout, Carousel, Center, Img, Instagram, Marquee, YouTube, SideBySide, Left, Right } from '@mdx';
+import { Accordion, Button, Callout, Carousel, Center, ImageGrid, Img, Instagram, Marquee, YouTube, SideBySide, Left, Right } from '@mdx';
 
 <SideBySide>
   <Left>
@@ -24,25 +23,27 @@ import { Accordion, Button, Callout, Carousel, Center, Img, Instagram, Marquee, 
 </SideBySide>
 ```
 
-<div class="not-prose mb-4">
+<Preview>
   <SideBySide>
     <Left>
-      <h3 class="text-lg font-semibold text-bears-text-onDark mb-2">Left Column</h3>
-      <p class="text-bears-text-onDark/80 text-sm">Content on the left side. On mobile, this stacks above the right column.</p>
+      ### Left Column
+
+      Content on the left side. On mobile, this stacks above the right column.
     </Left>
     <Right>
-      <h3 class="text-lg font-semibold text-bears-text-onDark mb-2">Right Column</h3>
-      <p class="text-bears-text-onDark/80 text-sm">Content on the right side. On desktop (1024px+), these sit next to each other.</p>
+      ### Right Column
+
+      Content on the right side. On desktop (1024px+), these sit next to each other.
     </Right>
   </SideBySide>
-</div>
+</Preview>
 
 ## Nesting Other Components
 
 You can put any component inside Left or Right — images, callouts, buttons, accordions, etc:
 
 ```mdx
-import { Accordion, Button, Callout, Carousel, Center, Img, Instagram, Marquee, YouTube, SideBySide, Left, Right } from '@mdx';
+import { Accordion, Button, Callout, Carousel, Center, ImageGrid, Img, Instagram, Marquee, YouTube, SideBySide, Left, Right } from '@mdx';
 import photo from '@assets/events/my-photo.jpg';
 
 <SideBySide showDivider={false}>
@@ -57,10 +58,12 @@ import photo from '@assets/events/my-photo.jpg';
 </SideBySide>
 ```
 
-<div class="not-prose mb-4">
+<Preview>
   <SideBySide showDivider={false}>
     <Left>
-      <div class="rounded-lg bg-white/5 border border-white/10 p-8 flex items-center justify-center text-bears-text-onDark/40 text-sm">Image, video, or any component here</div>
+      <Callout>
+        _Image, video, or any component here._
+      </Callout>
     </Left>
     <Right centerVertical>
       <Callout title="Tip">
@@ -68,7 +71,7 @@ import photo from '@assets/events/my-photo.jpg';
       </Callout>
     </Right>
   </SideBySide>
-</div>
+</Preview>
 
 ## Options
 

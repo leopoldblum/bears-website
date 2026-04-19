@@ -79,6 +79,17 @@ function listAssetFiles(dir: string): string[] {
   });
 }
 
+/**
+ * Resolve a frontmatter image path against its collection asset dir, matching
+ * what the runtime loaders in imageLoader.ts accept:
+ *   - flat legacy:            "event-8.jpg"               → <dir>/event-8.jpg
+ *   - Keystatic slug folder:  "/<slug>/coverImage.jpg"    → <dir>/<slug>/coverImage.jpg
+ *   - Keystatic no leading /: "<slug>/coverImage.jpg"     → <dir>/<slug>/coverImage.jpg
+ */
+function resolveAssetPath(dir: string, value: string): string {
+  return join(dir, value.replace(/^\/+/, ''));
+}
+
 // ---------------------------------------------------------------------------
 // 1. File extension checks
 // ---------------------------------------------------------------------------
@@ -1073,6 +1084,26 @@ describe('Page-text frontmatter edge cases', () => {
           `    url: "https://github.com/bears-team"`,
         );
       });
+
+      it(`${label} — every socialLink must reference an .svg "iconFile"`, () => {
+        const invalid = (frontmatter.socialLinks as Record<string, unknown>[]).filter(
+          (link) => typeof link.iconFile !== 'string' || !/\.svg$/i.test(link.iconFile as string),
+        );
+
+        expectWithMessage(
+          invalid.length === 0,
+          `File "${label}" has social links with a missing or non-SVG "iconFile":\n` +
+          invalid
+            .map((link) => `  - platform: "${link.platform}", iconFile: "${link.iconFile ?? ''}"`)
+            .join('\n') +
+          `\n\nEvery entry needs an "iconFile" pointing to an SVG uploaded into src/assets/social-icons/.\n\n` +
+          `To fix via the CMS: upload an SVG in the Social links editor (Icon (SVG) field).\n` +
+          `To fix by hand, drop the .svg into src/assets/social-icons/ and reference its filename:\n` +
+          `  - platform: "instagram"\n` +
+          `    iconFile: "instagram.svg"\n` +
+          `    url: "https://instagram.com/..."`,
+        );
+      });
     }
   }
 });
@@ -1148,21 +1179,20 @@ describe('Image references point to existing files', () => {
           if (!imageFilename) continue;
 
           it(`${label} — "${field}: ${imageFilename}" should exist in assets`, () => {
-            const assetFiles = listAssetFiles(assetDir);
-            const matchFound = assetFiles.some(
-              (f) => f.toLowerCase() === imageFilename.toLowerCase(),
-            );
+            const resolved = resolveAssetPath(assetDir, imageFilename);
+            const matchFound = existsSync(resolved) && statSync(resolved).isFile();
 
-            const availableList = assetFiles.length > 0
-              ? `Available images in that directory:\n` + assetFiles.map((f) => `  - ${f}`).join('\n')
-              : `The directory "${relative(ROOT, assetDir)}/" has no content images yet (only default/placeholder files).`;
+            const topLevel = listAssetFiles(assetDir);
+            const availableList = topLevel.length > 0
+              ? `Top-level files in "${relative(ROOT, assetDir)}/":\n` + topLevel.map((f) => `  - ${f}`).join('\n')
+              : `The directory "${relative(ROOT, assetDir)}/" has no top-level files.`;
 
             expectWithMessage(
               matchFound,
               `File "${label}" references image "${imageFilename}" in field "${field}",\n` +
-              `but this image was NOT found in "${relative(ROOT, assetDir)}/".\n\n` +
+              `but no file was found at "${relative(ROOT, resolved)}".\n\n` +
               availableList +
-              `\n\nTo fix: add the image file "${imageFilename}" to "${relative(ROOT, assetDir)}/"`,
+              `\n\nTo fix: add the image file so it resolves to "${relative(ROOT, resolved)}"`,
             );
           });
         }
@@ -1187,21 +1217,20 @@ describe('Image references point to existing files', () => {
         const assetDir = getSponsorAssetDir(file);
 
         it(`${label} — "logo: ${logoFilename}" should exist in assets`, () => {
-          const assetFiles = listAssetFiles(assetDir);
-          const matchFound = assetFiles.some(
-            (f) => f.toLowerCase() === logoFilename.toLowerCase(),
-          );
+          const resolved = resolveAssetPath(assetDir, logoFilename);
+          const matchFound = existsSync(resolved) && statSync(resolved).isFile();
 
-          const availableList = assetFiles.length > 0
-            ? `Available images in that directory:\n` + assetFiles.map((f) => `  - ${f}`).join('\n')
-            : `The directory "${relative(ROOT, assetDir)}/" has no content images yet (only default/placeholder files).`;
+          const topLevel = listAssetFiles(assetDir);
+          const availableList = topLevel.length > 0
+            ? `Top-level files in "${relative(ROOT, assetDir)}/":\n` + topLevel.map((f) => `  - ${f}`).join('\n')
+            : `The directory "${relative(ROOT, assetDir)}/" has no top-level files.`;
 
           expectWithMessage(
             matchFound,
             `File "${label}" references logo "${logoFilename}",\n` +
-            `but this image was NOT found in "${relative(ROOT, assetDir)}/".\n\n` +
+            `but no file was found at "${relative(ROOT, resolved)}".\n\n` +
             availableList +
-            `\n\nTo fix: add the logo file "${logoFilename}" to "${relative(ROOT, assetDir)}/"`,
+            `\n\nTo fix: add the logo file so it resolves to "${relative(ROOT, resolved)}"`,
           );
         });
       }
@@ -1226,14 +1255,13 @@ describe('Image references point to existing files', () => {
         const mediaFilename = frontmatter.media as string;
 
         it(`${label} — "media: ${mediaFilename}" should exist in assets`, () => {
-          const assetFiles = listAssetFiles(assetDir);
-          const matchFound = assetFiles.some(
-            (f) => f.toLowerCase() === mediaFilename.toLowerCase(),
-          );
+          const resolved = resolveAssetPath(assetDir, mediaFilename);
+          const matchFound = existsSync(resolved) && statSync(resolved).isFile();
 
-          const availableList = assetFiles.length > 0
-            ? `Available files in that directory:\n` + assetFiles.map((f) => `  - ${f}`).join('\n')
-            : `The directory "${relative(ROOT, assetDir)}/" has no content files yet (only default/placeholder files).`;
+          const topLevel = listAssetFiles(assetDir);
+          const availableList = topLevel.length > 0
+            ? `Top-level files in "${relative(ROOT, assetDir)}/":\n` + topLevel.map((f) => `  - ${f}`).join('\n')
+            : `The directory "${relative(ROOT, assetDir)}/" has no top-level files.`;
 
           expectWithMessage(
             matchFound,

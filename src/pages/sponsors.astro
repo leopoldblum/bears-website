@@ -5,7 +5,7 @@ import SponsorShowcase from "@components/sponsors/SponsorShowcase.astro";
 import Button from "@mdx/Button.astro";
 import CrosslinkBanner from "@reusable/CrosslinkBanner.astro";
 import { sponsorsHeroImages, sponsorLogos } from "@utils/imageGlobs";
-import { loadAllImagesFromDirectory, loadImage, defaultSponsorImage } from "@utils/imageLoader";
+import { loadAllImagesFromDirectory, loadImage, resolveImagePath, defaultSponsorImage } from "@utils/imageLoader";
 import { getPageContent, getSponsorsByTier } from "@utils/contentQueries";
 import { getLocale, localizeUrl } from "@utils/i18n";
 
@@ -16,7 +16,7 @@ const pageContent = await getPageContent("sponsors/sponsors-title", locale);
 const introContent = await getPageContent("sponsors/sponsors-intro", locale);
 const tiersContent = await getPageContent("sponsors/sponsor-tiers", locale);
 const ctaContent = await getPageContent("sponsors/become-sponsor-cta", locale);
-const donateContent = await getPageContent("sponsors/donate", locale);
+const donateContent = await getPageContent("donate", locale);
 const crosslink = await getPageContent("sponsors/sponsors-crosslink", locale);
 
 // Hero image
@@ -34,7 +34,7 @@ async function loadTierImages(sponsors: typeof diamond) {
       const logoData =
         (await loadImage({
           glob: sponsorLogos,
-          imagePath: `/src/assets/sponsors/${tier}/${sponsor.data.logo}`,
+          imagePath: resolveImagePath(`/src/assets/sponsors/${tier}`, sponsor.data.logo),
           fallbackImage: defaultSponsorImage,
           context: {
             itemTitle: sponsor.data.name,
@@ -61,15 +61,14 @@ const [diamondSponsors, platinumSponsors, goldSponsors, silverSponsors, bronzeSp
     loadTierImages(bronze),
   ]);
 
-// Tier descriptions from items array: [0]=Diamond, [1]=Platinum, [2]=Gold, [3]=Silver, [4]=Bronze
-const tierDescriptions = tiersContent?.data.items ?? [];
+const tierDescriptions = tiersContent?.data.tierDescriptions;
 
 const tiers = [
-  { name: "Diamond", key: "diamond" as const, sponsors: diamondSponsors, description: tierDescriptions[0] },
-  { name: "Platinum", key: "platinum" as const, sponsors: platinumSponsors, description: tierDescriptions[1] },
-  { name: "Gold", key: "gold" as const, sponsors: goldSponsors, description: tierDescriptions[2] },
-  { name: "Silver", key: "silver" as const, sponsors: silverSponsors, description: tierDescriptions[3] },
-  { name: "Bronze", key: "bronze" as const, sponsors: bronzeSponsors, description: tierDescriptions[4] },
+  { name: "Diamond", key: "diamond" as const, sponsors: diamondSponsors, description: tierDescriptions?.diamond },
+  { name: "Platinum", key: "platinum" as const, sponsors: platinumSponsors, description: tierDescriptions?.platinum },
+  { name: "Gold", key: "gold" as const, sponsors: goldSponsors, description: tierDescriptions?.gold },
+  { name: "Silver", key: "silver" as const, sponsors: silverSponsors, description: tierDescriptions?.silver },
+  { name: "Bronze", key: "bronze" as const, sponsors: bronzeSponsors, description: tierDescriptions?.bronze },
 ];
 ---
 

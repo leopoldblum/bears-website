@@ -1,13 +1,13 @@
 # Astro.js Website for BEARS
 >
 > **TODO:** Write SEO meta descriptions (~150 characters each) in the `seoDescription` field of these content files (in both `en/` and `de/` folders):
-> - `src/content/page-text/en/landing/hero.md` (homepage)
-> - `src/content/page-text/en/about-us/about-us-title.md`
-> - `src/content/page-text/en/events/events-title.md`
-> - `src/content/page-text/en/projects/projects-title.md`
-> - `src/content/page-text/en/sponsors/sponsors-title.md`
-> - `src/content/page-text/en/media/media-title.md`
-> - `src/content/page-text/en/contact/contact-title.md`
+> - `src/content/page-text/en/hero.mdx` (homepage)
+> - `src/content/page-text/en/about-us/about-us-title.mdx`
+> - `src/content/page-text/en/events/events-title.mdx`
+> - `src/content/page-text/en/projects/projects-title.mdx`
+> - `src/content/page-text/en/sponsors/sponsors-title.mdx`
+> - `src/content/page-text/en/media-categories.mdx`
+> - `src/content/page-text/en/contact/contact-title.mdx`
 >
 > **TODO:** Add benefits section to sponsors and link in footer, or remove entry in footer.
 
@@ -48,6 +48,16 @@ When adding or editing content (events, projects, sponsors, page text, etc.), **
    git push -u origin my-content-update
    ```
 4. *(Optional)* If you're comfortable with GitHub, you can open a **Pull Request** on GitHub to have your changes reviewed before they go live.
+
+## If Something Breaks
+
+Every save through the admin UI becomes a Git commit, so almost any editing mistake can be undone with one click:
+
+1. Go to [github.com/leopoldblum/bears-website/commits/main](https://github.com/leopoldblum/bears-website/commits/main).
+2. Find the bad commit (usually the most recent one).
+3. Click the `...` menu on it → **Revert**. Merge the PR GitHub opens.
+
+The site rebuilds from the previous state within a few minutes. See the [If Something Breaks guide](src/content/docs/guides/if-something-breaks.mdx) for details and when to escalate.
 
 ## Project Structure
 
