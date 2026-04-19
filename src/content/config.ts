@@ -146,16 +146,19 @@ const peopleCollection = defineCollection({
   }),
 });
 
+// Single-entry data collection backing the landing-page Testimonials carousel.
+// The editor manages one drag-reorderable list via a Keystatic singleton; the
+// array order in the file IS the display order on the landing page (no sort
+// key needed). Each item references a person from the `people` collection and
+// carries both quote translations inline.
 const testimonialsCollection = defineCollection({
-  type: 'content',
+  type: 'data',
   schema: z.object({
-    // Reference into the `people` collection — the person the quote belongs to.
-    person: reference('people'),
-    quoteEn: z.string(),
-    quoteDe: z.string(),
-    // Sort key for the landing-page carousel. Lower numbers appear first;
-    // ties break on slug.
-    order: z.number().default(0),
+    items: z.array(z.object({
+      person: reference('people'),
+      quoteEn: z.string(),
+      quoteDe: z.string(),
+    })),
   }),
 });
 

@@ -91,14 +91,14 @@ Frontmatter:
   showInFaces: boolean (default false) — true = appears in the Faces of BEARS grid on the About Us page; project-only people can stay false
   order: number (default 0) — only meaningful when showInFaces is true; lower = shown first; ties fall back to the slug
 
-TESTIMONIALS (src/content/testimonials/)
-Locale-agnostic — one file per testimonial; both quote translations live inline.
-File naming: the filename IS the referenced person's slug (e.g. jane-doe.mdx corresponds to people/jane-doe.mdx). Astro's reference('people') on the `person` field validates the match at build time.
-Frontmatter:
-  person: reference('people') (required) — slug of the person this testimonial is from; must match a file under src/content/people/ (also used as this file's own slug/filename)
-  order: number (default 0) — lower = shown first in the carousel; ties fall back to the person slug
-  quoteEn: string (required) — English quote
-  quoteDe: string (required) — German quote
+TESTIMONIALS (src/content/testimonials/list.yaml)
+Single-entry data collection backing the landing-page Testimonials carousel. Managed in Keystatic as a drag-reorderable list (a singleton with fields.array); array order in the file IS the display order — no sort key, no per-item filenames.
+Schema:
+  items: array of objects, each with:
+    person: reference('people') (required) — slug of the person this quote is from
+    quoteEn: string (required) — English quote
+    quoteDe: string (required) — German quote
+Query via getEntry('testimonials', 'list').
 
 PAGE TEXT (src/content/page-text/)
 Editable headings, descriptions, buttons, and structured data for every page section.

@@ -1,4 +1,4 @@
-import { getCollection } from 'astro:content';
+import { getCollection, getEntry } from 'astro:content';
 import type { CollectionEntry } from 'astro:content';
 import { DEFAULT_LOCALE, type Locale } from './i18n';
 
@@ -181,40 +181,37 @@ export async function getLatestInstagramPosts(limit: number = 3) {
 // ============================================================================
 
 /**
- * Gets all entries from the `testimonials` collection, sorted by `order`
- * (ascending) with slug tiebreak. Resolves each entry's `person` reference
- * to the matching `people` entry and returns the people entries augmented
- * with `role` (from the locale-appropriate roleEn/roleDe) and `quote` (from
- * the testimonial's locale-appropriate quote). Testimonials whose `person`
- * reference doesn't resolve are skipped with a dev warning.
+ * Reads the landing-page testimonials list (a single-entry `testimonials`
+ * data collection backed by a Keystatic singleton, at
+ * `src/content/testimonials/list.yaml`). Resolves each item's `person`
+ * reference to the matching `people` entry and returns people-shaped entries
+ * augmented with `role` (from the locale-appropriate roleEn/roleDe) and
+ * `quote` (locale-appropriate). Array order in the file IS the carousel
+ * order — no sort key. Items whose `person` reference doesn't resolve are
+ * skipped with a dev warning.
  *
  * Return shape stays aligned with `CollectionEntry<'people'>` so callers can
  * feed the result directly into `loadCollectionImages(..., 'person')`.
  */
 export async function getTestimonials(locale: Locale = DEFAULT_LOCALE) {
-  const [testimonials, people] = await Promise.all([
-    getCollection('testimonials'),
+  const [list, people] = await Promise.all([
+    getEntry('testimonials', 'list'),
     getCollection('people'),
   ]);
+  if (!list) return [];
   const peopleBySlug = new Map(people.map((p) => [p.slug, p]));
 
-  const sorted = [...testimonials].sort((a, b) => {
-    const orderDiff = a.data.order - b.data.order;
-    if (orderDiff !== 0) return orderDiff;
-    return a.slug.localeCompare(b.slug);
-  });
-
-  return sorted.flatMap((testimonial) => {
-    const ref = testimonial.data.person;
+  return list.data.items.flatMap((item, index) => {
+    const ref = item.person;
     // Astro's reference() surfaces as `{ collection, id }` in the typed entry;
     // the underlying frontmatter is just the slug string.
     const personSlug = typeof ref === 'string' ? ref : ref.id;
     const person = peopleBySlug.get(personSlug);
     if (!person) {
-      console.warn(`[Testimonials] testimonial "${testimonial.slug}" references unknown person "${personSlug}"`);
+      console.warn(`[Testimonials] item #${index + 1} references unknown person "${personSlug}"`);
       return [];
     }
-    const quote = locale === 'de' ? testimonial.data.quoteDe : testimonial.data.quoteEn;
+    const quote = locale === 'de' ? item.quoteDe : item.quoteEn;
     return [{
       ...person,
       data: {

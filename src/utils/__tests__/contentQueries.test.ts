@@ -1,5 +1,5 @@
 import type { MockedFunction } from 'vitest';
-import { getCollection } from 'astro:content';
+import { getCollection, getEntry } from 'astro:content';
 import {
   sortByDateDesc,
   sortBySlug,
@@ -26,6 +26,9 @@ import {
 // affecting the rest of the test file.
 const mockedGetCollection = vi.mocked(getCollection) as unknown as MockedFunction<
   (collection: string) => Promise<Array<Record<string, unknown>>>
+>;
+const mockedGetEntry = vi.mocked(getEntry) as unknown as MockedFunction<
+  (collection: string, id: string) => Promise<Record<string, unknown> | undefined>
 >;
 
 // ---------------------------------------------------------------------------
@@ -479,23 +482,23 @@ function makePerson(overrides: {
   };
 }
 
-function makeTestimonial(overrides: {
-  slug: string;
+function makeTestimonialItem(overrides: {
   person: string;
-  order?: number;
   quoteEn?: string;
   quoteDe?: string;
 }) {
   return {
-    id: `${overrides.slug}.mdx`,
-    slug: overrides.slug,
+    person: overrides.person,
+    quoteEn: overrides.quoteEn ?? 'quote',
+    quoteDe: overrides.quoteDe ?? 'zitat',
+  };
+}
+
+function makeTestimonialsList(items: ReturnType<typeof makeTestimonialItem>[]) {
+  return {
+    id: 'list',
     collection: 'testimonials',
-    data: {
-      person: overrides.person,
-      order: overrides.order ?? 0,
-      quoteEn: overrides.quoteEn ?? 'quote',
-      quoteDe: overrides.quoteDe ?? 'zitat',
-    },
+    data: { items },
   };
 }
 
@@ -709,32 +712,36 @@ describe('getSponsorsByTier', () => {
 describe('getTestimonials', () => {
   beforeEach(() => {
     mockedGetCollection.mockReset();
+    mockedGetEntry.mockReset();
   });
 
-  function withCollections(testimonials: unknown[], people: unknown[]) {
+  function withList(items: ReturnType<typeof makeTestimonialItem>[], people: unknown[]) {
+    mockedGetEntry.mockImplementation(async (name: string, id: string) => {
+      if (name === 'testimonials' && id === 'list') return makeTestimonialsList(items);
+      return undefined;
+    });
     mockedGetCollection.mockImplementation(async (name: string) => {
-      if (name === 'testimonials') return testimonials as Array<Record<string, unknown>>;
       if (name === 'people') return people as Array<Record<string, unknown>>;
       return [];
     });
   }
 
-  it('sorts testimonials by order (ascending) with slug tiebreak and returns the resolved people entries', async () => {
-    withCollections(
+  it('returns resolved people entries in array order (no sort)', async () => {
+    withList(
       [
-        makeTestimonial({ slug: 'b', person: 'b', order: 5 }),
-        makeTestimonial({ slug: 'a', person: 'a', order: 5 }),
-        makeTestimonial({ slug: 'first', person: 'first', order: 1 }),
+        makeTestimonialItem({ person: 'first' }),
+        makeTestimonialItem({ person: 'b' }),
+        makeTestimonialItem({ person: 'a' }),
       ],
       [makePerson({ slug: 'a' }), makePerson({ slug: 'b' }), makePerson({ slug: 'first' })],
     );
     const result = await getTestimonials();
-    expect(result.map((p) => p.slug)).toEqual(['first', 'a', 'b']);
+    expect(result.map((p) => p.slug)).toEqual(['first', 'b', 'a']);
   });
 
-  it('projects role from the person (locale-aware) and quote from the testimonial (locale-aware)', async () => {
-    withCollections(
-      [makeTestimonial({ slug: 't1', person: 'jane', quoteEn: 'Great place', quoteDe: 'Toller Ort' })],
+  it('projects role from the person (locale-aware) and quote from the item (locale-aware)', async () => {
+    withList(
+      [makeTestimonialItem({ person: 'jane', quoteEn: 'Great place', quoteDe: 'Toller Ort' })],
       [makePerson({ slug: 'jane', roleEn: 'CEO', roleDe: 'Geschäftsführerin' })],
     );
     const en = await getTestimonials('en');
@@ -745,10 +752,10 @@ describe('getTestimonials', () => {
     expect((de[0].data as { role: string; quote: string }).quote).toBe('Toller Ort');
   });
 
-  it('skips and warns on testimonials whose person reference does not resolve', async () => {
+  it('skips and warns on items whose person reference does not resolve', async () => {
     const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
-    withCollections(
-      [makeTestimonial({ slug: 'orphan', person: 'ghost' })],
+    withList(
+      [makeTestimonialItem({ person: 'ghost' })],
       [],
     );
     const result = await getTestimonials();
@@ -757,10 +764,17 @@ describe('getTestimonials', () => {
     warnSpy.mockRestore();
   });
 
-  it('queries both testimonials and people collections', async () => {
-    withCollections([], []);
+  it('returns empty array when the singleton entry is missing', async () => {
+    mockedGetEntry.mockResolvedValue(undefined);
+    mockedGetCollection.mockResolvedValue([]);
+    const result = await getTestimonials();
+    expect(result).toEqual([]);
+  });
+
+  it('reads the `list` entry from the testimonials collection and the people collection', async () => {
+    withList([], []);
     await getTestimonials();
-    expect(mockedGetCollection).toHaveBeenCalledWith('testimonials');
+    expect(mockedGetEntry).toHaveBeenCalledWith('testimonials', 'list');
     expect(mockedGetCollection).toHaveBeenCalledWith('people');
   });
 });
