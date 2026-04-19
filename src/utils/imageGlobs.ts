@@ -139,6 +139,15 @@ export const heroImages: ImageGlob = filterImageGlob(
 );
 
 /**
+ * Default fallback images (event/project/sponsor/face).
+ * Filenames are chosen via the `branding` content entry; this glob resolves
+ * whichever file the editor has set for each slot.
+ */
+export const defaultImages: ImageGlob = filterImageGlob(
+  import.meta.glob<{ default: ImageMetadata }>("/src/assets/default-images/*.*"),
+);
+
+/**
  * Flat glob across every asset subtree. Used by Img.astro to resolve string
  * srcs coming from Keystatic uploads (e.g. "/src/assets/events/<slug>/foo.jpg")
  * without having to know which collection the Img sits in.

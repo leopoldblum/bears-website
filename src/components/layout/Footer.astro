@@ -3,12 +3,18 @@ import { Image } from "astro:assets";
 import { footerLogoImages, socialIconFiles } from "@utils/imageGlobs";
 import { getPageContent } from "@utils/contentQueries";
 import { getSocialPlatformsMap } from "@utils/socialPlatforms";
-import { resolveImagePath } from "@utils/imageLoader";
+import { loadImage, resolveImagePath } from "@utils/imageLoader";
+import { getEntry } from "astro:content";
 import { localizeUrl, type Locale } from "@utils/i18n";
 
-// Load the first image from src/assets/footer/
-const logoEntry = Object.values(footerLogoImages)[0];
-const footerLogo = logoEntry ? (await logoEntry()).default : null;
+const branding = await getEntry("branding", "site-assets");
+const footerLogo = branding
+  ? await loadImage({
+      glob: footerLogoImages,
+      imagePath: resolveImagePath("/src/assets/footer", branding.data.footerLogo),
+      context: { itemTitle: "Footer logo" },
+    })
+  : null;
 
 interface Props {
   locale: Locale;

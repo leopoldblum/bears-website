@@ -71,9 +71,26 @@ Field names and types must match. Some Zod features (`.refine()`, `.transform()`
 
 After any schema edit, run `npm test`. The suite at `src/utils/__tests__/keystaticSchema.test.ts` uses Keystatic's Reader API to validate every content file against `keystatic.config.ts` — catching drift before editors see it in the admin UI. See [docs/dev/keystatic-testing](src/content/docs/dev/keystatic-testing.mdx).
 
+#### `fields.image` publicPath — admin preview gotcha
+
+Keystatic stores image values as `publicPath + uploadedFilename` verbatim and the admin UI renders previews by feeding that stored value straight into an `<img src>`. For the preview to resolve, the stored value must be a URL the dev server can serve — **not** a bare filename.
+
+Rules for setting `publicPath` on any `fields.image`:
+
+- Assets under `src/assets/<dir>/`: use `publicPath: '/src/assets/<dir>/'` so the stored value is `/src/assets/<dir>/<file>` (Vite serves it in dev, Astro's image pipeline handles it at build).
+- Assets under `public/`: use `publicPath: '/'` so the stored value is `/<file>` (served at the site root).
+- Per-entry subfolder uploads (events, projects, sponsors, people — one folder per slug): `publicPath: ''` is fine as long as the stored value ends up starting with `/` (Keystatic writes `/<slug>/<file>`, resolvable relative to `directory`). If a NEW field you add does not use the per-entry subfolder pattern, DO NOT copy `publicPath: ''` — use one of the two rules above or the preview will break.
+
+When you change `publicPath` on an existing field, update any consumer that prepends its own `/` (so you don't end up with `//favicon.png`) and make sure the runtime path resolver (`resolveImagePath` in `src/utils/imageLoader.ts`) handles both the bare and absolute shapes — it already short-circuits on values starting with `/src/`. Also re-seed any manually-written YAML to match the new stored format.
+
+Helpers in `keystatic.config.ts`:
+- `brandingAssetField(label, directory)` — singleton fields pointing at `src/assets/<dir>/`.
+- `publicAssetField(label)` — singleton fields pointing at `public/`.
+- `imageField(label, directory, _publicPath)` — legacy helper for per-entry subfolder uploads (stores bare path). Note: the third arg is currently unused; don't read too much into it.
+
 #### Keystatic collection mapping
 
-The 9 Astro collections fan out into ~90 Keystatic collections + singletons (split per locale, per tier, and per file for page-text):
+The 11 Astro collections fan out into ~90 Keystatic collections + singletons (split per locale, per tier, and per file for page-text):
 
 | Astro collection | Keystatic items |
 |---|---|
@@ -86,6 +103,8 @@ The 9 Astro collections fan out into ~90 Keystatic collections + singletons (spl
 | `people` | `people` — locale-agnostic, one entry per person. Roles translate inline via `roleEn`/`roleDe`; testimonial quotes via `quoteEn`/`quoteDe`. Powers three surfaces from one record: the Faces of BEARS grid (when `showInFaces: true`), project Meet the Team callouts (via `projects.person`), and the landing-page Testimonials carousel (when `showAsTestimonial: true`). |
 | `social-platforms` | `socialPlatforms` — one entry per platform (Instagram, LinkedIn, YouTube, …). Each entry owns a `label`, an `iconFile` (SVG under `src/assets/social-icons/<slug>/`) and an optional `defaultHoverColor`. Referenced from `socialLinks[].platform` on the `social` page-text singletons — editors add/remove platforms here instead of hand-editing code. |
 | `docs` | `docsGuides`, `docsDev` |
+| `branding` | `branding` — locale-agnostic singleton ("Branding / logos", under the Site-wide group). Holds the three brand logos (`headerLogo`, `footerLogo`, `heroLogo`) plus `favicon` and `ogDefault` (both stored in `public/` and referenced as root-level URLs). Logo filenames resolve through the matching glob in `src/utils/imageGlobs.ts`; favicon/OG are served straight from `public/`. |
+| `default-images` | `defaultImages` — sibling singleton ("Default images", same Site-wide group). Holds the four cover-image fallbacks (`defaultEventImage`, `defaultProjectImage`, `defaultSponsorImage`, `defaultFaceImage`) that get used when an event/project/sponsor/person has no custom image. Resolved via the `defaultImages` glob. |
 
 The bilingual split is purely organisational — both Keystatic collections write to the existing `en/`/`de/` subfolders. The sponsor tier split reflects the folder structure (`src/content/sponsors/{tier}/`). For page-text, every file has its own singleton with a tight schema — this keeps each editor form minimal (e.g. a crosslink file only shows title/button text/button link). The singletons are grouped in the admin navigation by page (Landing, About us, Contact, Events, Projects, Sponsors, Legal, Site-wide) so editors find content by the page it lives on.
 

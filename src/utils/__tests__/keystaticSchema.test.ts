@@ -94,15 +94,19 @@ describe('Keystatic Reader API resolves every collection', () => {
 
 describe('Astro ↔ Keystatic collection parity', () => {
   const keystaticCollections = (keystaticConfig.collections ?? {}) as Record<string, { path: string }>;
-  const keystaticPaths = Object.values(keystaticCollections).map((c) => c.path);
+  const keystaticSingletons = (keystaticConfig.singletons ?? {}) as Record<string, { path: string }>;
+  const keystaticPaths = [
+    ...Object.values(keystaticCollections).map((c) => c.path),
+    ...Object.values(keystaticSingletons).map((s) => s.path),
+  ];
 
   for (const astroName of Object.keys(astroCollections)) {
-    it(`Astro collection "${astroName}" is backed by at least one Keystatic collection`, () => {
+    it(`Astro collection "${astroName}" is backed by at least one Keystatic collection or singleton`, () => {
       const expectedPrefix = `src/content/${astroName}/`;
       const match = keystaticPaths.some((p) => p.startsWith(expectedPrefix));
       expect(
         match,
-        `No Keystatic collection in keystatic.config.ts writes to ${expectedPrefix}. ` +
+        `No Keystatic collection or singleton in keystatic.config.ts writes to ${expectedPrefix}. ` +
         `Either add one, or remove "${astroName}" from src/content/config.ts.`
       ).toBe(true);
     });

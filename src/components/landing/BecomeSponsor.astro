@@ -3,7 +3,7 @@
 import SponsorTier from "./SponsorTier.astro";
 import Button from "@mdx/Button.astro";
 import { sponsorLogos } from "@utils/imageGlobs";
-import { loadImage, resolveImagePath, defaultSponsorImage } from "@utils/imageLoader";
+import { loadImage, resolveImagePath, getDefaultSponsorImage } from "@utils/imageLoader";
 import { getPageContent, getSponsorsByTier } from "@utils/contentQueries";
 import { type Locale } from '@utils/i18n';
 
@@ -26,6 +26,7 @@ const activeTierNames = tierOrder
 
 // Load images for a tier's sponsors
 async function loadTierImages(sponsors: typeof allTiers.diamond) {
+  const defaultSponsorImage = await getDefaultSponsorImage();
   return Promise.all(
     sponsors.map(async (sponsor) => {
       const tier = sponsor.id.split("/")[0];

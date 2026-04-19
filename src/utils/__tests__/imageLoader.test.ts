@@ -1,4 +1,50 @@
 import type { ImageMetadata } from 'astro';
+
+// ---------------------------------------------------------------------------
+// Mocks — `vi.hoisted` lets us share `mockDefault*Image` between the vi.mock
+// factory (which is hoisted above all other code) and the test bodies. Without
+// `vi.hoisted`, the hoisted factory evaluates before the test file body runs,
+// so any plain `const` references would be undefined at mock-construction time.
+// ---------------------------------------------------------------------------
+
+const {
+  mockDefaultEvent,
+  mockDefaultProject,
+  mockDefaultFace,
+  mockDefaultImages,
+  mockEventImages,
+  mockProjectImages,
+  mockPeopleImages,
+} = vi.hoisted(() => {
+  const mockDefaultEvent: ImageMetadata = { src: '/default-event.jpg', width: 100, height: 100, format: 'jpg' };
+  const mockDefaultProject: ImageMetadata = { src: '/default-project.jpg', width: 100, height: 100, format: 'jpg' };
+  const mockDefaultSponsor: ImageMetadata = { src: '/default-sponsor.jpg', width: 100, height: 100, format: 'jpg' };
+  const mockDefaultFace: ImageMetadata = { src: '/default-face.jpg', width: 100, height: 100, format: 'jpg' };
+  return {
+    mockDefaultEvent,
+    mockDefaultProject,
+    mockDefaultSponsor,
+    mockDefaultFace,
+    mockDefaultImages: {
+      '/src/assets/default-images/default-event.jpg': () => Promise.resolve({ default: mockDefaultEvent }),
+      '/src/assets/default-images/default-project.jpg': () => Promise.resolve({ default: mockDefaultProject }),
+      '/src/assets/default-images/default-sponsor.jpg': () => Promise.resolve({ default: mockDefaultSponsor }),
+      '/src/assets/default-images/default-face.jpg': () => Promise.resolve({ default: mockDefaultFace }),
+    } as Record<string, () => Promise<{ default: ImageMetadata }>>,
+    mockEventImages: {} as Record<string, () => Promise<{ default: ImageMetadata }>>,
+    mockProjectImages: {} as Record<string, () => Promise<{ default: ImageMetadata }>>,
+    mockPeopleImages: {} as Record<string, () => Promise<{ default: ImageMetadata }>>,
+  };
+});
+
+vi.mock('../imageGlobs', () => ({
+  eventImages: mockEventImages,
+  projectImages: mockProjectImages,
+  peopleImages: mockPeopleImages,
+  defaultImages: mockDefaultImages,
+}));
+
+// Import after mocks so the SUT picks them up on its first evaluation.
 import {
   loadImage,
   loadImagesForCollection,
@@ -6,39 +52,18 @@ import {
   loadCollectionImages,
   loadCoverImage,
 } from '../imageLoader';
+import { getEntry as mockGetEntry } from 'astro:content';
 
-// ---------------------------------------------------------------------------
-// Mock default image imports (static imports in imageLoader.ts)
-// ---------------------------------------------------------------------------
-
-const mockDefaultEvent: ImageMetadata = { src: '/default-event.jpg', width: 100, height: 100, format: 'jpg' };
-const mockDefaultProject: ImageMetadata = { src: '/default-project.jpg', width: 100, height: 100, format: 'jpg' };
-const mockDefaultSponsor: ImageMetadata = { src: '/default-sponsor.jpg', width: 100, height: 100, format: 'jpg' };
-const mockDefaultFace: ImageMetadata = { src: '/default-face.jpg', width: 100, height: 100, format: 'jpg' };
-
-vi.mock('@assets/default-images/default-event.jpg', () => ({
-  default: { src: '/default-event.jpg', width: 100, height: 100, format: 'jpg' },
-}));
-vi.mock('@assets/default-images/default-project.jpg', () => ({
-  default: { src: '/default-project.jpg', width: 100, height: 100, format: 'jpg' },
-}));
-vi.mock('@assets/default-images/default-sponsor.jpg', () => ({
-  default: { src: '/default-sponsor.jpg', width: 100, height: 100, format: 'jpg' },
-}));
-vi.mock('@assets/default-images/default-face.jpg', () => ({
-  default: { src: '/default-face.jpg', width: 100, height: 100, format: 'jpg' },
-}));
-
-// Mock imageGlobs for loadCollectionImages / loadCoverImage
-const mockEventImages: Record<string, () => Promise<{ default: ImageMetadata }>> = {};
-const mockProjectImages: Record<string, () => Promise<{ default: ImageMetadata }>> = {};
-const mockPeopleImages: Record<string, () => Promise<{ default: ImageMetadata }>> = {};
-
-vi.mock('../imageGlobs', () => ({
-  get eventImages() { return mockEventImages; },
-  get projectImages() { return mockProjectImages; },
-  get peopleImages() { return mockPeopleImages; },
-}));
+vi.mocked(mockGetEntry).mockResolvedValue({
+  id: 'fallbacks',
+  collection: 'default-images',
+  data: {
+    defaultEventImage: 'default-event.jpg',
+    defaultProjectImage: 'default-project.jpg',
+    defaultSponsorImage: 'default-sponsor.jpg',
+    defaultFaceImage: 'default-face.jpg',
+  },
+} as never);
 
 // ---------------------------------------------------------------------------
 // Helpers

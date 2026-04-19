@@ -53,6 +53,36 @@ function imageField(label: string, directory: string, _publicPath: string) {
   });
 }
 
+// Variant of imageField for assets that live in /public (served at the site
+// root, not imported via Astro's asset pipeline). `publicPath: '/'` makes
+// Keystatic store the value as `/<filename>` — a URL the admin UI can preview
+// directly and that consumers can drop straight into an href/src attribute.
+function publicAssetField(label: string) {
+  return fields.image({
+    label,
+    directory: 'public',
+    publicPath: '/',
+    description: IMAGE_SIZE_HINT,
+    validation: { isRequired: true },
+  });
+}
+
+// Variant of imageField for singleton fields that point at a specific
+// directory under `src/assets/`. Unlike `imageField` (which stores a bare
+// filename for per-entry subfolder uploads), this one stores the full
+// `/src/assets/<dir>/<file>` URL so the admin preview resolves against Astro's
+// Vite dev server. `resolveImagePath` in imageLoader.ts short-circuits on
+// any value starting with `/src/`, so consumers don't need special handling.
+function brandingAssetField(label: string, directory: string) {
+  return fields.image({
+    label,
+    directory,
+    publicPath: `/${directory}/`,
+    description: IMAGE_SIZE_HINT,
+    validation: { isRequired: true },
+  });
+}
+
 // Keystatic's `contentField` must reference a real content field (mdx /
 // markdoc / document), not a plain text field. All content is stored as
 // `.mdx` so the collections share a single body helper.
@@ -475,7 +505,7 @@ function sectionWithImageSingleton(locale: Locale, pathSuffix: string, label: st
         image: fields.image({
           label: 'Image',
           directory: imageDirectory,
-          publicPath: '',
+          publicPath: `/${imageDirectory}/`,
           description: IMAGE_SIZE_HINT,
         }),
         imageAlt: fields.text({
@@ -520,7 +550,7 @@ function sectionWithButtonAndImagesSingleton(locale: Locale, pathSuffix: string,
           src: fields.image({
             label: 'Image',
             directory: 'src/assets/whatIsBears',
-            publicPath: '',
+            publicPath: '/src/assets/whatIsBears/',
             description: IMAGE_SIZE_HINT,
             validation: { isRequired: true },
           }),
@@ -1064,6 +1094,47 @@ const instagram = collection({
 });
 
 // ============================================================================
+// BRANDING — locale-agnostic singletons split into two tabs:
+//   • `branding`        → logos + favicon + OG image (site identity)
+//   • `defaultImages`   → fallback covers for posts / people / sponsors
+//
+// Fields storing assets under src/assets/ use bare filenames resolved through
+// the globs in src/utils/imageGlobs.ts; fields storing assets under public/
+// also store bare filenames, and consumers prepend `/` to build the URL.
+// ============================================================================
+
+function brandingSingleton() {
+  return singleton({
+    label: 'Branding / logos',
+    path: 'src/content/branding/site-assets',
+    format: { data: 'yaml' as const },
+    entryLayout: 'form' as const,
+    schema: {
+      headerLogo: brandingAssetField('Header logo', 'src/assets/header'),
+      footerLogo: brandingAssetField('Footer logo', 'src/assets/footer'),
+      heroLogo: brandingAssetField('Landing hero logo', 'src/assets/hero/landingpage/logo'),
+      favicon: publicAssetField('Favicon (browser tab icon)'),
+      ogDefault: publicAssetField('Default social share image (Open Graph)'),
+    },
+  });
+}
+
+function defaultImagesSingleton() {
+  return singleton({
+    label: 'Default images',
+    path: 'src/content/default-images/fallbacks',
+    format: { data: 'yaml' as const },
+    entryLayout: 'form' as const,
+    schema: {
+      defaultEventImage: brandingAssetField('Default event cover (fallback)', 'src/assets/default-images'),
+      defaultProjectImage: brandingAssetField('Default project cover (fallback)', 'src/assets/default-images'),
+      defaultSponsorImage: brandingAssetField('Default sponsor logo (fallback)', 'src/assets/default-images'),
+      defaultFaceImage: brandingAssetField('Default person portrait (fallback)', 'src/assets/default-images'),
+    },
+  });
+}
+
+// ============================================================================
 // CONFIG
 // ============================================================================
 
@@ -1140,6 +1211,8 @@ export default config({
         'pageTextNavLinksEn', 'pageTextNavLinksDe',
         'pageTextNavColumnsEn', 'pageTextNavColumnsDe',
         'pageTextSiteMetadataEn', 'pageTextSiteMetadataDe',
+        'branding',
+        'defaultImages',
       ],
       // --- Docs -------------------------------------------------------------
       'Docs': ['docsGuides', 'docsDev'],
@@ -1261,5 +1334,8 @@ export default config({
     pageTextDatenschutzDe: legalPageSingleton('de', 'datenschutz/datenschutz', 'Privacy policy'),
     pageTextImprintEn: legalPageSingleton('en', 'imprint/imprint', 'Imprint'),
     pageTextImprintDe: legalPageSingleton('de', 'imprint/imprint', 'Imprint'),
+    // Site-wide branding (locale-agnostic)
+    branding: brandingSingleton(),
+    defaultImages: defaultImagesSingleton(),
   },
 });

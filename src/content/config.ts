@@ -275,6 +275,33 @@ const socialPlatformsCollection = defineCollection({
   }),
 });
 
+const brandingImage = () =>
+  z.string().refine(
+    validateImageExtension,
+    { message: `image must have a valid image extension: ${VALID_EXTENSIONS_MESSAGE}` }
+  );
+
+const brandingCollection = defineCollection({
+  type: 'data',
+  schema: z.object({
+    headerLogo: brandingImage(),
+    footerLogo: brandingImage(),
+    heroLogo: brandingImage(),
+    favicon: brandingImage(),
+    ogDefault: brandingImage(),
+  }),
+});
+
+const defaultImagesCollection = defineCollection({
+  type: 'data',
+  schema: z.object({
+    defaultEventImage: brandingImage(),
+    defaultProjectImage: brandingImage(),
+    defaultSponsorImage: brandingImage(),
+    defaultFaceImage: brandingImage(),
+  }),
+});
+
 export const collections = {
   sponsors: sponsorsCollection,
   events: eventsCollection,
@@ -285,4 +312,6 @@ export const collections = {
   people: peopleCollection,
   docs: docsCollection,
   'social-platforms': socialPlatformsCollection,
+  branding: brandingCollection,
+  'default-images': defaultImagesCollection,
 };

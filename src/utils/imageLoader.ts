@@ -6,15 +6,41 @@
  */
 
 import type { ImageMetadata } from 'astro';
-import type { CollectionEntry } from 'astro:content';
-import defaultEventImage from '@assets/default-images/default-event.jpg';
-import defaultProjectImage from '@assets/default-images/default-project.jpg';
-import defaultSponsorImage from '@assets/default-images/default-sponsor.jpg';
-import defaultFaceImage from '@assets/default-images/default-face.jpg';
+import { getEntry, type CollectionEntry } from 'astro:content';
 import { resolveGlobKey } from './imageConstants';
+import { defaultImages } from './imageGlobs';
 
-// Export default images for components that need direct access
-export { defaultEventImage, defaultProjectImage, defaultSponsorImage, defaultFaceImage };
+// Default fallback images are chosen by the editor through the `branding`
+// Keystatic singleton and resolved at runtime via the `defaultImages` glob.
+type DefaultImageSlot =
+  | 'defaultEventImage'
+  | 'defaultProjectImage'
+  | 'defaultSponsorImage'
+  | 'defaultFaceImage';
+
+async function getDefaultImage(slot: DefaultImageSlot): Promise<ImageMetadata> {
+  const entry = await getEntry('default-images', 'fallbacks');
+  if (!entry) {
+    throw new Error(
+      'Default-images entry "fallbacks" is missing — expected src/content/default-images/fallbacks.yaml'
+    );
+  }
+
+  const fileName = entry.data[slot];
+  const imagePath = resolveImagePath('/src/assets/default-images', fileName);
+  const key = resolveGlobKey(defaultImages, imagePath);
+  if (!key) {
+    throw new Error(
+      `Default image "${fileName}" for slot "${slot}" not found under /src/assets/default-images/`
+    );
+  }
+  return (await defaultImages[key]()).default;
+}
+
+export const getDefaultEventImage = () => getDefaultImage('defaultEventImage');
+export const getDefaultProjectImage = () => getDefaultImage('defaultProjectImage');
+export const getDefaultSponsorImage = () => getDefaultImage('defaultSponsorImage');
+export const getDefaultFaceImage = () => getDefaultImage('defaultFaceImage');
 
 /**
  * Resolve a frontmatter `coverImage` / `logo` / `image` value to a glob key.
@@ -129,7 +155,7 @@ interface LoadImagesForCollectionOptions<T> {
  *   collection: events,
  *   baseDir: '/src/assets/events',
  *   imageField: 'coverImage',
- *   fallbackImage: defaultEventImage,
+ *   fallbackImage: await getDefaultEventImage(),
  *   postType: 'event'
  * });
  * ```
@@ -344,25 +370,28 @@ export async function loadCollectionImages(
     event: {
       glob: async () => (await import('./imageGlobs')).eventImages,
       baseDir: '/src/assets/events',
-      fallbackImage: defaultEventImage,
+      getFallbackImage: getDefaultEventImage,
       postType: 'event' as const,
     },
     project: {
       glob: async () => (await import('./imageGlobs')).projectImages,
       baseDir: '/src/assets/projects',
-      fallbackImage: defaultProjectImage,
+      getFallbackImage: getDefaultProjectImage,
       postType: 'project' as const,
     },
     person: {
       glob: async () => (await import('./imageGlobs')).peopleImages,
       baseDir: '/src/assets/people',
-      fallbackImage: defaultFaceImage,
+      getFallbackImage: getDefaultFaceImage,
       postType: 'person' as const,
     },
   };
 
   const typeConfig = config[type];
-  const glob = await typeConfig.glob();
+  const [glob, fallbackImage] = await Promise.all([
+    typeConfig.glob(),
+    typeConfig.getFallbackImage(),
+  ]);
 
   // Type assertion needed: CollectionEntry types from Zod transforms don't
   // structurally match the generic constraint, but the overload signatures
@@ -373,7 +402,7 @@ export async function loadCollectionImages(
     collection: collection as any,
     baseDir: typeConfig.baseDir,
     imageField: 'coverImage',
-    fallbackImage: typeConfig.fallbackImage,
+    fallbackImage,
     postType: typeConfig.postType,
   });
 }
@@ -408,30 +437,31 @@ export async function loadCoverImage(
     event: {
       glob: async () => (await import('./imageGlobs')).eventImages,
       baseDir: '/src/assets/events',
-      fallbackImage: defaultEventImage,
+      getFallbackImage: getDefaultEventImage,
     },
     project: {
       glob: async () => (await import('./imageGlobs')).projectImages,
       baseDir: '/src/assets/projects',
-      fallbackImage: defaultProjectImage,
+      getFallbackImage: getDefaultProjectImage,
     },
   };
 
   const typeConfig = config[type];
+  const fallbackImage = await typeConfig.getFallbackImage();
 
   if (!fileName) {
-    return typeConfig.fallbackImage;
+    return fallbackImage;
   }
 
   const glob = await typeConfig.glob();
   const image = await loadImage({
     glob,
     imagePath: resolveImagePath(typeConfig.baseDir, fileName),
-    fallbackImage: typeConfig.fallbackImage,
+    fallbackImage,
     context,
   });
 
-  return image || typeConfig.fallbackImage;
+  return image || fallbackImage;
 }
 
 

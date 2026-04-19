@@ -9,6 +9,8 @@ export { z };
 
 export const getCollection = vi.fn();
 
+export const getEntry = vi.fn();
+
 export const defineCollection = vi.fn((config: unknown) => config);
 
 // Stub for Astro's reference() helper. The real implementation returns a

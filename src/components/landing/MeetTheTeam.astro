@@ -2,7 +2,7 @@
 // MeetTheTeam component
 import type { ImageMetadata } from "astro";
 import Img from "@mdx/Img.astro";
-import { loadImage, defaultFaceImage, resolveImagePath } from "@utils/imageLoader";
+import { loadImage, getDefaultFaceImage, resolveImagePath } from "@utils/imageLoader";
 import { peopleImages } from "@utils/imageGlobs";
 import { getMeetTheTeamProjectsWithPeople, getPageContent } from "@utils/contentQueries";
 import { type Locale } from '@utils/i18n';
@@ -15,6 +15,8 @@ const { locale } = Astro.props;
 
 // Each entry already has the resolved person + locale-correct displayRole.
 const entries = await getMeetTheTeamProjectsWithPeople(locale);
+
+const defaultFaceImage = await getDefaultFaceImage();
 
 const projects = await Promise.all(
   entries.map(async ({ project, person, displayName, displayRole }) => {
