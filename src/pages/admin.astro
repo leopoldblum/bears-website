@@ -106,7 +106,13 @@ const publishedMismatches = mismatchCounts.total - mismatchCounts.drafts;
 const allInSync = mismatchCounts.total === 0;
 const onlyDrafts = !allInSync && publishedMismatches === 0;
 
-const generatedAt = new Date().toISOString();
+const generatedAtDate = new Date();
+const generatedAt = generatedAtDate.toISOString();
+const generatedAtLabel = new Intl.DateTimeFormat('en-GB', {
+  dateStyle: 'long',
+  timeStyle: 'short',
+  timeZone: 'UTC',
+}).format(generatedAtDate) + ' UTC';
 
 function pillTone() {
   if (allInSync) return 'bg-emerald-500/15 text-emerald-300';
@@ -216,7 +222,7 @@ function sectionSummary(r: Report) {
             </div>
             <p class="mt-3 text-sm text-bears-text-onDark/60">
               Shows which bilingual content files exist in only one locale. Auto-generated at build time —
-              this snapshot was captured <time datetime={generatedAt}>{generatedAt}</time>. The page refreshes automatically on every deploy (lag: ~1–2 minutes after an editor commit).
+              this snapshot was captured <time datetime={generatedAt}>{generatedAtLabel}</time>. The page refreshes automatically on every deploy (lag: ~1–2 minutes after an editor commit).
             </p>
             <p class="mt-2 text-sm text-bears-text-onDark/60">
               Entries marked <span class="inline-flex items-center rounded-full bg-sky-500/15 text-sky-300 px-2 py-0.5 text-xs font-medium">draft</span> are
