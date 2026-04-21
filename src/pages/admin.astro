@@ -109,10 +109,15 @@ const onlyDrafts = !allInSync && publishedMismatches === 0;
 const generatedAtDate = new Date();
 const generatedAt = generatedAtDate.toISOString();
 const generatedAtLabel = new Intl.DateTimeFormat('en-GB', {
-  dateStyle: 'long',
-  timeStyle: 'short',
-  timeZone: 'UTC',
-}).format(generatedAtDate) + ' UTC';
+  day: 'numeric',
+  month: 'long',
+  year: 'numeric',
+  hour: '2-digit',
+  minute: '2-digit',
+  hourCycle: 'h23',
+  timeZone: 'Europe/Berlin',
+  timeZoneName: 'short',
+}).format(generatedAtDate);
 
 function pillTone() {
   if (allInSync) return 'bg-emerald-500/15 text-emerald-300';
