@@ -48,15 +48,14 @@ const parsedItems = listContent?.data.titledItems ?? [];
   <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
     <!-- Image -->
     <div
-      class="relative w-full h-72 sm:h-80 lg:h-[480px] rounded-2xl overflow-hidden border border-white/10 shadow-[0_4px_12px_rgba(0,0,0,0.4)]"
+      class="w-full rounded-2xl overflow-hidden border border-white/10 shadow-[0_4px_12px_rgba(0,0,0,0.4)]"
     >
       {missionImage && (
         <Img
           src={missionImage}
           alt={imageAlt}
-          class="rounded-2xl"
+          class="rounded-2xl w-full h-auto"
           enableClickToEnlarge={false}
-          fill={true}
           loading="eager"
           sizes="(min-width: 1024px) 50vw, 100vw"
         />
