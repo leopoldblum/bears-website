@@ -16,6 +16,13 @@ const footerLogo = branding
     })
   : null;
 
+// NEW: TU Berlin logo on the right side of the bottom bar
+const tubLogo = await loadImage({
+  glob: footerLogoImages,
+  imagePath: resolveImagePath("/src/assets/footer", "TU_BERLIN_Logo_Lang_RGB_rot.png"),
+  context: { itemTitle: "TU Berlin footer logo" },
+});
+
 interface Props {
   locale: Locale;
 }
@@ -226,11 +233,6 @@ const legalLinks = bottomBarContent?.data.navLinks ?? [
         {
           socialLinksWithIcons.map((link) => {
             if (!link.iconUrl) return null;
-            // Vite inlines small SVGs as data URIs that contain single quotes
-            // (e.g. xmlns='http://...'), so we wrap the url(...) in double
-            // quotes to avoid a premature string termination in CSS. Astro
-            // escapes the inner " to &quot; in the HTML attribute; the
-            // browser decodes it back before parsing CSS.
             const maskStyle = `-webkit-mask: url("${link.iconUrl}") center/contain no-repeat; mask: url("${link.iconUrl}") center/contain no-repeat;`;
             return (
               <a
@@ -268,12 +270,18 @@ const legalLinks = bottomBarContent?.data.navLinks ?? [
 
     <!-- Bottom bar -->
     <div
-      class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 sm:pt-8 pb-8 sm:pb-10 lg:pb-12"
+      class="grid grid-cols-1 gap-4 pt-6 sm:pt-8 pb-8 sm:pb-10 lg:pb-12
+             md:grid-cols-[1fr_auto_1fr] md:items-center"
     >
-      <p class="text-xs text-bears-text-onLight/75">
-        {copyrightText}
-      </p>
-      <div class="flex items-center gap-4 text-xs text-bears-text-onLight/75">
+      <!-- Left -->
+      <div class="flex justify-center md:justify-start">
+        <p class="text-xs text-bears-text-onLight/75 text-center md:text-left">
+          {copyrightText}
+        </p>
+      </div>
+
+      <!-- Center: footer-bottom.mdx links -->
+      <div class="flex items-center justify-center gap-4 text-xs text-bears-text-onLight/75 text-center">
         {
           legalLinks.map((link, i) => (
             <>
@@ -286,6 +294,20 @@ const legalLinks = bottomBarContent?.data.navLinks ?? [
               </a>
             </>
           ))
+        }
+      </div>
+
+      <!-- Right: TU Berlin logo -->
+      <div class="flex justify-center md:justify-end">
+        {
+          tubLogo && (
+            <Image
+              src={tubLogo}
+              alt="Technische Universität Berlin"
+              class="h-10 sm:h-12 w-auto"
+              loading="lazy"
+            />
+          )
         }
       </div>
     </div>
