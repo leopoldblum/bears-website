@@ -30,7 +30,20 @@ npm install
 npm run dev
 ```
 
+## Deployment
+
+The repo produces **two separate deploys** from the same source tree:
+
+- **Public site** — `bears-space.de`, deployed to GitHub Pages. Purely static, built with `npm run build`. This is what end users see.
+- **Admin UI** — `admin.bears-space.de`, deployed to Cloudflare Pages. Astro `output: 'server'` with the `@astrojs/cloudflare` adapter, built with `npm run build:admin` (sets `ADMIN_BUILD=true`). Serves `/keystatic` for content editors.
+
+Both builds read and write the same files under `src/content/`. Editors save through `admin.bears-space.de/keystatic` → Keystatic commits to `main` via a GitHub App → GitHub Actions rebuilds the public site. The admin site never maintains its own database.
+
+One-time setup for the admin deploy (GitHub App, Cloudflare Pages project, DNS, access control) is documented in [CLAUDE.md](CLAUDE.md).
+
 ## Adding New Content
+
+Content editors normally work through the admin UI at `admin.bears-space.de/keystatic` — Keystatic commits the edits for you. The steps below are for developers making content changes directly in the codebase.
 
 When adding or editing content (events, projects, sponsors, page text, etc.), **always work on a new branch** — never commit directly to `main`.
 
@@ -69,9 +82,12 @@ The site rebuilds from the previous state within a few minutes. See the [If Some
 │   │   ├── about-us/        # About page section images (our-mission/)
 │   │   ├── default-images/  # Placeholder/fallback images
 │   │   ├── events/          # Event cover images
-│   │   ├── people/          # Person portraits (Faces of BEARS + Meet the Team)
+│   │   ├── footer/          # Footer logo variants
+│   │   ├── header/          # Header logo variants
 │   │   ├── hero/            # Hero images by page (about-us/, events/, etc.)
+│   │   ├── people/          # Person portraits (Faces of BEARS + Meet the Team)
 │   │   ├── projects/        # Project cover images
+│   │   ├── social-icons/    # Social platform icons (per-platform subfolder)
 │   │   ├── sponsors/        # Sponsor logos by tier (diamond/, gold/, etc.)
 │   │   ├── testimonials/    # Testimonial portraits
 │   │   └── whatIsBears/     # "What is BEARS" section images
@@ -91,31 +107,43 @@ The site rebuilds from the previous state within a few minutes. See the [If Some
 │   │   └── sponsors/        # Sponsors page components
 │   │
 │   ├── content/             # Astro content collections
+│   │   ├── branding/        # Brand logos, favicon, OG default (singleton)
+│   │   ├── default-images/  # Fallback cover images (singleton)
 │   │   ├── docs/            # Documentation pages (guides/, dev/)
 │   │   ├── events/          # Event entries (.md/.mdx)
 │   │   │   ├── en/          #   English (default)
 │   │   │   └── de/          #   German translations
-│   │   ├── people/          # People (Faces of BEARS + project leads, locale-agnostic)
 │   │   ├── hero-slides/     # Landing page hero carousel slides
 │   │   ├── instagram/       # Instagram feed entries
 │   │   ├── page-text/       # Editable page copy by section
 │   │   │   ├── en/          #   English (default)
-│   │   │   │   ├── landing/ #     Homepage sections
-│   │   │   │   ├── about-us/#     About page
-│   │   │   │   ├── events/  #     Events page
-│   │   │   │   ├── projects/#     Projects page
-│   │   │   │   ├── sponsors/#     Sponsors page
-│   │   │   │   └── ...      #     404/, contact/, footer/, site/, etc.
+│   │   │   │   ├── 404/
+│   │   │   │   ├── about-us/
+│   │   │   │   ├── contact/
+│   │   │   │   ├── datenschutz/
+│   │   │   │   ├── events/
+│   │   │   │   ├── imprint/
+│   │   │   │   ├── landing/          # Homepage sections
+│   │   │   │   ├── nav-links/
+│   │   │   │   ├── projects/
+│   │   │   │   ├── site/
+│   │   │   │   ├── sponsors/
+│   │   │   │   └── *.mdx             # Outlier singletons at locale root:
+│   │   │   │                         #   hero, faq, social, donate,
+│   │   │   │                         #   nav-columns, media-categories
 │   │   │   └── de/          #   German translations (same structure)
+│   │   ├── people/          # People (Faces of BEARS + project leads, locale-agnostic)
 │   │   ├── projects/        # Project entries (.md/.mdx)
 │   │   │   ├── en/          #   English (default)
 │   │   │   └── de/          #   German translations
+│   │   ├── social-platforms/ # Social platforms (Instagram, LinkedIn, YouTube, …)
 │   │   ├── sponsors/        # Sponsor entries by tier (diamond/, gold/, etc.)
 │   │   ├── testimonials/    # Testimonial entries
 │   │   │   ├── en/          #   English (default)
 │   │   │   └── de/          #   German translations
 │   │   └── config.ts        # Collection schemas (Zod)
 │   │
+│   ├── keystatic/           # MDX component registry for the Keystatic editor
 │   ├── layouts/             # Page layouts (BaseLayout, DocsLayout, PostLayout)
 │   ├── pages/               # File-based routing (English, default locale)
 │   │   ├── de/              # German locale wrappers (re-render root pages)
@@ -131,7 +159,8 @@ The site rebuilds from the previous state within a few minutes. See the [If Some
 │       └── __tests__/       # Vitest unit tests
 │
 ├── astro.config.mjs
-├── wrangler.jsonc        # Cloudflare Pages deployment config
+├── keystatic.config.ts   # Keystatic CMS schema (mirrors src/content/config.ts)
+├── wrangler.jsonc        # Cloudflare Pages deployment config (admin build)
 ├── vitest.config.ts
 ├── CLAUDE.md             # AI assistant instructions
 ├── package.json
@@ -151,7 +180,7 @@ The language switcher in the header toggles between locales. Locale utilities li
 
 ## Images
 
-All images must be local files in `src/assets/` subdirectories — remote URLs are not supported. Accepted formats: `.jpg`, `.jpeg`, `.png`, `.webp`. Hero slides also accept video formats (`.mp4`, `.webm`, `.ogg`). See the [image system docs](src/content/docs/dev/image-system.md) for details on the loading pipeline and fallback behavior.
+All images must be local files in `src/assets/` subdirectories — remote URLs are not supported. Accepted formats: `.jpg`, `.jpeg`, `.png`, `.webp`. Hero slides also accept video formats (`.mp4`, `.webm`, `.ogg`). See the [image system docs](src/content/docs/dev/image-system.mdx) for details on the loading pipeline and fallback behavior.
 
 ## Commands
 
@@ -160,10 +189,14 @@ All commands are run from the root of the project, from a terminal:
 | Command                   | Action                                           |
 | :------------------------ | :----------------------------------------------- |
 | `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`       |
-| `npm run build`           | Build your production site to `./dist/`           |
-| `npm run preview`         | Preview your build locally, before deploying      |
-| `npm test`                | Run unit tests once                               |
-| `npm run test:watch`      | Run unit tests in watch mode                      |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check`  |
-| `npm run astro -- --help` | Get help using the Astro CLI                      |
+| `npm run dev`             | Starts local dev server at `localhost:4321`      |
+| `npm run dev:admin`       | Dev server with Keystatic admin UI (visit `/keystatic`) |
+| `npm run build`           | Build public site to `./dist/`                   |
+| `npm run build:admin`     | Build admin variant for the Cloudflare Pages deploy |
+| `npm run preview`         | Preview your build locally, before deploying    |
+| `npm test`                | Run unit tests once                              |
+| `npm run test:watch`      | Run unit tests in watch mode                     |
+| `npm run typecheck`       | TypeScript type check (`tsc --noEmit`)           |
+| `npm run compress-images` | Compress images in a path (also runs in pre-commit) |
+| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
+| `npm run astro -- --help` | Get help using the Astro CLI                     |
