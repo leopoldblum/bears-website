@@ -16,10 +16,11 @@ Create a new file named after the slide (e.g., `team-photo.mdx`). The filename i
 ```yaml
 ---
 order: 6
-type: "image"
-media: "hero-mars-rover.jpg"
 alt: "Mars Rover Engineering lecture at BEARS"
 shownText: "Explore Mars"
+media:
+  discriminant: image
+  value: /mars-rover-lecture/media.jpg
 ---
 ```
 
@@ -28,10 +29,11 @@ shownText: "Explore Mars"
 ```yaml
 ---
 order: 7
-type: "video"
-media: "sample-video.webm"
 alt: "Decorative video background"
 shownText: "Video Background Example"
+media:
+  discriminant: video
+  value: /video-background-example/media.webm
 ---
 ```
 
@@ -42,9 +44,9 @@ The body of hero slide files is not used.
 | Field | Type | Description |
 |-------|------|-------------|
 | `order` | number | Display order — slides are shown in ascending order of this number |
-| `type` | enum | Either `image` or `video` |
-| `media` | string | Filename of the image or video |
-| `alt` | string | Alt text for accessibility (**required** for image slides, optional for video slides) |
+| `alt` | string | Alt text for accessibility; also used as the slide's slug in the admin UI |
+| `media.discriminant` | enum | Either `image` or `video` — determines which upload widget the admin UI shows |
+| `media.value` | string | Path to the file, relative to `src/assets/hero/landingpage/` (e.g. `/my-slide/media.jpg`) |
 
 ## Optional Fields
 
@@ -54,12 +56,12 @@ The body of hero slide files is not used.
 
 ## Media Files
 
-Place all media files in `src/assets/hero/landingpage/`.
+Uploads via the admin UI are placed at `src/assets/hero/landingpage/<slug>/media.<ext>` (one folder per slide, named after the slide's alt text). The `media.value` field in the frontmatter is set automatically.
 
 - **Images:** `.jpg`, `.jpeg`, `.png`, `.webp`, `.svg`
 - **Videos:** `.mp4`, `.webm`, `.ogg`
 
-**Uploading through the admin UI:** larger files (images >2 MB, videos >10 MB) will freeze the tab during upload &mdash; just let it run and it will go through after a while. Smaller files are preferred; shrink images at [squoosh.app](https://squoosh.app/) and compress videos with HandBrake or ffmpeg when you can. Dropping the file into `src/assets/hero/landingpage/` directly via git is always the quickest route for large media.
+**Uploading through the admin UI:** larger files (images >2 MB, videos >10 MB) will freeze the tab during upload &mdash; just let it run and it will go through after a while. Smaller files are preferred; shrink images at [squoosh.app](https://squoosh.app/) and compress videos with HandBrake or ffmpeg when you can. Dropping files into the right subfolder via git is always the quickest route for large media.
 
 ## Hero Logo
 

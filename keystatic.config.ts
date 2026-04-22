@@ -26,7 +26,6 @@ const storage = process.env.NODE_ENV === 'production'
 // ============================================================================
 
 const IMAGE_EXTENSIONS = ['jpg', 'jpeg', 'png', 'webp', 'svg'];
-const MEDIA_EXTENSIONS = [...IMAGE_EXTENSIONS, 'mp4', 'webm', 'ogg'];
 
 // Keystatic loads the whole file into memory as a Uint8Array and base64-encodes
 // it on save — large uploads freeze the admin tab for many seconds. The library
@@ -1104,7 +1103,7 @@ const heroSlides = collection({
   label: 'Hero Slides',
   slugField: 'alt',
   path: 'src/content/hero-slides/*',
-  columns: ['order', 'type', 'shownText'],
+  columns: ['order', 'shownText'],
   format: { contentField: 'body' },
   entryLayout: 'form',
   schema: {
@@ -1121,21 +1120,36 @@ const heroSlides = collection({
         validation: { isRequired: true },
       },
     }),
-    type: fields.select({
-      label: 'Media type',
-      options: [
-        { label: 'Image', value: 'image' },
-        { label: 'Video', value: 'video' },
-      ],
-      defaultValue: 'image',
-    }),
-    media: fields.file({
-      label: 'Media file',
-      description: `Supported: ${MEDIA_EXTENSIONS.join(', ')}. Larger files (images >2 MB, videos >10 MB) will freeze the tab during upload — just let it run and it will go through eventually. Smaller files are preferred (squoosh.app for images, HandBrake/ffmpeg for videos).`,
-      directory: 'src/assets/hero/landingpage',
-      publicPath: '',
-      validation: { isRequired: true },
-    }),
+    // Image and video uploads need different field types: fields.image
+    // renders the thumbnail preview editors expect, while fields.file is the
+    // only one that accepts video extensions. Keyed on a media-type select so
+    // both branches share one upload slot in the form.
+    media: fields.conditional(
+      fields.select({
+        label: 'Media type',
+        options: [
+          { label: 'Image', value: 'image' },
+          { label: 'Video', value: 'video' },
+        ],
+        defaultValue: 'image',
+      }),
+      {
+        image: fields.image({
+          label: 'Image file',
+          description: `Supported: ${IMAGE_EXTENSIONS.join(', ')}. ${IMAGE_SIZE_HINT}`,
+          directory: 'src/assets/hero/landingpage',
+          publicPath: '',
+          validation: { isRequired: true },
+        }),
+        video: fields.file({
+          label: 'Video file',
+          description: 'Supported: mp4, webm, ogg. Larger files (>10 MB) will freeze the tab during upload — just let it run and it will go through eventually. Smaller files preferred (HandBrake/ffmpeg).',
+          directory: 'src/assets/hero/landingpage',
+          publicPath: '',
+          validation: { isRequired: true },
+        }),
+      }
+    ),
     shownText: fields.text({ label: 'Overlay text (optional)' }),
     body: fields.emptyContent({ extension: 'mdx' }),
   },

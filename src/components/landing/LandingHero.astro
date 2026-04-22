@@ -61,9 +61,10 @@ const slides = await getLandingHeroSlides();
 const media: MediaItem[] = await Promise.all(
   slides.map(async (slide) => {
     let src: string | ImageMetadata;
-    const mediaPath = `/src/assets/hero/landingpage/${slide.data.media}`;
+    const mediaType = slide.data.media.discriminant;
+    const mediaPath = resolveImagePath('/src/assets/hero/landingpage', slide.data.media.value);
 
-    if (slide.data.type === 'video') {
+    if (mediaType === 'video') {
       // Videos use the general media glob
       const videoKey = resolveGlobKey(heroMedia, mediaPath);
       if (videoKey) {
@@ -86,7 +87,7 @@ const media: MediaItem[] = await Promise.all(
     }
 
     return {
-      type: slide.data.type,
+      type: mediaType,
       src,
       alt: slide.data.alt,
       shownText: slide.data.shownText,

@@ -133,9 +133,13 @@ export const heroLogoImages: ImageGlob = filterImageGlob(
 /**
  * Landing Hero background images
  * Used by: LandingHero.astro
+ * Note: recursive so Keystatic per-slide subfolder uploads resolve
+ * (`src/assets/hero/landingpage/<slug>/media.<ext>`) alongside legacy
+ * flat filenames. The `logo/` subfolder is harmlessly included too —
+ * lookups are by full path, so there is no collision.
  */
 export const heroImages: ImageGlob = filterImageGlob(
-  import.meta.glob<{ default: ImageMetadata }>("/src/assets/hero/landingpage/*.*"),
+  import.meta.glob<{ default: ImageMetadata }>("/src/assets/hero/landingpage/**/*.*"),
 );
 
 /**
@@ -176,10 +180,11 @@ export type MediaGlob = Record<string, () => Promise<{ default: string }>>;
  * Landing Hero all media (images + videos)
  * Used by: LandingHero.astro
  * Includes: jpg, jpeg, png, webp, mp4, webm, ogg
+ * Note: recursive so Keystatic per-slide subfolder uploads resolve.
  */
 export const heroMedia: MediaGlob = filterMediaGlob(
   import.meta.glob<{ default: string }>(
-    "/src/assets/hero/landingpage/*.*",
+    "/src/assets/hero/landingpage/**/*.*",
     { eager: false },
   ),
 );

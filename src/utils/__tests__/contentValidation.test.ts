@@ -649,84 +649,67 @@ describe('Hero slides frontmatter edge cases', () => {
     VALID_CONTENT_EXTENSIONS.has(extname(f).toLowerCase()),
   );
 
-  const validMediaExts = [...VALID_IMAGE_EXTENSIONS, ...VALID_VIDEO_EXTENSIONS];
-
   for (const file of files) {
     const label = rel(file);
     const frontmatter = parseFrontmatter(file);
     if (!frontmatter) continue;
 
-    it(`${label} — "type" must be "image" or "video"`, () => {
+    const media = frontmatter.media as { discriminant?: unknown; value?: unknown } | undefined;
+
+    it(`${label} — "media" must be a { discriminant, value } object`, () => {
       expectWithMessage(
-        frontmatter.type === 'image' || frontmatter.type === 'video',
-        `File "${label}" has "type: ${frontmatter.type}" but it must be "image" or "video".\n\n` +
-        `The type field tells the website how to render this hero slide.\n\n` +
-        `To fix: set the type field to one of:\n` +
-        `  type: "image"   (for photos: .jpg, .png, .webp)\n` +
-        `  type: "video"   (for videos: .mp4, .webm, .ogg)`,
+        typeof media === 'object' && media !== null &&
+          (media.discriminant === 'image' || media.discriminant === 'video') &&
+          typeof media.value === 'string' && media.value.trim().length > 0,
+        `File "${label}" has an invalid "media" field.\n\n` +
+        `Hero slides now store media as a conditional object so the Keystatic admin\n` +
+        `can render an image preview or a video file picker depending on the type.\n\n` +
+        `To fix: update the frontmatter to:\n` +
+        `  media:\n` +
+        `    discriminant: image   # or "video"\n` +
+        `    value: /<slug>/media.jpg`,
       );
     });
 
-    it(`${label} — must have a "media" filename`, () => {
-      expectWithMessage(
-        typeof frontmatter.media === 'string' && frontmatter.media.trim().length > 0,
-        `File "${label}" is missing the required field "media".\n\n` +
-        `Every hero slide needs a media filename (image or video).\n\n` +
-        `To fix: add a "media" field to the frontmatter:\n` +
-        `  media: "hero-photo.jpg"\n` +
-        `  (place the file in src/assets/hero/landingpage/)`,
-      );
-    });
-
-    if (typeof frontmatter.media === 'string') {
-      const mediaExt = extname(frontmatter.media as string).toLowerCase().slice(1);
-
-      it(`${label} — "media" must have a valid image or video extension`, () => {
-        expectWithMessage(
-          validMediaExts.includes(mediaExt as typeof validMediaExts[number]),
-          `File "${label}" has "media: ${frontmatter.media}"\n` +
-          `but ".${mediaExt}" is not a supported format.\n\n` +
-          `Supported image formats: ${[...VALID_IMAGE_EXTENSIONS].map((e) => `.${e}`).join(', ')}\n` +
-          `Supported video formats: ${[...VALID_VIDEO_EXTENSIONS].map((e) => `.${e}`).join(', ')}\n\n` +
-          `To fix: convert the file to a supported format and update the "media" value.`,
-        );
-      });
-
-      // Check that "type" matches the actual media file extension
+    if (media && typeof media.value === 'string') {
+      const mediaExt = extname(media.value).toLowerCase().slice(1);
       const imageExts = [...VALID_IMAGE_EXTENSIONS].map((e) => e.toLowerCase());
       const videoExts = [...VALID_VIDEO_EXTENSIONS].map((e) => e.toLowerCase());
       const isImageExt = imageExts.includes(mediaExt);
       const isVideoExt = videoExts.includes(mediaExt);
 
-      if ((frontmatter.type === 'image' || frontmatter.type === 'video') && (isImageExt || isVideoExt)) {
-        it(`${label} — "type: ${frontmatter.type}" should match the media file extension`, () => {
-          const expectedType = isImageExt ? 'image' : 'video';
+      it(`${label} — "media.value" must have a valid image or video extension`, () => {
+        expectWithMessage(
+          isImageExt || isVideoExt,
+          `File "${label}" has "media.value: ${media.value}"\n` +
+          `but ".${mediaExt}" is not a supported format.\n\n` +
+          `Supported image formats: ${imageExts.map((e) => `.${e}`).join(', ')}\n` +
+          `Supported video formats: ${videoExts.map((e) => `.${e}`).join(', ')}`,
+        );
+      });
 
+      if ((media.discriminant === 'image' || media.discriminant === 'video') && (isImageExt || isVideoExt)) {
+        it(`${label} — "media.discriminant: ${media.discriminant}" should match the file extension`, () => {
+          const expected = isImageExt ? 'image' : 'video';
           expectWithMessage(
-            frontmatter.type === expectedType,
-            `File "${label}" has "type: ${frontmatter.type}" but "media: ${frontmatter.media}"\n` +
-            `has a ${isImageExt ? 'image' : 'video'} extension (.${mediaExt}).\n\n` +
-            `The "type" field should match the kind of media file:\n` +
-            `  - Image files (${imageExts.map((e) => `.${e}`).join(', ')}) → type: "image"\n` +
-            `  - Video files (${videoExts.map((e) => `.${e}`).join(', ')}) → type: "video"\n\n` +
-            `To fix: change the type to match the file:\n` +
-            `  type: "${expectedType}"`,
+            media.discriminant === expected,
+            `File "${label}" has "media.discriminant: ${media.discriminant}" but "media.value" has a ${expected} extension (.${mediaExt}).\n` +
+            `Fix: set "media.discriminant: ${expected}".`,
           );
         });
       }
     }
 
-    if (frontmatter.type === 'image') {
-      it(`${label} — image slides must have an "alt" text`, () => {
-        expectWithMessage(
-          typeof frontmatter.alt === 'string' && frontmatter.alt.trim().length > 0,
-          `File "${label}" is an image slide but is missing the required "alt" field.\n\n` +
-          `Image slides need alt text for accessibility (screen readers) and SEO.\n\n` +
-          `To fix: add an "alt" field describing what's in the image:\n` +
-          `  alt: "The BEARS team at the 2026 launch event"`,
-        );
-      });
-    }
+    it(`${label} — must have an "alt" text`, () => {
+      expectWithMessage(
+        typeof frontmatter.alt === 'string' && frontmatter.alt.trim().length > 0,
+        `File "${label}" is missing the required "alt" field.\n\n` +
+        `Alt text is used as the slide's slug in the admin UI AND as the image's\n` +
+        `alt attribute for accessibility.\n\n` +
+        `To fix: add an "alt" field:\n` +
+        `  alt: "The BEARS team at the 2026 launch event"`,
+      );
+    });
   }
 });
 
@@ -1179,25 +1162,23 @@ describe('Image references point to existing files', () => {
       for (const file of files) {
         const label = rel(file);
         const frontmatter = parseFrontmatter(file);
-        if (!frontmatter || !frontmatter.media) continue;
+        const media = frontmatter?.media as { discriminant?: unknown; value?: unknown } | undefined;
+        if (!media || typeof media.value !== 'string') continue;
 
-        const mediaFilename = frontmatter.media as string;
+        const mediaValue = media.value;
 
-        it(`${label} — "media: ${mediaFilename}" should exist in assets`, () => {
-          const resolved = resolveAssetPath(assetDir, mediaFilename);
+        it(`${label} — "media.value: ${mediaValue}" should exist in assets`, () => {
+          const resolved = resolveAssetPath(assetDir, mediaValue);
           const matchFound = existsSync(resolved) && statSync(resolved).isFile();
-
-          const topLevel = listAssetFiles(assetDir);
-          const availableList = topLevel.length > 0
-            ? `Top-level files in "${relative(ROOT, assetDir)}/":\n` + topLevel.map((f) => `  - ${f}`).join('\n')
-            : `The directory "${relative(ROOT, assetDir)}/" has no top-level files.`;
 
           expectWithMessage(
             matchFound,
-            `File "${label}" references media "${mediaFilename}",\n` +
-            `but this file was NOT found in "${relative(ROOT, assetDir)}/".\n\n` +
-            availableList +
-            `\n\nTo fix: add the media file "${mediaFilename}" to "${relative(ROOT, assetDir)}/"`,
+            `File "${label}" references media "${mediaValue}",\n` +
+            `but no matching file was found under "${relative(ROOT, assetDir)}/".\n\n` +
+            `Expected path: "${relative(ROOT, resolved)}"\n\n` +
+            `To fix: upload the file through the admin UI (it will be placed at\n` +
+            `src/assets/hero/landingpage/<slug>/media.<ext>) or move the existing\n` +
+            `file into that subfolder and update "media.value" to match.`,
           );
         });
       }

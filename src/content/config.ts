@@ -95,29 +95,32 @@ const validateMediaExtension = (value: string | undefined) => {
   return IMAGE_EXTENSION_REGEX.test(value) || /\.(mp4|webm|ogg)$/i.test(value);
 };
 
-const heroSlideBase = {
-  order: z.number(),
-  media: z.string().refine(
-    validateMediaExtension,
-    { message: `media must have a valid extension: ${VALID_EXTENSIONS_MESSAGE} or mp4, webm, ogg` }
-  ),
-  shownText: z.string().optional(),
-};
-
 const heroSlidesCollection = defineCollection({
   type: 'content',
-  schema: z.discriminatedUnion('type', [
-    z.object({
-      type: z.literal('image'),
-      ...heroSlideBase,
-      alt: z.string(),
-    }),
-    z.object({
-      type: z.literal('video'),
-      ...heroSlideBase,
-      alt: z.string().optional(),
-    }),
-  ]),
+  schema: z.object({
+    order: z.number(),
+    alt: z.string(),
+    shownText: z.string().optional(),
+    // Mirrors the Keystatic `fields.conditional` on media: the admin UI splits
+    // uploads into an image branch (with thumbnail preview) and a video branch,
+    // serialized as { discriminant, value } in the YAML frontmatter.
+    media: z.discriminatedUnion('discriminant', [
+      z.object({
+        discriminant: z.literal('image'),
+        value: z.string().refine(
+          validateImageExtension,
+          { message: `media value must have a valid image extension: ${VALID_EXTENSIONS_MESSAGE}` }
+        ),
+      }),
+      z.object({
+        discriminant: z.literal('video'),
+        value: z.string().refine(
+          validateMediaExtension,
+          { message: `media value must have a valid video extension: mp4, webm, or ogg` }
+        ),
+      }),
+    ]),
+  }),
 });
 
 const instagramCollection = defineCollection({

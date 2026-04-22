@@ -56,21 +56,14 @@ Frontmatter:
 
 HERO SLIDES (src/content/hero-slides/)
 File naming: "<slug>.mdx" — filename is the slug, sort order comes from the `order` frontmatter field.
-Two types:
-
-Image slide:
+Frontmatter:
   order: number (required) — display order (lower = shown first)
-  type: "image" (required)
-  media: string (required) — filename in src/assets/hero/landingpage/
-  alt: string (required)
+  alt: string (required) — also used as the slide's slug in the admin UI
   shownText: string (optional) — overlay text
-
-Video slide:
-  order: number (required)
-  type: "video" (required)
-  media: string (required) — video filename in src/assets/hero/landingpage/, valid: .mp4 .webm .ogg
-  alt: string (optional)
-  shownText: string (optional)
+  media: object (required) — conditional field with two branches:
+    { discriminant: "image", value: "/<slug>/media.<ext>" }  — .jpg .jpeg .png .webp .svg
+    { discriminant: "video", value: "/<slug>/media.<ext>" }  — .mp4 .webm .ogg
+  Files live at src/assets/hero/landingpage/<slug>/media.<ext> (one subfolder per slide).
 
 INSTAGRAM POSTS (src/content/instagram/)
 File naming: filename is the slug (derived from the post URL). Sort order comes from the `date` frontmatter field.
