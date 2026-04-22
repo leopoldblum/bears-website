@@ -2,22 +2,27 @@
 import { Image, getImage } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
 import ImageModal from './ImageModal.astro';
+import { allAssetImages } from '@utils/imageGlobs';
+import { resolveImagePath } from '@utils/imageLoader';
+import { resolveGlobKey } from '@utils/imageConstants';
 
 interface Props {
-  src: ImageMetadata;  // Only ImageMetadata, no string URLs
+  // Imported asset (hand-written MDX) OR a string path stored by Keystatic
+  // (e.g. "/src/assets/events/<slug>/foo.jpg"). Undefined → placeholder.
+  src?: ImageMetadata | string;
   alt: string;
-  width?: string;      // CSS width: "50%", "800px", "100%", etc. (default: "100%")
-  sizes?: string;      // Optional override for srcset sizes (auto-derived from width if not provided)
-  widths?: number[];   // Array of widths for srcset generation (default covers common cases)
-  class?: string;      // Additional styling classes (rounded, shadow, etc.)
-  enableClickToEnlarge?: boolean;  // Default: true. When false, renders without wrapper div.
-  loading?: "eager" | "lazy";      // Default: "lazy"
-  fetchpriority?: "high" | "low" | "auto";  // Default: undefined (browser default)
-  fill?: boolean;      // When true, image fills parent container (ignores native aspect ratio). Default: false
+  width?: string;
+  sizes?: string;
+  widths?: number[];
+  class?: string;
+  enableClickToEnlarge?: boolean;
+  loading?: "eager" | "lazy";
+  fetchpriority?: "high" | "low" | "auto";
+  fill?: boolean;
 }
 
 const {
-  src,
+  src: rawSrc,
   alt,
   width = "100%",
   sizes: customSizes,
@@ -28,6 +33,22 @@ const {
   fetchpriority,
   fill = false
 } = Astro.props;
+
+// Resolve string srcs (what Keystatic writes) to ImageMetadata.
+// resolveImagePath is a no-op for fully-qualified /src/... paths.
+let src: ImageMetadata | undefined;
+if (typeof rawSrc === 'string') {
+  const key = resolveGlobKey(allAssetImages, resolveImagePath('', rawSrc));
+  if (!key) {
+    throw new Error(
+      `<Img>: image "${rawSrc}" not found under /src/assets/. ` +
+      `If this was just uploaded via Keystatic, restart the dev server so Vite picks up the new file.`
+    );
+  }
+  src = (await allAssetImages[key]!()).default;
+} else {
+  src = rawSrc;
+}
 
 // Auto-derive sizes from width if not provided
 function deriveSizes(width: string): string {
@@ -46,13 +67,25 @@ const sizes = customSizes || deriveSizes(width);
 // Default to rounded-lg, but allow overriding via class prop
 const roundedClass = className?.match(/\brounded(-\w+)?\b/) ? '' : 'rounded-lg';
 
-// Generate full-res modal image only if click-to-enlarge enabled
-const modalSrc = enableClickToEnlarge
+// Render a visible placeholder when an editor has inserted an <Img /> via the
+// CMS without choosing a source yet. Keeps the build green and surfaces the
+// missing image to the content editor directly on the page.
+const missingSrc = !src;
+
+// Generate full-res modal image only if click-to-enlarge enabled and src present
+const modalSrc = enableClickToEnlarge && !missingSrc
   ? (await getImage({ src, format: 'webp' })).src
   : undefined;
 ---
 
-{enableClickToEnlarge ? (
+{missingSrc ? (
+  <div
+    class={`${roundedClass} border-2 border-dashed border-bears-accent/50 bg-bears-accent/5 text-bears-text-onDark/70 text-center text-sm p-6 my-4`}
+    style={width !== '100%' ? `width: ${width}` : undefined}
+  >
+    <strong>Image missing</strong> — {alt ? `"${alt}"` : 'no src set in the CMS'}
+  </div>
+) : enableClickToEnlarge ? (
   <!-- With wrapper: enables click-to-enlarge modal -->
   <div
     class={`img-better group/image ${roundedClass} overflow-hidden ring-0 ring-bears-accent transition-all duration-300 hover:ring-2 ${width === '100%' ? 'w-full h-full' : 'h-full'} ${className || ''}`.trim()}

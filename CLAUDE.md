@@ -14,6 +14,8 @@ Run commands from the project root:
 - `npm run build` - Build production site to ./dist/
 - `npm run preview` - Preview production build locally
 - `npm run astro -- --help` - Get help with Astro CLI commands
+- `npm run dev:admin` - Start dev server with Keystatic admin UI enabled (visit /keystatic)
+- `npm run build:admin` - Build the admin-mode variant (hybrid output + Cloudflare adapter) for the admin subdomain deploy
 
 **Important for Claude Code**: If you start a development server (e.g., `npm run dev`) during a task, you MUST stop it before completing the task. Use the KillShell tool with the appropriate shell ID to terminate background processes. This prevents resource accumulation across multiple prompts.
 
@@ -36,10 +38,93 @@ src/
 ```
 
 ### Key Configuration
-- Astro config: [astro.config.mjs](astro.config.mjs) - Tailwind integrated via Vite plugin
+- Astro config: [astro.config.mjs](astro.config.mjs) - Tailwind integrated via Vite plugin. Branches on `ADMIN_BUILD` env var to produce the admin build variant.
 - TypeScript: [tsconfig.json](tsconfig.json) - Strict Astro configuration
 - Global styles: [src/styles/global.css](src/styles/global.css) - Single Tailwind import
 - Layout: [src/layouts/BaseLayout.astro](src/layouts/BaseLayout.astro) - Imports global.css
+- Keystatic config: [keystatic.config.ts](keystatic.config.ts) - CMS schema mirroring the Astro content collections
+
+### Dual deploy: public site (GitHub Pages) + admin UI (Cloudflare Pages)
+
+The public site and the Keystatic admin UI are **deployed separately from the same repo**:
+
+- **Public site** — `bears-space.de`, GitHub Pages, pure static. Built with `npm run build`. No Keystatic runtime, no adapter. This is what end users see.
+- **Admin site** — `admin.bears-space.de`, Cloudflare Pages, Astro `output: 'server'` with the `@astrojs/cloudflare` adapter. Built with `npm run build:admin` (sets `ADMIN_BUILD=true`). Serves `/keystatic` for editors to manage content. Commits edits back to the same GitHub repo via a GitHub App, which triggers a rebuild of the public site.
+
+Both builds read/write the **same content files** under `src/content/` — Keystatic never maintains its own database. The flow is:
+
+```
+Editor → admin.bears-space.de/keystatic → Keystatic commits to main
+  → GitHub Actions rebuilds public site → gh-pages → bears-space.de
+```
+
+The admin deploy does not prerender most pages — it only needs to serve `/keystatic`. Editors should always use the admin subdomain; the main site has no editing surface.
+
+#### Adding or changing content collection schemas
+
+When you modify a content collection's schema, update **both** files in the same commit:
+
+1. `src/content/config.ts` — Astro's Zod schema, source of truth for validation at build time.
+2. `keystatic.config.ts` — Keystatic's editor schema, controls the admin UI.
+
+Field names and types must match. Some Zod features (`.refine()`, `.transform()`, discriminated unions) don't have direct Keystatic equivalents — use `fields.conditional()` where possible, otherwise rely on Astro build-time validation to catch bad data.
+
+After any schema edit, run `npm test`. The suite at `src/utils/__tests__/keystaticSchema.test.ts` uses Keystatic's Reader API to validate every content file against `keystatic.config.ts` — catching drift before editors see it in the admin UI. See [docs/dev/keystatic-testing](src/content/docs/dev/keystatic-testing.mdx).
+
+#### `fields.image` publicPath — admin preview gotcha
+
+Keystatic stores image values as `publicPath + uploadedFilename` verbatim and the admin UI renders previews by feeding that stored value straight into an `<img src>`. For the preview to resolve, the stored value must be a URL the dev server can serve — **not** a bare filename.
+
+Rules for setting `publicPath` on any `fields.image`:
+
+- Assets under `src/assets/<dir>/`: use `publicPath: '/src/assets/<dir>/'` so the stored value is `/src/assets/<dir>/<file>` (Vite serves it in dev, Astro's image pipeline handles it at build).
+- Assets under `public/`: use `publicPath: '/'` so the stored value is `/<file>` (served at the site root).
+- Per-entry subfolder uploads (events, projects, sponsors, people — one folder per slug): `publicPath: ''` is fine as long as the stored value ends up starting with `/` (Keystatic writes `/<slug>/<file>`, resolvable relative to `directory`). If a NEW field you add does not use the per-entry subfolder pattern, DO NOT copy `publicPath: ''` — use one of the two rules above or the preview will break.
+
+When you change `publicPath` on an existing field, update any consumer that prepends its own `/` (so you don't end up with `//favicon.png`) and make sure the runtime path resolver (`resolveImagePath` in `src/utils/imageLoader.ts`) handles both the bare and absolute shapes — it already short-circuits on values starting with `/src/`. Also re-seed any manually-written YAML to match the new stored format.
+
+Helpers in `keystatic.config.ts`:
+- `brandingAssetField(label, directory)` — singleton fields pointing at `src/assets/<dir>/`.
+- `publicAssetField(label)` — singleton fields pointing at `public/`.
+- `imageField(label, directory, _publicPath)` — legacy helper for per-entry subfolder uploads (stores bare path). Note: the third arg is currently unused; don't read too much into it.
+
+#### Keystatic collection mapping
+
+The 12 Astro collections fan out into ~90 Keystatic collections + singletons (split per locale, per tier, and per file for page-text):
+
+| Astro collection | Keystatic items |
+|---|---|
+| `sponsors` | `sponsorsDiamond`, `sponsorsPlatinum`, `sponsorsGold`, `sponsorsSilver`, `sponsorsBronze` |
+| `events` | `eventsEn`, `eventsDe` |
+| `projects` | `projectsEn`, `projectsDe` — `person` field is a `reference('people')` (the project's first cross-collection relationship) |
+| `hero-slides` | `heroSlides` |
+| `page-text` | One Keystatic singleton per `.mdx` file, scoped to a "shape" schema that only exposes the fields that file uses (page header, section, section-with-button, crosslink, list section, title-only, latest-news, legal page). See the singleton names in [keystatic.config.ts](keystatic.config.ts). Plus `pageTextNavLinksEn`/`De` (collection for the two nav-link list entries). |
+| `instagram` | `instagram` |
+| `people` | `people` — locale-agnostic, one entry per person. Roles translate inline via `roleEn`/`roleDe`. Powers two surfaces from one record: the Faces of BEARS grid (when `showInFaces: true`) and project Meet the Team callouts (via `projects.person`). Also referenced by the `testimonials` singleton. |
+| `testimonials` | `testimonials` — single-entry `content` collection at `src/content/testimonials/list.mdx` (body is empty and not editable). Managed as a Keystatic singleton containing a `fields.array` of `{ person: relationship, quoteEn, quoteDe }`. Array order is display order (drag-to-reorder in the admin). |
+| `social-platforms` | `socialPlatforms` — one entry per platform (Instagram, LinkedIn, YouTube, …). Each entry owns a `label`, an `iconFile` (SVG under `src/assets/social-icons/<slug>/`) and an optional `defaultHoverColor`. Referenced from `socialLinks[].platform` on the `social` page-text singletons — editors add/remove platforms here instead of hand-editing code. |
+| `docs` | `docsGuides`, `docsDev` |
+| `branding` | `branding` — locale-agnostic singleton ("Branding / logos", under the Site-wide group). Holds the three brand logos (`headerLogo`, `footerLogo`, `heroLogo`) plus `favicon` and `ogDefault` (both stored in `public/` and referenced as root-level URLs). Logo filenames resolve through the matching glob in `src/utils/imageGlobs.ts`; favicon/OG are served straight from `public/`. |
+| `default-images` | `defaultImages` — sibling singleton ("Default images", same Site-wide group). Holds the four cover-image fallbacks (`defaultEventImage`, `defaultProjectImage`, `defaultSponsorImage`, `defaultFaceImage`) that get used when an event/project/sponsor/person has no custom image. Resolved via the `defaultImages` glob. |
+
+The bilingual split is purely organisational — both Keystatic collections write to the existing `en/`/`de/` subfolders. The sponsor tier split reflects the folder structure (`src/content/sponsors/{tier}/`). For page-text, every file has its own singleton with a tight schema — this keeps each editor form minimal (e.g. a crosslink file only shows title/button text/button link). The singletons are grouped in the admin navigation by page (Landing, About us, Contact, Events, Projects, Sponsors, Legal, Site-wide) so editors find content by the page it lives on.
+
+#### MDX component registry
+
+MDX components usable inside Keystatic's MDX editor are registered in [src/keystatic/mdxComponents.tsx](src/keystatic/mdxComponents.tsx). Each entry is a React **preview** of the matching Astro component — the real component renders at build time. When adding a new MDX component:
+
+1. Create the `.astro` file in `src/components/mdx/` and export it from [src/components/mdx/index.ts](src/components/mdx/index.ts).
+2. Add a matching entry to `mdxComponents.tsx` with field definitions and a `ContentView`/`NodeView`.
+3. Imports are not allowed inside MDX files edited through Keystatic — the components are passed in externally via the MDX renderer.
+
+#### Keystatic external setup (one-time)
+
+These steps live outside the codebase and must be configured once before the admin deploy works in production:
+
+1. **GitHub App** — run `npm run dev:admin` and visit `/keystatic/setup` to register a GitHub App against the repo. Generates `KEYSTATIC_GITHUB_CLIENT_ID`, `KEYSTATIC_GITHUB_CLIENT_SECRET`, `KEYSTATIC_SECRET`.
+2. **Cloudflare Pages project** — create a new Pages project connected to the repo. Build command: `npm run build:admin`. Output dir: `dist`. Add the three env vars from step 1.
+3. **DNS** — add `admin.bears-space.de` as a custom domain on the Cloudflare Pages project.
+4. **Access control** — in GitHub, restrict the app installation to the repo only. Only users with repo write access can log in to `/keystatic`. For tighter control, add a GitHub team named "content-editors" with just the editors.
 
 ### Routing & i18n
 Astro uses file-based routing. Files in `src/pages/` automatically become routes:
@@ -200,7 +285,7 @@ See [Accordion.astro](src/components/mdx/Accordion.astro) for a complete example
 
 ### Editable Page Content
 
-Static text in components and pages — such as headings, descriptions, and button labels — should be sourced from `.md` files in the `page-text` content collection (`src/content/page-text/`) rather than hardcoded, when useful and practical. This allows content creators to update copy without touching component code.
+Static text in components and pages — such as headings, descriptions, and button labels — should be sourced from `.mdx` files in the `page-text` content collection (`src/content/page-text/`) rather than hardcoded, when useful and practical. This allows content creators to update copy without touching component code.
 
 **Locale folder structure:**
 Content files are organized under `en/` and `de/` subfolders. Within each locale folder, the subfolder conventions are:
@@ -212,14 +297,17 @@ Content files are organized under `en/` and `de/` subfolders. Within each locale
 ```
 src/content/page-text/
 ├── en/                  ← English (default)
-│   ├── landing/hero.md
-│   ├── about-us/our-mission.md
+│   ├── about-us/our-mission.mdx
+│   ├── landing/what-is-bears.mdx
+│   ├── hero.mdx                ← outlier singletons at locale root
+│   ├── faq.mdx
+│   ├── nav-links/header.mdx    ← multi-entry outlier collection
 │   └── ...
 └── de/                  ← German translations
-    ├── landing/hero.md
-    ├── about-us/our-mission.md
-    └── ...
+    └── ... (same structure as en/)
 ```
+
+Outlier shapes (hero, FAQ, nav-columns, social, donate, media-categories, nav-links) live as dedicated `.mdx` files at the locale root (or under `nav-links/`) so Keystatic can surface each through a dedicated editor form instead of one giant flat schema. See `keystatic.config.ts` for the full mapping.
 
 **Querying content:**
 Use `getPageContent(id, locale)` from `src/utils/contentQueries.ts` to fetch a page content entry by its ID. The `id` does NOT include the locale prefix — the function prepends it automatically and falls back to English if the translation is missing:
@@ -243,7 +331,7 @@ const content = await getPageContent('events/events-title', locale);
 
 ## Documentation
 
-All documentation lives in `src/content/docs/` as a content collection, served at `/docs/` on the website. Files are `.md` or `.mdx` (MDX allows importing and live-demoing components).
+All documentation lives in `src/content/docs/` as a content collection, served at `/docs/` on the website. Files are `.mdx` (MDX allows embedding components like `<Callout>`, `<Img>`, `<Accordion>` in prose).
 
 - **Guides** (`src/content/docs/guides/`): User-facing guides for content creators
 - **Dev Docs** (`src/content/docs/dev/`): Technical reference for developers

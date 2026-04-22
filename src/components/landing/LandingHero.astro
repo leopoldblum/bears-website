@@ -10,10 +10,17 @@ import CarouselArrow from '@reusable/CarouselArrow.astro';
 import { getLandingHeroSlides } from '@utils/contentQueries';
 import { heroImages, heroMedia, heroLogoImages } from '@utils/imageGlobs';
 import { resolveGlobKey } from '@utils/imageConstants';
+import { loadImage, resolveImagePath } from '@utils/imageLoader';
+import { getEntry } from 'astro:content';
 
-// Load the first image from src/assets/hero/landingpage/logo/
-const heroLogoEntry = Object.values(heroLogoImages)[0];
-const bearsHeroLogo = heroLogoEntry ? (await heroLogoEntry()).default : null;
+const branding = await getEntry('branding', 'site-assets');
+const bearsHeroLogo = branding
+  ? await loadImage({
+      glob: heroLogoImages,
+      imagePath: resolveImagePath('/src/assets/hero/landingpage/logo', branding.data.heroLogo),
+      context: { itemTitle: 'Landing hero logo' },
+    })
+  : null;
 
 interface MediaItem {
   type: 'video' | 'image';

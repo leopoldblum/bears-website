@@ -1,13 +1,20 @@
 ---
 import { Image } from "astro:assets";
-import { footerLogoImages } from "@utils/imageGlobs";
+import { footerLogoImages, socialIconFiles } from "@utils/imageGlobs";
 import { getPageContent } from "@utils/contentQueries";
-import { socialIcons } from "@utils/socialIcons";
+import { getSocialPlatformsMap } from "@utils/socialPlatforms";
+import { loadImage, resolveImagePath } from "@utils/imageLoader";
+import { getEntry } from "astro:content";
 import { localizeUrl, type Locale } from "@utils/i18n";
 
-// Load the first image from src/assets/footer/
-const logoEntry = Object.values(footerLogoImages)[0];
-const footerLogo = logoEntry ? (await logoEntry()).default : null;
+const branding = await getEntry("branding", "site-assets");
+const footerLogo = branding
+  ? await loadImage({
+      glob: footerLogoImages,
+      imagePath: resolveImagePath("/src/assets/footer", branding.data.footerLogo),
+      context: { itemTitle: "Footer logo" },
+    })
+  : null;
 
 interface Props {
   locale: Locale;
@@ -16,13 +23,41 @@ interface Props {
 const { locale } = Astro.props;
 const currentYear = new Date().getFullYear();
 
-const socialContent = await getPageContent("site/social-links", locale);
+const socialContent = await getPageContent("social", locale);
 const socialLinks = socialContent?.data.socialLinks ?? [];
+const platformsMap = await getSocialPlatformsMap();
 
-const addressContent = await getPageContent("footer/footer-address", locale);
-const addressLines = addressContent?.data.items ?? [];
+// Resolve each uploaded SVG path to its built URL so we can feed it into a
+// CSS mask-image — this preserves the fill-on-hover animation that the
+// legacy hardcoded <svg><path/></svg> approach gave us, regardless of any
+// fill set inside the uploaded file.
+const socialLinksWithIcons = await Promise.all(
+  socialLinks.map(async (link: { platform: { id: string } | string; url: string; hoverColor?: string }) => {
+    const platformId = typeof link.platform === "string" ? link.platform : link.platform.id;
+    const info = platformsMap.get(platformId);
+    const iconKey = info
+      ? resolveImagePath("/src/assets/social-icons", info.iconFile)
+      : null;
+    const loader = iconKey ? socialIconFiles[iconKey] : undefined;
+    const iconUrl = loader ? await loader() : null;
+    const hoverColor = link.hoverColor || info?.defaultHoverColor;
+    return {
+      platform: info?.label ?? platformId,
+      url: link.url,
+      iconUrl,
+      hoverColor,
+    };
+  })
+);
 
-const navContent = await getPageContent("footer/navigation", locale);
+const addressContent = await getPageContent("contact-details", locale);
+const addressLines =
+  addressContent?.data.address
+    ?.split("\n")
+    .map((l) => l.trim())
+    .filter(Boolean) ?? [];
+
+const navContent = await getPageContent("nav-columns", locale);
 const navColumns = navContent?.data.navColumns ?? [
   {
     heading: "Projects",
@@ -87,7 +122,7 @@ const navColumns = navContent?.data.navColumns ?? [
   },
 ];
 
-const bottomBarContent = await getPageContent("footer/bottom-bar", locale);
+const bottomBarContent = await getPageContent("nav-links/footer-bottom", locale);
 const copyrightText = (
   bottomBarContent?.data.title ?? "© {year} BEARS e.V. All rights reserved."
 ).replace("{year}", String(currentYear));
@@ -186,12 +221,17 @@ const legalLinks = bottomBarContent?.data.navLinks ?? [
 
       <!-- Social Media Icons -->
       <div
-        class="lg:order-last flex gap-3 items-center justify-center shrink-0"
+        class="lg:order-last flex flex-wrap gap-3 items-center justify-center shrink-0"
       >
         {
-          socialLinks.map((link) => {
-            const icon = socialIcons[link.platform];
-            if (!icon) return null;
+          socialLinksWithIcons.map((link) => {
+            if (!link.iconUrl) return null;
+            // Vite inlines small SVGs as data URIs that contain single quotes
+            // (e.g. xmlns='http://...'), so we wrap the url(...) in double
+            // quotes to avoid a premature string termination in CSS. Astro
+            // escapes the inner " to &quot; in the HTML attribute; the
+            // browser decodes it back before parsing CSS.
+            const maskStyle = `-webkit-mask: url("${link.iconUrl}") center/contain no-repeat; mask: url("${link.iconUrl}") center/contain no-repeat;`;
             return (
               <a
                 href={link.url}
@@ -209,16 +249,13 @@ const legalLinks = bottomBarContent?.data.navLinks ?? [
                   "group w-10 h-10 rounded-full bg-bears-text-onLight/10 flex items-center justify-center hover:scale-110 transition-all duration-200",
                   !link.hoverColor && "hover:bg-bears-accent",
                 ]}
-                aria-label={icon.label}
+                aria-label={link.platform}
               >
-                <svg
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  class="fill-bears-text-onLight group-hover:fill-white transition-colors duration-200"
-                >
-                  <path d={icon.path} />
-                </svg>
+                <span
+                  class="w-[18px] h-[18px] bg-bears-text-onLight group-hover:bg-white transition-colors duration-200"
+                  style={maskStyle}
+                  aria-hidden="true"
+                />
               </a>
             );
           })

@@ -2,6 +2,7 @@
 import "@styles/global.css";
 import DocsSidebar from "@components/docs/DocsSidebar.astro";
 import DocsToc from "@components/docs/DocsToc.astro";
+import { getEntry } from "astro:content";
 
 interface Props {
   title: string;
@@ -10,13 +11,16 @@ interface Props {
 }
 
 const { title, description, headings = [] } = Astro.props;
+
+const branding = await getEntry("branding", "site-assets");
+const faviconHref = branding?.data.favicon ?? "/favicon.png";
 ---
 
 <!DOCTYPE html>
 <html lang="en" class="scroll-smooth">
   <head>
     <meta charset="utf-8" />
-    <link rel="icon" type="image/png" href="/favicon.png" />
+    <link rel="icon" href={faviconHref} />
     <meta name="viewport" content="width=device-width" />
     <meta name="generator" content={Astro.generator} />
     {description && <meta name="description" content={description} />}

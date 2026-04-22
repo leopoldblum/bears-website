@@ -1,12 +1,19 @@
 ---
 import { Image } from 'astro:assets';
 import { headerLogoImages } from '@utils/imageGlobs';
+import { loadImage, resolveImagePath } from '@utils/imageLoader';
+import { getEntry } from 'astro:content';
 import { getPageContent } from '@utils/contentQueries';
 import { localizeUrl, stripLocalePrefix, getAlternateLocale, type Locale } from '@utils/i18n';
 
-// Load the first image from src/assets/header/
-const logoEntry = Object.values(headerLogoImages)[0];
-const bearsLogo = logoEntry ? (await logoEntry()).default : null;
+const branding = await getEntry('branding', 'site-assets');
+const bearsLogo = branding
+  ? await loadImage({
+      glob: headerLogoImages,
+      imagePath: resolveImagePath('/src/assets/header', branding.data.headerLogo),
+      context: { itemTitle: 'Header logo' },
+    })
+  : null;
 
 interface Props {
   locale: Locale;
@@ -15,7 +22,7 @@ interface Props {
 const { locale } = Astro.props;
 const currentPath = Astro.url.pathname;
 
-const navContent = await getPageContent('header/navigation', locale);
+const navContent = await getPageContent('nav-links/header', locale);
 const navLinks = navContent?.data.navLinks ?? [
   { href: "/projects", label: "Projects" },
   { href: "/sponsors", label: "Sponsors" },
@@ -33,8 +40,11 @@ function isActive(href: string): boolean {
 const alternateLocale = getAlternateLocale(locale);
 const barePath = stripLocalePrefix(currentPath);
 const alternateUrl = localizeUrl(barePath, alternateLocale);
-const searchPlaceholder = locale === 'de' ? 'Suche...' : 'Search...';
-const noResultsText = locale === 'de' ? 'Keine Ergebnisse' : 'No results found';
+const searchContent = await getPageContent('site/search', locale);
+const searchPlaceholder = searchContent?.data.searchPlaceholder
+  ?? (locale === 'de' ? 'Suche...' : 'Search...');
+const noResultsText = searchContent?.data.searchNoResultsText
+  ?? (locale === 'de' ? 'Keine Ergebnisse' : 'No results found');
 ---
 
 <header

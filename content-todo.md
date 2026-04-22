@@ -206,9 +206,9 @@ Each event has: `title`, `description`, `date`, `categoryEvent`, `coverImage`, `
 
 ## 8. Projects (Content Collection)
 
-Each project has: `title`, `description`, `date`, `categoryProject`, `coverImage`, `isDraft`, `isProjectCompleted`, `headOfProject`, `personImage`, and body content.
+Each project has: `title`, `description`, `date`, `categoryProject`, `coverImage`, `isDraft`, `isProjectCompleted`, `person` (slug into `src/content/people/`), and body content.
 
-**All head-of-project photos are missing** — `src/assets/projects/team-members/` is empty.
+**All head-of-project photos are placeholders** — synthesized people under `src/content/people/` reference `placeholder.jpg`. Replace each person's portrait under `src/assets/people/<slug>/` and update `coverImage` in the matching `.mdx`.
 
 - [ ] `2025 07 10 ai-navigation.md` — "AI-Powered Navigation System", science-and-experiments, `project-7.jpg`, head: "Sophie Taylor" (`sophie-taylor.jpg`), completed
 - [ ] `2025 08 20 propulsion-testing.md` — "Propulsion System Testing", experimental-rocketry, `project-8.jpg`, head: "David Martinez" (`david-martinez.jpg`), in progress
@@ -317,9 +317,9 @@ Each needs: real **name**, real **role + year**, and a **portrait photo**.
 
 Each needs: real **name**, **role**, **quote**, and **photo**.
 
-- [ ] `01-member-4.md` — name: "Fourth Member", role: "Title / Year / Group", quote: generic placeholder, image: `placeholder-5.jpg`
-- [ ] `02-member-5.md` — name: "Fifth Member", role: "Engineering Lead / 2025", image: `placeholder-4.jpg`
-- [ ] `03-member-6.md` — name: "Sixth Member", role: "Project Manager / 2024", image: `placeholder-6.jpg`
+- [ ] `member-4.md` — name: "Fourth Member", role: "Title / Year / Group", quote: generic placeholder, image: `placeholder-5.jpg`
+- [ ] `member-5.md` — name: "Fifth Member", role: "Engineering Lead / 2025", image: `placeholder-4.jpg`
+- [ ] `member-6.md` — name: "Sixth Member", role: "Project Manager / 2024", image: `placeholder-6.jpg`
 
 ---
 

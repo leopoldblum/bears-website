@@ -5,21 +5,20 @@ order: 31
 group: "MDX Components"
 ---
 
-import { Button } from '@mdx';
 
 Buttons can act as clickable actions or as styled links. Add this to any `.mdx` file:
 
 ```mdx
-import { Accordion, Button, Callout, Carousel, Center, Img, Instagram, Marquee, YouTube, SideBySide, Left, Right } from '@mdx';
+import { Accordion, Button, Callout, Carousel, Center, ImageGrid, Img, Instagram, Marquee, YouTube, SideBySide, Left, Right } from '@mdx';
 
 <Button content="Click me" />
 <Button content="Visit our page" href="/about-us" />
 ```
 
-<div class="not-prose flex flex-wrap gap-3 mb-4">
+<Preview layout="row">
   <Button content="Click me" />
   <Button content="Visit our page" href="/about-us" />
-</div>
+</Preview>
 
 When you add `href`, the button renders as a link. Without it, it's a regular button.
 
@@ -33,11 +32,11 @@ Three visual styles — `primary` (default), `secondary`, and `inverse`:
 <Button content="Inverse" variant="inverse" />
 ```
 
-<div class="not-prose flex flex-wrap gap-3 mb-4">
+<Preview layout="row">
   <Button content="Primary" variant="primary" />
   <Button content="Secondary" variant="secondary" />
   <Button content="Inverse" variant="inverse" />
-</div>
+</Preview>
 
 ## Sizes
 
@@ -49,11 +48,11 @@ Three sizes — `standard` (default), `large`, and `xlarge`:
 <Button content="XLarge" size="xlarge" />
 ```
 
-<div class="not-prose flex flex-wrap items-center gap-3 mb-4">
+<Preview layout="row-center">
   <Button content="Standard" size="standard" />
   <Button content="Large" size="large" />
   <Button content="XLarge" size="xlarge" />
-</div>
+</Preview>
 
 ## Required Fields
 

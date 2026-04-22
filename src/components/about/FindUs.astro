@@ -11,11 +11,13 @@ const { locale } = Astro.props;
 
 const content = await getPageContent("about-us/find-us", locale);
 
-// items[0] = room, items[1] = schedule
-const room = content?.data.items?.[0] ?? "H1001";
-const schedule = content?.data.items?.[1] ?? "every Tuesday 18 PM";
+const room = content?.data.room ?? "H1001";
+const schedule = content?.data.schedule ?? "every Tuesday 18 PM";
 
-const location = { lat: 52.5154444, lng: 13.3238611 };
+const location = {
+  lat: content?.data.mapLat ?? 52.5154444,
+  lng: content?.data.mapLng ?? 13.3238611,
+};
 ---
 
 <section
@@ -63,7 +65,7 @@ const location = { lat: 52.5154444, lng: 13.3238611 };
           <p
             class="text-xs sm:text-sm font-bold uppercase tracking-[0.2em] text-bears-accent mb-3 sm:mb-4"
           >
-            remember:
+            {content?.data.rememberLabel ?? 'remember:'}
           </p>
           <div class="border-l-[3px] border-bears-accent pl-4 sm:pl-6">
             <p
@@ -102,11 +104,8 @@ const location = { lat: 52.5154444, lng: 13.3238611 };
   </div>
 </section>
 
-<link
-  rel="stylesheet"
-  href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-/>
 <script>
+  import "leaflet/dist/leaflet.css";
   import L from "leaflet";
 
   function initMap() {

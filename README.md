@@ -1,13 +1,13 @@
 # Astro.js Website for BEARS
 >
 > **TODO:** Write SEO meta descriptions (~150 characters each) in the `seoDescription` field of these content files (in both `en/` and `de/` folders):
-> - `src/content/page-text/en/landing/hero.md` (homepage)
-> - `src/content/page-text/en/about-us/about-us-title.md`
-> - `src/content/page-text/en/events/events-title.md`
-> - `src/content/page-text/en/projects/projects-title.md`
-> - `src/content/page-text/en/sponsors/sponsors-title.md`
-> - `src/content/page-text/en/media/media-title.md`
-> - `src/content/page-text/en/contact/contact-title.md`
+> - `src/content/page-text/en/hero.mdx` (homepage)
+> - `src/content/page-text/en/about-us/about-us-title.mdx`
+> - `src/content/page-text/en/events/events-title.mdx`
+> - `src/content/page-text/en/projects/projects-title.mdx`
+> - `src/content/page-text/en/sponsors/sponsors-title.mdx`
+> - `src/content/page-text/en/media-categories.mdx`
+> - `src/content/page-text/en/contact/contact-title.mdx`
 >
 > **TODO:** Add benefits section to sponsors and link in footer, or remove entry in footer.
 
@@ -49,6 +49,16 @@ When adding or editing content (events, projects, sponsors, page text, etc.), **
    ```
 4. *(Optional)* If you're comfortable with GitHub, you can open a **Pull Request** on GitHub to have your changes reviewed before they go live.
 
+## If Something Breaks
+
+Every save through the admin UI becomes a Git commit, so almost any editing mistake can be undone with one click:
+
+1. Go to [github.com/leopoldblum/bears-website/commits/main](https://github.com/leopoldblum/bears-website/commits/main).
+2. Find the bad commit (usually the most recent one).
+3. Click the `...` menu on it → **Revert**. Merge the PR GitHub opens.
+
+The site rebuilds from the previous state within a few minutes. See the [If Something Breaks guide](src/content/docs/guides/if-something-breaks.mdx) for details and when to escalate.
+
 ## Project Structure
 
 ```text
@@ -59,7 +69,7 @@ When adding or editing content (events, projects, sponsors, page text, etc.), **
 │   │   ├── about-us/        # About page section images (our-mission/)
 │   │   ├── default-images/  # Placeholder/fallback images
 │   │   ├── events/          # Event cover images
-│   │   ├── faces-of-bears/  # Team member portraits
+│   │   ├── people/          # Person portraits (Faces of BEARS + Meet the Team)
 │   │   ├── hero/            # Hero images by page (about-us/, events/, etc.)
 │   │   ├── projects/        # Project cover images
 │   │   ├── sponsors/        # Sponsor logos by tier (diamond/, gold/, etc.)
@@ -85,9 +95,7 @@ When adding or editing content (events, projects, sponsors, page text, etc.), **
 │   │   ├── events/          # Event entries (.md/.mdx)
 │   │   │   ├── en/          #   English (default)
 │   │   │   └── de/          #   German translations
-│   │   ├── faces-of-bears/  # Team member profiles
-│   │   │   ├── en/          #   English (default)
-│   │   │   └── de/          #   German translations
+│   │   ├── people/          # People (Faces of BEARS + project leads, locale-agnostic)
 │   │   ├── hero-slides/     # Landing page hero carousel slides
 │   │   ├── instagram/       # Instagram feed entries
 │   │   ├── page-text/       # Editable page copy by section
@@ -137,7 +145,7 @@ The site supports two languages: **English** (default) and **German**.
 - English pages live at the root URL (e.g., `/about-us`)
 - German pages live under `/de/` (e.g., `/de/about-us`)
 
-Localized content collections (`events`, `projects`, `page-text`, `testimonials`, `faces-of-bears`) use `en/` and `de/` subfolders. Collections that are language-neutral (`sponsors`, `instagram`, `hero-slides`) stay flat. If a German translation is missing, the English version is shown as fallback.
+Localized content collections (`events`, `projects`, `page-text`, `testimonials`) use `en/` and `de/` subfolders. Collections that are language-neutral (`people`, `sponsors`, `instagram`, `hero-slides`) stay flat — `people` keeps role translation inline via `roleEn` / `roleDe`. If a German translation is missing, the English version is shown as fallback.
 
 The language switcher in the header toggles between locales. Locale utilities live in `src/utils/i18n.ts`.
 

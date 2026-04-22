@@ -1,10 +1,11 @@
 ---
 // WhatIsBears component - Explains what BEARS e.V. is
+import type { ImageMetadata } from 'astro';
 import Marquee from "@mdx/Marquee.astro";
 import Button from "@mdx/Button.astro";
 import Img from "@mdx/Img.astro";
 import { whatIsBearsImages } from "@utils/imageGlobs";
-import { loadAllImagesFromDirectory } from "@utils/imageLoader";
+import { loadImage, resolveImagePath } from "@utils/imageLoader";
 import { getPageContent } from "@utils/contentQueries";
 import { type Locale } from '@utils/i18n';
 
@@ -14,8 +15,21 @@ interface Props {
 
 const { locale } = Astro.props;
 
-const carouselImages = await loadAllImagesFromDirectory(whatIsBearsImages);
 const content = await getPageContent('landing/what-is-bears', locale);
+// Carousel images are locale-agnostic; they live on the EN singleton only.
+const imagesEntry = await getPageContent('landing/what-is-bears', 'en');
+const baseDir = '/src/assets/whatIsBears';
+
+const resolvedImages = (await Promise.all(
+  (imagesEntry?.data.carouselImages ?? []).map(async (item) => {
+    const image = await loadImage({
+      glob: whatIsBearsImages,
+      imagePath: resolveImagePath(baseDir, item.src),
+      context: { itemTitle: 'What is BEARS carousel' },
+    });
+    return image ? { image, alt: item.alt ?? '' } : null;
+  }),
+)).filter((x): x is { image: ImageMetadata; alt: string } => x !== null);
 ---
 
 <section
@@ -47,17 +61,19 @@ const content = await getPageContent('landing/what-is-bears', locale);
     </div>
   </div>
 
-  <div class="mt-16 sm:mt-20">
-    <Marquee speed={160} gap="1.5rem" height="lg">
-      {
-        carouselImages.map((img, index) => (
-          <Img
-            src={img}
-            alt={`BEARS Gallery ${index + 1}`}
-            class="rounded-lg"
-          />
-        ))
-      }
-    </Marquee>
-  </div>
+  {resolvedImages.length > 0 && (
+    <div class="mt-16 sm:mt-20">
+      <Marquee speed={160} gap="1.5rem" height="lg">
+        {
+          resolvedImages.map((img, index) => (
+            <Img
+              src={img.image}
+              alt={img.alt || `BEARS Gallery ${index + 1}`}
+              class="rounded-lg"
+            />
+          ))
+        }
+      </Marquee>
+    </div>
+  )}
 </section>

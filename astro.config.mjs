@@ -10,9 +10,25 @@ import mdx from '@astrojs/mdx';
 import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
 
+import keystatic from '@keystatic/astro';
+import cloudflare from '@astrojs/cloudflare';
+
+const ADMIN_BUILD = process.env.ADMIN_BUILD === 'true';
+
+const baseIntegrations = [alpinejs(), mdx(), react(), sitemap({
+  filter: (page) => !page.includes('/docs/') && !page.includes('/keystatic') && !page.includes('/admin'),
+})];
+
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://bears-space.de',
+  site: ADMIN_BUILD ? 'https://admin.bears-space.de' : 'https://bears-space.de',
+
+  ...(ADMIN_BUILD
+    ? {
+        output: 'server',
+        adapter: cloudflare(),
+      }
+    : {}),
 
   i18n: {
     defaultLocale: 'en',
@@ -21,10 +37,10 @@ export default defineConfig({
   },
 
   vite: {
-    plugins: [tailwindcss()]
+    plugins: [tailwindcss()],
   },
 
-  integrations: [alpinejs(), mdx(), react(), sitemap({
-    filter: (page) => !page.includes('/docs/')
-  })]
+  integrations: ADMIN_BUILD
+    ? [...baseIntegrations, keystatic()]
+    : baseIntegrations,
 });

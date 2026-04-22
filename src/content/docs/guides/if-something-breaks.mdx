@@ -1,0 +1,21 @@
+---
+title: "If Something Breaks"
+description: "The one-click fix when an edit goes wrong."
+order: 15
+---
+
+Don't panic. Every save you make through the admin UI becomes a Git commit, which means almost any editing mistake can be undone with a single click.
+
+## The recovery procedure
+
+Open [github.com/leopoldblum/bears-website/commits/main](https://github.com/leopoldblum/bears-website/commits/main). You'll see every save to the site, newest first. Find the last commit that was known-good (usually the one just above the commit that broke things), click the **`...`** menu on the bad commit, and hit **Revert**.
+
+GitHub opens a pull request that undoes the change. Merge that PR, and within a few minutes the site rebuilds from the previous state. Done.
+
+## When to use it
+
+Any time you catch yourself thinking "did I just break it?" &mdash; after a save, when a page looks wrong, when the site won't load, when you meant to tweak one word and something else changed. Reverting is safe, reversible, and doesn't touch any code.
+
+## When it isn't enough
+
+If reverting the last commit doesn't fix it, or the problem goes further back than one commit, ping a developer. But that's rare &mdash; the **Revert** button covers roughly 95% of editing mishaps.

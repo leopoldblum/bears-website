@@ -1,0 +1,161 @@
+---
+title: "Image System"
+description: "Image loading pipeline, glob patterns, fallbacks, and optimization."
+order: 50
+group: "Systems"
+---
+
+All images on the site are local files in `src/assets/`, processed by Astro's image optimization pipeline at build time. The image system consists of three utility modules that work together.
+
+## Architecture
+
+```
+imageConstants.ts    →  Supported formats, validation regex
+imageGlobs.ts        →  Centralized glob patterns per directory
+imageLoader.ts       →  Loading functions with fallback + dev warnings
+```
+
+## Image Constants
+
+**File:** `src/utils/imageConstants.ts`
+
+| Export | Value | Purpose |
+|--------|-------|---------|
+| `VALID_IMAGE_EXTENSIONS` | `['jpg', 'jpeg', 'png', 'webp', 'svg']` | Source of truth for supported formats |
+| `IMAGE_GLOB_PATTERN` | `*.{jpg,jpeg,png,webp,svg}` | For use in glob patterns |
+| `IMAGE_EXTENSION_REGEX` | `/\.(jpg\|jpeg\|png\|webp\|svg)$/i` | Schema validation |
+| `VALID_EXTENSIONS_MESSAGE` | `".jpg, .jpeg, .png, .webp, or .svg"` | Error messages |
+
+## Glob Patterns
+
+**File:** `src/utils/imageGlobs.ts`
+
+Each asset directory has a centralized glob pattern exported as a constant:
+
+| Export | Directory | Used by |
+|--------|-----------|---------|
+| `eventImages` | `/src/assets/events/` | Events listing, detail pages |
+| `projectImages` | `/src/assets/projects/` | Projects listing, detail pages |
+| `sponsorLogos` | `/src/assets/sponsors/**/` | Sponsor showcase |
+| `whatIsBearsImages` | `/src/assets/whatIsBears/**/` | Landing "What is BEARS" carousel (content-driven via `landing/what-is-bears` page-text singleton) |
+| `ourMissionImages` | `/src/assets/about-us/our-mission/` | About page hero |
+| `peopleImages` | `/src/assets/people/` | Faces of BEARS grid, Meet the Team portraits, Testimonials carousel |
+| `aboutHeroImages` | `/src/assets/hero/about-us/` | About page hero |
+| `eventsHeroImages` | `/src/assets/hero/events/` | Events page hero |
+| `projectsHeroImages` | `/src/assets/hero/projects/` | Projects page hero |
+| `mediaHeroImages` | `/src/assets/hero/media/` | Media page hero |
+| `sponsorsHeroImages` | `/src/assets/hero/sponsors/` | Sponsors page hero |
+| `contactHeroImages` | `/src/assets/hero/contact/` | Contact page hero |
+| `headerLogoImages` | `/src/assets/header/` | Site header logo (filename chosen via `branding` singleton) |
+| `footerLogoImages` | `/src/assets/footer/` | Site footer logo (filename chosen via `branding` singleton) |
+| `heroLogoImages` | `/src/assets/hero/landingpage/logo/` | Landing hero logo (filename chosen via `branding` singleton) |
+| `defaultImages` | `/src/assets/default-images/` | Default fallback covers (filenames chosen via `branding` singleton) |
+| `heroImages` | `/src/assets/hero/landingpage/` | Landing hero images only |
+| `heroMedia` | `/src/assets/hero/landingpage/` | Landing hero images + videos |
+
+### Logo images
+
+The header, footer, and landing hero logos are content-driven through the `branding` Keystatic singleton. Each field in that singleton names a specific file inside its asset directory; the component reads the filename from the entry and resolves it through the matching glob. Editors can upload a new logo from the admin UI without touching code.
+
+| Field on `branding` singleton | Asset directory | Used by | Fallback |
+|--------|---------|---------|----------|
+| `headerLogo` | `src/assets/header/` | Header logo (all pages) | Plain "BEARS" text |
+| `footerLogo` | `src/assets/footer/` | Footer logo (all pages) | Plain "BEARS" text |
+| `heroLogo` | `src/assets/hero/landingpage/logo/` | Landing page hero logo | Plain "BEARS" heading |
+
+**Vite limitation:** Glob pattern strings must be static literals. They cannot be constructed dynamically from variables. This is why each pattern is hardcoded rather than generated from `IMAGE_GLOB_PATTERN`.
+
+## Loader Functions
+
+**File:** `src/utils/imageLoader.ts`
+
+### `loadImage(options)`
+
+Loads a single image from a glob with optional fallback.
+
+```typescript
+const image = await loadImage({
+  glob: eventImages,
+  imagePath: "/src/assets/events/event-1.jpg",
+  fallbackImage: await getDefaultEventImage(),
+  context: { itemTitle: "My Event", itemSlug: "my-event" }
+});
+```
+
+Returns `ImageMetadata | null`.
+
+### `loadCollectionImages(collection, type)`
+
+The primary API for loading images for a content collection. Uses type-specific configuration (glob, base directory, fallback image) and returns items with a `loadedImage` property attached.
+
+```typescript
+const eventsWithImages = await loadCollectionImages(sortedEvents, 'event');
+const projectsWithImages = await loadCollectionImages(sortedProjects, 'project');
+const peopleWithImages = await loadCollectionImages(sortedPeople, 'person');
+```
+
+Supported types: `'event'`, `'project'`, `'person'`. The `'person'` loader backs both the Faces of BEARS grid and the Testimonials carousel — same portrait folder, same defaults.
+
+TypeScript overloads guarantee that when a fallback is configured (which it always is for the built-in types), `loadedImage` is non-null.
+
+### `loadCoverImage(fileName, type, context?)`
+
+Loads a single cover image for a detail page. Used in `[slug].astro` routes.
+
+```typescript
+const coverImage = await loadCoverImage(
+  entry.data.coverImage, 'event',
+  { itemTitle: entry.data.title, itemSlug: entry.slug }
+);
+```
+
+Always returns a non-null `ImageMetadata` (falls back to default).
+
+### `loadAllImagesFromDirectory(glob)`
+
+Loads all images from a glob. Used for carousels/galleries that are not backed by a content entry.
+
+```typescript
+const allHeroImages = await loadAllImagesFromDirectory(allHeroImages);
+```
+
+Returns `ImageMetadata[]`, filtering out failed loads.
+
+Note: the "What is BEARS" carousel used to rely on this helper. It is now content-driven — see `WhatIsBears.astro`, which reads the image list (in order) from the `landing/what-is-bears` page-text singleton and resolves each filename through `whatIsBearsImages` via `loadImage`.
+
+## Default / Fallback Images
+
+Default images live in `src/assets/default-images/`. The **filename used for each slot is chosen in the `defaultImages` Keystatic singleton** (labelled "Default images", under Site-wide), so editors can swap placeholders without code changes. Consumers pull them through async getters that read the `default-images` entry and resolve each filename through the `defaultImages` glob:
+
+| Getter | Field on `defaultImages` singleton | Seed file | Used for |
+|--------|---------------|-----------|----------|
+| `getDefaultEventImage()` | `defaultEventImage` | `default-event.jpg` | Events with no custom cover |
+| `getDefaultProjectImage()` | `defaultProjectImage` | `default-project.jpg` | Projects with no custom cover |
+| `getDefaultSponsorImage()` | `defaultSponsorImage` | `default-sponsor.jpg` | Sponsors with missing logo |
+| `getDefaultFaceImage()` | `defaultFaceImage` | `default-face.jpg` | People with missing portrait (Faces of BEARS + Testimonials) |
+
+Each getter returns an `ImageMetadata`.
+
+## Favicon & social-share image
+
+The browser-tab favicon and the default Open Graph image live in `/public/` and are editable on the **"Branding / logos"** singleton (same Site-wide group). Each field stores a bare filename; `BaseLayout.astro` and `DocsLayout.astro` prepend `/` to build the URL. Dropping in a new favicon replaces `public/<filename>` and the `<link rel="icon">` tag picks it up on the next build — note that browsers cache favicons aggressively, so a hard-reload may be needed to see the new icon.
+
+## coverImageType Logic
+
+Events and projects have a `coverImageType` field (derived in the schema transform):
+
+- **`DEFAULT`** &mdash; No custom image provided. Uses the fallback image. Logs `🔹` in dev console.
+- **`CUSTOM`** &mdash; Custom image specified. Attempts to load it. If it fails, logs `⚠️` and falls back.
+
+## Adding Images for a New Collection
+
+1. Create an asset directory: `src/assets/<name>/`
+2. Add a default fallback image: `src/assets/default-images/default-<name>.jpg`
+3. Add a glob export in `src/utils/imageGlobs.ts`:
+   ```typescript
+   export const myImages: ImageGlob = import.meta.glob<{ default: ImageMetadata }>(
+     "/src/assets/<name>/*.{jpg,jpeg,png,webp,svg}"
+   );
+   ```
+4. Import the default image and add a type config to `loadCollectionImages()` in `src/utils/imageLoader.ts`
+5. Add an overload signature for the new type

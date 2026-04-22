@@ -1,5 +1,7 @@
 ---
 import Page from '../../events/[slug].astro';
 export { getStaticPaths } from '../../events/[slug].astro';
+
+export const prerender = true;
 ---
 <Page {...Astro.props} />

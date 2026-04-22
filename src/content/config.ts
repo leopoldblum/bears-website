@@ -1,4 +1,4 @@
-import { defineCollection, z } from 'astro:content';
+import { defineCollection, reference, z } from 'astro:content';
 import { CoverImageType, CategoryEventEnum, CategoryProjectEnum } from '@types';
 import { IMAGE_EXTENSION_REGEX, VALID_EXTENSIONS_MESSAGE } from '@utils/imageConstants';
 
@@ -11,23 +11,14 @@ const validateImageExtension = (value: string | undefined) => {
   return IMAGE_EXTENSION_REGEX.test(value);
 };
 
-const testimonialsCollection = defineCollection({
-  type: 'content',
-  schema: z.object({
-    quote: z.string(),
-    name: z.string(),
-    role: z.string(),
-    coverImage: z.string().refine(
-      validateImageExtension,
-      { message: `coverImage must have a valid image extension: ${VALID_EXTENSIONS_MESSAGE}` }
-    ),
-  }),
-});
+/** Social-platform icons must be SVGs (rendered as silhouettes via CSS mask). */
+const validateSvgExtension = (value: string) => /\.svg$/i.test(value);
 
 const sponsorsCollection = defineCollection({
   type: 'content',
   schema: z.object({
     name: z.string(),
+    order: z.number(),
     logo: z.string().refine(
       validateImageExtension,
       { message: `logo must have a valid image extension: ${VALID_EXTENSIONS_MESSAGE}` }
@@ -74,35 +65,16 @@ const projectsCollection = defineCollection({
     ),
     isDraft: z.boolean().default(false).optional(),
     displayMeetTheTeam: z.boolean().optional(),
-    headOfProject: z.string().optional(),
-    personImage: z.string().optional().refine(
-      validateImageExtension,
-      { message: `personImage must have a valid image extension: ${VALID_EXTENSIONS_MESSAGE}` }
-    ),
+    // Reference into the `people` collection. Replaces the old flat
+    // headOfProject (string) + personImage (filename) pair. Required when
+    // displayMeetTheTeam is true (enforced by the .refine() below).
+    person: reference('people').optional(),
     isProjectCompleted: z.boolean(),
   }).refine(
-    (data) => {
-      // If displayMeetTheTeam is true, headOfProject must be provided
-      if (data.displayMeetTheTeam === true && !data.headOfProject) {
-        return false;
-      }
-      return true;
-    },
+    (data) => !(data.displayMeetTheTeam === true && !data.person),
     {
-      message: "headOfProject is required when displayMeetTheTeam is true",
-      path: ["headOfProject"],
-    }
-  ).refine(
-    (data) => {
-      // If displayMeetTheTeam is true, personImage must be provided
-      if (data.displayMeetTheTeam === true && !data.personImage) {
-        return false;
-      }
-      return true;
-    },
-    {
-      message: "personImage is required when displayMeetTheTeam is true",
-      path: ["personImage"],
+      message: "person is required when displayMeetTheTeam is true",
+      path: ["person"],
     }
   ).transform((data) => {
     // Derive coverImageType from coverImage presence
@@ -124,6 +96,7 @@ const validateMediaExtension = (value: string | undefined) => {
 };
 
 const heroSlideBase = {
+  order: z.number(),
   media: z.string().refine(
     validateMediaExtension,
     { message: `media must have a valid extension: ${VALID_EXTENSIONS_MESSAGE} or mp4, webm, ogg` }
@@ -156,15 +129,36 @@ const instagramCollection = defineCollection({
   }),
 });
 
-const facesOfBearsCollection = defineCollection({
+const peopleCollection = defineCollection({
   type: 'content',
   schema: z.object({
     name: z.string(),
-    role: z.string(),
+    roleEn: z.string(),
+    roleDe: z.string(),
     coverImage: z.string().refine(
       validateImageExtension,
       { message: `coverImage must have a valid image extension: ${VALID_EXTENSIONS_MESSAGE}` }
     ),
+    showInFaces: z.boolean().default(true),
+    order: z.number().default(0),
+  }),
+});
+
+// Single-entry content collection backing the landing-page Testimonials
+// carousel. The editor manages one drag-reorderable list via a Keystatic
+// singleton; the array order in the file IS the display order on the
+// landing page (no sort key needed). Each item references a person from the
+// `people` collection and carries both quote translations inline. Stored as
+// MDX with an empty, uneditable body for consistency with other content-type
+// collections in this project.
+const testimonialsCollection = defineCollection({
+  type: 'content',
+  schema: z.object({
+    items: z.array(z.object({
+      person: reference('people'),
+      quoteEn: z.string(),
+      quoteDe: z.string(),
+    })),
   }),
 });
 
@@ -181,7 +175,7 @@ const docsCollection = defineCollection({
 const pageTextCollection = defineCollection({
   type: 'content',
   schema: z.object({
-    title: z.string(),
+    title: z.string().optional(),
     subtitle: z.string().optional(),
     description: z.string().optional(),
     seoDescription: z.string().optional(),
@@ -195,8 +189,18 @@ const pageTextCollection = defineCollection({
       href: z.string(),
     })).max(4).optional(),
     items: z.array(z.string()).optional(),
+    titledItems: z.array(z.object({
+      title: z.string(),
+      description: z.string().optional(),
+    })).optional(),
+    email: z.string().optional(),
+    address: z.string().optional(),
+    room: z.string().optional(),
+    schedule: z.string().optional(),
+    mapLat: z.number().min(-90).max(90).optional(),
+    mapLng: z.number().min(-180).max(180).optional(),
     socialLinks: z.array(z.object({
-      platform: z.string(),
+      platform: reference('social-platforms'),
       url: z.string().url(),
       hoverColor: z.string().optional(),
     })).optional(),
@@ -217,10 +221,47 @@ const pageTextCollection = defineCollection({
       answer: z.string(),
     })).optional(),
     instagramButtonText: z.string().optional(),
+    image: z.string().refine(
+      validateImageExtension,
+      { message: `image must have a valid image extension: ${VALID_EXTENSIONS_MESSAGE}` },
+    ).optional(),
+    imageAlt: z.string().optional(),
+    carouselImages: z.array(z.object({
+      src: z.string().refine(
+        validateImageExtension,
+        { message: `src must have a valid image extension: ${VALID_EXTENSIONS_MESSAGE}` },
+      ),
+      alt: z.string().min(1),
+    })).optional(),
     mediaCategories: z.array(z.object({
       id: z.string(),
       label: z.string(),
     })).optional(),
+    bankName: z.string().optional(),
+    accountHolder: z.string().optional(),
+    iban: z.string().optional(),
+    bic: z.string().optional(),
+    reference: z.string().optional(),
+    paypalUrl: z.string().url().optional(),
+    paypalButtonText: z.string().optional(),
+    tierDescriptions: z.object({
+      diamond: z.string().optional(),
+      platinum: z.string().optional(),
+      gold: z.string().optional(),
+      silver: z.string().optional(),
+      bronze: z.string().optional(),
+    }).optional(),
+    showMoreText: z.string().optional(),
+    showLessText: z.string().optional(),
+    rememberLabel: z.string().optional(),
+    emailLabel: z.string().optional(),
+    addressLabel: z.string().optional(),
+    mapLinkText: z.string().optional(),
+    followLabel: z.string().optional(),
+    orDividerText: z.string().optional(),
+    bankToggleText: z.string().optional(),
+    searchPlaceholder: z.string().optional(),
+    searchNoResultsText: z.string().optional(),
   }).refine(d => !d.buttonText || d.buttonHref, {
     message: 'buttonHref is required when buttonText is set',
     path: ['buttonHref'],
@@ -236,14 +277,56 @@ const pageTextCollection = defineCollection({
   }),
 });
 
+const socialPlatformsCollection = defineCollection({
+  type: 'content',
+  schema: z.object({
+    label: z.string(),
+    iconFile: z.string().refine(
+      validateSvgExtension,
+      { message: 'iconFile must be an SVG (.svg)' },
+    ),
+    defaultHoverColor: z.string().optional(),
+  }),
+});
+
+const brandingImage = () =>
+  z.string().refine(
+    validateImageExtension,
+    { message: `image must have a valid image extension: ${VALID_EXTENSIONS_MESSAGE}` }
+  );
+
+const brandingCollection = defineCollection({
+  type: 'data',
+  schema: z.object({
+    headerLogo: brandingImage(),
+    footerLogo: brandingImage(),
+    heroLogo: brandingImage(),
+    favicon: brandingImage(),
+    ogDefault: brandingImage(),
+  }),
+});
+
+const defaultImagesCollection = defineCollection({
+  type: 'data',
+  schema: z.object({
+    defaultEventImage: brandingImage(),
+    defaultProjectImage: brandingImage(),
+    defaultSponsorImage: brandingImage(),
+    defaultFaceImage: brandingImage(),
+  }),
+});
+
 export const collections = {
-  testimonials: testimonialsCollection,
   sponsors: sponsorsCollection,
   events: eventsCollection,
   projects: projectsCollection,
   'hero-slides': heroSlidesCollection,
   'page-text': pageTextCollection,
   instagram: instagramCollection,
-  'faces-of-bears': facesOfBearsCollection,
+  people: peopleCollection,
+  testimonials: testimonialsCollection,
   docs: docsCollection,
+  'social-platforms': socialPlatformsCollection,
+  branding: brandingCollection,
+  'default-images': defaultImagesCollection,
 };

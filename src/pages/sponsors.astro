@@ -5,7 +5,7 @@ import SponsorShowcase from "@components/sponsors/SponsorShowcase.astro";
 import Button from "@mdx/Button.astro";
 import CrosslinkBanner from "@reusable/CrosslinkBanner.astro";
 import { sponsorsHeroImages, sponsorLogos } from "@utils/imageGlobs";
-import { loadAllImagesFromDirectory, loadImage, defaultSponsorImage } from "@utils/imageLoader";
+import { loadAllImagesFromDirectory, loadImage, resolveImagePath, getDefaultSponsorImage } from "@utils/imageLoader";
 import { getPageContent, getSponsorsByTier } from "@utils/contentQueries";
 import { getLocale, localizeUrl } from "@utils/i18n";
 
@@ -16,24 +16,42 @@ const pageContent = await getPageContent("sponsors/sponsors-title", locale);
 const introContent = await getPageContent("sponsors/sponsors-intro", locale);
 const tiersContent = await getPageContent("sponsors/sponsor-tiers", locale);
 const ctaContent = await getPageContent("sponsors/become-sponsor-cta", locale);
+const donateContent = await getPageContent("donate", locale);
 const crosslink = await getPageContent("sponsors/sponsors-crosslink", locale);
 
-// Hero image
-const loadedHeroImages = await loadAllImagesFromDirectory(sponsorsHeroImages);
-const sponsorHeroImage = loadedHeroImages[0];
+// Hero image — locale-agnostic; editors can upload on either locale's singleton.
+// Prefer EN, fall back to the active locale, then to the first file in the directory.
+const imageEntry = await getPageContent("sponsors/sponsors-title", "en");
+const imageFileName = imageEntry?.data.image || pageContent?.data.image;
+const sponsorHeroAlt = imageEntry?.data.imageAlt || pageContent?.data.imageAlt
+  || "Partnership and collaboration opportunities with BEARS";
+
+let sponsorHeroImage = imageFileName
+  ? await loadImage({
+      glob: sponsorsHeroImages,
+      imagePath: resolveImagePath('/src/assets/hero/sponsors', imageFileName),
+      context: { itemTitle: 'Sponsors hero image' },
+    })
+  : null;
+
+if (!sponsorHeroImage) {
+  const loadedHeroImages = await loadAllImagesFromDirectory(sponsorsHeroImages);
+  sponsorHeroImage = loadedHeroImages[0] ?? null;
+}
 
 // Sponsors by tier
 const { diamond, platinum, gold, silver, bronze } = await getSponsorsByTier();
 
 // Load images for a tier's sponsors (same pattern as BecomeSponsor.astro)
 async function loadTierImages(sponsors: typeof diamond) {
+  const defaultSponsorImage = await getDefaultSponsorImage();
   return Promise.all(
     sponsors.map(async (sponsor) => {
       const tier = sponsor.id.split("/")[0];
       const logoData =
         (await loadImage({
           glob: sponsorLogos,
-          imagePath: `/src/assets/sponsors/${tier}/${sponsor.data.logo}`,
+          imagePath: resolveImagePath(`/src/assets/sponsors/${tier}`, sponsor.data.logo),
           fallbackImage: defaultSponsorImage,
           context: {
             itemTitle: sponsor.data.name,
@@ -60,23 +78,22 @@ const [diamondSponsors, platinumSponsors, goldSponsors, silverSponsors, bronzeSp
     loadTierImages(bronze),
   ]);
 
-// Tier descriptions from items array: [0]=Diamond, [1]=Platinum, [2]=Gold, [3]=Silver, [4]=Bronze
-const tierDescriptions = tiersContent?.data.items ?? [];
+const tierDescriptions = tiersContent?.data.tierDescriptions;
 
 const tiers = [
-  { name: "Diamond", key: "diamond" as const, sponsors: diamondSponsors, description: tierDescriptions[0] },
-  { name: "Platinum", key: "platinum" as const, sponsors: platinumSponsors, description: tierDescriptions[1] },
-  { name: "Gold", key: "gold" as const, sponsors: goldSponsors, description: tierDescriptions[2] },
-  { name: "Silver", key: "silver" as const, sponsors: silverSponsors, description: tierDescriptions[3] },
-  { name: "Bronze", key: "bronze" as const, sponsors: bronzeSponsors, description: tierDescriptions[4] },
+  { name: "Diamond", key: "diamond" as const, sponsors: diamondSponsors, description: tierDescriptions?.diamond },
+  { name: "Platinum", key: "platinum" as const, sponsors: platinumSponsors, description: tierDescriptions?.platinum },
+  { name: "Gold", key: "gold" as const, sponsors: goldSponsors, description: tierDescriptions?.gold },
+  { name: "Silver", key: "silver" as const, sponsors: silverSponsors, description: tierDescriptions?.silver },
+  { name: "Bronze", key: "bronze" as const, sponsors: bronzeSponsors, description: tierDescriptions?.bronze },
 ];
 ---
 
 <BaseLayout title={pageContent?.data.title ?? "Sponsors"} description={pageContent?.data.seoDescription}>
   {/* Hero */}
   <PageHeroImage
-    image={sponsorHeroImage}
-    alt="Partnership and collaboration opportunities with BEARS"
+    image={sponsorHeroImage!}
+    alt={sponsorHeroAlt}
     title={pageContent?.data.title ?? "Sponsors"}
     subtitle={pageContent?.data.subtitle ?? ""}
     searchAliases={['Sponsoren', 'Sponsors']}
@@ -102,7 +119,7 @@ const tiers = [
         {ctaContent.data.title}
       </h2>
 
-      <div class="max-w-2xl mx-auto bg-white/[0.03] border border-white/10 rounded-2xl p-6 sm:p-8 lg:p-10 text-center">
+      <div class="max-w-2xl mx-auto bg-white/[0.04] border border-white/15 rounded-2xl p-6 sm:p-8 lg:p-10 text-center shadow-[0_8px_32px_rgba(0,0,0,0.35)]">
         {ctaContent.data.description && (
           <p class="text-sm sm:text-base lg:text-lg text-bears-text-onDark/70 leading-relaxed mb-8 sm:mb-10">
             {ctaContent.data.description}
@@ -115,6 +132,158 @@ const tiers = [
           </Button>
         )}
       </div>
+
+      {/* Visual bridge: "OR" divider connecting to direct donations */}
+      {donateContent && (
+        <div class="max-w-xl mx-auto flex items-center gap-4 my-10 sm:my-14" aria-hidden="true">
+          <div class="flex-1 h-px bg-gradient-to-r from-transparent to-white/15"></div>
+          <span class="text-xs font-bold uppercase tracking-[0.2em] text-bears-text-onDark/40">{donateContent.data.orDividerText ?? 'Or'}</span>
+          <div class="flex-1 h-px bg-gradient-to-l from-transparent to-white/15"></div>
+        </div>
+      )}
+
+      {/* Direct donations — secondary, compact */}
+      {donateContent && (
+      <div
+        id="donate-title"
+        class="max-w-xl mx-auto bg-white/[0.02] border border-white/10 rounded-2xl p-5 sm:p-6 lg:p-8 scroll-mt-20"
+        x-data={`{
+          bankOpen: false,
+          _reducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+          toggleBank() {
+            const panel = this.$refs.bankPanel;
+            if (!panel) { this.bankOpen = !this.bankOpen; return; }
+            if (this._reducedMotion) {
+              this.bankOpen = !this.bankOpen;
+              panel.style.height = this.bankOpen ? 'auto' : '0px';
+              return;
+            }
+            if (!this.bankOpen) {
+              this.bankOpen = true;
+              const target = panel.scrollHeight;
+              panel.style.transition = 'none';
+              panel.style.height = '0px';
+              panel.offsetHeight;
+              panel.style.transition = 'height 250ms ease-out';
+              panel.style.height = target + 'px';
+              setTimeout(() => {
+                if (this.bankOpen) { panel.style.transition = ''; panel.style.height = 'auto'; }
+              }, 260);
+            } else {
+              panel.style.transition = 'none';
+              panel.style.height = panel.offsetHeight + 'px';
+              panel.offsetHeight;
+              panel.style.transition = 'height 200ms ease-in';
+              panel.style.height = '0px';
+              this.bankOpen = false;
+            }
+          }
+        }`}
+      >
+        <h3 class="text-xl sm:text-2xl font-bold text-bears-text-onDark text-center mb-3">
+          {donateContent.data.title}
+        </h3>
+
+        {donateContent.data.description && (
+          <p class="text-sm sm:text-base text-bears-text-onDark/70 text-center mb-6">
+            {donateContent.data.description}
+          </p>
+        )}
+
+        {donateContent.data.items && donateContent.data.items.length > 0 && (
+          <ul class="flex flex-wrap items-center justify-center gap-x-6 gap-y-3 sm:gap-x-10 mb-8 text-xs sm:text-sm text-bears-text-onDark/70">
+            {donateContent.data.items.map((label, i) => {
+              const icons = [
+                'M5 12l4-9 6 16 4-7h0', // rocket-ish chevron path (placeholder)
+                'M9 3v6l-4 8a4 4 0 003.6 5.8h6.8A4 4 0 0019 16.9L15 9V3', // flask
+                'M3 12h18M12 3l4 4-4 4M12 21l-4-4 4-4', // travel arrows
+              ];
+              return (
+                <li class="flex items-center gap-2">
+                  <svg class="w-4 h-4 sm:w-5 sm:h-5 text-bears-accent flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.8">
+                    <path stroke-linecap="round" stroke-linejoin="round" d={icons[i] ?? icons[0]} />
+                  </svg>
+                  <span>{label}</span>
+                </li>
+              );
+            })}
+          </ul>
+        )}
+
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
+          {donateContent.data.paypalUrl && donateContent.data.paypalButtonText && (
+            <Button variant="primary" size="large" href={donateContent.data.paypalUrl} class="border-2 border-transparent whitespace-nowrap">
+              {donateContent.data.paypalButtonText}
+            </Button>
+          )}
+
+          {(donateContent.data.iban || donateContent.data.bic || donateContent.data.accountHolder) && (
+            <Button
+              variant="secondary"
+              size="large"
+              onClick="toggleBank()"
+              xBind="bankOpen ? 'rotate-chevron-open' : ''"
+              class="whitespace-nowrap"
+            >
+              <span class="inline-flex items-center gap-2">
+                <span>{donateContent.data.bankToggleText ?? 'Bank transfer details'}</span>
+                <svg
+                  class="w-4 h-4 transition-transform duration-200"
+                  x-bind:class="bankOpen ? 'rotate-180' : 'rotate-0'"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  stroke-width="2"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+              </span>
+            </Button>
+          )}
+        </div>
+
+        {(donateContent.data.iban || donateContent.data.bic || donateContent.data.accountHolder) && (
+          <div
+            x-ref="bankPanel"
+            class="overflow-hidden"
+            style="height: 0px;"
+          >
+            <dl class="text-left text-xs sm:text-sm space-y-2 text-bears-text-onDark/80 border border-white/10 rounded-xl px-5 py-4 mt-6">
+              {donateContent.data.accountHolder && (
+                <div class="flex justify-between gap-4">
+                  <dt class="text-bears-text-onDark/50">Account holder</dt>
+                  <dd class="text-right">{donateContent.data.accountHolder}</dd>
+                </div>
+              )}
+              {donateContent.data.bankName && (
+                <div class="flex justify-between gap-4">
+                  <dt class="text-bears-text-onDark/50">Bank</dt>
+                  <dd class="text-right">{donateContent.data.bankName}</dd>
+                </div>
+              )}
+              {donateContent.data.iban && (
+                <div class="flex justify-between gap-4">
+                  <dt class="text-bears-text-onDark/50">IBAN</dt>
+                  <dd class="text-right font-mono break-all">{donateContent.data.iban}</dd>
+                </div>
+              )}
+              {donateContent.data.bic && (
+                <div class="flex justify-between gap-4">
+                  <dt class="text-bears-text-onDark/50">BIC</dt>
+                  <dd class="text-right font-mono">{donateContent.data.bic}</dd>
+                </div>
+              )}
+              {donateContent.data.reference && (
+                <div class="flex justify-between gap-4">
+                  <dt class="text-bears-text-onDark/50">Reference</dt>
+                  <dd class="text-right">{donateContent.data.reference}</dd>
+                </div>
+              )}
+            </dl>
+          </div>
+        )}
+      </div>
+      )}
     </section>
   )}
 

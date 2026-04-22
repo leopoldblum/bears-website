@@ -5,8 +5,6 @@ order: 33
 group: "MDX Components"
 ---
 
-import { Img } from '@mdx';
-import testImage from '@assets/projects/project-1.jpg';
 
 The `Img` component displays optimized images with automatic responsive sizing and an optional click-to-enlarge modal. Images must be local files in `src/assets/`.
 
@@ -20,15 +18,15 @@ The `Img` component displays optimized images with automatic responsive sizing a
 Then import the image using the `@assets` alias:
 
 ```mdx
-import { Accordion, Button, Callout, Carousel, Center, Img, Instagram, Marquee, YouTube, SideBySide, Left, Right } from '@mdx';
+import { Accordion, Button, Callout, Carousel, Center, ImageGrid, Img, Instagram, Marquee, YouTube, SideBySide, Left, Right } from '@mdx';
 import photo from '@assets/events/my-photo.jpg';
 
 <Img src={photo} alt="Workshop participants" />
 ```
 
-<div class="not-prose mb-4">
-  <Img src={testImage} alt="Example project image" />
-</div>
+<Preview>
+  <Img src="/src/assets/default-images/default-event.jpg" alt="Example project image" />
+</Preview>
 
 Click the image above to see the full-size modal.
 
@@ -40,9 +38,9 @@ Set `width` to any CSS value — percentages, pixels, etc:
 <Img src={photo} alt="Small preview" width="50%" />
 ```
 
-<div class="not-prose mb-4">
-  <Img src={testImage} alt="Half-width example" width="50%" />
-</div>
+<Preview>
+  <Img src="/src/assets/default-images/default-event.jpg" alt="Half-width example" width="50%" />
+</Preview>
 
 ## Disabling Click-to-Enlarge
 

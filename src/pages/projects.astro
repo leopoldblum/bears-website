@@ -6,7 +6,7 @@ import SortMenu from "@posts-catalog/SortMenu.astro";
 
 import PageHeroImage from "@reusable/PageHeroImage.astro";
 import ProjectCategories from "@components/projects/ProjectCategories.astro";
-import { loadCollectionImages } from "@utils/imageLoader";
+import { loadCollectionImages, loadAllImagesFromDirectory, loadImage, resolveImagePath } from "@utils/imageLoader";
 import { getPublishedProjects, getPageContent } from "@utils/contentQueries";
 import { CategoryProjectEnum } from "@types";
 import { getLocale, localizeUrl, getCategoryLabel, catalogUiStrings } from "@utils/i18n";
@@ -14,7 +14,6 @@ import { stripLocaleFromSlug } from "@utils/contentQueries";
 
 import CrosslinkBanner from "@reusable/CrosslinkBanner.astro";
 import { projectsHeroImages } from "@utils/imageGlobs";
-import { loadAllImagesFromDirectory } from "@utils/imageLoader";
 
 const locale = getLocale(Astro.url);
 
@@ -50,8 +49,25 @@ const categoryDescriptions = await Promise.all(
     };
   })
 );
-const loadedHeroImages = await loadAllImagesFromDirectory(projectsHeroImages);
-const projectHeroImage = loadedHeroImages[0];
+// Image is locale-agnostic; editors can upload on either locale's singleton.
+// Prefer EN, fall back to the active locale, then to the first file in the directory.
+const imageEntry = await getPageContent('projects/projects-title', 'en');
+const imageFileName = imageEntry?.data.image || pageContent?.data.image;
+const projectHeroAlt = imageEntry?.data.imageAlt || pageContent?.data.imageAlt
+  || "BEARS student working on satellite project";
+
+let projectHeroImage = imageFileName
+  ? await loadImage({
+      glob: projectsHeroImages,
+      imagePath: resolveImagePath('/src/assets/hero/projects', imageFileName),
+      context: { itemTitle: 'Projects hero image' },
+    })
+  : null;
+
+if (!projectHeroImage) {
+  const loadedHeroImages = await loadAllImagesFromDirectory(projectsHeroImages);
+  projectHeroImage = loadedHeroImages[0] ?? null;
+}
 
 // Get all published projects (filtered and sorted)
 const sortedProjects = await getPublishedProjects(locale);
@@ -84,8 +100,8 @@ const projectsData = JSON.stringify(projectsWithImages.map((p, i) => ({
 
 <BaseLayout title={pageContent?.data.title ?? "Projects"} description={pageContent?.data.seoDescription}>
   <PageHeroImage
-    image={projectHeroImage}
-    alt="BEARS student working on satellite project"
+    image={projectHeroImage!}
+    alt={projectHeroAlt}
     title={pageContent?.data.title ?? "Projects"}
     subtitle={pageContent?.data.subtitle ?? ""}
     searchAliases={['Projekte', 'Projects']}

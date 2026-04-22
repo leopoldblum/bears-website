@@ -6,14 +6,13 @@ import SortMenu from "@posts-catalog/SortMenu.astro";
 
 import PageHeroImage from "@reusable/PageHeroImage.astro";
 import EventsIntro from "@components/events/EventsIntro.astro";
-import { loadCollectionImages } from "@utils/imageLoader";
+import { loadCollectionImages, loadAllImagesFromDirectory, loadImage, resolveImagePath } from "@utils/imageLoader";
 import { getPublishedEvents, getPageContent } from "@utils/contentQueries";
 import { CategoryEventEnum } from "@types";
 import { getLocale, localizeUrl, getCategoryLabel, catalogUiStrings } from "@utils/i18n";
 import { stripLocaleFromSlug } from "@utils/contentQueries";
 import CrosslinkBanner from "@reusable/CrosslinkBanner.astro";
 import { eventsHeroImages } from "@utils/imageGlobs";
-import { loadAllImagesFromDirectory } from "@utils/imageLoader";
 
 const locale = getLocale(Astro.url);
 
@@ -33,8 +32,26 @@ const pageContent = await getPageContent('events/events-title', locale);
 const eventsIntro = await getPageContent('events/events-intro', locale);
 const emptyState = await getPageContent('events/events-empty-state', locale);
 const crosslink = await getPageContent('events/events-crosslink', locale);
-const loadedHeroImages = await loadAllImagesFromDirectory(eventsHeroImages);
-const eventHeroImage = loadedHeroImages[0];
+
+// Image is locale-agnostic; editors can upload on either locale's singleton.
+// Prefer EN, fall back to the active locale, then to the first file in the directory.
+const imageEntry = await getPageContent('events/events-title', 'en');
+const imageFileName = imageEntry?.data.image || pageContent?.data.image;
+const eventHeroAlt = imageEntry?.data.imageAlt || pageContent?.data.imageAlt
+  || "BEARS members collaborating at a workshop event";
+
+let eventHeroImage = imageFileName
+  ? await loadImage({
+      glob: eventsHeroImages,
+      imagePath: resolveImagePath('/src/assets/hero/events', imageFileName),
+      context: { itemTitle: 'Events hero image' },
+    })
+  : null;
+
+if (!eventHeroImage) {
+  const loadedHeroImages = await loadAllImagesFromDirectory(eventsHeroImages);
+  eventHeroImage = loadedHeroImages[0] ?? null;
+}
 
 // Get all published events (filtered and sorted)
 const sortedEvents = await getPublishedEvents(locale);
@@ -72,8 +89,8 @@ const eventsData = JSON.stringify(eventsWithImages.map((e, i) => ({
 
 <BaseLayout title={pageContent?.data.title ?? "Events"} description={pageContent?.data.seoDescription}>
   <PageHeroImage
-    image={eventHeroImage}
-    alt="BEARS members collaborating at a workshop event"
+    image={eventHeroImage!}
+    alt={eventHeroAlt}
     title={pageContent?.data.title ?? "Events"}
     subtitle={pageContent?.data.subtitle ?? ""}
     searchAliases={['Events', 'Veranstaltungen']}

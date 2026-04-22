@@ -1,4 +1,5 @@
-import { getCollection } from 'astro:content';
+import type { MockedFunction } from 'vitest';
+import { getCollection, getEntry } from 'astro:content';
 import {
   sortByDateDesc,
   sortBySlug,
@@ -10,27 +11,39 @@ import {
   getPageContent,
   getDocsBySection,
   getLandingHeroSlides,
-  getMeetTheTeamProjects,
+  getMeetTheTeamProjectsWithPeople,
+  getFacesOfBearsPeople,
   getSponsorsByTier,
-  getTestimonialsSorted,
+  getTestimonials,
   getPublishedInstagramPosts,
   getLatestInstagramPosts,
 } from '../contentQueries';
 
-const mockedGetCollection = vi.mocked(getCollection);
+// `astro:content` is aliased to a loose local mock at runtime (vitest.config.ts)
+// but tsconfig resolves it to the real Astro types — so `vi.mocked(getCollection)`
+// inherits the full `CollectionEntry` union, rejecting the minimal shapes
+// `makeEntry` builds below. Re-typing relaxes the argument shape without
+// affecting the rest of the test file.
+const mockedGetCollection = vi.mocked(getCollection) as unknown as MockedFunction<
+  (collection: string) => Promise<Array<Record<string, unknown>>>
+>;
+const mockedGetEntry = vi.mocked(getEntry) as unknown as MockedFunction<
+  (collection: string, id: string) => Promise<Record<string, unknown> | undefined>
+>;
 
 // ---------------------------------------------------------------------------
 // Helpers for creating mock entries
 // ---------------------------------------------------------------------------
 
-function makeEntry(overrides: { date?: Date; slug?: string; isDraft?: boolean; id?: string; displayMeetTheTeam?: boolean }) {
+function makeEntry(overrides: { date?: Date; slug?: string; isDraft?: boolean; id?: string; displayMeetTheTeam?: boolean; order?: number }) {
   return {
-    id: overrides.id ?? 'en/test.md',
+    id: overrides.id ?? 'en/test.mdx',
     slug: overrides.slug ?? 'test',
     data: {
       date: overrides.date ?? new Date('2024-01-01'),
       isDraft: overrides.isDraft,
       displayMeetTheTeam: overrides.displayMeetTheTeam,
+      order: overrides.order,
     },
   };
 }
@@ -356,8 +369,8 @@ describe('getPageContent', () => {
 
   it('finds entry by id', async () => {
     mockedGetCollection.mockResolvedValue([
-      { id: 'en/landing/hero.md', slug: 'hero', data: { title: 'Hero' } },
-      { id: 'en/sub-pages/about.md', slug: 'about', data: { title: 'About' } },
+      { id: 'en/landing/hero.mdx', slug: 'hero', data: { title: 'Hero' } },
+      { id: 'en/sub-pages/about.mdx', slug: 'about', data: { title: 'About' } },
     ]);
     const result = await getPageContent('landing/hero');
     expect(result?.data.title).toBe('Hero');
@@ -365,23 +378,23 @@ describe('getPageContent', () => {
 
   it('appends .md extension if missing', async () => {
     mockedGetCollection.mockResolvedValue([
-      { id: 'en/landing/hero.md', slug: 'hero', data: { title: 'Hero' } },
+      { id: 'en/landing/hero.mdx', slug: 'hero', data: { title: 'Hero' } },
     ]);
     const result = await getPageContent('landing/hero');
     expect(result).toBeDefined();
   });
 
-  it('does not double-append .md', async () => {
+  it('does not double-append .mdx', async () => {
     mockedGetCollection.mockResolvedValue([
-      { id: 'en/landing/hero.md', slug: 'hero', data: { title: 'Hero' } },
+      { id: 'en/landing/hero.mdx', slug: 'hero', data: { title: 'Hero' } },
     ]);
-    const result = await getPageContent('landing/hero.md');
+    const result = await getPageContent('landing/hero.mdx');
     expect(result).toBeDefined();
   });
 
   it('returns undefined for non-existent id', async () => {
     mockedGetCollection.mockResolvedValue([
-      { id: 'en/landing/hero.md', slug: 'hero', data: { title: 'Hero' } },
+      { id: 'en/landing/hero.mdx', slug: 'hero', data: { title: 'Hero' } },
     ]);
     const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
     const result = await getPageContent('does-not-exist');
@@ -405,45 +418,33 @@ describe('getLandingHeroSlides', () => {
     mockedGetCollection.mockReset();
   });
 
-  it('sorts slides by numeric prefix', async () => {
+  it('sorts slides by data.order ascending', async () => {
     mockedGetCollection.mockResolvedValue([
-      { id: '03-slide.md', slug: 'slide-3', data: {} },
-      { id: '01-slide.md', slug: 'slide-1', data: {} },
-      { id: '02-slide.md', slug: 'slide-2', data: {} },
+      { id: 'c.mdx', slug: 'c', data: { order: 3 } },
+      { id: 'a.mdx', slug: 'a', data: { order: 1 } },
+      { id: 'b.mdx', slug: 'b', data: { order: 2 } },
     ]);
     const result = await getLandingHeroSlides();
-    expect(result.map(s => s.id)).toEqual(['01-slide.md', '02-slide.md', '03-slide.md']);
+    expect(result.map(s => s.id)).toEqual(['a.mdx', 'b.mdx', 'c.mdx']);
   });
 
-  it('sorts numerically not lexicographically', async () => {
+  it('sorts numerically across non-contiguous orders', async () => {
     mockedGetCollection.mockResolvedValue([
-      { id: '10-slide.md', slug: 'slide-10', data: {} },
-      { id: '2-slide.md', slug: 'slide-2', data: {} },
-      { id: '1-slide.md', slug: 'slide-1', data: {} },
+      { id: 'ten.mdx', slug: 'ten', data: { order: 10 } },
+      { id: 'two.mdx', slug: 'two', data: { order: 2 } },
+      { id: 'one.mdx', slug: 'one', data: { order: 1 } },
     ]);
     const result = await getLandingHeroSlides();
-    expect(result.map(s => s.id)).toEqual(['1-slide.md', '2-slide.md', '10-slide.md']);
+    expect(result.map(s => s.id)).toEqual(['one.mdx', 'two.mdx', 'ten.mdx']);
   });
 
-  it('sorts slides without numeric prefix to the beginning', async () => {
+  it('breaks ties on filename for deterministic output', async () => {
     mockedGetCollection.mockResolvedValue([
-      { id: '05-slide.md', slug: 'slide-5', data: {} },
-      { id: 'about.md', slug: 'about', data: {} },
-      { id: '01-slide.md', slug: 'slide-1', data: {} },
+      { id: 'beta.mdx', slug: 'beta', data: { order: 1 } },
+      { id: 'alpha.mdx', slug: 'alpha', data: { order: 1 } },
     ]);
     const result = await getLandingHeroSlides();
-    expect(result.map(s => s.id)).toEqual(['about.md', '01-slide.md', '05-slide.md']);
-  });
-
-  it('handles slides with same numeric prefix', async () => {
-    mockedGetCollection.mockResolvedValue([
-      { id: '01-alpha.md', slug: 'alpha', data: {} },
-      { id: '01-beta.md', slug: 'beta', data: {} },
-    ]);
-    const result = await getLandingHeroSlides();
-    expect(result).toHaveLength(2);
-    expect(result.map(s => s.id)).toContain('01-alpha.md');
-    expect(result.map(s => s.id)).toContain('01-beta.md');
+    expect(result.map(s => s.id)).toEqual(['alpha.mdx', 'beta.mdx']);
   });
 
   it('returns empty array for empty collection', async () => {
@@ -454,45 +455,159 @@ describe('getLandingHeroSlides', () => {
 });
 
 // ---------------------------------------------------------------------------
-// getMeetTheTeamProjects
+// getMeetTheTeamProjectsWithPeople
 // ---------------------------------------------------------------------------
 
-describe('getMeetTheTeamProjects', () => {
+function makePerson(overrides: {
+  slug: string;
+  name?: string;
+  roleEn?: string;
+  roleDe?: string;
+  coverImage?: string;
+  showInFaces?: boolean;
+  order?: number;
+}) {
+  return {
+    id: `${overrides.slug}.mdx`,
+    slug: overrides.slug,
+    collection: 'people',
+    data: {
+      name: overrides.name ?? overrides.slug,
+      roleEn: overrides.roleEn ?? 'Project Lead',
+      roleDe: overrides.roleDe ?? 'Projektleitung',
+      coverImage: overrides.coverImage ?? `${overrides.slug}/coverImage.jpg`,
+      showInFaces: overrides.showInFaces ?? false,
+      order: overrides.order ?? 0,
+    },
+  };
+}
+
+function makeTestimonialItem(overrides: {
+  person: string;
+  quoteEn?: string;
+  quoteDe?: string;
+}) {
+  return {
+    person: overrides.person,
+    quoteEn: overrides.quoteEn ?? 'quote',
+    quoteDe: overrides.quoteDe ?? 'zitat',
+  };
+}
+
+function makeTestimonialsList(items: ReturnType<typeof makeTestimonialItem>[]) {
+  return {
+    id: 'list',
+    collection: 'testimonials',
+    data: { items },
+  };
+}
+
+describe('getMeetTheTeamProjectsWithPeople', () => {
   beforeEach(() => {
     mockedGetCollection.mockReset();
     import.meta.env.DEV = false;
   });
 
-  it('calls getCollection with "projects"', async () => {
-    mockedGetCollection.mockResolvedValue([]);
-    await getMeetTheTeamProjects();
+  function withCollections(projects: unknown[], people: unknown[]) {
+    mockedGetCollection.mockImplementation(async (name: string) => {
+      if (name === 'projects') return projects as Array<Record<string, unknown>>;
+      if (name === 'people') return people as Array<Record<string, unknown>>;
+      return [];
+    });
+  }
+
+  it('queries both projects and people collections', async () => {
+    withCollections([], []);
+    await getMeetTheTeamProjectsWithPeople();
     expect(mockedGetCollection).toHaveBeenCalledWith('projects');
+    expect(mockedGetCollection).toHaveBeenCalledWith('people');
   });
 
-  it('returns projects sorted by date descending', async () => {
-    mockedGetCollection.mockResolvedValue([
-      makeEntry({ id: 'en/old-project.mdx', date: new Date('2023-01-01'), slug: 'old-project', displayMeetTheTeam: true }),
-      makeEntry({ id: 'en/new-project.mdx', date: new Date('2024-06-01'), slug: 'new-project', displayMeetTheTeam: true }),
-    ]);
-    const result = await getMeetTheTeamProjects();
-    expect(result[0].slug).toBe('new-project');
-    expect(result[1].slug).toBe('old-project');
+  it('attaches the resolved person and locale-correct displayRole', async () => {
+    withCollections(
+      [{ ...makeEntry({ id: 'en/p.mdx', slug: 'p', displayMeetTheTeam: true }), data: { ...makeEntry({ id: 'en/p.mdx', slug: 'p', displayMeetTheTeam: true }).data, person: 'jane' } }],
+      [makePerson({ slug: 'jane', name: 'Jane Doe', roleEn: 'CEO', roleDe: 'Geschäftsführerin' })],
+    );
+    const result = await getMeetTheTeamProjectsWithPeople('de');
+    expect(result).toHaveLength(1);
+    expect(result[0].displayName).toBe('Jane Doe');
+    expect(result[0].displayRole).toBe('Geschäftsführerin');
+    expect(result[0].person.slug).toBe('jane');
+  });
+
+  it('sorts attached entries by project date descending', async () => {
+    withCollections(
+      [
+        { ...makeEntry({ id: 'en/old.mdx', slug: 'old', date: new Date('2023-01-01'), displayMeetTheTeam: true }), data: { ...makeEntry({ id: 'en/old.mdx', slug: 'old', date: new Date('2023-01-01'), displayMeetTheTeam: true }).data, person: 'a' } },
+        { ...makeEntry({ id: 'en/new.mdx', slug: 'new', date: new Date('2024-06-01'), displayMeetTheTeam: true }), data: { ...makeEntry({ id: 'en/new.mdx', slug: 'new', date: new Date('2024-06-01'), displayMeetTheTeam: true }).data, person: 'b' } },
+      ],
+      [makePerson({ slug: 'a' }), makePerson({ slug: 'b' })],
+    );
+    const result = await getMeetTheTeamProjectsWithPeople();
+    expect(result[0].project.slug).toBe('new');
+    expect(result[1].project.slug).toBe('old');
   });
 
   it('filters out projects without displayMeetTheTeam', async () => {
-    mockedGetCollection.mockResolvedValue([
-      makeEntry({ id: 'en/team-project.mdx', slug: 'team-project', displayMeetTheTeam: true }),
-      makeEntry({ id: 'en/regular-project.mdx', slug: 'regular-project' }),
-    ]);
-    const result = await getMeetTheTeamProjects();
+    withCollections(
+      [
+        { ...makeEntry({ id: 'en/yes.mdx', slug: 'yes', displayMeetTheTeam: true }), data: { ...makeEntry({ id: 'en/yes.mdx', slug: 'yes', displayMeetTheTeam: true }).data, person: 'a' } },
+        makeEntry({ id: 'en/no.mdx', slug: 'no' }),
+      ],
+      [makePerson({ slug: 'a' })],
+    );
+    const result = await getMeetTheTeamProjectsWithPeople();
     expect(result).toHaveLength(1);
-    expect(result[0].slug).toBe('team-project');
+    expect(result[0].project.slug).toBe('yes');
   });
 
-  it('returns empty array when no projects match', async () => {
-    mockedGetCollection.mockResolvedValue([]);
-    const result = await getMeetTheTeamProjects();
+  it('skips and warns on projects whose person reference does not resolve', async () => {
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    withCollections(
+      [{ ...makeEntry({ id: 'en/orphan.mdx', slug: 'orphan', displayMeetTheTeam: true }), data: { ...makeEntry({ id: 'en/orphan.mdx', slug: 'orphan', displayMeetTheTeam: true }).data, person: 'ghost' } }],
+      [],
+    );
+    const result = await getMeetTheTeamProjectsWithPeople();
     expect(result).toEqual([]);
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('ghost'));
+    warnSpy.mockRestore();
+  });
+
+  it('returns an empty array when no projects exist', async () => {
+    withCollections([], []);
+    const result = await getMeetTheTeamProjectsWithPeople();
+    expect(result).toEqual([]);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// getFacesOfBearsPeople
+// ---------------------------------------------------------------------------
+
+describe('getFacesOfBearsPeople', () => {
+  beforeEach(() => {
+    mockedGetCollection.mockReset();
+  });
+
+  it('returns only people flagged showInFaces, sorted by order then slug', async () => {
+    mockedGetCollection.mockResolvedValue([
+      makePerson({ slug: 'b', showInFaces: true, order: 5 }),
+      makePerson({ slug: 'a', showInFaces: true, order: 5 }),
+      makePerson({ slug: 'first', showInFaces: true, order: 1 }),
+      makePerson({ slug: 'hidden', showInFaces: false, order: 0 }),
+    ]);
+    const result = await getFacesOfBearsPeople();
+    expect(result.map((p) => p.slug)).toEqual(['first', 'a', 'b']);
+  });
+
+  it('projects role from the locale-appropriate field', async () => {
+    mockedGetCollection.mockResolvedValue([
+      makePerson({ slug: 'jane', showInFaces: true, roleEn: 'CEO', roleDe: 'Geschäftsführerin' }),
+    ]);
+    const en = await getFacesOfBearsPeople('en');
+    const de = await getFacesOfBearsPeople('de');
+    expect((en[0].data as { role: string }).role).toBe('CEO');
+    expect((de[0].data as { role: string }).role).toBe('Geschäftsführerin');
   });
 });
 
@@ -500,11 +615,11 @@ describe('getMeetTheTeamProjects', () => {
 // getSponsorsByTier
 // ---------------------------------------------------------------------------
 
-function makeSponsor(overrides: { id: string; slug: string }) {
+function makeSponsor(overrides: { id: string; slug: string; order?: number }) {
   return {
     id: overrides.id,
     slug: overrides.slug,
-    data: { name: overrides.slug },
+    data: { name: overrides.slug, order: overrides.order ?? 0 },
     collection: 'sponsors',
   };
 }
@@ -516,10 +631,10 @@ describe('getSponsorsByTier', () => {
 
   it('groups sponsors by tier derived from id', async () => {
     mockedGetCollection.mockResolvedValue([
-      makeSponsor({ id: 'gold/acme', slug: 'acme' }),
-      makeSponsor({ id: 'silver/beta', slug: 'beta' }),
-      makeSponsor({ id: 'gold/zeta', slug: 'zeta' }),
-      makeSponsor({ id: 'bronze/gamma', slug: 'gamma' }),
+      makeSponsor({ id: 'gold/acme', slug: 'acme', order: 1 }),
+      makeSponsor({ id: 'silver/beta', slug: 'beta', order: 1 }),
+      makeSponsor({ id: 'gold/zeta', slug: 'zeta', order: 2 }),
+      makeSponsor({ id: 'bronze/gamma', slug: 'gamma', order: 1 }),
     ]);
 
     const result = await getSponsorsByTier();
@@ -530,15 +645,25 @@ describe('getSponsorsByTier', () => {
     expect(result.platinum).toHaveLength(0);
   });
 
-  it('sorts each tier alphabetically by slug', async () => {
+  it('sorts each tier by data.order ascending', async () => {
     mockedGetCollection.mockResolvedValue([
-      makeSponsor({ id: 'gold/zeta-corp', slug: 'zeta-corp' }),
-      makeSponsor({ id: 'gold/alpha-inc', slug: 'alpha-inc' }),
-      makeSponsor({ id: 'gold/mid-co', slug: 'mid-co' }),
+      makeSponsor({ id: 'gold/zeta-corp', slug: 'zeta-corp', order: 3 }),
+      makeSponsor({ id: 'gold/alpha-inc', slug: 'alpha-inc', order: 1 }),
+      makeSponsor({ id: 'gold/mid-co', slug: 'mid-co', order: 2 }),
     ]);
 
     const result = await getSponsorsByTier();
     expect(result.gold.map(s => s.slug)).toEqual(['alpha-inc', 'mid-co', 'zeta-corp']);
+  });
+
+  it('breaks order ties on slug', async () => {
+    mockedGetCollection.mockResolvedValue([
+      makeSponsor({ id: 'silver/beta', slug: 'beta', order: 1 }),
+      makeSponsor({ id: 'silver/alpha', slug: 'alpha', order: 1 }),
+    ]);
+
+    const result = await getSponsorsByTier();
+    expect(result.silver.map(s => s.slug)).toEqual(['alpha', 'beta']);
   });
 
   it('returns all five tier keys', async () => {
@@ -581,28 +706,76 @@ describe('getSponsorsByTier', () => {
 });
 
 // ---------------------------------------------------------------------------
-// getTestimonialsSorted
+// getTestimonials
 // ---------------------------------------------------------------------------
 
-describe('getTestimonialsSorted', () => {
+describe('getTestimonials', () => {
   beforeEach(() => {
     mockedGetCollection.mockReset();
+    mockedGetEntry.mockReset();
   });
 
-  it('returns testimonials sorted by slug', async () => {
-    mockedGetCollection.mockResolvedValue([
-      makeEntry({ id: 'en/charlie.md', slug: 'charlie' }),
-      makeEntry({ id: 'en/alpha.md', slug: 'alpha' }),
-      makeEntry({ id: 'en/bravo.md', slug: 'bravo' }),
-    ]);
-    const result = await getTestimonialsSorted();
-    expect(result.map(t => t.slug)).toEqual(['alpha', 'bravo', 'charlie']);
+  function withList(items: ReturnType<typeof makeTestimonialItem>[], people: unknown[]) {
+    mockedGetEntry.mockImplementation(async (name: string, id: string) => {
+      if (name === 'testimonials' && id === 'list') return makeTestimonialsList(items);
+      return undefined;
+    });
+    mockedGetCollection.mockImplementation(async (name: string) => {
+      if (name === 'people') return people as Array<Record<string, unknown>>;
+      return [];
+    });
+  }
+
+  it('returns resolved people entries in array order (no sort)', async () => {
+    withList(
+      [
+        makeTestimonialItem({ person: 'first' }),
+        makeTestimonialItem({ person: 'b' }),
+        makeTestimonialItem({ person: 'a' }),
+      ],
+      [makePerson({ slug: 'a' }), makePerson({ slug: 'b' }), makePerson({ slug: 'first' })],
+    );
+    const result = await getTestimonials();
+    expect(result.map((p) => p.slug)).toEqual(['first', 'b', 'a']);
   });
 
-  it('calls getCollection with "testimonials"', async () => {
+  it('projects role from the person (locale-aware) and quote from the item (locale-aware)', async () => {
+    withList(
+      [makeTestimonialItem({ person: 'jane', quoteEn: 'Great place', quoteDe: 'Toller Ort' })],
+      [makePerson({ slug: 'jane', roleEn: 'CEO', roleDe: 'Geschäftsführerin' })],
+    );
+    const en = await getTestimonials('en');
+    const de = await getTestimonials('de');
+    expect((en[0].data as { role: string; quote: string }).role).toBe('CEO');
+    expect((en[0].data as { role: string; quote: string }).quote).toBe('Great place');
+    expect((de[0].data as { role: string; quote: string }).role).toBe('Geschäftsführerin');
+    expect((de[0].data as { role: string; quote: string }).quote).toBe('Toller Ort');
+  });
+
+  it('skips and warns on items whose person reference does not resolve', async () => {
+    const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    withList(
+      [makeTestimonialItem({ person: 'ghost' })],
+      [],
+    );
+    const result = await getTestimonials();
+    expect(result).toEqual([]);
+    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining('ghost'));
+    warnSpy.mockRestore();
+  });
+
+  it('returns empty array when the singleton entry is missing', async () => {
+    mockedGetEntry.mockResolvedValue(undefined);
     mockedGetCollection.mockResolvedValue([]);
-    await getTestimonialsSorted();
-    expect(mockedGetCollection).toHaveBeenCalledWith('testimonials');
+    const result = await getTestimonials();
+    expect(result).toEqual([]);
+  });
+
+  it('reads the `list` entry from the testimonials collection and the people collection', async () => {
+    withList([], []);
+    await getTestimonials();
+    expect(mockedGetEntry).toHaveBeenCalledWith('testimonials', 'list');
+    expect(mockedGetCollection).toHaveBeenCalledWith('people');
   });
 });
 
@@ -684,8 +857,8 @@ describe('getPageContent locale fallback', () => {
 
   it('returns German entry when available', async () => {
     mockedGetCollection.mockResolvedValue([
-      { id: 'en/landing/hero.md', slug: 'hero', data: { title: 'Hero EN' } },
-      { id: 'de/landing/hero.md', slug: 'hero', data: { title: 'Hero DE' } },
+      { id: 'en/landing/hero.mdx', slug: 'hero', data: { title: 'Hero EN' } },
+      { id: 'de/landing/hero.mdx', slug: 'hero', data: { title: 'Hero DE' } },
     ]);
     const result = await getPageContent('landing/hero', 'de');
     expect(result?.data.title).toBe('Hero DE');
@@ -693,7 +866,7 @@ describe('getPageContent locale fallback', () => {
 
   it('falls back to English when German entry is missing', async () => {
     mockedGetCollection.mockResolvedValue([
-      { id: 'en/landing/hero.md', slug: 'hero', data: { title: 'Hero EN' } },
+      { id: 'en/landing/hero.mdx', slug: 'hero', data: { title: 'Hero EN' } },
     ]);
     const result = await getPageContent('landing/hero', 'de');
     expect(result?.data.title).toBe('Hero EN');
@@ -701,7 +874,7 @@ describe('getPageContent locale fallback', () => {
 
   it('does not fall back when locale is en (default)', async () => {
     mockedGetCollection.mockResolvedValue([
-      { id: 'de/landing/hero.md', slug: 'hero', data: { title: 'Hero DE' } },
+      { id: 'de/landing/hero.mdx', slug: 'hero', data: { title: 'Hero DE' } },
     ]);
     const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
     const result = await getPageContent('landing/hero', 'en');
@@ -721,9 +894,9 @@ describe('getDocsBySection', () => {
 
   it('groups docs by section folder', async () => {
     mockedGetCollection.mockResolvedValue([
-      { id: 'guides/getting-started.md', slug: 'getting-started', data: { title: 'Getting Started', order: 10 } },
-      { id: 'guides/advanced.md', slug: 'advanced', data: { title: 'Advanced', order: 20 } },
-      { id: 'dev/architecture.md', slug: 'architecture', data: { title: 'Architecture', order: 10 } },
+      { id: 'guides/getting-started.mdx', slug: 'getting-started', data: { title: 'Getting Started', order: 10 } },
+      { id: 'guides/advanced.mdx', slug: 'advanced', data: { title: 'Advanced', order: 20 } },
+      { id: 'dev/architecture.mdx', slug: 'architecture', data: { title: 'Architecture', order: 10 } },
     ]);
 
     const result = await getDocsBySection();
@@ -735,9 +908,9 @@ describe('getDocsBySection', () => {
 
   it('sorts docs within each section by order', async () => {
     mockedGetCollection.mockResolvedValue([
-      { id: 'guides/z-last.md', slug: 'z-last', data: { title: 'Last', order: 30 } },
-      { id: 'guides/a-first.md', slug: 'a-first', data: { title: 'First', order: 10 } },
-      { id: 'guides/m-middle.md', slug: 'm-middle', data: { title: 'Middle', order: 20 } },
+      { id: 'guides/z-last.mdx', slug: 'z-last', data: { title: 'Last', order: 30 } },
+      { id: 'guides/a-first.mdx', slug: 'a-first', data: { title: 'First', order: 10 } },
+      { id: 'guides/m-middle.mdx', slug: 'm-middle', data: { title: 'Middle', order: 20 } },
     ]);
 
     const result = await getDocsBySection();

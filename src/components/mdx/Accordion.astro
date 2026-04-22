@@ -4,25 +4,45 @@ import { markdownToHtml } from '@utils/markdown';
 // Accordion - Reusable accordion component with self-managed state
 // Usage: Pass items array with title, subtitle (optional), and content (Markdown format)
 
+type AccordionMode = 'single-closed' | 'single-open' | 'always-one' | 'multi';
+
 interface Props {
   items: Array<{
     title: string;           // Accordion header text (required)
     subtitle?: string;       // Optional subtitle/metadata
     content: string;         // Content in Markdown format (processed server-side to HTML)
   }>;
-  defaultOpen?: number | null;  // Index of initially opened item (default: null - all closed)
-  allowCloseAll?: boolean;      // Whether clicking an open item closes it (default: auto-derived from defaultOpen)
-  allowMultiple?: boolean;      // Allow multiple items to be open simultaneously (default: false)
+  // Preferred: one-word display mode. Overrides the three low-level props below.
+  mode?: AccordionMode;
+  // Legacy explicit props (kept for backward compatibility with existing content):
+  defaultOpen?: number | null;
+  allowCloseAll?: boolean;
+  allowMultiple?: boolean;
   width?: string;               // Optional width (default: "100%")
 }
 
+const MODE_PRESETS: Record<AccordionMode, { defaultOpen: number | null; allowCloseAll: boolean; allowMultiple: boolean }> = {
+  'single-closed': { defaultOpen: null, allowCloseAll: true,  allowMultiple: false },
+  'single-open':   { defaultOpen: 0,    allowCloseAll: true,  allowMultiple: false },
+  'always-one':    { defaultOpen: 0,    allowCloseAll: false, allowMultiple: false },
+  'multi':         { defaultOpen: null, allowCloseAll: true,  allowMultiple: true  },
+};
+
 const {
   items = [],
-  defaultOpen = null,
-  allowCloseAll = defaultOpen === null || defaultOpen === undefined,  // Auto-derive if not explicitly set
-  allowMultiple = false,  // Default to single-open mode for backward compatibility
+  mode,
+  defaultOpen: rawDefaultOpen = null,
+  allowCloseAll: rawAllowCloseAll,
+  allowMultiple: rawAllowMultiple = false,
   width = "100%",
 } = Astro.props;
+
+const preset = mode ? MODE_PRESETS[mode] : null;
+const defaultOpen = preset ? preset.defaultOpen : rawDefaultOpen;
+const allowMultiple = preset ? preset.allowMultiple : rawAllowMultiple;
+const allowCloseAll = preset
+  ? preset.allowCloseAll
+  : (rawAllowCloseAll ?? (defaultOpen === null || defaultOpen === undefined));
 
 // Process Markdown content to HTML for all items
 const processedItems = await Promise.all(

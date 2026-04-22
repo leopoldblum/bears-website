@@ -1,0 +1,38 @@
+---
+title: "Managing Instagram Posts"
+description: "How to embed Instagram posts on the website."
+order: 25
+group: "Content"
+---
+
+Instagram posts displayed on the website are stored in `src/content/instagram/` as Markdown files. The landing page shows the latest 3 posts.
+
+## Creating a Post Entry
+
+Create a new `.mdx` file in `src/content/instagram/`. The filename can be anything — posts are sorted by the `date` frontmatter field, not by filename. Editors using the Keystatic admin UI get a slug derived from the post URL automatically.
+
+```yaml
+---
+url: "https://www.instagram.com/p/DTtCU_xCO2f/"
+date: 2026-02-05
+---
+```
+
+The body of Instagram files is not used. Copy the post URL directly from Instagram's share menu.
+
+## Required Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `url` | string | Full Instagram post URL |
+| `date` | date | Date of the post (`YYYY-MM-DD`) |
+
+## Optional Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `isDraft` | boolean | Set to `true` to hide in production (default: `false`) |
+
+## Display Order
+
+Posts are sorted by date, newest first.

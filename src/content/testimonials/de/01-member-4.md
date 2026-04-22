@@ -1,6 +1,0 @@
----
-quote: "Platzhalter-Inhalte fuer Testimonials koennen einfach durch echte Zitate und Rueckmeldungen von Mitgliedern ersetzt werden, sobald die Inhalte bereit sind."
-name: "Fourth Member"
-role: "Titel / Jahr / Gruppe"
-coverImage: "placeholder-5.jpg"
----

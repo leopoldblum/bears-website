@@ -1,0 +1,69 @@
+---
+title: "Managing People"
+description: "How to add and manage people who appear in the Faces of BEARS grid, as project leads in Meet the Team, and as the subjects of landing-page testimonials."
+order: 26
+group: "Content"
+---
+
+People (team members, project leads, anyone whose photo + role appears on the site) live in a single `people` collection. The same record can power all three surfaces where a person shows up:
+
+- **Faces of BEARS** — the portrait grid on the About Us page.
+- **Meet the Team** — the project lead callout on the landing page (one project's lead is one person from this collection).
+- **Testimonials** — the quote carousel on the landing page. The quote itself lives in the separate **Testimonials** collection (see [Managing Testimonials](/docs/guides/managing-testimonials)) and points back at a person here.
+
+The collection is **locale-agnostic**: one entry per person, with `roleEn` / `roleDe` fields for the bilingual job title. Names and photos are shared across English and German.
+
+## Folder Structure
+
+```
+src/content/people/
+├── matti-keller.mdx
+├── jane-doe.mdx
+└── ...
+```
+
+No `en/` or `de/` subfolder — one file per person.
+
+## Creating a Person
+
+Create a new `.mdx` file under `src/content/people/` named after the person (e.g., `jane-doe.mdx`). The filename becomes the slug used by other content (projects' `person` reference, the URL of any future people-detail page).
+
+```yaml
+---
+name: "Jane Doe"
+roleEn: "Propulsion Lead / WS 2025"
+roleDe: "Antriebsteam-Leitung / WS 2025"
+coverImage: jane-doe/jane-doe.jpg
+showInFaces: true
+order: 17
+---
+```
+
+The body of these files is not rendered — all content comes from the frontmatter.
+
+## Required Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `name` | string | The person's display name. |
+| `roleEn` | string | English role (e.g., "Project Lead"). |
+| `roleDe` | string | German role (e.g., "Projektleitung"). |
+| `coverImage` | string | Portrait path under `src/assets/people/<slug>/`, written as `<slug>/<filename>`. |
+| `showInFaces` | boolean | If `true`, this person appears in the Faces of BEARS grid on the About Us page. Default `false`. |
+| `order` | number | Sort order in the grid. Only meaningful when `showInFaces` is `true`. Lower numbers appear first; ties break on the slug. |
+
+## Images
+
+Each person has their own asset subfolder under `src/assets/people/<slug>/`. Place the portrait there and reference it as `<slug>/<filename>`. Valid formats: `.jpg`, `.jpeg`, `.png`, `.webp`, `.svg`. The same portrait is reused across Faces of BEARS, Meet the Team, and Testimonials — one image per person.
+
+When uploading through the Keystatic admin, the image is automatically scoped to the right subfolder.
+
+## Surfaces a person can appear on
+
+The three surfaces are independent.
+
+- **Faces of BEARS** — `showInFaces: true`, sorted by `order`.
+- **Meet the Team** — this person is referenced from a project's `person` field. Works independently of `showInFaces`; project leads who don't belong in the grid can stay with `showInFaces: false`.
+- **Testimonials** — create an entry in the separate **Testimonials** collection that references this person. The quote text and display order live on the testimonial entry, not the person. See [Managing Testimonials](/docs/guides/managing-testimonials).
+
+To attach a person to a project, edit the project (`Projects` group in the admin) and pick the person from the **Head of project** dropdown. See [Managing Projects](/docs/guides/managing-projects).

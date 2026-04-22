@@ -5,13 +5,11 @@ order: 38
 group: "MDX Components"
 ---
 
-import { Marquee, Img } from '@mdx';
-import testImage from '@assets/projects/project-1.jpg';
 
 Marquees create an infinite horizontal scroll — great for photo galleries or logo strips. Items are automatically duplicated to fill the screen:
 
 ```mdx
-import { Accordion, Button, Callout, Carousel, Center, Img, Instagram, Marquee, YouTube, SideBySide, Left, Right } from '@mdx';
+import { Accordion, Button, Callout, Carousel, Center, ImageGrid, Img, Instagram, Marquee, YouTube, SideBySide, Left, Right } from '@mdx';
 import photo1 from '@assets/events/photo-1.jpg';
 import photo2 from '@assets/events/photo-2.jpg';
 import photo3 from '@assets/events/photo-3.jpg';
@@ -23,13 +21,13 @@ import photo3 from '@assets/events/photo-3.jpg';
 </Marquee>
 ```
 
-<div class="not-prose mb-4">
+<Preview>
   <Marquee>
-    <Img src={testImage} alt="Photo 1" />
-    <Img src={testImage} alt="Photo 2" />
-    <Img src={testImage} alt="Photo 3" />
+    <Img src="/src/assets/default-images/default-event.jpg" alt="Photo 1" />
+    <Img src="/src/assets/default-images/default-event.jpg" alt="Photo 2" />
+    <Img src="/src/assets/default-images/default-event.jpg" alt="Photo 3" />
   </Marquee>
-</div>
+</Preview>
 
 Hover over the marquee to pause it. On touch devices, you can drag the marquee horizontally to browse content — auto-scrolling resumes when you release.
 

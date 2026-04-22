@@ -21,33 +21,19 @@ export type ImageGlob = Record<string, () => Promise<{ default: ImageMetadata }>
 /**
  * Event cover images
  * Used by: events.astro, [slug].astro, LatestNews.astro
+ * Note: includes subdirectories so Keystatic-scoped uploads (e.g. `test/coverImage.jpg`) resolve.
  */
 export const eventImages: ImageGlob = filterImageGlob(
-  import.meta.glob<{ default: ImageMetadata }>("/src/assets/events/*.*"),
+  import.meta.glob<{ default: ImageMetadata }>("/src/assets/events/**/*.*"),
 );
 
 /**
  * Project cover images
  * Used by: projects.astro, [slug].astro, LatestNews.astro
+ * Note: includes subdirectories so Keystatic-scoped uploads resolve.
  */
 export const projectImages: ImageGlob = filterImageGlob(
-  import.meta.glob<{ default: ImageMetadata }>("/src/assets/projects/*.*"),
-);
-
-/**
- * Team member portrait images for Meet the Team section
- * Used by: MeetTheTeam.astro
- */
-export const teamImages: ImageGlob = filterImageGlob(
-  import.meta.glob<{ default: ImageMetadata }>("/src/assets/projects/team-members/*.*"),
-);
-
-/**
- * Testimonial portrait images
- * Used by: Testimonials.astro
- */
-export const testimonialImages: ImageGlob = filterImageGlob(
-  import.meta.glob<{ default: ImageMetadata }>("/src/assets/testimonials/*.*"),
+  import.meta.glob<{ default: ImageMetadata }>("/src/assets/projects/**/*.*"),
 );
 
 /**
@@ -62,9 +48,10 @@ export const sponsorLogos: ImageGlob = filterImageGlob(
 /**
  * WhatIsBears carousel images
  * Used by: WhatIsBears.astro
+ * Note: includes subdirectories so Keystatic per-entry subfolder uploads resolve.
  */
 export const whatIsBearsImages: ImageGlob = filterImageGlob(
-  import.meta.glob<{ default: ImageMetadata }>("/src/assets/whatIsBears/*.*"),
+  import.meta.glob<{ default: ImageMetadata }>("/src/assets/whatIsBears/**/*.*"),
 );
 
 /**
@@ -76,11 +63,13 @@ export const ourMissionImages: ImageGlob = filterImageGlob(
 );
 
 /**
- * Faces of BEARS portrait images
- * Used by: FacesOfBears.astro
+ * People portrait images (Faces of BEARS grid + project Meet-the-Team leads).
+ * Used by: FacesOfBears.astro, MeetTheTeam.astro, media.astro.
+ * Files live at /src/assets/people/{slug}/coverImage.{ext} following the
+ * Keystatic per-entry-subfolder convention.
  */
-export const faceImages: ImageGlob = filterImageGlob(
-  import.meta.glob<{ default: ImageMetadata }>("/src/assets/faces-of-bears/*.*"),
+export const peopleImages: ImageGlob = filterImageGlob(
+  import.meta.glob<{ default: ImageMetadata }>("/src/assets/people/**/*.*"),
 );
 
 /**
@@ -147,6 +136,35 @@ export const heroLogoImages: ImageGlob = filterImageGlob(
  */
 export const heroImages: ImageGlob = filterImageGlob(
   import.meta.glob<{ default: ImageMetadata }>("/src/assets/hero/landingpage/*.*"),
+);
+
+/**
+ * Default fallback images (event/project/sponsor/face).
+ * Filenames are chosen via the `branding` content entry; this glob resolves
+ * whichever file the editor has set for each slot.
+ */
+export const defaultImages: ImageGlob = filterImageGlob(
+  import.meta.glob<{ default: ImageMetadata }>("/src/assets/default-images/*.*"),
+);
+
+/**
+ * Flat glob across every asset subtree. Used by Img.astro to resolve string
+ * srcs coming from Keystatic uploads (e.g. "/src/assets/events/<slug>/foo.jpg")
+ * without having to know which collection the Img sits in.
+ */
+export const allAssetImages: ImageGlob = filterImageGlob(
+  import.meta.glob<{ default: ImageMetadata }>("/src/assets/**/*.*"),
+);
+
+/**
+ * Social-link SVG icons uploaded via Keystatic.
+ * Used by: Footer.astro, ContactInfo.astro
+ * Imported as URLs (not optimised) because icons render via CSS mask-image,
+ * which operates on the SVG silhouette rather than its path data.
+ */
+export const socialIconFiles = import.meta.glob<string>(
+  "/src/assets/social-icons/**/*.svg",
+  { query: '?url', import: 'default' },
 );
 
 /**

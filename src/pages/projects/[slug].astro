@@ -1,9 +1,12 @@
 ---
 import PostLayout from "@layouts/PostLayout.astro";
-import { type CollectionEntry } from "astro:content";
+import { type CollectionEntry, getEntry } from "astro:content";
 import { loadCoverImage } from "@utils/imageLoader";
 import { getPublishedProjects, stripLocaleFromSlug } from "@utils/contentQueries";
 import { getLocale } from "@utils/i18n";
+import * as mdxComponents from "@mdx";
+
+export const prerender = true;
 
 
 export async function getStaticPaths() {
@@ -40,8 +43,18 @@ const coverImageData = await loadCoverImage(
   { itemTitle: entry.data.title, itemSlug: entry.slug }
 );
 
-// Extract data for template use
-const { title, date, categoryProject, isProjectCompleted, headOfProject } = entry.data;
+// Resolve the optional person reference. Project Lead label on the metadata
+// card is sourced from the People collection so the same person record can be
+// edited in one place and reflected wherever they're referenced.
+const personRef = entry.data.person;
+let headOfProject: string | undefined;
+if (personRef) {
+  const personSlug = typeof personRef === 'string' ? personRef : personRef.id;
+  const personEntry = await getEntry('people', personSlug);
+  headOfProject = personEntry?.data.name;
+}
+
+const { title, date, categoryProject, isProjectCompleted } = entry.data;
 ---
 
 <PostLayout
@@ -55,5 +68,5 @@ const { title, date, categoryProject, isProjectCompleted, headOfProject } = entr
   headOfProject={headOfProject}
   type="project"
 >
-  <Content />
+  <Content components={mdxComponents} />
 </PostLayout>

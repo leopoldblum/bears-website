@@ -1,0 +1,61 @@
+---
+title: "Architecture"
+description: "Overview of the project structure and technology stack."
+order: 1
+---
+
+The BEARS website is built with Astro.js 5.x, Tailwind CSS v4, and Alpine.js.
+
+## Technology Stack
+
+- **Astro.js 5.x** &mdash; static site generation with file-based routing
+- **Tailwind CSS v4** &mdash; utility-first styling via Vite plugin
+- **Alpine.js** &mdash; lightweight client-side interactivity
+- **TypeScript** &mdash; strict mode enabled
+- **MDX** &mdash; Markdown with component support for rich content pages
+
+## Project Structure
+
+```
+src/
+├── pages/           # File-based routing (English, default locale)
+│   └── de/          # German locale wrappers
+├── layouts/         # Page layouts (BaseLayout, PostLayout, DocsLayout)
+├── components/      # UI components organized by feature
+├── content/         # Content collections (events, projects, docs, etc.)
+│                    # Localized collections use en/ and de/ subfolders
+├── utils/           # Shared utilities (contentQueries, i18n, imageLoader, etc.)
+├── styles/          # Global CSS and Tailwind theme
+├── assets/          # Images and static assets (processed by Astro)
+└── types/           # Shared TypeScript types
+```
+
+## Content Collections
+
+Content is managed through Astro's content collections, defined in `src/content/config.ts`. Each collection has a Zod schema that validates frontmatter fields.
+
+Localized collections (`events`, `projects`, `page-text`) use `en/` and `de/` subfolders. Language-neutral collections (`sponsors`, `instagram`, `hero-slides`, `docs`, `people`, `testimonials`, `social-platforms`) stay flat — `people` carries both role translations inline (`roleEn`/`roleDe`), and `testimonials` carries both quote translations inline (`quoteEn`/`quoteDe`).
+
+## Internationalization (i18n)
+
+The site supports English (default, no URL prefix) and German (`/de/` prefix). Configured via Astro's built-in i18n in `astro.config.mjs`.
+
+Key utilities in `src/utils/i18n.ts`:
+- `getLocale(url)` &mdash; derives locale from URL pathname
+- `localizeUrl(path, locale)` &mdash; adds/removes `/de/` prefix
+- `getCategoryLabel(key, locale)` &mdash; locale-aware category translations
+- `getHreflangUrls(pathname, origin)` &mdash; generates SEO hreflang URLs
+- `catalogUiStrings` &mdash; locale-aware UI labels for events/projects pages (filter, sort, status labels)
+- `mediaUiStrings` &mdash; locale-aware UI labels for the media page
+
+German pages in `src/pages/de/` are thin wrappers that import and re-render the root page component. The root page detects its locale via `getLocale(Astro.url)` and passes it to all components and content queries.
+
+## Routing
+
+Astro uses file-based routing. Files in `src/pages/` map directly to URLs:
+
+- `src/pages/index.astro` &rarr; `/`
+- `src/pages/events.astro` &rarr; `/events`
+- `src/pages/events/[slug].astro` &rarr; `/events/:slug`
+- `src/pages/de/events.astro` &rarr; `/de/events` (German wrapper)
+- `src/pages/de/events/[slug].astro` &rarr; `/de/events/:slug`

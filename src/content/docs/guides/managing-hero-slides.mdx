@@ -1,0 +1,70 @@
+---
+title: "Managing Hero Slides"
+description: "How to add and configure the landing page slideshow."
+order: 24
+group: "Content"
+---
+
+Hero slides control the full-screen background slideshow on the landing page. They are stored in `src/content/hero-slides/`.
+
+## Creating a Slide
+
+Create a new file named after the slide (e.g., `team-photo.mdx`). The filename is just an identifier — display order comes from the `order` frontmatter field, not the filename.
+
+**Image slide:**
+
+```yaml
+---
+order: 6
+type: "image"
+media: "hero-mars-rover.jpg"
+alt: "Mars Rover Engineering lecture at BEARS"
+shownText: "Explore Mars"
+---
+```
+
+**Video slide:**
+
+```yaml
+---
+order: 7
+type: "video"
+media: "sample-video.webm"
+alt: "Decorative video background"
+shownText: "Video Background Example"
+---
+```
+
+The body of hero slide files is not used.
+
+## Required Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `order` | number | Display order — slides are shown in ascending order of this number |
+| `type` | enum | Either `image` or `video` |
+| `media` | string | Filename of the image or video |
+| `alt` | string | Alt text for accessibility (**required** for image slides, optional for video slides) |
+
+## Optional Fields
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `shownText` | string | Overlay text displayed on the slide |
+
+## Media Files
+
+Place all media files in `src/assets/hero/landingpage/`.
+
+- **Images:** `.jpg`, `.jpeg`, `.png`, `.webp`, `.svg`
+- **Videos:** `.mp4`, `.webm`, `.ogg`
+
+**Uploading through the admin UI:** larger files (images >2 MB, videos >10 MB) will freeze the tab during upload &mdash; just let it run and it will go through after a while. Smaller files are preferred; shrink images at [squoosh.app](https://squoosh.app/) and compress videos with HandBrake or ffmpeg when you can. Dropping the file into `src/assets/hero/landingpage/` directly via git is always the quickest route for large media.
+
+## Hero Logo
+
+The landing hero displays a logo image instead of a text heading. The logo is loaded from `src/assets/hero/landingpage/logo/` &mdash; place a single image file in this directory. The filename does not matter; the component picks the first image it finds. To replace the logo, simply swap the file. If the directory is empty, a plain-text "BEARS" heading is shown as a fallback.
+
+## Ordering
+
+Slides are sorted in ascending order of the `order` field. Two slides with the same `order` break the tie by filename. In the admin UI, the `Order` column in the Hero Slides overview shows each slide's position.

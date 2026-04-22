@@ -1,0 +1,106 @@
+---
+title: "TypeScript & Configuration"
+description: "Type system, path aliases, and build configuration."
+order: 12
+group: "Architecture"
+---
+
+## TypeScript Configuration
+
+The project uses Astro's strict TypeScript preset (`astro/tsconfigs/strict`) with React JSX support for MDX components that use React islands.
+
+## Path Aliases
+
+Path aliases are configured in `tsconfig.json` and resolve throughout all `.astro`, `.ts`, `.tsx`, and `.mdx` files:
+
+| Alias | Resolves To | Usage |
+|-------|-------------|-------|
+| `@utils/*` | `src/utils/*` | Utility functions and queries |
+| `@components/*` | `src/components/*` | Any component by full path |
+| `@mdx` | `src/components/mdx/index.ts` | Barrel import for all MDX components |
+| `@mdx/*` | `src/components/mdx/*` | Individual MDX component |
+| `@layouts/*` | `src/layouts/*` | Layout components |
+| `@types` | `src/types/index.ts` | Barrel import for all types |
+| `@types/*` | `src/types/*` | Individual type files |
+| `@assets/*` | `src/assets/*` | Static assets (images, etc.) |
+| `@styles/*` | `src/styles/*` | CSS files |
+| `@reusable/*` | `src/components/reusable/*` | Reusable components |
+| `@layout/*` | `src/components/layout/*` | Layout components (Header, Footer) |
+| `@landing/*` | `src/components/landing/*` | Landing page components |
+| `@posts-catalog/*` | `src/components/posts-catalog/*` | Post listing components |
+| `@post/*` | `src/components/post/*` | Post detail components |
+
+The `@mdx` barrel alias is especially important &mdash; it enables the single-import pattern used in all `.mdx` content files:
+
+```mdx
+import { Accordion, Button, Callout, Carousel, Center, ImageGrid, Img, Instagram, Marquee, YouTube, SideBySide, Left, Right } from '@mdx';
+```
+
+## Type Definitions
+
+Types are defined in `src/types/` and re-exported from `src/types/index.ts`:
+
+### Content Types (`src/types/content.ts`)
+
+```typescript
+type PostType = 'events' | 'projects';
+
+type SponsorTier = 'bronze' | 'silver' | 'gold' | 'platinum' | 'diamond';
+
+// Zod enums — use .options for all valid values
+const CategoryEventEnum = z.enum([
+  'trade-fairs-and-conventions',
+  'competitions-and-workshops',
+  'kick-off-events',
+  'other'
+]);
+
+const CategoryProjectEnum = z.enum([
+  'experimental-rocketry',
+  'science-and-experiments',
+  'robotics',
+  'other'
+]);
+
+const CoverImageType = z.enum(["DEFAULT", "CUSTOM"]);
+```
+
+`CategoryEventEnum.options` and `CategoryProjectEnum.options` return the array of valid values, used by filter components to render category options.
+
+### Component Types (`src/types/components.ts`)
+
+```typescript
+type SponsorEntry = CollectionEntry<'sponsors'>;
+
+interface ImageWithAlt {
+  image: ImageMetadata;
+  alt: string;
+}
+```
+
+`ImageWithAlt` is used by `ImageGrid`, `CollapsibleImageGrid`, and other image display components.
+
+## Astro Configuration
+
+**File:** `astro.config.mjs`
+
+```javascript
+export default defineConfig({
+  site: 'https://bears-space.de',
+  vite: {
+    plugins: [tailwindcss()]
+  },
+  integrations: [alpinejs(), mdx(), react(), sitemap({
+    filter: (page) => !page.includes('/docs/')
+  })]
+});
+```
+
+| Setting | Purpose |
+|---------|---------|
+| `site` | Base URL for canonical links, Open Graph, and sitemap |
+| `tailwindcss()` | Tailwind CSS v4 via Vite plugin (not Astro integration) |
+| `alpinejs()` | Alpine.js for client-side interactivity |
+| `mdx()` | MDX support for content files with component imports |
+| `react()` | React JSX for interactive islands (Carousel) |
+| `sitemap()` | Auto-generated sitemap, excluding `/docs/` pages |

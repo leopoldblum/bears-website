@@ -1,0 +1,38 @@
+---
+title: "Managing Testimonials"
+description: "How to add and manage quotes in the landing-page Testimonials carousel."
+order: 27
+group: "Content"
+---
+
+The **Testimonials** carousel on the landing page is managed as a single drag-reorderable list. Each item picks a person from the People collection and adds a bilingual quote — the list order in the admin is the order shown on the landing page. The same person can appear as a face in "Faces of BEARS" or as a project lead in "Meet the Team" without being a testimonial, and vice versa.
+
+## Where the data lives
+
+All testimonials live in a single file, `src/content/testimonials/list.mdx`, which holds an array of items in its frontmatter. You don't edit it directly — use the admin.
+
+## Adding a Testimonial
+
+In the Keystatic admin, open **Testimonials** in the sidebar. You'll see the list; click **Add** at the bottom to add a new item. If the person you want to quote doesn't exist yet, create them under **People** first (see [Managing People](/docs/guides/managing-people)), then come back.
+
+Fields on each item:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `person` | dropdown | Pick the person this testimonial is from. |
+| `quoteEn` | string | English quote text. |
+| `quoteDe` | string | German quote text. |
+
+All fields are required.
+
+## Reordering
+
+Drag any item up or down in the list — that's the only ordering control. The top item in the list is shown first in the carousel, the bottom item last.
+
+## Removing a Testimonial
+
+Click the trash icon on the item you want to remove. The underlying person record in the People collection is untouched, so they can still appear in Faces of BEARS or Meet the Team.
+
+## Image and Name
+
+The carousel uses the portrait, name, and role from the referenced person — you don't duplicate those on the testimonial. Update them once in the People entry and every surface picks up the change.

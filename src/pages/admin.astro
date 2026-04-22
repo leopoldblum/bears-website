@@ -1,0 +1,305 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import { getCollection } from 'astro:content';
+
+export const prerender = true;
+
+const ADMIN_BUILD = process.env.ADMIN_BUILD === 'true';
+
+type Mismatch = { slug: string; isDraft: boolean };
+type Report = {
+  name: string;
+  contentPath: string;
+  total: number;
+  missingInDe: Mismatch[];
+  missingInEn: Mismatch[];
+};
+
+// Build a report from an Astro content collection that has `isDraft` frontmatter.
+// We annotate each mismatch with the draft status of the counterpart that DOES
+// exist — a missing translation for an unpublished draft is less urgent since
+// it isn't live on the public site yet.
+function buildDraftAwareReport(
+  entries: Array<{ id: string; data: { isDraft?: boolean } }>,
+  name: string,
+  contentPath: string,
+): Report {
+  const byLocale: Record<'en' | 'de', Map<string, { isDraft: boolean }>> = {
+    en: new Map(),
+    de: new Map(),
+  };
+  for (const entry of entries) {
+    const [locale, ...rest] = entry.id.split('/');
+    if (locale !== 'en' && locale !== 'de') continue;
+    const slug = rest.join('/').replace(/\.mdx?$/, '');
+    byLocale[locale].set(slug, { isDraft: entry.data.isDraft ?? false });
+  }
+  const bySlug = (a: Mismatch, b: Mismatch) => a.slug.localeCompare(b.slug);
+  const missingInDe: Mismatch[] = [];
+  for (const [slug, meta] of byLocale.en) {
+    if (!byLocale.de.has(slug)) missingInDe.push({ slug, isDraft: meta.isDraft });
+  }
+  const missingInEn: Mismatch[] = [];
+  for (const [slug, meta] of byLocale.de) {
+    if (!byLocale.en.has(slug)) missingInEn.push({ slug, isDraft: meta.isDraft });
+  }
+  return {
+    name,
+    contentPath,
+    total: byLocale.en.size + byLocale.de.size,
+    missingInDe: missingInDe.sort(bySlug),
+    missingInEn: missingInEn.sort(bySlug),
+  };
+}
+
+// page-text has no isDraft field, so we fall back to the glob-based enumeration
+// and mark every mismatch as non-draft (full severity).
+function buildPageTextReport(): Report {
+  const enumerate = (glob: Record<string, unknown>, prefix: string) =>
+    new Set(Object.keys(glob).map((p) => p.slice(prefix.length).replace(/\.mdx?$/, '')));
+  const en = enumerate(
+    import.meta.glob('/src/content/page-text/en/**/*.mdx'),
+    '/src/content/page-text/en/',
+  );
+  const de = enumerate(
+    import.meta.glob('/src/content/page-text/de/**/*.mdx'),
+    '/src/content/page-text/de/',
+  );
+  const bySlug = (a: Mismatch, b: Mismatch) => a.slug.localeCompare(b.slug);
+  return {
+    name: 'Page text',
+    contentPath: 'page-text',
+    total: en.size + de.size,
+    missingInDe: [...en]
+      .filter((s) => !de.has(s))
+      .map((slug) => ({ slug, isDraft: false }))
+      .sort(bySlug),
+    missingInEn: [...de]
+      .filter((s) => !en.has(s))
+      .map((slug) => ({ slug, isDraft: false }))
+      .sort(bySlug),
+  };
+}
+
+const [eventsEntries, projectsEntries] = await Promise.all([
+  getCollection('events'),
+  getCollection('projects'),
+]);
+
+const report: Report[] = [
+  buildDraftAwareReport(eventsEntries, 'Events', 'events'),
+  buildDraftAwareReport(projectsEntries, 'Projects', 'projects'),
+  buildPageTextReport(),
+];
+
+const mismatchCounts = report.reduce(
+  (acc, r) => {
+    const all = [...r.missingInDe, ...r.missingInEn];
+    return {
+      total: acc.total + all.length,
+      drafts: acc.drafts + all.filter((m) => m.isDraft).length,
+    };
+  },
+  { total: 0, drafts: 0 },
+);
+const publishedMismatches = mismatchCounts.total - mismatchCounts.drafts;
+const allInSync = mismatchCounts.total === 0;
+const onlyDrafts = !allInSync && publishedMismatches === 0;
+
+const generatedAt = new Date().toISOString();
+
+function pillTone() {
+  if (allInSync) return 'bg-emerald-500/15 text-emerald-300';
+  if (onlyDrafts) return 'bg-sky-500/15 text-sky-300';
+  return 'bg-amber-500/15 text-amber-300';
+}
+
+function pillLabel() {
+  if (allInSync) return '✅ In sync';
+  const base = `⚠️ ${mismatchCounts.total} mismatch${mismatchCounts.total === 1 ? '' : 'es'}`;
+  if (mismatchCounts.drafts === 0) return base;
+  if (onlyDrafts) return `${base} (all drafts)`;
+  return `${base} — ${mismatchCounts.drafts} draft, ${publishedMismatches} published`;
+}
+
+function sectionTone(r: Report) {
+  const all = [...r.missingInDe, ...r.missingInEn];
+  if (all.length === 0) return 'border-bears-text-onDark/10 bg-bears-bg-surface';
+  const onlyDrafts = all.every((m) => m.isDraft);
+  if (onlyDrafts) return 'border-sky-500/20 bg-sky-500/5';
+  return 'border-amber-500/20 bg-amber-500/5';
+}
+
+function sectionSummary(r: Report) {
+  const all = [...r.missingInDe, ...r.missingInEn];
+  if (all.length === 0) return '✅ in sync';
+  const drafts = all.filter((m) => m.isDraft).length;
+  if (drafts === all.length) return `ℹ️ ${all.length} missing (all drafts)`;
+  if (drafts === 0) return `⚠️ ${all.length} missing`;
+  return `⚠️ ${all.length} missing — ${drafts} draft, ${all.length - drafts} published`;
+}
+---
+
+<BaseLayout title="Admin">
+  <main class="mx-auto max-w-4xl px-4 sm:px-6 py-12 sm:py-16">
+    {!ADMIN_BUILD ? (
+      <section class="rounded-2xl border border-bears-text-onDark/10 bg-bears-bg-surface p-8 text-center">
+        <p class="text-lg text-bears-text-onDark/70">
+          This page is only available on the admin site.
+        </p>
+        <p class="mt-2 text-sm text-bears-text-onDark/50">
+          Visit <a href="https://admin.bears-space.de/admin" class="text-bears-accent underline hover:no-underline">admin.bears-space.de/admin</a>.
+        </p>
+      </section>
+    ) : (
+      <>
+        <header class="mb-10 sm:mb-14">
+          <h1 class="text-3xl sm:text-4xl font-bold text-bears-text-onDark">Admin</h1>
+          <p class="mt-3 text-sm text-bears-text-onDark/60">
+            Editor tools and content health for bears-space.de.
+          </p>
+        </header>
+
+        <section aria-labelledby="quick-links" class="mb-12 sm:mb-16">
+          <h2 id="quick-links" class="sr-only">Quick links</h2>
+          <div class="grid gap-4 sm:grid-cols-2">
+            <a
+              href="/keystatic"
+              class="group flex items-start justify-between gap-4 rounded-2xl border border-bears-text-onDark/10 bg-bears-bg-surface p-6 transition-colors hover:border-bears-accent/50 hover:bg-bears-bg-elevated"
+            >
+              <div>
+                <h3 class="text-lg font-semibold text-bears-text-onDark">Keystatic CMS</h3>
+                <p class="mt-1 text-sm text-bears-text-onDark/60">
+                  Edit events, projects, page text and branding.
+                </p>
+                <p class="mt-2 text-xs text-bears-text-onDark/50">
+                  Requires GitHub write access to the <code class="font-mono">bears-website</code> repo.
+                </p>
+              </div>
+              <span
+                class="text-bears-text-onDark/40 transition-all group-hover:translate-x-1 group-hover:text-bears-accent"
+                aria-hidden="true"
+              >→</span>
+            </a>
+            <a
+              href="/docs"
+              class="group flex items-start justify-between gap-4 rounded-2xl border border-bears-text-onDark/10 bg-bears-bg-surface p-6 transition-colors hover:border-bears-accent/50 hover:bg-bears-bg-elevated"
+            >
+              <div>
+                <h3 class="text-lg font-semibold text-bears-text-onDark">Docs</h3>
+                <p class="mt-1 text-sm text-bears-text-onDark/60">
+                  Guides for content creators and developer reference.
+                </p>
+              </div>
+              <span
+                class="text-bears-text-onDark/40 transition-all group-hover:translate-x-1 group-hover:text-bears-accent"
+                aria-hidden="true"
+              >→</span>
+            </a>
+          </div>
+        </section>
+
+        <section aria-labelledby="translation-status">
+          <header class="mb-6 sm:mb-8">
+            <div class="flex items-center gap-3">
+              <h2 id="translation-status" class="text-2xl sm:text-3xl font-bold text-bears-text-onDark">
+                Translation status
+              </h2>
+              <span
+                class:list={[
+                  'inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium',
+                  pillTone(),
+                ]}
+              >
+                {pillLabel()}
+              </span>
+            </div>
+            <p class="mt-3 text-sm text-bears-text-onDark/60">
+              Shows which bilingual content files exist in only one locale. Auto-generated at build time —
+              this snapshot was captured <time datetime={generatedAt}>{generatedAt}</time>. The page refreshes automatically on every deploy (lag: ~1–2 minutes after an editor commit).
+            </p>
+            <p class="mt-2 text-sm text-bears-text-onDark/60">
+              Entries marked <span class="inline-flex items-center rounded-full bg-sky-500/15 text-sky-300 px-2 py-0.5 text-xs font-medium">draft</span> are
+              not yet visible to the public, so missing their translation is less urgent.
+            </p>
+          </header>
+
+        {allInSync ? (
+          <section class="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-8">
+            <p class="text-emerald-300 font-medium">
+              ✅ All English and German files are paired up.
+            </p>
+            <p class="mt-2 text-sm text-bears-text-onDark/60">
+              Nothing to do here. New content added in one locale should always be mirrored in the other.
+            </p>
+          </section>
+        ) : (
+          <div class="space-y-6">
+            {report.map((r) => {
+              const inSync = r.missingInDe.length === 0 && r.missingInEn.length === 0;
+              return (
+                <section class:list={['rounded-2xl border p-6', sectionTone(r)]}>
+                  <header class="flex items-center justify-between gap-4 mb-4">
+                    <h2 class="text-xl font-semibold text-bears-text-onDark">{r.name}</h2>
+                    <span class="text-sm text-bears-text-onDark/50">{sectionSummary(r)}</span>
+                  </header>
+
+                  {inSync ? (
+                    <p class="text-sm text-bears-text-onDark/50">
+                      All {r.total} files are paired between en/ and de/.
+                    </p>
+                  ) : (
+                    <div class="space-y-4">
+                      {r.missingInDe.length > 0 && (
+                        <div>
+                          <h3 class="text-sm font-semibold text-bears-text-onDark/80 mb-2">
+                            Missing German translations ({r.missingInDe.length})
+                          </h3>
+                          <ul class="space-y-1">
+                            {r.missingInDe.map((m) => (
+                              <li class="flex items-center gap-2 text-sm text-bears-text-onDark/70 font-mono">
+                                <span class={m.isDraft ? 'text-sky-400' : 'text-amber-400'}>→</span>
+                                <span>src/content/{r.contentPath}/de/{m.slug}.mdx</span>
+                                {m.isDraft && (
+                                  <span class="ml-1 inline-flex items-center rounded-full bg-sky-500/15 text-sky-300 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide font-sans">
+                                    draft
+                                  </span>
+                                )}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+
+                      {r.missingInEn.length > 0 && (
+                        <div>
+                          <h3 class="text-sm font-semibold text-bears-text-onDark/80 mb-2">
+                            Missing English versions ({r.missingInEn.length})
+                          </h3>
+                          <ul class="space-y-1">
+                            {r.missingInEn.map((m) => (
+                              <li class="flex items-center gap-2 text-sm text-bears-text-onDark/70 font-mono">
+                                <span class={m.isDraft ? 'text-sky-400' : 'text-amber-400'}>→</span>
+                                <span>src/content/{r.contentPath}/en/{m.slug}.mdx</span>
+                                {m.isDraft && (
+                                  <span class="ml-1 inline-flex items-center rounded-full bg-sky-500/15 text-sky-300 px-2 py-0.5 text-[10px] font-medium uppercase tracking-wide font-sans">
+                                    draft
+                                  </span>
+                                )}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </section>
+              );
+            })}
+          </div>
+        )}
+        </section>
+      </>
+    )}
+  </main>
+</BaseLayout>

@@ -79,6 +79,17 @@ function listAssetFiles(dir: string): string[] {
   });
 }
 
+/**
+ * Resolve a frontmatter image path against its collection asset dir, matching
+ * what the runtime loaders in imageLoader.ts accept:
+ *   - flat legacy:            "event-8.jpg"               → <dir>/event-8.jpg
+ *   - Keystatic slug folder:  "/<slug>/coverImage.jpg"    → <dir>/<slug>/coverImage.jpg
+ *   - Keystatic no leading /: "<slug>/coverImage.jpg"     → <dir>/<slug>/coverImage.jpg
+ */
+function resolveAssetPath(dir: string, value: string): string {
+  return join(dir, value.replace(/^\/+/, ''));
+}
+
 // ---------------------------------------------------------------------------
 // 1. File extension checks
 // ---------------------------------------------------------------------------
@@ -90,10 +101,9 @@ describe('Content file extensions', () => {
     'events',
     'projects',
     'sponsors',
-    'testimonials',
     'hero-slides',
     'instagram',
-    'faces-of-bears',
+    'people',
     'page-text',
     'docs',
   ];
@@ -132,26 +142,27 @@ const VALID_ASSET_EXTENSIONS = new Set(
 );
 
 describe('Asset file extensions', () => {
-  const assetDirs = [
-    'events',
-    'projects',
-    'projects/team-members',
-    'sponsors/bronze',
-    'sponsors/silver',
-    'sponsors/gold',
-    'sponsors/platinum',
-    'sponsors/diamond',
-    'testimonials',
-    'faces-of-bears',
-    'hero/landingpage',
+  // Each entry is `{ subdir, recurse }`. Recursive dirs (people, sponsors) are
+  // walked into subfolders so per-slug Keystatic uploads are validated too.
+  const assetDirs: { subdir: string; recurse?: boolean }[] = [
+    { subdir: 'events' },
+    { subdir: 'projects' },
+    { subdir: 'sponsors/bronze' },
+    { subdir: 'sponsors/silver' },
+    { subdir: 'sponsors/gold' },
+    { subdir: 'sponsors/platinum' },
+    { subdir: 'sponsors/diamond' },
+    { subdir: 'people', recurse: true },
+    { subdir: 'hero/landingpage' },
   ];
 
-  for (const subdir of assetDirs) {
+  for (const { subdir, recurse } of assetDirs) {
     const dir = join(ASSETS_DIR, subdir);
     if (!existsSync(dir)) continue;
 
-    const files = readdirSync(dir)
-      .filter((f) => statSync(join(dir, f)).isFile());
+    const files = recurse
+      ? collectFiles(dir).map((f) => relative(dir, f))
+      : readdirSync(dir).filter((f) => statSync(join(dir, f)).isFile());
 
     if (files.length === 0) continue;
 
@@ -179,22 +190,21 @@ describe('Asset file extensions', () => {
 /**
  * Collections that use locale subfolders (en/, de/)
  */
-const LOCALE_COLLECTIONS = ['events', 'projects', 'testimonials', 'faces-of-bears', 'page-text'];
+const LOCALE_COLLECTIONS = ['events', 'projects', 'page-text'];
 
 /**
- * Collections without locale subfolders
+ * Collections without locale subfolders. `people` is locale-agnostic by design:
+ * one entry per person, with roleEn / roleDe stored inline.
  */
-const FLAT_COLLECTIONS = ['sponsors', 'hero-slides', 'instagram'];
+const FLAT_COLLECTIONS = ['sponsors', 'hero-slides', 'instagram', 'people'];
 
 /** Mapping from collection name to its expected asset directory for image references */
 const IMAGE_FIELD_TO_ASSET_DIR: Record<string, Record<string, string>> = {
   events: { coverImage: join(ASSETS_DIR, 'events') },
   projects: {
     coverImage: join(ASSETS_DIR, 'projects'),
-    personImage: join(ASSETS_DIR, 'projects', 'team-members'),
   },
-  testimonials: { coverImage: join(ASSETS_DIR, 'testimonials') },
-  'faces-of-bears': { coverImage: join(ASSETS_DIR, 'faces-of-bears') },
+  people: { coverImage: join(ASSETS_DIR, 'people') },
   'hero-slides': { media: join(ASSETS_DIR, 'hero', 'landingpage') },
 };
 
@@ -314,8 +324,7 @@ describe('Frontmatter validation', () => {
 // 3b. Project-specific frontmatter edge cases
 //
 // The projects schema has conditional requirements that are easy to get wrong:
-//   - displayMeetTheTeam: true  →  headOfProject AND personImage are REQUIRED
-//   - personImage must have a valid image extension
+//   - displayMeetTheTeam: true  →  `person` slug is REQUIRED and must resolve
 //   - isProjectCompleted is a required boolean (not optional)
 //   - categoryProject must be one of the allowed enum values
 // ---------------------------------------------------------------------------
@@ -329,6 +338,16 @@ describe('Project frontmatter edge cases', () => {
   );
 
   const validCategories = ['experimental-rocketry', 'science-and-experiments', 'robotics', 'other'];
+
+  // Resolve which person slugs exist on disk for cross-reference checks.
+  const peopleDir = join(CONTENT_DIR, 'people');
+  const peopleSlugs = existsSync(peopleDir)
+    ? new Set(
+        readdirSync(peopleDir)
+          .filter((f) => VALID_CONTENT_EXTENSIONS.has(extname(f).toLowerCase()))
+          .map((f) => f.replace(/\.mdx?$/i, ''))
+      )
+    : new Set<string>();
 
   for (const file of files) {
     const label = rel(file);
@@ -359,79 +378,53 @@ describe('Project frontmatter edge cases', () => {
       );
     });
 
-    // --- displayMeetTheTeam: true requires headOfProject ---
+    // --- displayMeetTheTeam: true requires a `person` slug into the people collection ---
     if (frontmatter.displayMeetTheTeam === true) {
-      it(`${label} — "displayMeetTheTeam: true" requires "headOfProject"`, () => {
+      it(`${label} — "displayMeetTheTeam: true" requires a "person" reference`, () => {
         expectWithMessage(
-          typeof frontmatter.headOfProject === 'string' &&
-          frontmatter.headOfProject.trim().length > 0,
-          `File "${label}" has "displayMeetTheTeam: true" but is missing "headOfProject".\n\n` +
-          `When displayMeetTheTeam is enabled, you must also provide the name of the\n` +
-          `person leading the project.\n\n` +
-          `To fix: either:\n` +
-          `  1. Add a "headOfProject" field:  headOfProject: "Jane Doe"\n` +
-          `  2. Or set "displayMeetTheTeam: false" if you don't want to show the team section`,
+          typeof frontmatter.person === 'string' &&
+          frontmatter.person.trim().length > 0,
+          `File "${label}" has "displayMeetTheTeam: true" but is missing a "person" reference.\n\n` +
+          `Meet the Team entries are linked to a person record in the People\n` +
+          `collection (src/content/people/<slug>.mdx).\n\n` +
+          `To fix: pick (or create) a person and reference their slug:\n` +
+          `  person: "jane-doe"\n` +
+          `Or set "displayMeetTheTeam: false" if you don't want to show the team section.`,
         );
       });
 
-      // --- displayMeetTheTeam: true requires personImage ---
-      it(`${label} — "displayMeetTheTeam: true" requires "personImage"`, () => {
+      it(`${label} — "person" must reference an existing entry in src/content/people/`, () => {
+        const slug = (frontmatter.person as string | undefined)?.trim() ?? '';
+        if (!slug) return; // covered by the previous test
+        const available = [...peopleSlugs].sort().map((s) => `  - ${s}`).join('\n');
         expectWithMessage(
-          typeof frontmatter.personImage === 'string' &&
-          frontmatter.personImage.trim().length > 0,
-          `File "${label}" has "displayMeetTheTeam: true" but is missing "personImage".\n\n` +
-          `When displayMeetTheTeam is enabled, you must also provide a portrait image\n` +
-          `of the head of project.\n\n` +
-          `To fix: either:\n` +
-          `  1. Add a "personImage" field:  personImage: "jane-doe.jpg"\n` +
-          `     (place the image in src/assets/projects/team-members/)\n` +
-          `  2. Or set "displayMeetTheTeam: false" if you don't want to show the team section`,
-        );
-      });
-    }
-
-    // --- personImage must have a valid image extension (when provided) ---
-    if (typeof frontmatter.personImage === 'string' && frontmatter.personImage.trim().length > 0) {
-      it(`${label} — "personImage" must have a valid image extension`, () => {
-        const ext = extname(frontmatter.personImage as string).toLowerCase().slice(1);
-        const validExts = [...VALID_IMAGE_EXTENSIONS];
-
-        expectWithMessage(
-          validExts.includes(ext as typeof validExts[number]),
-          `File "${label}" has "personImage: ${frontmatter.personImage}"\n` +
-          `but "${ext}" is not a supported image format.\n\n` +
-          `Supported formats: ${validExts.map((e) => `.${e}`).join(', ')}\n\n` +
-          `To fix: convert the image to a supported format (e.g., .jpg, .png, .webp)\n` +
-          `and update the "personImage" value in the frontmatter.`,
+          peopleSlugs.has(slug),
+          `File "${label}" references person slug "${slug}",\n` +
+          `but no file was found at "src/content/people/${slug}.mdx".\n\n` +
+          (peopleSlugs.size > 0
+            ? `Available people slugs:\n${available}`
+            : `The people collection is empty. Create a person first.`) +
+          `\n\nTo fix: create the person file or update the slug to match an existing one.`,
         );
       });
     }
 
-    // --- headOfProject / personImage without displayMeetTheTeam is likely a mistake ---
-    if (frontmatter.displayMeetTheTeam !== true) {
-      const hasHead = typeof frontmatter.headOfProject === 'string' && frontmatter.headOfProject.trim().length > 0;
-      const hasPerson = typeof frontmatter.personImage === 'string' && (frontmatter.personImage as string).trim().length > 0;
-
-      if (hasHead || hasPerson) {
-        it(`${label} — "headOfProject"/"personImage" are set but "displayMeetTheTeam" is not true`, () => {
-          const setFields = [
-            hasHead ? `headOfProject: "${frontmatter.headOfProject}"` : null,
-            hasPerson ? `personImage: "${frontmatter.personImage}"` : null,
-          ].filter(Boolean);
-
-          expectWithMessage(
-            false,
-            `File "${label}" provides team member info but won't display it:\n` +
-            setFields.map((f) => `  - ${f}`).join('\n') +
-            `\n\n` +
-            `These fields only take effect when "displayMeetTheTeam: true" is set.\n` +
-            `Currently displayMeetTheTeam is ${frontmatter.displayMeetTheTeam === false ? 'false' : 'not set'}.\n\n` +
-            `To fix: either:\n` +
-            `  1. Add "displayMeetTheTeam: true" to show the team section\n` +
-            `  2. Or remove the unused "headOfProject"/"personImage" fields to avoid confusion`,
-          );
-        });
-      }
+    // --- person without displayMeetTheTeam is dead data ---
+    if (
+      frontmatter.displayMeetTheTeam !== true &&
+      typeof frontmatter.person === 'string' &&
+      frontmatter.person.trim().length > 0
+    ) {
+      it(`${label} — "person" is set but "displayMeetTheTeam" is not true`, () => {
+        expectWithMessage(
+          false,
+          `File "${label}" sets "person: ${frontmatter.person}" but won't display it:\n\n` +
+          `The "person" reference only takes effect when "displayMeetTheTeam: true" is set.\n` +
+          `Currently displayMeetTheTeam is ${frontmatter.displayMeetTheTeam === false ? 'false' : 'not set'}.\n\n` +
+          `To fix: either set "displayMeetTheTeam: true" to show the team section,\n` +
+          `or remove the unused "person" field to avoid confusion.`,
+        );
+      });
     }
   }
 });
@@ -549,83 +542,7 @@ describe('Event frontmatter edge cases', () => {
 });
 
 // ---------------------------------------------------------------------------
-// 3d. Testimonial-specific frontmatter edge cases
-//
-//   - quote, name, role, coverImage are all required
-//   - coverImage must have a valid image extension
-// ---------------------------------------------------------------------------
-
-describe('Testimonial frontmatter edge cases', () => {
-  const testimonialsDir = join(CONTENT_DIR, 'testimonials');
-  if (!existsSync(testimonialsDir)) return;
-
-  const files = collectFiles(testimonialsDir).filter((f) =>
-    VALID_CONTENT_EXTENSIONS.has(extname(f).toLowerCase()),
-  );
-
-  for (const file of files) {
-    const label = rel(file);
-    const frontmatter = parseFrontmatter(file);
-    if (!frontmatter) continue;
-
-    it(`${label} — must have a "quote"`, () => {
-      expectWithMessage(
-        typeof frontmatter.quote === 'string' && frontmatter.quote.trim().length > 0,
-        `File "${label}" is missing the required field "quote".\n\n` +
-        `Every testimonial needs the member's quote text.\n\n` +
-        `To fix: add a "quote" field to the frontmatter:\n` +
-        `  quote: "BEARS gave me an amazing experience..."`,
-      );
-    });
-
-    it(`${label} — must have a "name"`, () => {
-      expectWithMessage(
-        typeof frontmatter.name === 'string' && frontmatter.name.trim().length > 0,
-        `File "${label}" is missing the required field "name".\n\n` +
-        `Every testimonial needs the name of the person being quoted.\n\n` +
-        `To fix: add a "name" field to the frontmatter:\n` +
-        `  name: "Jane Doe"`,
-      );
-    });
-
-    it(`${label} — must have a "role"`, () => {
-      expectWithMessage(
-        typeof frontmatter.role === 'string' && frontmatter.role.trim().length > 0,
-        `File "${label}" is missing the required field "role".\n\n` +
-        `Every testimonial needs the person's role or title.\n\n` +
-        `To fix: add a "role" field to the frontmatter:\n` +
-        `  role: "Engineering Lead / 2025"`,
-      );
-    });
-
-    it(`${label} — "coverImage" must have a valid image extension`, () => {
-      expectWithMessage(
-        typeof frontmatter.coverImage === 'string' && frontmatter.coverImage.trim().length > 0,
-        `File "${label}" is missing the required field "coverImage".\n\n` +
-        `Every testimonial needs a portrait image of the person.\n\n` +
-        `To fix: add a "coverImage" field to the frontmatter:\n` +
-        `  coverImage: "portrait.jpg"\n` +
-        `  (place the image in src/assets/testimonials/)`,
-      );
-
-      if (typeof frontmatter.coverImage === 'string') {
-        const ext = extname(frontmatter.coverImage as string).toLowerCase().slice(1);
-        const validExts = [...VALID_IMAGE_EXTENSIONS];
-
-        expectWithMessage(
-          validExts.includes(ext as typeof validExts[number]),
-          `File "${label}" has "coverImage: ${frontmatter.coverImage}"\n` +
-          `but ".${ext}" is not a supported image format.\n\n` +
-          `Supported formats: ${validExts.map((e) => `.${e}`).join(', ')}\n\n` +
-          `To fix: convert the image to a supported format and update the "coverImage" value.`,
-        );
-      }
-    });
-  }
-});
-
-// ---------------------------------------------------------------------------
-// 3e. Sponsor-specific frontmatter edge cases
+// 3d. Sponsor-specific frontmatter edge cases
 //
 //   - name and logo are required
 //   - logo must have a valid image extension
@@ -717,7 +634,7 @@ describe('Sponsor frontmatter edge cases', () => {
 });
 
 // ---------------------------------------------------------------------------
-// 3f. Hero slides frontmatter edge cases
+// 3e. Hero slides frontmatter edge cases
 //
 //   - type must be "image" or "video"
 //   - media is required with valid image/video extension
@@ -814,7 +731,7 @@ describe('Hero slides frontmatter edge cases', () => {
 });
 
 // ---------------------------------------------------------------------------
-// 3g. Instagram post frontmatter edge cases
+// 3f. Instagram post frontmatter edge cases
 //
 //   - url is required and must be a valid URL
 //   - date is required
@@ -877,17 +794,19 @@ describe('Instagram post frontmatter edge cases', () => {
 });
 
 // ---------------------------------------------------------------------------
-// 3h. Faces of BEARS frontmatter edge cases
+// 3g. People frontmatter edge cases
 //
-//   - name, role, coverImage are all required
+//   - name, roleEn, roleDe, coverImage are all required
 //   - coverImage must have a valid image extension
+//   - showInFaces is a boolean (defaulted, but must be valid type when set)
+//   - order is a number (defaulted, but must be valid type when set)
 // ---------------------------------------------------------------------------
 
-describe('Faces of BEARS frontmatter edge cases', () => {
-  const facesDir = join(CONTENT_DIR, 'faces-of-bears');
-  if (!existsSync(facesDir)) return;
+describe('People frontmatter edge cases', () => {
+  const peopleDir = join(CONTENT_DIR, 'people');
+  if (!existsSync(peopleDir)) return;
 
-  const files = collectFiles(facesDir).filter((f) =>
+  const files = collectFiles(peopleDir).filter((f) =>
     VALID_CONTENT_EXTENSIONS.has(extname(f).toLowerCase()),
   );
 
@@ -900,19 +819,27 @@ describe('Faces of BEARS frontmatter edge cases', () => {
       expectWithMessage(
         typeof frontmatter.name === 'string' && frontmatter.name.trim().length > 0,
         `File "${label}" is missing the required field "name".\n\n` +
-        `Every Faces of BEARS entry needs the team member's name.\n\n` +
+        `Every person entry needs a display name.\n\n` +
         `To fix: add a "name" field to the frontmatter:\n` +
         `  name: "Jane Doe"`,
       );
     });
 
-    it(`${label} — must have a "role"`, () => {
+    it(`${label} — must have a "roleEn"`, () => {
       expectWithMessage(
-        typeof frontmatter.role === 'string' && frontmatter.role.trim().length > 0,
-        `File "${label}" is missing the required field "role".\n\n` +
-        `Every Faces of BEARS entry needs the person's role.\n\n` +
-        `To fix: add a "role" field to the frontmatter:\n` +
-        `  role: "Project Lead / 2026"`,
+        typeof frontmatter.roleEn === 'string' && frontmatter.roleEn.trim().length > 0,
+        `File "${label}" is missing the required field "roleEn" (English role).\n\n` +
+        `To fix: add a "roleEn" field to the frontmatter:\n` +
+        `  roleEn: "Project Lead / 2026"`,
+      );
+    });
+
+    it(`${label} — must have a "roleDe"`, () => {
+      expectWithMessage(
+        typeof frontmatter.roleDe === 'string' && frontmatter.roleDe.trim().length > 0,
+        `File "${label}" is missing the required field "roleDe" (German role).\n\n` +
+        `To fix: add a "roleDe" field to the frontmatter:\n` +
+        `  roleDe: "Projektleitung / 2026"`,
       );
     });
 
@@ -920,10 +847,10 @@ describe('Faces of BEARS frontmatter edge cases', () => {
       expectWithMessage(
         typeof frontmatter.coverImage === 'string' && frontmatter.coverImage.trim().length > 0,
         `File "${label}" is missing the required field "coverImage".\n\n` +
-        `Every Faces of BEARS entry needs a portrait image.\n\n` +
+        `Every person needs a portrait image.\n\n` +
         `To fix: add a "coverImage" field to the frontmatter:\n` +
-        `  coverImage: "portrait.jpg"\n` +
-        `  (place the image in src/assets/faces-of-bears/)`,
+        `  coverImage: "<slug>/portrait.jpg"\n` +
+        `  (place the image in src/assets/people/<slug>/)`,
       );
 
       if (typeof frontmatter.coverImage === 'string') {
@@ -939,11 +866,29 @@ describe('Faces of BEARS frontmatter edge cases', () => {
         );
       }
     });
+
+    if (frontmatter.showInFaces !== undefined) {
+      it(`${label} — "showInFaces" must be a boolean`, () => {
+        expectWithMessage(
+          typeof frontmatter.showInFaces === 'boolean',
+          `File "${label}" has "showInFaces: ${frontmatter.showInFaces}" but it must be true or false.`,
+        );
+      });
+    }
+
+    if (frontmatter.order !== undefined) {
+      it(`${label} — "order" must be a number`, () => {
+        expectWithMessage(
+          typeof frontmatter.order === 'number',
+          `File "${label}" has "order: ${frontmatter.order}" but it must be a number.`,
+        );
+      });
+    }
   }
 });
 
 // ---------------------------------------------------------------------------
-// 3i. Page-text frontmatter edge cases
+// 3h. Page-text frontmatter edge cases
 //
 //   - title is always required
 //   - buttonText and buttonHref must always come as a pair
@@ -960,20 +905,34 @@ describe('Page-text frontmatter edge cases', () => {
     VALID_CONTENT_EXTENSIONS.has(extname(f).toLowerCase()),
   );
 
+  // Page-text files that are pure site-wide config and are not rendered as
+  // a section heading. They are allowed to omit the `title` field so the CMS
+  // does not surface a pointless "Internal label" row above the real fields.
+  const PAGE_TEXT_NO_TITLE_REQUIRED = new Set([
+    'src/content/page-text/en/contact-details.mdx',
+    'src/content/page-text/de/contact-details.mdx',
+    'src/content/page-text/en/social.mdx',
+    'src/content/page-text/de/social.mdx',
+    'src/content/page-text/en/site/search.mdx',
+    'src/content/page-text/de/site/search.mdx',
+  ]);
+
   for (const file of files) {
     const label = rel(file);
     const frontmatter = parseFrontmatter(file);
     if (!frontmatter) continue;
 
-    it(`${label} — must have a "title"`, () => {
-      expectWithMessage(
-        typeof frontmatter.title === 'string' && frontmatter.title.trim().length > 0,
-        `File "${label}" is missing the required field "title".\n\n` +
-        `Every page-text entry needs a title.\n\n` +
-        `To fix: add a "title" field to the frontmatter:\n` +
-        `  title: "My Section Title"`,
-      );
-    });
+    if (!PAGE_TEXT_NO_TITLE_REQUIRED.has(label)) {
+      it(`${label} — must have a "title"`, () => {
+        expectWithMessage(
+          typeof frontmatter.title === 'string' && frontmatter.title.trim().length > 0,
+          `File "${label}" is missing the required field "title".\n\n` +
+          `Every page-text entry needs a title.\n\n` +
+          `To fix: add a "title" field to the frontmatter:\n` +
+          `  title: "My Section Title"`,
+        );
+      });
+    }
 
     // buttonText ↔ buttonHref must come as a pair
     const hasButtonText = typeof frontmatter.buttonText === 'string';
@@ -1073,12 +1032,13 @@ describe('Page-text frontmatter edge cases', () => {
           `    url: "https://github.com/bears-team"`,
         );
       });
+
     }
   }
 });
 
 // ---------------------------------------------------------------------------
-// 3j. Docs frontmatter edge cases
+// 3i. Docs frontmatter edge cases
 //
 //   - title is required
 //   - order is required and must be a number
@@ -1126,7 +1086,7 @@ describe('Docs frontmatter edge cases', () => {
 // ---------------------------------------------------------------------------
 
 describe('Image references point to existing files', () => {
-  // ---- Events, Projects, Testimonials, Faces of Bears ----
+  // ---- Events, Projects, People ----
   for (const [collection, fieldMap] of Object.entries(IMAGE_FIELD_TO_ASSET_DIR)) {
     if (collection === 'hero-slides') continue; // handled separately below
 
@@ -1148,21 +1108,20 @@ describe('Image references point to existing files', () => {
           if (!imageFilename) continue;
 
           it(`${label} — "${field}: ${imageFilename}" should exist in assets`, () => {
-            const assetFiles = listAssetFiles(assetDir);
-            const matchFound = assetFiles.some(
-              (f) => f.toLowerCase() === imageFilename.toLowerCase(),
-            );
+            const resolved = resolveAssetPath(assetDir, imageFilename);
+            const matchFound = existsSync(resolved) && statSync(resolved).isFile();
 
-            const availableList = assetFiles.length > 0
-              ? `Available images in that directory:\n` + assetFiles.map((f) => `  - ${f}`).join('\n')
-              : `The directory "${relative(ROOT, assetDir)}/" has no content images yet (only default/placeholder files).`;
+            const topLevel = listAssetFiles(assetDir);
+            const availableList = topLevel.length > 0
+              ? `Top-level files in "${relative(ROOT, assetDir)}/":\n` + topLevel.map((f) => `  - ${f}`).join('\n')
+              : `The directory "${relative(ROOT, assetDir)}/" has no top-level files.`;
 
             expectWithMessage(
               matchFound,
               `File "${label}" references image "${imageFilename}" in field "${field}",\n` +
-              `but this image was NOT found in "${relative(ROOT, assetDir)}/".\n\n` +
+              `but no file was found at "${relative(ROOT, resolved)}".\n\n` +
               availableList +
-              `\n\nTo fix: add the image file "${imageFilename}" to "${relative(ROOT, assetDir)}/"`,
+              `\n\nTo fix: add the image file so it resolves to "${relative(ROOT, resolved)}"`,
             );
           });
         }
@@ -1187,21 +1146,20 @@ describe('Image references point to existing files', () => {
         const assetDir = getSponsorAssetDir(file);
 
         it(`${label} — "logo: ${logoFilename}" should exist in assets`, () => {
-          const assetFiles = listAssetFiles(assetDir);
-          const matchFound = assetFiles.some(
-            (f) => f.toLowerCase() === logoFilename.toLowerCase(),
-          );
+          const resolved = resolveAssetPath(assetDir, logoFilename);
+          const matchFound = existsSync(resolved) && statSync(resolved).isFile();
 
-          const availableList = assetFiles.length > 0
-            ? `Available images in that directory:\n` + assetFiles.map((f) => `  - ${f}`).join('\n')
-            : `The directory "${relative(ROOT, assetDir)}/" has no content images yet (only default/placeholder files).`;
+          const topLevel = listAssetFiles(assetDir);
+          const availableList = topLevel.length > 0
+            ? `Top-level files in "${relative(ROOT, assetDir)}/":\n` + topLevel.map((f) => `  - ${f}`).join('\n')
+            : `The directory "${relative(ROOT, assetDir)}/" has no top-level files.`;
 
           expectWithMessage(
             matchFound,
             `File "${label}" references logo "${logoFilename}",\n` +
-            `but this image was NOT found in "${relative(ROOT, assetDir)}/".\n\n` +
+            `but no file was found at "${relative(ROOT, resolved)}".\n\n` +
             availableList +
-            `\n\nTo fix: add the logo file "${logoFilename}" to "${relative(ROOT, assetDir)}/"`,
+            `\n\nTo fix: add the logo file so it resolves to "${relative(ROOT, resolved)}"`,
           );
         });
       }
@@ -1226,14 +1184,13 @@ describe('Image references point to existing files', () => {
         const mediaFilename = frontmatter.media as string;
 
         it(`${label} — "media: ${mediaFilename}" should exist in assets`, () => {
-          const assetFiles = listAssetFiles(assetDir);
-          const matchFound = assetFiles.some(
-            (f) => f.toLowerCase() === mediaFilename.toLowerCase(),
-          );
+          const resolved = resolveAssetPath(assetDir, mediaFilename);
+          const matchFound = existsSync(resolved) && statSync(resolved).isFile();
 
-          const availableList = assetFiles.length > 0
-            ? `Available files in that directory:\n` + assetFiles.map((f) => `  - ${f}`).join('\n')
-            : `The directory "${relative(ROOT, assetDir)}/" has no content files yet (only default/placeholder files).`;
+          const topLevel = listAssetFiles(assetDir);
+          const availableList = topLevel.length > 0
+            ? `Top-level files in "${relative(ROOT, assetDir)}/":\n` + topLevel.map((f) => `  - ${f}`).join('\n')
+            : `The directory "${relative(ROOT, assetDir)}/" has no top-level files.`;
 
           expectWithMessage(
             matchFound,
