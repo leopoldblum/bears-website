@@ -1,0 +1,5 @@
+files=$(git diff --cached --name-only --diff-filter=ACM | grep -Ei '\.(jpe?g|png)$' || true)
+if [ -n "$files" ]; then
+  echo "$files" | xargs node scripts/compress-images.mjs
+  echo "$files" | xargs git add
+fi

@@ -11,7 +11,9 @@
     "astro": "astro",
     "test": "vitest run",
     "test:watch": "vitest",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "compress-images": "node scripts/compress-images.mjs",
+    "prepare": "husky"
   },
   "dependencies": {
     "@astrojs/alpinejs": "^0.4.9",
@@ -45,6 +47,7 @@
     "@tailwindcss/typography": "^0.5.19",
     "@vitest/coverage-v8": "^4.0.18",
     "cross-env": "^10.1.0",
+    "husky": "^9.1.7",
     "pagefind": "^1.4.0",
     "tailwind-scrollbar": "^4.0.2",
     "vitest": "^4.0.18"
