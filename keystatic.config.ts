@@ -140,6 +140,11 @@ function sponsorsCollection(tier: 'diamond' | 'platinum' | 'gold' | 'silver' | '
     schema: {
       name: fields.slug({
         name: { label: 'Sponsor name', validation: { isRequired: true } },
+        slug: {
+          label: 'Filename',
+          description:
+            "Auto-generated from the sponsor name — you don't need to touch this. Changing it renames the content file on disk.",
+        },
       }),
       order: fields.integer({
         label: 'Order',
@@ -173,7 +178,7 @@ function eventsCollection(locale: 'en' | 'de') {
         slug: {
           label: 'URL slug',
           description:
-            "Do not change after publishing — this appears in the event's public URL (/events/…). Renaming breaks inbound links, SEO, and shared bookmarks.",
+            "Auto-generated from the title — you don't need to touch this. Do not change after publishing: this appears in the event's public URL (/events/…). Renaming breaks inbound links, SEO, and shared bookmarks.",
           validation: {
             length: { min: 3, max: 80 },
             pattern: {
@@ -219,7 +224,7 @@ function projectsCollection(locale: 'en' | 'de') {
         slug: {
           label: 'URL slug',
           description:
-            "Do not change after publishing — this appears in the project's public URL (/projects/…). Renaming breaks inbound links, SEO, and shared bookmarks.",
+            "Auto-generated from the title — you don't need to touch this. Do not change after publishing: this appears in the project's public URL (/projects/…). Renaming breaks inbound links, SEO, and shared bookmarks.",
           validation: {
             length: { min: 3, max: 80 },
             pattern: {
@@ -918,7 +923,7 @@ function pageTextNavLinksCollection(locale: 'en' | 'de') {
         slug: {
           label: 'ID',
           description:
-            'Do not rename — these IDs (e.g. "header", "footer-bottom") are referenced directly from code. Renaming silently replaces the content with hardcoded English defaults.',
+            'Auto-generated from the title — you don\'t need to touch this. Do not rename: these IDs (e.g. "header", "footer-bottom") are referenced directly from code. Renaming silently replaces the content with hardcoded English defaults.',
           validation: {
             length: { min: 3, max: 80 },
             pattern: {
@@ -956,7 +961,8 @@ const socialPlatformsCollection = collection({
       },
       slug: {
         label: 'ID',
-        description: 'Lowercase id used by Social links to reference this platform. Letters, digits, and hyphens only.',
+        description:
+          "Auto-generated from the label — you don't need to touch this. It's the lowercase ID used by Social links to reference this platform, and it matches the icon folder name on disk.",
       },
     }),
     iconFile: fields.file({
@@ -990,6 +996,11 @@ const peopleCollection = collection({
   schema: {
     name: fields.slug({
       name: { label: 'Name', validation: { isRequired: true } },
+      slug: {
+        label: 'Filename / ID',
+        description:
+          "Auto-generated from the name — you don't need to touch this. It's used as the person's ID in relationships (projects' \"Head of project\", testimonials). Renaming breaks those references.",
+      },
     }),
     roleEn: fields.text({
       label: 'Role (English)',
@@ -1072,7 +1083,7 @@ function docsCollection(section: 'guides' | 'dev') {
         slug: {
           label: 'URL slug',
           description:
-            "Do not change after publishing — this appears in the doc's public URL (/docs/…). Renaming breaks inbound links, SEO, and shared bookmarks.",
+            "Auto-generated from the title — you don't need to touch this. Do not change after publishing: this appears in the doc's public URL (/docs/…). Renaming breaks inbound links, SEO, and shared bookmarks.",
           validation: {
             length: { min: 3, max: 80 },
             pattern: {
@@ -1118,6 +1129,11 @@ const heroSlides = collection({
         label: 'Alt text / slide ID',
         description: 'Used as the filename and image alt text.',
         validation: { isRequired: true },
+      },
+      slug: {
+        label: 'Filename',
+        description:
+          "Auto-generated from the alt text — you don't need to touch this.",
       },
     }),
     // Image and video uploads need different field types: fields.image
@@ -1168,6 +1184,11 @@ const instagram = collection({
         label: 'Instagram post URL',
         description: 'Full URL of the Instagram post. Used as slug.',
         validation: { isRequired: true },
+      },
+      slug: {
+        label: 'Filename',
+        description:
+          "Auto-generated from the post URL — you don't need to touch this.",
       },
     }),
     date: fields.date({
