@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Disallow: /keystatic/
+Disallow: /admin/
+
+Sitemap: https://bears-space.de/sitemap-index.xml

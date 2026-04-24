@@ -269,10 +269,9 @@ const content = await getPageContent('landing/meet-the-team', locale);
                           )}
                         </p>
                       )}
-                      <div
-                        class="text-sm sm:text-base text-bears-text-onDark/90 leading-relaxed"
-                        set:html={project.project.data.description}
-                      />
+                      <div class="text-sm sm:text-base text-bears-text-onDark/90 leading-relaxed">
+                        {project.project.data.description}
+                      </div>
                     </div>
                   </div>
 

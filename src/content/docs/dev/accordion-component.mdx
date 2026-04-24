@@ -62,7 +62,7 @@ The legacy props are kept on the Astro component for backwards compatibility wit
 
 ## Implementation Notes
 
-**Markdown processing:** Each item's `content` string is processed at build time via `markdownToHtml()` from `src/utils/markdown.ts`. This uses the unified/remark/rehype pipeline with GitHub Flavored Markdown support (tables, strikethrough, task lists) and allows raw HTML passthrough.
+**Markdown processing:** Each item's `content` string is processed at build time via `markdownToHtml()` from `src/utils/markdown.ts`. This uses the unified/remark/rehype pipeline with GitHub Flavored Markdown support (tables, strikethrough, task lists). Raw HTML is allowed but sanitized via `rehype-sanitize` &mdash; `<script>`, inline event handlers, and `javascript:` URLs are stripped before render.
 
 **Alpine.js state:**
 - `activeIndex` &mdash; tracks the single open item (single mode)

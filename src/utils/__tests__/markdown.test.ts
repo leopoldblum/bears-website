@@ -35,9 +35,26 @@ describe('markdownToHtml', () => {
     expect(html).toContain('<del>deleted</del>');
   });
 
-  it('passes through inline HTML', async () => {
-    const html = await markdownToHtml('text <span class="x">inner</span> more');
-    expect(html).toContain('<span class="x">inner</span>');
+  it('passes through safe inline HTML tags', async () => {
+    const html = await markdownToHtml('text <span>inner</span> more');
+    expect(html).toContain('<span>inner</span>');
+  });
+
+  it('strips <script> tags', async () => {
+    const html = await markdownToHtml('hi <script>alert(1)</script> bye');
+    expect(html).not.toContain('<script>');
+    expect(html).not.toContain('alert(1)');
+  });
+
+  it('strips inline event handlers', async () => {
+    const html = await markdownToHtml('<img src="x" onerror="alert(1)">');
+    expect(html).not.toContain('onerror');
+    expect(html).not.toContain('alert(1)');
+  });
+
+  it('strips javascript: URLs in links', async () => {
+    const html = await markdownToHtml('[click](javascript:alert(1))');
+    expect(html).not.toContain('javascript:');
   });
 
   it('handles empty string', async () => {

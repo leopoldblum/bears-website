@@ -12,7 +12,14 @@ import remarkParse from 'remark-parse';
 import remarkGfm from 'remark-gfm';
 import remarkRehype from 'remark-rehype';
 import rehypeRaw from 'rehype-raw';
+import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
 import rehypeStringify from 'rehype-stringify';
+
+// Raw HTML is allowed in editor markdown for occasional inline tags, but
+// rehype-sanitize strips <script>, event handlers, and javascript: URLs.
+// defaultSchema mirrors GitHub's allowlist (inline formatting, links, lists,
+// code, GFM tables); extending it here would require an explicit decision.
+const sanitizeSchema = defaultSchema;
 
 /**
  * Converts a Markdown string to HTML
@@ -29,11 +36,12 @@ import rehypeStringify from 'rehype-stringify';
 export async function markdownToHtml(markdown: string): Promise<string> {
   try {
     const result = await unified()
-      .use(remarkParse)                             // Parse Markdown to AST
-      .use(remarkGfm)                               // GitHub Flavored Markdown support
-      .use(remarkRehype, { allowDangerousHtml: true }) // Convert to HTML AST, allow raw HTML
-      .use(rehypeRaw)                               // Parse raw HTML nodes
-      .use(rehypeStringify)                         // Serialize to HTML string
+      .use(remarkParse)
+      .use(remarkGfm)
+      .use(remarkRehype, { allowDangerousHtml: true })
+      .use(rehypeRaw)
+      .use(rehypeSanitize, sanitizeSchema)
+      .use(rehypeStringify)
       .process(markdown);
 
     return String(result);
