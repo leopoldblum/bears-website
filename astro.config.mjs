@@ -15,15 +15,9 @@ import cloudflare from '@astrojs/cloudflare';
 
 const ADMIN_BUILD = process.env.ADMIN_BUILD === 'true';
 
-const baseIntegrations = [alpinejs(), mdx(), react()];
-
-// Sitemap is only meaningful for the public site; the admin deploy serves a
-// single dashboard plus Keystatic and shouldn't advertise either to crawlers.
-const publicOnlyIntegrations = [
-  sitemap({
-    filter: (page) => !page.includes('/docs/') && !page.includes('/keystatic'),
-  }),
-];
+const baseIntegrations = [alpinejs(), mdx(), react(), sitemap({
+  filter: (page) => !page.includes('/docs/') && !page.includes('/keystatic') && !page.includes('/admin'),
+})];
 
 // https://astro.build/config
 export default defineConfig({
@@ -43,13 +37,10 @@ export default defineConfig({
   },
 
   vite: {
-    define: {
-      'import.meta.env.ADMIN_BUILD': JSON.stringify(ADMIN_BUILD),
-    },
     plugins: [tailwindcss()],
   },
 
   integrations: ADMIN_BUILD
     ? [...baseIntegrations, keystatic()]
-    : [...baseIntegrations, ...publicOnlyIntegrations],
+    : baseIntegrations,
 });

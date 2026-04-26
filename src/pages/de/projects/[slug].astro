@@ -2,6 +2,6 @@
 import Page from '../../projects/[slug].astro';
 export { getStaticPaths } from '../../projects/[slug].astro';
 
-export const prerender = import.meta.env.ADMIN_BUILD !== true;
+export const prerender = true;
 ---
 <Page {...Astro.props} />

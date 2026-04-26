@@ -1,38 +1,6 @@
 import { defineMiddleware } from 'astro:middleware';
 
-const ADMIN_BUILD = import.meta.env.ADMIN_BUILD === true;
-const PUBLIC_SITE_ORIGIN = 'https://bears-space.de';
-
-// On the admin deploy (admin.bears-space.de) we only expose the dashboard at
-// `/` and the Keystatic CMS under `/keystatic`. Anything else gets bounced to
-// the public site so editors who land here on a stale link aren't stuck on a
-// 404. Asset paths (`/_astro`, `/_image`, `/favicon*`) must pass through so
-// the dashboard and CMS can load their resources. `/api/keystatic/*` is
-// Keystatic's own server endpoint — used by `local` storage in dev:admin and
-// by the GitHub-OAuth callback in prod — so it must pass through too.
-function isAdminAllowedPath(pathname: string): boolean {
-  if (pathname === '/') return true;
-  if (pathname.startsWith('/keystatic')) return true;
-  if (pathname.startsWith('/api/keystatic')) return true;
-  if (pathname.startsWith('/_')) return true;
-  if (pathname.startsWith('/favicon')) return true;
-  if (/\.[a-z0-9]+$/i.test(pathname)) return true;
-  return false;
-}
-
 export const onRequest = defineMiddleware(async (context, next) => {
-  if (ADMIN_BUILD) {
-    const { pathname, search } = context.url;
-
-    if (pathname === '/admin' || pathname.startsWith('/admin/')) {
-      return context.redirect('/', 301);
-    }
-
-    if (!isAdminAllowedPath(pathname)) {
-      return Response.redirect(`${PUBLIC_SITE_ORIGIN}${pathname}${search}`, 301);
-    }
-  }
-
   const response = await next();
 
   if (

@@ -3,7 +3,7 @@ import DocsLayout from "@layouts/DocsLayout.astro";
 import { getCollection, type CollectionEntry } from "astro:content";
 import * as mdxComponents from "@mdx";
 
-export const prerender = import.meta.env.ADMIN_BUILD !== true;
+export const prerender = true;
 
 export async function getStaticPaths() {
   const docs = await getCollection("docs");

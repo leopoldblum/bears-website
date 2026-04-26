@@ -46,29 +46,19 @@ src/
 
 ### Dual deploy: public site (GitHub Pages) + admin UI (Cloudflare Pages)
 
-The public site and the Keystatic admin UI are **deployed separately from the same repo**, and each domain only serves its own surface — there is no overlap:
+The public site and the Keystatic admin UI are **deployed separately from the same repo**:
 
-| Domain | Build | What it serves | What it doesn't |
-|---|---|---|---|
-| `bears-space.de` (GitHub Pages, static) | `npm run build` | Landing page, all public marketing/content pages, `/docs`, sitemap | No `/admin`, no `/keystatic` (not emitted at all) |
-| `admin.bears-space.de` (Cloudflare Pages, SSR via `@astrojs/cloudflare`) | `npm run build:admin` (sets `ADMIN_BUILD=true`) | Admin dashboard at `/`, Keystatic CMS at `/keystatic` | Every other path 301-redirects to `bears-space.de` |
+- **Public site** — `bears-space.de`, GitHub Pages, pure static. Built with `npm run build`. No Keystatic runtime, no adapter. This is what end users see.
+- **Admin site** — `admin.bears-space.de`, Cloudflare Pages, Astro `output: 'server'` with the `@astrojs/cloudflare` adapter. Built with `npm run build:admin` (sets `ADMIN_BUILD=true`). Serves `/keystatic` for editors to manage content. Commits edits back to the same GitHub repo via a GitHub App, which triggers a rebuild of the public site.
 
-**How the split is enforced:**
-
-- `src/pages/index.astro` branches on `import.meta.env.ADMIN_BUILD` — renders the admin dashboard component on the admin build, the landing page component on the public build. The flag is injected at build time via `vite.define` in [astro.config.mjs](astro.config.mjs), so each bundle only carries the branch it needs (after dead-code elimination).
-- The dashboard and landing live as components in `src/components/admin/AdminDashboard.astro` and `src/components/landing/LandingPage.astro`. There is no longer a separate `src/pages/admin.astro`.
-- Dynamic content routes (`/events/[slug]`, `/projects/[slug]`, `/docs/[...slug]` plus their `de/` wrappers) declare `export const prerender = import.meta.env.ADMIN_BUILD !== true;`. Public build prerenders them as static HTML; admin build flips them to SSR so middleware can intercept.
-- [src/middleware.ts](src/middleware.ts) handles the gating on the admin runtime: `/admin*` → 301 to `/`, anything outside `/`, `/keystatic*`, and asset paths (`/_astro`, `/_image`, `/favicon*`, anything with a file extension) → 301 to `https://bears-space.de` + path. Middleware doesn't run for prerendered pages, which is why we flip dynamic routes to SSR in the admin build.
-- Sitemap integration is omitted from the admin build — admin pages should never be indexed.
-
-Both builds read/write the **same content files** under `src/content/` — Keystatic never maintains its own database. The editor flow is:
+Both builds read/write the **same content files** under `src/content/` — Keystatic never maintains its own database. The flow is:
 
 ```
-Editor → admin.bears-space.de/ (dashboard) → /keystatic → Keystatic commits to main
+Editor → admin.bears-space.de/keystatic → Keystatic commits to main
   → GitHub Actions rebuilds public site → gh-pages → bears-space.de
 ```
 
-Editors should always use the admin subdomain; the main site has no editing surface and never will.
+The admin deploy does not prerender most pages — it only needs to serve `/keystatic`. Editors should always use the admin subdomain; the main site has no editing surface.
 
 #### Adding or changing content collection schemas
 
