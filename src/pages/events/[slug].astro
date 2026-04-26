@@ -6,7 +6,7 @@ import { getPublishedEvents, stripLocaleFromSlug } from "@utils/contentQueries";
 import { getLocale } from "@utils/i18n";
 import * as mdxComponents from "@mdx";
 
-export const prerender = true;
+export const prerender = import.meta.env.ADMIN_BUILD !== true;
 
 
 export async function getStaticPaths() {

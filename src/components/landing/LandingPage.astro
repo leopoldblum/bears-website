@@ -1,0 +1,32 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import LandingHero from "@landing/LandingHero.astro";
+import WhatIsBears from "@landing/WhatIsBears.astro";
+import MeetTheTeam from "@landing/MeetTheTeam.astro";
+import BecomeSponsor from "@landing/BecomeSponsor.astro";
+import LatestNews from "@landing/LatestNews.astro";
+import Testimonials from "@landing/Testimonials.astro";
+import { getPageContent } from "@utils/contentQueries";
+import { localizeUrl, type Locale } from "@utils/i18n";
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+
+const heroContent = await getPageContent('hero', locale);
+const heroCTAs = (heroContent?.data.ctas ?? []).map(cta => ({
+  ...cta,
+  href: localizeUrl(cta.href, locale),
+}));
+---
+
+<BaseLayout title={locale === 'de' ? 'Startseite' : 'Home'} description={heroContent?.data.seoDescription}>
+  <LandingHero ctas={heroCTAs} locale={locale} />
+  <WhatIsBears locale={locale} />
+  <MeetTheTeam locale={locale} />
+  <BecomeSponsor locale={locale} />
+  <LatestNews locale={locale} />
+  <Testimonials locale={locale} />
+</BaseLayout>

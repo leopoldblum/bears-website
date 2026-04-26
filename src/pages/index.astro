@@ -1,29 +1,12 @@
 ---
-import BaseLayout from "@layouts/BaseLayout.astro";
-import LandingHero from "@landing/LandingHero.astro";
-import WhatIsBears from "@landing/WhatIsBears.astro";
-import MeetTheTeam from "@landing/MeetTheTeam.astro";
-import BecomeSponsor from "@landing/BecomeSponsor.astro";
-import LatestNews from "@landing/LatestNews.astro";
-import Testimonials from "@landing/Testimonials.astro"
-import { getPageContent } from "@utils/contentQueries";
-import { getLocale, localizeUrl } from "@utils/i18n";
+import LandingPage from "@landing/LandingPage.astro";
+import AdminDashboard from "@components/admin/AdminDashboard.astro";
+import { getLocale } from "@utils/i18n";
 
+export const prerender = true;
+
+const ADMIN_BUILD = import.meta.env.ADMIN_BUILD === true;
 const locale = getLocale(Astro.url);
-
-// Fetch hero CTAs from content collection
-const heroContent = await getPageContent('hero', locale);
-const heroCTAs = (heroContent?.data.ctas ?? []).map(cta => ({
-  ...cta,
-  href: localizeUrl(cta.href, locale),
-}));
 ---
 
-<BaseLayout title={locale === 'de' ? 'Startseite' : 'Home'} description={heroContent?.data.seoDescription}>
-  <LandingHero ctas={heroCTAs} locale={locale} />
-  <WhatIsBears locale={locale} />
-  <MeetTheTeam locale={locale} />
-  <BecomeSponsor locale={locale} />
-  <LatestNews locale={locale} />
-  <Testimonials locale={locale} />
-</BaseLayout>
+{ADMIN_BUILD ? <AdminDashboard /> : <LandingPage locale={locale} />}
