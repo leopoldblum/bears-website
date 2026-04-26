@@ -3,6 +3,8 @@ import DocsLayout from "@layouts/DocsLayout.astro";
 import { getDocsBySection } from "@utils/contentQueries";
 import type { CollectionEntry } from "astro:content";
 
+export const prerender = true;
+
 const sections = await getDocsBySection();
 
 const sectionConfig: Record<string, { label: string; description: string; order: number }> = {

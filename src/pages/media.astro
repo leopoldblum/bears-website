@@ -21,6 +21,8 @@ import type { ImageGlob } from "@utils/imageGlobs";
 import { getPageContent } from "@utils/contentQueries";
 import { getLocale, mediaUiStrings } from "@utils/i18n";
 
+export const prerender = true;
+
 const locale = getLocale(Astro.url);
 const pageContent = await getPageContent('media-categories', locale);
 const visibility = (await getEntry('media-section-visibility', 'settings'))!.data;

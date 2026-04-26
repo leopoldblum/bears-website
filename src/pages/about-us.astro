@@ -11,6 +11,8 @@ import { loadAllImagesFromDirectory, loadImage, resolveImagePath } from "@utils/
 import { getPageContent } from "@utils/contentQueries";
 import { getLocale } from "@utils/i18n";
 
+export const prerender = true;
+
 const locale = getLocale(Astro.url);
 const pageContent = await getPageContent('about-us/about-us-title', locale);
 const visibility = (await getEntry('about-section-visibility', 'settings'))!.data;

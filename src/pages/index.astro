@@ -10,6 +10,8 @@ import Testimonials from "@landing/Testimonials.astro"
 import { getPageContent } from "@utils/contentQueries";
 import { getLocale, localizeUrl } from "@utils/i18n";
 
+export const prerender = true;
+
 const locale = getLocale(Astro.url);
 
 // Fetch hero CTAs from content collection

@@ -15,6 +15,8 @@ import { stripLocaleFromSlug } from "@utils/contentQueries";
 import CrosslinkBanner from "@reusable/CrosslinkBanner.astro";
 import { projectsHeroImages } from "@utils/imageGlobs";
 
+export const prerender = true;
+
 const locale = getLocale(Astro.url);
 
 // Locale-aware UI strings for Alpine.js

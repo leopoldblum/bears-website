@@ -10,6 +10,8 @@ import { loadAllImagesFromDirectory, loadImage, resolveImagePath, getDefaultSpon
 import { getPageContent, getSponsorsByTier } from "@utils/contentQueries";
 import { getLocale, localizeUrl } from "@utils/i18n";
 
+export const prerender = true;
+
 const locale = getLocale(Astro.url);
 
 // Page text content

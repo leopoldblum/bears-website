@@ -3,6 +3,8 @@ import BaseLayout from "@layouts/BaseLayout.astro";
 import { getPageContent } from "@utils/contentQueries";
 import { getLocale } from "@utils/i18n";
 
+export const prerender = true;
+
 const locale = getLocale(Astro.url);
 const entry = await getPageContent('imprint/imprint', locale);
 const title = entry?.data.title ?? "Impressum";

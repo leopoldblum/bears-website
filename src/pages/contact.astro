@@ -9,6 +9,8 @@ import { loadAllImagesFromDirectory, loadImage, resolveImagePath } from "@utils/
 import { getPageContent } from "@utils/contentQueries";
 import { getLocale, localizeUrl } from "@utils/i18n";
 
+export const prerender = true;
+
 const locale = getLocale(Astro.url);
 const pageContent = await getPageContent('contact/contact-title', locale);
 const crosslink = await getPageContent('contact/contact-crosslink', locale);
