@@ -7,10 +7,13 @@ const PUBLIC_SITE_ORIGIN = 'https://bears-space.de';
 // `/` and the Keystatic CMS under `/keystatic`. Anything else gets bounced to
 // the public site so editors who land here on a stale link aren't stuck on a
 // 404. Asset paths (`/_astro`, `/_image`, `/favicon*`) must pass through so
-// the dashboard and CMS can load their resources.
+// the dashboard and CMS can load their resources. `/api/keystatic/*` is
+// Keystatic's own server endpoint — used by `local` storage in dev:admin and
+// by the GitHub-OAuth callback in prod — so it must pass through too.
 function isAdminAllowedPath(pathname: string): boolean {
   if (pathname === '/') return true;
   if (pathname.startsWith('/keystatic')) return true;
+  if (pathname.startsWith('/api/keystatic')) return true;
   if (pathname.startsWith('/_')) return true;
   if (pathname.startsWith('/favicon')) return true;
   if (/\.[a-z0-9]+$/i.test(pathname)) return true;
